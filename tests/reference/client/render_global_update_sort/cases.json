@@ -1,0 +1,653 @@
+{
+  "scope": "Authored integer sort controls; normalized keys, no original JAR execution; initial array slot is identity",
+  "cases": [
+    {
+      "name": "equal_ordinal_2",
+      "count": 2,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "equal_ordinal_2",
+      "count": 2,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "equal_ordinal_2",
+      "count": 2,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "equal_ordinal_2",
+      "count": 2,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "equal_ordinal_2",
+      "count": 2,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "equal_ordinal_2",
+      "count": 2,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "equal_ordinal_3",
+      "count": 3,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "equal_ordinal_3",
+      "count": 3,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "equal_ordinal_3",
+      "count": 3,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "equal_ordinal_3",
+      "count": 3,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "equal_ordinal_3",
+      "count": 3,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "equal_ordinal_3",
+      "count": 3,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "equal_ordinal_8",
+      "count": 8,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "equal_ordinal_8",
+      "count": 8,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "equal_ordinal_8",
+      "count": 8,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "equal_ordinal_8",
+      "count": 8,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "equal_ordinal_8",
+      "count": 8,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "equal_ordinal_8",
+      "count": 8,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "equal_ordinal_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "equal_ordinal_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "equal_ordinal_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "equal_ordinal_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "equal_ordinal_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "equal_ordinal_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "equal_ordinal_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "equal_ordinal_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "equal_ordinal_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "equal_ordinal_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "equal_ordinal_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "equal_ordinal_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "equal_ordinal_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "equal_ordinal_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "equal_ordinal_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "equal_ordinal_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "equal_ordinal_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "equal_ordinal_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "equal_ordinal_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "equal_ordinal_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "equal_ordinal_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "equal_ordinal_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "equal_ordinal_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "equal_ordinal_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "mixed_runs_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "mixed_runs_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "mixed_runs_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "mixed_runs_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "mixed_runs_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "mixed_runs_31",
+      "count": 31,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "mixed_runs_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "mixed_runs_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "mixed_runs_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "mixed_runs_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "mixed_runs_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "mixed_runs_32",
+      "count": 32,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "mixed_runs_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "mixed_runs_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "mixed_runs_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "mixed_runs_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "mixed_runs_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "mixed_runs_33",
+      "count": 33,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "mixed_runs_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "mixed_runs_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "mixed_runs_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "mixed_runs_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "mixed_runs_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "mixed_runs_64",
+      "count": 64,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "mixed_runs_65",
+      "count": 65,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "mixed_runs_65",
+      "count": 65,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "mixed_runs_65",
+      "count": 65,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "mixed_runs_65",
+      "count": 65,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "mixed_runs_65",
+      "count": 65,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "mixed_runs_65",
+      "count": 65,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "mixed_runs_128",
+      "count": 128,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "mixed_runs_128",
+      "count": 128,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "mixed_runs_128",
+      "count": 128,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "mixed_runs_128",
+      "count": 128,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "mixed_runs_128",
+      "count": 128,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "mixed_runs_128",
+      "count": 128,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "contract_violation_85",
+      "count": 85,
+      "mode": 0,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "contract_violation_85",
+      "count": 85,
+      "mode": 0,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "contract_violation_85",
+      "count": 85,
+      "mode": 0,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "contract_violation_85",
+      "count": 85,
+      "mode": 0,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "contract_violation_85",
+      "count": 85,
+      "mode": 0,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "contract_violation_85",
+      "count": 85,
+      "mode": 0,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "stable_gallop_1024",
+      "count": 1024,
+      "mode": 1,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "stable_gallop_1024",
+      "count": 1024,
+      "mode": 1,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "stable_gallop_1024",
+      "count": 1024,
+      "mode": 1,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "stable_gallop_1024",
+      "count": 1024,
+      "mode": 1,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "stable_gallop_1024",
+      "count": 1024,
+      "mode": 1,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "stable_gallop_1024",
+      "count": 1024,
+      "mode": 1,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "stable_reverse_runs_512",
+      "count": 512,
+      "mode": 1,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "stable_reverse_runs_512",
+      "count": 512,
+      "mode": 1,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "stable_reverse_runs_512",
+      "count": 512,
+      "mode": 1,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "stable_reverse_runs_512",
+      "count": 512,
+      "mode": 1,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "stable_reverse_runs_512",
+      "count": 512,
+      "mode": 1,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "stable_reverse_runs_512",
+      "count": 512,
+      "mode": 1,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "nontransitive_257",
+      "count": 257,
+      "mode": 2,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "nontransitive_257",
+      "count": 257,
+      "mode": 2,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "nontransitive_257",
+      "count": 257,
+      "mode": 2,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "nontransitive_257",
+      "count": 257,
+      "mode": 2,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "nontransitive_257",
+      "count": 257,
+      "mode": 2,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "nontransitive_257",
+      "count": 257,
+      "mode": 2,
+      "stop_at_comparison": 189
+    },
+    {
+      "name": "nonantisymmetric_1024",
+      "count": 1024,
+      "mode": 3,
+      "stop_at_comparison": 0
+    },
+    {
+      "name": "nonantisymmetric_1024",
+      "count": 1024,
+      "mode": 3,
+      "stop_at_comparison": 1
+    },
+    {
+      "name": "nonantisymmetric_1024",
+      "count": 1024,
+      "mode": 3,
+      "stop_at_comparison": 7
+    },
+    {
+      "name": "nonantisymmetric_1024",
+      "count": 1024,
+      "mode": 3,
+      "stop_at_comparison": 31
+    },
+    {
+      "name": "nonantisymmetric_1024",
+      "count": 1024,
+      "mode": 3,
+      "stop_at_comparison": 127
+    },
+    {
+      "name": "nonantisymmetric_1024",
+      "count": 1024,
+      "mode": 3,
+      "stop_at_comparison": 189
+    }
+  ]
+}

@@ -1,0 +1,7371 @@
+{
+  "rows": [
+    {
+      "case": 0,
+      "profile": 0,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000c8e4f625302a",
+      "uniquifier_before": "9066802dfa00177c",
+      "uniquifier_after": "46595d06636a26ac",
+      "constructor": {
+        "actor_private_random": "00000dc5c6d63459",
+        "source_private_random": "000046bd41f6aa95",
+        "math_random": "0000c8e4f625302a"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "00000139246231b2",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 0,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfb861f040000000",
+              "3fc99999a0000000",
+              "bf94e47f60000000"
+            ],
+            "rotation": [
+              "439505f6",
+              "00000000",
+              "00000000",
+              "00000000",
+              "400c97b8"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00009b96d809d359",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 1,
+      "profile": 1,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000090d397fb4fc2",
+      "uniquifier_before": "c715ed9a08f9f0dc",
+      "uniquifier_after": "07a8b96c9d84b78c",
+      "constructor": {
+        "actor_private_random": "000016f63efbdb0d",
+        "source_private_random": "00002b0ab3e6ce6d",
+        "math_random": "000090d397fb4fc2"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000b9d1f793ac4a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 1,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              1,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfb2760960000000",
+              "3fc99999a0000000",
+              "bfa4222720000000"
+            ],
+            "rotation": [
+              "43a6ffc9",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40141470"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00007ffc25689916",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 2,
+      "profile": 2,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        2,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000080dc2760a05a",
+      "uniquifier_before": "290477600183f13c",
+      "uniquifier_after": "0f875a0b7215db6c",
+      "constructor": {
+        "actor_private_random": "00005d8574e27171",
+        "source_private_random": "0000b1f0b93065de",
+        "math_random": "000080dc2760a05a"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000c56f6ea977e2",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 2,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              2,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfa722ce20000000",
+              "3fc99999a0000000",
+              "bfa44952c0000000"
+            ],
+            "rotation": [
+              "42e6c9cb",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40b24a32"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00009c9bca957169",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 3,
+      "profile": 3,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        3,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000d22ed06081f2",
+      "uniquifier_before": "310e218c0cf3b09c",
+      "uniquifier_after": "a57a77b259da0a4c",
+      "constructor": {
+        "actor_private_random": "0000123edafd7be5",
+        "source_private_random": "0000e71cb4d3b08a",
+        "math_random": "0000d22ed06081f2"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000dce727baf47a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 3,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              3,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfac938360000000",
+              "3fc99999a0000000",
+              "3fb17b5e00000000"
+            ],
+            "rotation": [
+              "431e77e7",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40b057f7"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000b122e1ece959",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 4,
+      "profile": 4,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        4,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000044dc65aa548a",
+      "uniquifier_before": "49e60339b02a86fc",
+      "uniquifier_after": "9381ccf3e41c7c2c",
+      "constructor": {
+        "actor_private_random": "000054c88dadbf3d",
+        "source_private_random": "0000c5a909ff7bd2",
+        "math_random": "000044dc65aa548a"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000953818038212",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 4,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              4,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fb59952c0000000",
+              "3fc99999a0000000",
+              "bfaf2f1160000000"
+            ],
+            "rotation": [
+              "4370edda",
+              "00000000",
+              "00000000",
+              "00000000",
+              "4026d5d5"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00000a635db560d5",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 5,
+      "profile": 5,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        5,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000ce7322117822",
+      "uniquifier_before": "86d3a2d0564b8c5c",
+      "uniquifier_after": "72132b63a765290c",
+      "constructor": {
+        "actor_private_random": "000038117925ff79",
+        "source_private_random": "00006440ef01725e",
+        "math_random": "0000ce7322117822"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000b56dfd6280aa",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 5,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              5,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fb1ea05a0000000",
+              "3fc99999a0000000",
+              "3fa7a98440000000"
+            ],
+            "rotation": [
+              "439c96f9",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3fc49687"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000edf31e3ae63d",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 6,
+      "profile": 6,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        6,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "00009da17a0d4cba",
+      "uniquifier_before": "cb0e8e84fae198bc",
+      "uniquifier_after": "bf5d48d51c56c8ec",
+      "constructor": {
+        "actor_private_random": "000008fb95632981",
+        "source_private_random": "000048144c1f09d5",
+        "math_random": "00009da17a0d4cba"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000963cdfdb5042",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 6,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              6,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3faaba2440000000",
+              "3fc99999a0000000",
+              "bf9ca83240000000"
+            ],
+            "rotation": [
+              "42d56659",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40951986"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00008e45aaa58ea9",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 7,
+      "profile": 7,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        7,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000045b4fd393252",
+      "uniquifier_before": "863d367d54f5441c",
+      "uniquifier_after": "2ba65dc7d23cd3cc",
+      "constructor": {
+        "actor_private_random": "0000faa803836de9",
+        "source_private_random": "0000f0ede266789d",
+        "math_random": "000045b4fd393252"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000a2eaa31550da",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 7,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              7,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3f85ad8e60000000",
+              "3fc99999a0000000",
+              "3f96be1160000000"
+            ],
+            "rotation": [
+              "438fd66b",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3ff9dd09"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00009b57645cdf0d",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 8,
+      "profile": 8,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        8,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "00003b0b47d488ea",
+      "uniquifier_before": "7f3e1966e092e67c",
+      "uniquifier_after": "3fc886a498c981ac",
+      "constructor": {
+        "actor_private_random": "0000030c3b18ca39",
+        "source_private_random": "0000dff656923ee6",
+        "math_random": "00003b0b47d488ea"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000f15ca7dbe272",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 8,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              8,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3f714521a0000000",
+              "3fc99999a0000000",
+              "bfaf355320000000"
+            ],
+            "rotation": [
+              "429a8b48",
+              "00000000",
+              "00000000",
+              "00000000",
+              "403ef5cf"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "000040342edc7329",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 9,
+      "profile": 9,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        9,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000b7cb0442b082",
+      "uniquifier_before": "ad3af9a7804097dc",
+      "uniquifier_after": "03b9634b4683ca8c",
+      "constructor": {
+        "actor_private_random": "000025b50d0a97e1",
+        "source_private_random": "00003f3737fbd1b9",
+        "math_random": "0000b7cb0442b082"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "00005d5f7d9e650a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 9,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              9,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfb5e52620000000",
+              "3fc99999a0000000",
+              "bfa02661a0000000"
+            ],
+            "rotation": [
+              "42cc15c4",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40ad1074"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000a5dbf10ba91d",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 10,
+      "profile": 10,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        10,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000a67afc8b091a",
+      "uniquifier_before": "2e8333452be4303c",
+      "uniquifier_after": "eb526d64af65666c",
+      "constructor": {
+        "actor_private_random": "0000ba8281ba0616",
+        "source_private_random": "0000f5d59cce1562",
+        "math_random": "0000a67afc8b091a"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000a17ea3f038a2",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 10,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              10,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fb6d94b60000000",
+              "3fc99999a0000000",
+              "3f862ce440000000"
+            ],
+            "rotation": [
+              "4300bf87",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40bd2674"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000abf4185a667a",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 11,
+      "profile": 11,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        11,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "00004e4d3bd8f2b2",
+      "uniquifier_before": "4efa9a9d3e99479c",
+      "uniquifier_after": "73b0b9232b28cd4c",
+      "constructor": {
+        "actor_private_random": "000043f07bbd33b1",
+        "source_private_random": "00005c0d8a46ed4e",
+        "math_random": "00004e4d3bd8f2b2"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "00008e025c08bd3a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 11,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              11,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfae94df00000000",
+              "3fc99999a0000000",
+              "3fab39dfa0000000"
+            ],
+            "rotation": [
+              "434578c6",
+              "00000000",
+              "00000000",
+              "00000000",
+              "409bf93e"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00007fb39f846665",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 12,
+      "profile": 12,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        12,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000033343ffbcd4a",
+      "uniquifier_before": "9c04bdb970f735fc",
+      "uniquifier_after": "db51b8f8b6c7372c",
+      "constructor": {
+        "actor_private_random": "0000769de2f54486",
+        "source_private_random": "00007b29c4ba4239",
+        "math_random": "000033343ffbcd4a"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000bce98a4352d2",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 12,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              12,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3f9f04f3c0000000",
+              "3fc99999a0000000",
+              "bfad773b00000000"
+            ],
+            "rotation": [
+              "439399f1",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f1f29cb"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00007e6802851955",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 13,
+      "profile": 13,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        13,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000ea183ae6f8e2",
+      "uniquifier_before": "6b79154f6947135c",
+      "uniquifier_after": "f5ee3ba748a69c0c",
+      "constructor": {
+        "actor_private_random": "0000455ef7c46815",
+        "source_private_random": "0000d3dfdca5a941",
+        "math_random": "0000ea183ae6f8e2"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000f7f5a79f596a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 13,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              13,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfb5698600000000",
+              "3fc99999a0000000",
+              "3f8f60f4e0000000"
+            ],
+            "rotation": [
+              "439a9372",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40b4f5f0"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000fd37fd51425d",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 14,
+      "profile": 14,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        14,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000087c26431d57a",
+      "uniquifier_before": "950502e70729b7bc",
+      "uniquifier_after": "0bd00d015af7b3ec",
+      "constructor": {
+        "actor_private_random": "0000a85275802a26",
+        "source_private_random": "0000c477b2b923a9",
+        "math_random": "000087c26431d57a"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000f41ec3403102",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 14,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              14,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bf88ef1c40000000",
+              "3fc99999a0000000",
+              "bfa9f9d460000000"
+            ],
+            "rotation": [
+              "42f9bfd0",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3fa41978"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000cb91ef92f815",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 15,
+      "profile": 15,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        15,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000cf545a97c312",
+      "uniquifier_before": "fb5aa4822c2dbb1c",
+      "uniquifier_after": "671af540fbc3f6cc",
+      "constructor": {
+        "actor_private_random": "000030755941d02d",
+        "source_private_random": "000062129ec596fd",
+        "math_random": "0000cf545a97c312"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "00000c0593ed399a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 15,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              15,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfa7316ce0000000",
+              "3fc99999a0000000",
+              "3fa5f36080000000"
+            ],
+            "rotation": [
+              "433cd8be",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40c81019"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "000033d0493d1775",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 16,
+      "profile": 16,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        7,
+        1,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "00005b61957821aa",
+      "uniquifier_before": "f3fa1605bed5757c",
+      "uniquifier_after": "f3fa1605bed5757c",
+      "constructor": {
+        "actor_private_random": "000088fae5392ae1",
+        "source_private_random": "0000d0950c4dc371",
+        "math_random": "00005b61957821aa"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "00005b61957821aa",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 23,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          }
+        ]
+      }
+    },
+    {
+      "case": 17,
+      "profile": 17,
+      "step": 0,
+      "input": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000afd836cd2dba",
+      "uniquifier_before": "f077e8ab93042cec",
+      "uniquifier_after": "f077e8ab93042cec",
+      "constructor": {
+        "actor_private_random": "0000373b7b533e89",
+        "source_private_random": "00002e3b21005545",
+        "math_random": "0000afd836cd2dba"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000122c88857d03",
+        "math_random": "0000afd836cd2dba",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.pigdeath",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f845141"
+          }
+        ],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          }
+        ]
+      }
+    },
+    {
+      "case": 18,
+      "profile": 18,
+      "step": 0,
+      "input": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000002694ebd5dca",
+      "uniquifier_before": "f5d5000b03e2b81c",
+      "uniquifier_after": "9bd90cf497c3d7cc",
+      "constructor": {
+        "actor_private_random": "000061cbfcf5ce2a",
+        "source_private_random": "0000c69bb0444f65",
+        "math_random": "000002694ebd5dca"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00003d93cb7ab84e",
+        "math_random": "0000e5a40c767352",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.pigdeath",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f7adb14"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              319,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fa5995f20000000",
+              "3fc99999a0000000",
+              "bf71087420000000"
+            ],
+            "rotation": [
+              "42a03e82",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3fdd43d6"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000ca642478167d",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 19,
+      "profile": 19,
+      "step": 0,
+      "input": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000002d26a233962",
+      "uniquifier_before": "6d8ee5f8d6a47a7c",
+      "uniquifier_after": "3912579489c09e9c",
+      "constructor": {
+        "actor_private_random": "00003a4b32253b79",
+        "source_private_random": "0000236865fed00d",
+        "math_random": "000002d26a233962"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000e6c5459041b8",
+        "math_random": "0000ed034bcda372",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.pigdeath",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f8b34f9"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              319,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fb2c3e9c0000000",
+              "3fc99999a0000000",
+              "bfaaad7940000000"
+            ],
+            "rotation": [
+              "43391618",
+              "00000000",
+              "00000000",
+              "00000000",
+              "4098716e"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "000024658d54ef59",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          },
+          {
+            "stack": [
+              319,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fab2621e0000000",
+              "3fc99999a0000000",
+              "3fa07af140000000"
+            ],
+            "rotation": [
+              "43a1847d",
+              "00000000",
+              "00000000",
+              "00000000",
+              "408853be"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "000091043aef0bbd",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 2,
+        "chunk_count": 2,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          },
+          {
+            "kind": "ADD",
+            "index": 1,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 20,
+      "profile": 20,
+      "step": 0,
+      "input": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "00001e4dfc26b182",
+      "uniquifier_before": "acc73c60ded90e8c",
+      "uniquifier_after": "54e63f8471ccb22c",
+      "constructor": {
+        "actor_private_random": "0000e2882968c102",
+        "source_private_random": "0000faf06e1a7569",
+        "math_random": "00001e4dfc26b182"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000e6c5459041b8",
+        "math_random": "0000fd65d41f6392",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.pigdeath",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f8b34f9"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              320,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfa6a37b00000000",
+              "3fc99999a0000000",
+              "3fb0f7da00000000"
+            ],
+            "rotation": [
+              "4367775c",
+              "00000000",
+              "00000000",
+              "00000000",
+              "4031533a"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000c9e727baadb9",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          },
+          {
+            "stack": [
+              320,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3f840d2d80000000",
+              "3fc99999a0000000",
+              "3f903ff1a0000000"
+            ],
+            "rotation": [
+              "42bf6d56",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3dd54d79"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000f914c11e68c1",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 2,
+        "chunk_count": 2,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          },
+          {
+            "kind": "ADD",
+            "index": 1,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 21,
+      "profile": 21,
+      "step": 0,
+      "input": [
+        1,
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000b1ba4ae8b9a2",
+      "uniquifier_before": "91d67928ff005a5c",
+      "uniquifier_after": "1a89c50b20d0cf0c",
+      "constructor": {
+        "actor_private_random": "00007418807adf5e",
+        "source_private_random": "0000bfb84f45263d",
+        "math_random": "0000b1ba4ae8b9a2"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00003d93cb7ab84e",
+        "math_random": "0000b8c2ea50722a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.pigdeath",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f7adb14"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              319,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fb9336600000000",
+              "3fc99999a0000000",
+              "3f989e5800000000"
+            ],
+            "rotation": [
+              "4321cabd",
+              "00000000",
+              "00000000",
+              "00000000",
+              "405ad2ae"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000039b908a4cb5",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 22,
+      "profile": 22,
+      "step": 0,
+      "input": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000396cec5a9e3a",
+      "uniquifier_before": "2d34c81a61b596bc",
+      "uniquifier_after": "2d34c81a61b596bc",
+      "constructor": {
+        "actor_private_random": "0000c76bfbe70805",
+        "source_private_random": "00000e8ad045798a",
+        "math_random": "0000396cec5a9e3a"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000122c88857d03",
+        "math_random": "0000396cec5a9e3a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.cowhurt",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3ecccccd",
+            "pitch": "3f845141"
+          }
+        ],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          }
+        ]
+      }
+    },
+    {
+      "case": 23,
+      "profile": 23,
+      "step": 0,
+      "input": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000029dd7c87ee4a",
+      "uniquifier_before": "f6adddc14f2d5b2c",
+      "uniquifier_after": "62f87708051ff21c",
+      "constructor": {
+        "actor_private_random": "0000fe3af22c4bfd",
+        "source_private_random": "00001b51febdb7f5",
+        "math_random": "000029dd7c87ee4a"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00003d93cb7ab84e",
+        "math_random": "0000b61525d293d2",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.cowhurt",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3ecccccd",
+            "pitch": "3f7adb14"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              334,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfb0243ce0000000",
+              "3fc99999a0000000",
+              "3fb4c1e500000000"
+            ],
+            "rotation": [
+              "42919b29",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f727143"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000b198b47bea25",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 24,
+      "profile": 24,
+      "step": 0,
+      "input": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000fcab4cc879e2",
+      "uniquifier_before": "9e2888d4dc24600c",
+      "uniquifier_after": "668d9d2fef4077ac",
+      "constructor": {
+        "actor_private_random": "0000b03f806b3b4d",
+        "source_private_random": "00004e4472c749fd",
+        "math_random": "0000fcab4cc879e2"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000e6c5459041b8",
+        "math_random": "00001aeb5c4403f2",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.cowhurt",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3ecccccd",
+            "pitch": "3f8b34f9"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              334,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfb041c040000000",
+              "3fc99999a0000000",
+              "bfabf7b480000000"
+            ],
+            "rotation": [
+              "4304fa1b",
+              "00000000",
+              "00000000",
+              "00000000",
+              "4048d143"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00001c688147d7b1",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          },
+          {
+            "stack": [
+              334,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fb1b062e0000000",
+              "3fc99999a0000000",
+              "bfb62b7800000000"
+            ],
+            "rotation": [
+              "432e5f87",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f80568f"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00005bbf41b1d3ee",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 2,
+        "chunk_count": 2,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          },
+          {
+            "kind": "ADD",
+            "index": 1,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 25,
+      "profile": 25,
+      "step": 0,
+      "input": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000112ed0f63202",
+      "uniquifier_before": "ac3f5d36954f25dc",
+      "uniquifier_after": "ac3f5d36954f25dc",
+      "constructor": {
+        "actor_private_random": "00005d361f2c88d0",
+        "source_private_random": "00009ba63b2e04f5",
+        "math_random": "0000112ed0f63202"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000122c88857d03",
+        "math_random": "0000112ed0f63202",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.chickenhurt",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f845141"
+          }
+        ],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          }
+        ]
+      }
+    },
+    {
+      "case": 26,
+      "profile": 26,
+      "step": 0,
+      "input": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000895bb5d00412",
+      "uniquifier_before": "66cc2d94b01bfacc",
+      "uniquifier_after": "a19017e808f7ee3c",
+      "constructor": {
+        "actor_private_random": "0000c463ecc585ec",
+        "source_private_random": "0000eb041e1b6865",
+        "math_random": "0000895bb5d00412"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00003d93cb7ab84e",
+        "math_random": "00000020ab8c9a9a",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.chickenhurt",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f7adb14"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              288,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfacd890e0000000",
+              "3fc99999a0000000",
+              "bfa52098c0000000"
+            ],
+            "rotation": [
+              "43065273",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40c0748c"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000d178a6e254fd",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 27,
+      "profile": 27,
+      "step": 0,
+      "input": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "00008709c7b1c2aa",
+      "uniquifier_before": "51cae2044fd640ac",
+      "uniquifier_after": "08d46ebc5a6c934c",
+      "constructor": {
+        "actor_private_random": "00006b8150095195",
+        "source_private_random": "00002494e0620c76",
+        "math_random": "00008709c7b1c2aa"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000e6c5459041b8",
+        "math_random": "0000766e5eb10eba",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.chickenhurt",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f8b34f9"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              288,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfb2685e20000000",
+              "3fc99999a0000000",
+              "3fab539e40000000"
+            ],
+            "rotation": [
+              "4312561e",
+              "00000000",
+              "00000000",
+              "00000000",
+              "4004dbd7"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000c86b6a500105",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          },
+          {
+            "stack": [
+              288,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fb49e0aa0000000",
+              "3fc99999a0000000",
+              "bfab790f60000000"
+            ],
+            "rotation": [
+              "436623cf",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3fc30e5c"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000a82cf5e5e292",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 2,
+        "chunk_count": 2,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          },
+          {
+            "kind": "ADD",
+            "index": 1,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 28,
+      "profile": 28,
+      "step": 0,
+      "input": [
+        4,
+        1,
+        0,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000a47b2b5b7eca",
+      "uniquifier_before": "7b5f25531c77d3fc",
+      "uniquifier_after": "7b5f25531c77d3fc",
+      "constructor": {
+        "actor_private_random": "000020dc572a9d81",
+        "source_private_random": "0000e3c3b354fbc5",
+        "math_random": "0000a47b2b5b7eca"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          0
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00000005deece64b",
+        "math_random": "0000a47b2b5b7eca",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": []
+      }
+    },
+    {
+      "case": 29,
+      "profile": 29,
+      "step": 0,
+      "input": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        3,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000d2b53ec212da",
+      "uniquifier_before": "6da8644ccd66956c",
+      "uniquifier_after": "6da8644ccd66956c",
+      "constructor": {
+        "actor_private_random": "0000b06ed7919121",
+        "source_private_random": "0000a2dc61a1d645",
+        "math_random": "0000d2b53ec212da"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          0
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00000005deece66e",
+        "math_random": "0000d2b53ec212da",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": []
+      }
+    },
+    {
+      "case": 30,
+      "profile": 30,
+      "step": 0,
+      "input": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        38,
+        2,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NPE",
+      "scope": "SOURCE_FAILURE",
+      "math_before": "000049bc1035caea",
+      "uniquifier_before": "08034eac90a9929c",
+      "uniquifier_after": "08034eac90a9929c",
+      "constructor": {
+        "actor_private_random": "00009eaae5934f1d",
+        "source_private_random": "0000883c3cc2e169",
+        "math_random": "000049bc1035caea"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          0
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00000005deece64b",
+        "math_random": "000049bc1035caea",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": null,
+        "watcher": 0,
+        "sounds": [],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": []
+      }
+    },
+    {
+      "case": 31,
+      "profile": 31,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        9,
+        0,
+        0,
+        38,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000029af8d47a6fa",
+      "uniquifier_before": "2103db775ada528c",
+      "uniquifier_after": "7b96a1f9a084b8fc",
+      "constructor": {
+        "actor_private_random": "0000f0331f99266d",
+        "source_private_random": "00001de7f6d2d915",
+        "math_random": "000029af8d47a6fa"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "00000000",
+          "3fc00000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "00003307a28e320c",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 9,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              9,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fb26f38e0000000",
+              "3fc99999a0000000",
+              "3fabcb13e0000000"
+            ],
+            "rotation": [
+              "42ef985a",
+              "00000000",
+              "00000000",
+              "00000000",
+              "404e7e47"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "000067690c9912ed",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 32,
+      "profile": 32,
+      "step": 0,
+      "input": [
+        0,
+        1,
+        3,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "00001583e1f01a9c",
+      "uniquifier_before": "1b1c6b072da52e6c",
+      "uniquifier_after": "2ebe2149565e8e5c",
+      "constructor": {
+        "actor_private_random": "0000852320fcb3b5",
+        "source_private_random": "0000ad9780187d59",
+        "math_random": "00001583e1f01a9c"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          0
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00000005deece64b",
+        "math_random": "0000bc2941a13864",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 3,
+        "sounds": [],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              3,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3f831e4aa0000000",
+              "3fc99999a0000000",
+              "bf7055d500000000"
+            ],
+            "rotation": [
+              "42da11a4",
+              "00000000",
+              "00000000",
+              "00000000",
+              "4086c8b0"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000e7d9fbee8dfd",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 33,
+      "profile": 32,
+      "step": 1,
+      "input": [
+        0,
+        1,
+        3,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000bc2941a13864",
+      "uniquifier_before": "2ebe2149565e8e5c",
+      "uniquifier_after": "3f111be1abcf930c",
+      "constructor": {
+        "actor_private_random": "0000852320fcb3b5",
+        "source_private_random": "0000ad9780187d59",
+        "math_random": "00001583e1f01a9c"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          0
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00000005deece64b",
+        "math_random": "00008c421edd472c",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 3,
+        "sounds": [],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              3,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3f831e4aa0000000",
+              "3fc99999a0000000",
+              "bf7055d500000000"
+            ],
+            "rotation": [
+              "42da11a4",
+              "00000000",
+              "00000000",
+              "00000000",
+              "4086c8b0"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000e7d9fbee8dfd",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          },
+          {
+            "stack": [
+              35,
+              1,
+              3,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3f9e2b87c0000000",
+              "3fc99999a0000000",
+              "bf9ccc36c0000000"
+            ],
+            "rotation": [
+              "434568af",
+              "00000000",
+              "00000000",
+              "00000000",
+              "406ec6bf"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000dd7106a213d9",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 2,
+        "chunk_count": 2,
+        "events": [
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          },
+          {
+            "kind": "ADD",
+            "index": 1,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 34,
+      "profile": 33,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        7,
+        0,
+        0,
+        38,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "CALLBACK",
+      "scope": "PUBLICATION_CALLBACK",
+      "math_before": "0000d057a2aeb7bc",
+      "uniquifier_before": "7257c9a1f535eabc",
+      "uniquifier_after": "df80f25bccfec2ec",
+      "constructor": {
+        "actor_private_random": "000069b5fc6508f5",
+        "source_private_random": "00000f3158336a1a",
+        "math_random": "0000d057a2aeb7bc"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000664f136a5984",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 7,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              7,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fa86a0f40000000",
+              "3fc99999a0000000",
+              "bfb34518e0000000"
+            ],
+            "rotation": [
+              "434c4929",
+              "00000000",
+              "00000000",
+              "00000000",
+              "405033b7"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "000034cb61ea52e9",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 35,
+      "profile": 34,
+      "step": 0,
+      "input": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        2,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "CALLBACK",
+      "scope": "PUBLICATION_CALLBACK",
+      "math_before": "00005d0824851014",
+      "uniquifier_before": "0738d4f4afa7661c",
+      "uniquifier_after": "5bf5d3d29b8b6d3c",
+      "constructor": {
+        "actor_private_random": "0000870c2c65e5f9",
+        "source_private_random": "00001264051d2651",
+        "math_random": "00005d0824851014"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000e6c5459041b8",
+        "math_random": "0000e1d86afa8aa4",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [
+          {
+            "name": "mob.pigdeath",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f8b34f9"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              319,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fa85e28c0000000",
+              "3fc99999a0000000",
+              "bfa06ab520000000"
+            ],
+            "rotation": [
+              "4394953f",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3fefa2b6"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000b197a1476325",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          },
+          {
+            "stack": [
+              319,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfa3817680000000",
+              "3fc99999a0000000",
+              "3f95b5ac60000000"
+            ],
+            "rotation": [
+              "41283e14",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40bf4547"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000154231041612",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 2,
+        "chunk_count": 2,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          },
+          {
+            "kind": "ADD",
+            "index": 1,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 36,
+      "profile": 35,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        5,
+        0,
+        0,
+        38,
+        0,
+        0,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NPE",
+      "scope": "SOURCE_FAILURE",
+      "math_before": "00006798c303c934",
+      "uniquifier_before": "0ce7e5f94f241bac",
+      "uniquifier_after": "65807a4c66548c9c",
+      "constructor": {
+        "actor_private_random": "0000e7c3cc52d419",
+        "source_private_random": "00002369e5056809",
+        "math_random": "00006798c303c934"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "00009cae229321fc",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": null,
+        "watcher": 5,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              5,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bf99ce9580000000",
+              "3fc99999a0000000",
+              "bfb5062be0000000"
+            ],
+            "rotation": [
+              "4285b523",
+              "00000000",
+              "00000000",
+              "00000000",
+              "400c2cdd"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "0000bcdccc62056e",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 37,
+      "profile": 36,
+      "step": 0,
+      "input": [
+        0,
+        1,
+        6,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "000015e125d0e68c",
+      "uniquifier_before": "653b270f597b748c",
+      "uniquifier_after": "773a8348f50bc2fc",
+      "constructor": {
+        "actor_private_random": "0000348a6d257f5a",
+        "source_private_random": "0000e19ff2adfde5",
+        "math_random": "000015e125d0e68c"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          -1
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00000005deece64b",
+        "math_random": "00002eff29f59254",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 6,
+        "sounds": [],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              6,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfb8e75640000000",
+              "3fc99999a0000000",
+              "3f9b82fba0000000"
+            ],
+            "rotation": [
+              "4316e096",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f3d0119"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "000045d85ea28fbe",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 38,
+      "profile": 37,
+      "step": 0,
+      "input": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        2,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "0000bbeeb2901ce4",
+      "uniquifier_before": "e3472200c84ca06c",
+      "uniquifier_after": "da6bbfc7686c285c",
+      "constructor": {
+        "actor_private_random": "0000a671d44fcbb5",
+        "source_private_random": "0000e49063025c15",
+        "math_random": "0000bbeeb2901ce4"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          0
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000bb2c7239d74e",
+        "math_random": "00009c4c94143bac",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [],
+        "items": [
+          {
+            "stack": [
+              319,
+              1,
+              0,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "3fa24cb280000000",
+              "3fc99999a0000000",
+              "bf97bed980000000"
+            ],
+            "rotation": [
+              "4004517c",
+              "00000000",
+              "00000000",
+              "00000000",
+              "407a6b1e"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "00007957c32de6c1",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 39,
+      "profile": 38,
+      "step": 0,
+      "input": [
+        1,
+        1,
+        0,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NPE",
+      "scope": "SOURCE_FAILURE",
+      "math_before": "000079809d8bcc3c",
+      "uniquifier_before": "7ba7543c8b76174c",
+      "uniquifier_after": "7ba7543c8b76174c",
+      "constructor": {
+        "actor_private_random": "0000800aff2f26a1",
+        "source_private_random": "000092ac239660ad",
+        "math_random": "000079809d8bcc3c"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          0
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": null,
+        "math_random": "000079809d8bcc3c",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": []
+      }
+    },
+    {
+      "case": 40,
+      "profile": 39,
+      "step": 0,
+      "input": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      "result": null,
+      "exception": "NPE",
+      "scope": "SOURCE_FAILURE",
+      "math_before": "0000094d7548a0cc",
+      "uniquifier_before": "cb9bfbfe8525e7fc",
+      "uniquifier_after": "cb9bfbfe8525e7fc",
+      "constructor": {
+        "actor_private_random": "00007313d2e7bbde",
+        "source_private_random": "00003d6e2daea3e1",
+        "math_random": "0000094d7548a0cc"
+      },
+      "state": {
+        "health": [
+          4,
+          17,
+          20,
+          0,
+          0,
+          17,
+          3,
+          4,
+          7,
+          0
+        ],
+        "animation": [
+          "42c60000",
+          "3e800000"
+        ],
+        "velocity": [
+          "3fd0000000000000",
+          "bfd8000000000000",
+          "bfc0000000000000"
+        ],
+        "attacked": false,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "00000005deece64b",
+        "math_random": "0000094d7548a0cc",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": null,
+        "sounds": [],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": []
+      }
+    },
+    {
+      "case": 41,
+      "profile": 40,
+      "step": 0,
+      "input": [
+        0,
+        2,
+        7,
+        0,
+        0,
+        38,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "scope": "FULL",
+      "math_before": "00001c660723b95c",
+      "uniquifier_before": "c186cd1e64d5796c",
+      "uniquifier_after": "e2d4ef5652a2955c",
+      "constructor": {
+        "actor_private_random": "00006e75245aef85",
+        "source_private_random": "00000b8eccfb9811",
+        "math_random": "00001c660723b95c"
+      },
+      "state": {
+        "health": [
+          0,
+          2,
+          20,
+          20,
+          2,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "0000ea7a4ea1ef24",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 20,
+        "source_unchanged": true,
+        "world": "PRIMARY",
+        "watcher": 7,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [
+          {
+            "stack": [
+              35,
+              1,
+              7,
+              0
+            ],
+            "position": [
+              "4021000000000000",
+              "4050200000000000",
+              "4021000000000000"
+            ],
+            "previous_position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "velocity": [
+              "bfa51d3b60000000",
+              "3fc99999a0000000",
+              "bf60dca360000000"
+            ],
+            "rotation": [
+              "423ff904",
+              "00000000",
+              "00000000",
+              "00000000",
+              "40bcc0ad"
+            ],
+            "size": [
+              "3e000000",
+              "3e800000",
+              "3e800000"
+            ],
+            "bounds": [
+              "4020c00000000000",
+              "4050180000000000",
+              "4020c00000000000",
+              "4021400000000000",
+              "4050280000000000",
+              "4021400000000000"
+            ],
+            "body": [
+              0,
+              10,
+              0,
+              5,
+              0,
+              0,
+              0
+            ],
+            "flags": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              false,
+              false,
+              true
+            ],
+            "chunk": [
+              0,
+              4,
+              0
+            ],
+            "private_random": "000029c6fa9e1415",
+            "world": "PRIMARY",
+            "world_member": true,
+            "chunk_members": 1,
+            "stack_unique": true
+          }
+        ],
+        "world_loaded": 1,
+        "chunk_count": 1,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          },
+          {
+            "kind": "ADD",
+            "index": 0,
+            "world_member": true,
+            "chunk_members": 1
+          }
+        ]
+      }
+    },
+    {
+      "case": 42,
+      "profile": 41,
+      "step": 0,
+      "input": [
+        0,
+        0,
+        8,
+        0,
+        0,
+        38,
+        0,
+        0,
+        4,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "result": null,
+      "exception": "NPE",
+      "scope": "SOURCE_FAILURE",
+      "math_before": "00007304694d4db4",
+      "uniquifier_before": "d37daeac4311584c",
+      "uniquifier_after": "d37daeac4311584c",
+      "constructor": {
+        "actor_private_random": "0000d157a90f3e31",
+        "source_private_random": "0000683cead03609",
+        "math_random": "00007304694d4db4"
+      },
+      "state": {
+        "health": [
+          0,
+          4,
+          20,
+          20,
+          4,
+          0,
+          10,
+          10,
+          7,
+          0
+        ],
+        "animation": [
+          "41b90a72",
+          "3fc00000"
+        ],
+        "velocity": [
+          "bfbd70a3e6666666",
+          "3fcb333340000000",
+          "bfd87ae14ccccccd"
+        ],
+        "attacked": true,
+        "dying": true,
+        "dead": false,
+        "position": [
+          "4021000000000000",
+          "4050200000000000",
+          "4021000000000000"
+        ],
+        "yaw": "41f00000",
+        "bounds": [
+          "4020000000000000",
+          "4050000000000000",
+          "4020000000000000",
+          "4022000000000000",
+          "4050400000000000",
+          "4022000000000000"
+        ],
+        "random": "0000fa815c77497d",
+        "math_random": "00007304694d4db4",
+        "world_random": "00000005deecefc9",
+        "source_random": "00000005deecd654",
+        "source_cooldown": 123,
+        "source_unchanged": true,
+        "world": null,
+        "watcher": 8,
+        "sounds": [
+          {
+            "name": "mob.sheep",
+            "position": [
+              "4021000000000000",
+              "4050180000000000",
+              "4021000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ],
+        "items": [],
+        "world_loaded": 0,
+        "chunk_count": 0,
+        "events": [
+          {
+            "kind": "SOUND",
+            "index": 0
+          }
+        ]
+      }
+    }
+  ],
+  "source_sha256": {
+    "AnimalDeathObservation.java": "72574318b341b2e90e2ce79ae1037bf965fe309b6d486f1b2ae175e9fda2c908",
+    "AnimalDeathJdi.java": "792c8fabc8ebde9dd1b7fb122905c55cbd0f8ca4a8dc2662f92727f562191d39",
+    "capture_reference.py": "0e63463b28ba17497def3149f662ff78622869f1fe98730712ebf3e4a177f8e6",
+    "validate.py": "58188f971e26ef211bada5eb92f3cd778c844b83b4f945dc0afba44daaccb143",
+    "profiles.txt": "63b574b290d3db18ea2ffcba1cef4dbdee7f639ada2ba9df05fbfe06bc6b1638",
+    "source-pins.json": "0697fd6a567e13af562cb239cafb998f0e621ddc4eb032c29d505d54cc320ca3",
+    "../mob_tick/ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "../../client/controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "../../client/controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-25T16:20:16Z",
+  "platform": "Windows x86-64",
+  "java": "Temurin OpenJDK 17.0.17+10",
+  "compiler": "MinGW GCC 15.2.0 x86_64-posix-seh",
+  "c_flags": [
+    "-std=c17",
+    "-O2",
+    "-flto",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic",
+    "-Werror",
+    "-ffp-contract=off",
+    "-fno-fast-math"
+  ],
+  "provenance_sha256": "11a4cb31d3cc78d77a5847cf1b1cb8cd005ee832dd26f72d3c012c9a0ee253d4",
+  "inputs_sha256": "3270073f7a12425fe8ed7936dd7278339cf2f107e05239387e35fc18cbe20e3b",
+  "comparisons": {
+    "faces": {
+      "equal": true,
+      "records": 108,
+      "original_sha256": "9c61145f566f9fd7be9676db4b2dbc2257bde3452ae0cdda57a2485725dc5ae8",
+      "native_sha256": "9c61145f566f9fd7be9676db4b2dbc2257bde3452ae0cdda57a2485725dc5ae8"
+    },
+    "ao": {
+      "equal": true,
+      "records": 108,
+      "original_sha256": "dc29e6ba8669c586a9a8eba3f6a2c8fb343c5a32438b30d42f7e08dfe33ebceb",
+      "native_sha256": "dc29e6ba8669c586a9a8eba3f6a2c8fb343c5a32438b30d42f7e08dfe33ebceb"
+    },
+    "families": {
+      "equal": true,
+      "records": 550,
+      "original_sha256": "29db72ac8a2596aa92b25f2f4bdb1d1c211836a472509eb5490498887e476f05",
+      "native_sha256": "29db72ac8a2596aa92b25f2f4bdb1d1c211836a472509eb5490498887e476f05"
+    }
+  },
+  "native_source_sha256": {
+    "include/mc/block/registry/rendering.h": "5cea0a39cb79ac9e19d4afb2ef27186b1032248c9c3cb09dee85a792fa9ea7dc",
+    "src/block/material/material.c": "b5f1d0e2b2198f9d0916cae34d5d0ce1e460f6f1593327ee5a0fffe7af820e6c",
+    "src/block/registry/opacity.c": "7533b36c2c0172b08ef41c8c9997789004497580a05dd20e8552b1cc4790b531",
+    "src/block/registry/registry.c": "9e53fa99b79c18653e79af414305ce1b9dbe371c32f1d59998f96f872c9cffcd",
+    "src/block/registry/registry_internal.h": "dfa07e99d8ebd2483fc912b47eeacacf5d50bf88ec0f8e529e7c034653344ecf",
+    "src/block/registry/rendering.c": "1071b83ee6231a855a2fe04c9aaf63362e343c7e56609135b51b258c3a96b898",
+    "src/block/registry/runtime.c": "e20242dacc750f053c7506d05d7d4d04a8784c4ef335ec1e8428171fed7e8d95",
+    "src/block/registry/texture.c": "857a25cfc65aa14559ad5184091c2d7e280c59e0408387f32b2d18bb7507d554",
+    "src/client/world/mesher.c": "3e57358fec1ec61ab9a039a5b5eacda549c3687965eae9ed906fbcc8a0e2d9da",
+    "src/client/world/mesher.h": "020ffc050de1f622ee10991e0b81f39bb940096522798bf31c23644e299b79a5",
+    "src/client/world/mesher_faces.c": "7c11f62e06b5ec1a6ff76fc6ec6188d1a6dd0c341ff955915a209ab7adf781ec",
+    "src/client/world/mesher_lighting.c": "46f03a3d6bd4a448650a7a8d5260a76e000b96a0d81fa2c8d77cfc59b2376369",
+    "src/client/world/mesher_lighting.h": "bed5316a73b2878689f8b47ccefeee4ac9b909a60262dd4c1b6a1e32ead51ccb",
+    "src/client/world/vertex.h": "703aea6dfb684000d2de701156ab3efe95f8d5f16f085db6010ef388b6b552b6",
+    "src/core/java/java.c": "efa5f6b0c997ed9a160184785f699ab822d2ba2dd501a1b2228d63a5360fa2db",
+    "src/core/math/math.c": "a28b1681f42433d221c6e0b66b2e81515b9e3d53f60abf78a63a4c9ed729c202",
+    "src/world/chunk/nibbles.c": "dfe5b82c4918fb2e973bcd3e0da1b145c940ab0d7f604eff56acff5f6768d791"
+  },
+  "frozen_source_manifest_sha256": "b4342fac06ad8464361b90113281d73e6607025159e0765b39330fbae76bde26",
+  "prebuilt_mode_control": {
+    "passed": true,
+    "compiler_argument": "deliberately-unavailable-compiler",
+    "compiler_invoked": false,
+    "binary_profile": "current LF-source GCC probe products; no MSVC or Clang execution claim"
+  },
+  "rejection_controls": {
+    "wrong_archive_hash": {
+      "exit_code": 1,
+      "rejected": true
+    },
+    "partial_prebuilt_arguments": {
+      "exit_code": 2,
+      "rejected": true
+    }
+  },
+  "limits": "Authored IBlockAccess CPU records only; no actual GAME World acquisition, Player loop, driver pixels or general failure equivalence.",
+  "authored_unit_checks": 493,
+  "line_endings": "LF in published producers, inputs, pins, validation and native mesher sources"
+}

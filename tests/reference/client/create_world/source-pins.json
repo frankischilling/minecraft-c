@@ -1,0 +1,4643 @@
+{
+  "schema": 1,
+  "scope": "Offline class inventories, hierarchy, Code hashes and selected references; no runtime observations.",
+  "jar_bytes": 1465375,
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "archive_member_count": 834,
+  "archive_class_count": 747,
+  "classes": {
+    "fj": {
+      "class_bytes": 3605,
+      "class_sha256": "08f5fdc97bd5ea61ad89e7c4555f84ef2e65f51e974300a870bada283b99b4e7",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "da",
+      "fields": [
+        {
+          "access": 2,
+          "name": "a",
+          "descriptor": "Lda;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "i",
+          "descriptor": "Lro;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "j",
+          "descriptor": "Lro;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "l",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "m",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lda;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "k",
+          "descriptor": "()V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnl;Ljava/lang/String;)Ljava/lang/String;",
+          "access": 9
+        },
+        {
+          "name": "h",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lke;)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(CI)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(III)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIF)V",
+          "access": 1
+        },
+        {
+          "name": "j",
+          "descriptor": "()V",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lda;)V",
+          "access": 1,
+          "code_bytes": 10,
+          "code_sha256": "377e79729ca759137f7f6064cfdc25f50389a0d3edf9a4dd11cd0637dd1b7be7",
+          "code_attribute_sha256": "129d331ff66979e324f05e7b43accf290f1fd99fd00a4d12edbc7d7f5197aee8",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "c99d83402bf469505c8b230f89f39638fe457c1ff3ec7299ed320b5053c05134",
+          "code_attribute_sha256": "abfca7f4255354c530092125a758c94988c7b2c4381ec144ca8de4ebe6b825c7",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 201,
+          "code_sha256": "702397b46545e281cd6e2328b292dcdc56be199e28091adb2c92b2a888231ca7",
+          "code_attribute_sha256": "be8f00de800f6a5d776115f5ea18dffce912574563de6232ff98aa7e9f53c2d3",
+          "max_stack": 11,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "k",
+          "descriptor": "()V",
+          "access": 2,
+          "code_bytes": 89,
+          "code_sha256": "90b00d8500a16ce7c43c86e84f7c43efce8c93130aa7f81a1efb1f62c0844e90",
+          "code_attribute_sha256": "cd9ccca83d98de5ed68a309d84e586a0b22c6def320e1b8a8507c6f40d0f9c50",
+          "max_stack": 4,
+          "max_locals": 5,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnl;Ljava/lang/String;)Ljava/lang/String;",
+          "access": 9,
+          "code_bytes": 35,
+          "code_sha256": "5319f41dce20fe4b61f4cee65693303b6c9b926ee84c00912dcd7feba9e21a42",
+          "code_attribute_sha256": "d4ec53eda92d691641795a1d4804f09e73be573c238cdf6c3e4b89cf1164f32b",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "h",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "a613bc891b578677d0a0b6b44761972ed200df19a957aeef060014bf8d672e6f",
+          "code_attribute_sha256": "8aa39f65d1257072a1f78b00c712840d1e8f8847f0a3eff4db32cd12f8f03ed9",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lke;)V",
+          "access": 4,
+          "code_bytes": 161,
+          "code_sha256": "96b55517e4ea7c0426ae4cc862d2c55e045babd512c87ed8639b71ca31d27b16",
+          "code_attribute_sha256": "7e43dd86609c02451565c42328b3641c24ee5ceb854f888f2c8d3e848a48e4c0",
+          "max_stack": 5,
+          "max_locals": 7,
+          "exceptions": [
+            {
+              "from": 86,
+              "to": 103,
+              "target": 106,
+              "catch": "java/lang/NumberFormatException"
+            }
+          ]
+        },
+        {
+          "name": "a",
+          "descriptor": "(CI)V",
+          "access": 4,
+          "code_bytes": 93,
+          "code_sha256": "48dc6f9995b32710ed440eb1e9c25b1a23b2777df1e246abbbdb931c87dcd7a7",
+          "code_attribute_sha256": "9e20f1d99a3f3878538135a226f40e4b1c0a8d19a07562d287f4e696fa1a0d9e",
+          "max_stack": 3,
+          "max_locals": 3,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(III)V",
+          "access": 4,
+          "code_bytes": 28,
+          "code_sha256": "af067dfed9d7f37c35d6fa1616d22c3f402f17bfa1a4e93af691b4d595697939",
+          "code_attribute_sha256": "2a2ae5d69de37e22547aa86ac157ac95399c2e5a09bc57310e0b6ae8df4a201d",
+          "max_stack": 4,
+          "max_locals": 4,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIF)V",
+          "access": 1,
+          "code_bytes": 204,
+          "code_sha256": "1e2b2390ff58b8beff43f05b403ea969a2269b813f9ba86af72ad4d1385f4d12",
+          "code_attribute_sha256": "ca1249fbfae5c1ebb94b72205755ea1e18d561152cd5d9b9587690e333d69d0e",
+          "max_stack": 6,
+          "max_locals": 5,
+          "exceptions": []
+        },
+        {
+          "name": "j",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 46,
+          "code_sha256": "e0852dd9b664cf58cd39f0f79d762ab8482e2c4411da88cb8b8898a9125723d1",
+          "code_attribute_sha256": "c6c6080f91e98f238d2809bfd774baceb3ba232171b8b5a272e3f9fc3c32ba3f",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exceptions": []
+        }
+      ]
+    },
+    "ro": {
+      "class_bytes": 2029,
+      "class_sha256": "a2116d3ef14a01fe4c8f0244906e191419b4d526bd99cdb41afb005c463dbe67",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "ub",
+      "fields": [
+        {
+          "access": 18,
+          "name": "c",
+          "descriptor": "Lsj;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 18,
+          "name": "d",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 18,
+          "name": "e",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 18,
+          "name": "f",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 18,
+          "name": "g",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "h",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "i",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "j",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 2,
+          "name": "l",
+          "descriptor": "Lda;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lda;Lsj;IIIILjava/lang/String;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(CI)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(III)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Z)V",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(I)V",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lda;Lsj;IIIILjava/lang/String;)V",
+          "access": 1,
+          "code_bytes": 54,
+          "code_sha256": "4e7d3e0e08836c07c1c778fc00def4f5bfc896c6f86c2b07b2f856a5bb968203",
+          "code_attribute_sha256": "970d09e3d30f31f872fa33ec9a1dd3ea9b70228bbd8f920ef75a5251c278ca2b",
+          "max_stack": 2,
+          "max_locals": 8,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 1,
+          "code_bytes": 6,
+          "code_sha256": "6377798f8121adf0407db2372aa220ce41c532ac92844368c39c3a53e012a535",
+          "code_attribute_sha256": "c9111632d065b9b43de45cfd69a6107f0d3a7353a237faf70a9d646209bff21a",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "f66e8250518af8e7eba2e824a653290c86670b3fe30fd9f290298cfd4523f135",
+          "code_attribute_sha256": "865be9966c62a9cd6a368ee91e494334bc105763f9325b1483898b1c4a363797",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 11,
+          "code_sha256": "be9b6403f1328f3aef49ded551f249ae59ef7c8dee758654cf4dabfefcb9a516",
+          "code_attribute_sha256": "b245389db7a6310f185df8811188496ea20a32f27a967371936f860543521566",
+          "max_stack": 3,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(CI)V",
+          "access": 1,
+          "code_bytes": 202,
+          "code_sha256": "10996da77c0ed43535f67b2d1afb045153ac4b15966a3b1fe94bcca772a5b604",
+          "code_attribute_sha256": "a64fd034d353cf5e20677ca165c21bf4d939fc9514e8e16c9cac4a0af19c075d",
+          "max_stack": 5,
+          "max_locals": 5,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(III)V",
+          "access": 1,
+          "code_bytes": 63,
+          "code_sha256": "8970e9793b53115f340e7d2e01bbab602c8c01a95581ade9d20c6b08e6eab598",
+          "code_attribute_sha256": "50e5ee0e66a6a44805c5ce7c67ac93602665251c14f36faf8ec1dce48b289289",
+          "max_stack": 3,
+          "max_locals": 5,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Z)V",
+          "access": 1,
+          "code_bytes": 22,
+          "code_sha256": "c0681aa868d879d31421e4b9d123dd804119f80cbed63fae1cd87e2bb317c49d",
+          "code_attribute_sha256": "55b433e2301c46ed7fdbd5b8b94cb58f9305ae6233340d450ccf7efa743cd42d",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "c",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 203,
+          "code_sha256": "cd20e7cdccd0f4b482e686b9c1606b23ec3b1336179fd1b08a36296362865be2",
+          "code_attribute_sha256": "447d0fb4a7f350d5faf6c669cb57326d24bbe90526cd0e717595638ad72b749d",
+          "max_stack": 7,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(I)V",
+          "access": 1,
+          "code_bytes": 6,
+          "code_sha256": "7219da784c3356986243ab7c21ee693a4c1ee8340bc544be9069ecdac498c260",
+          "code_attribute_sha256": "a7386079c9dd1d8f625c37f9d52e366f6b8ffe6ecf37c83eb2bbf3011f12a823",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exceptions": []
+        }
+      ]
+    },
+    "fp": {
+      "class_bytes": 1121,
+      "class_sha256": "3749b3ed11fd0ab6fd46c68645a897d6132350aa87346c745c220ce42f696e77",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "java/lang/Object",
+      "fields": [
+        {
+          "access": 25,
+          "name": "a",
+          "descriptor": "Ljava/lang/String;",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 25,
+          "name": "b",
+          "descriptor": "[C",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 10
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "46202a05ae07ac9d2aac2ebbd079d457dde453f0987613b52558e8d5f968e0c8",
+          "code_attribute_sha256": "e819a5f156d368bd93f4b0126ecc36ef148aa59a25344ef8ee76f4bffb13bb0a",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 10,
+          "code_bytes": 81,
+          "code_sha256": "7106e8b0a57df589199dd37aa794fa6f0365b94cbedf8fe907826252603074aa",
+          "code_attribute_sha256": "a1999ea5021966b04f06df17c530c5149192e98726ec451f8b12628d4cd232ad",
+          "max_stack": 6,
+          "max_locals": 3,
+          "exceptions": [
+            {
+              "from": 3,
+              "to": 75,
+              "target": 78,
+              "catch": "java/lang/Exception"
+            }
+          ]
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 97,
+          "code_sha256": "3b6edfce2d08d2fc259c3997de42a582b7d6358501a8dd61351d4dedbb8d5a1a",
+          "code_attribute_sha256": "7d1e2598ad206519062255bdcdfe827750e75a8a0966f113ef885982ae21c426",
+          "max_stack": 4,
+          "max_locals": 0,
+          "exceptions": []
+        }
+      ]
+    },
+    "da": {
+      "class_bytes": 3962,
+      "class_sha256": "55349b76fb6119d1ea841fb3488b19b387a32abae0b2ce94b5e11706cc4b6890",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "ub",
+      "fields": [
+        {
+          "access": 4,
+          "name": "b",
+          "descriptor": "Lnet/minecraft/client/Minecraft;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "c",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "d",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 4,
+          "name": "e",
+          "descriptor": "Ljava/util/List;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "f",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 4,
+          "name": "g",
+          "descriptor": "Lsj;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "h",
+          "descriptor": "Ldu;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "a",
+          "descriptor": "Lke;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIF)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(CI)V",
+          "access": 4
+        },
+        {
+          "name": "d",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 9
+        },
+        {
+          "name": "a",
+          "descriptor": "(III)V",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(III)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lke;)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;II)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "e",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "f",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "g",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "h",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "i",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(I)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(I)V",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(ZI)V",
+          "access": 1
+        },
+        {
+          "name": "j",
+          "descriptor": "()V",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 26,
+          "code_sha256": "fa6033c77e35f433f7fc88ab9f2439498f30e166a5158be131d094de100ffb0d",
+          "code_attribute_sha256": "d84973df03d0b21092a6acab43cf0e6f55f5d443084bd9b90003cb2e9908028c",
+          "max_stack": 3,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIF)V",
+          "access": 1,
+          "code_bytes": 51,
+          "code_sha256": "6d04bceaf25e8a2ce62a1c73b4899226afaf3fc6a895b48454e02467300dfec1",
+          "code_attribute_sha256": "2302bf5523b560208a0e690e073ba95432f8c7556d83858b73bfdc92cfba8bc9",
+          "max_stack": 4,
+          "max_locals": 6,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(CI)V",
+          "access": 4,
+          "code_bytes": 21,
+          "code_sha256": "bbcf84ed6d88ba9710df1abeab749b6212c6ba9f7302d9730056e6b4ada49a43",
+          "code_attribute_sha256": "994186820805ddda0584495423eed43887ff97d88219dc5cf76c371b1d766bd0",
+          "max_stack": 2,
+          "max_locals": 3,
+          "exceptions": []
+        },
+        {
+          "name": "d",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 9,
+          "code_bytes": 48,
+          "code_sha256": "a5c46c8201af7b982ad3540f629929fc7faad69fb55d787aab9728edc59f7d1d",
+          "code_attribute_sha256": "e1418da4904184eb080af06756d1a0d2121a89f514ab5fe56b7acebac4f1fe12",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exceptions": [
+            {
+              "from": 0,
+              "to": 41,
+              "target": 45,
+              "catch": "java/lang/Exception"
+            }
+          ]
+        },
+        {
+          "name": "a",
+          "descriptor": "(III)V",
+          "access": 4,
+          "code_bytes": 84,
+          "code_sha256": "9c633878d2059804083cb71115156148af166748e4e5c944ebb4c58fd59eae44",
+          "code_attribute_sha256": "fe9cf9baccb02b7203d253438c799d906ece9e12850a14f2903ec05b8a5df607",
+          "max_stack": 4,
+          "max_locals": 6,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "(III)V",
+          "access": 4,
+          "code_bytes": 26,
+          "code_sha256": "8994af1283ff4dc4ebb38582d4a9a9688ef7056ee0fcdbe35d2a9acb24f8f459",
+          "code_attribute_sha256": "566a348fb82ee9052e70d32469104c5d928d2c0a76b96bdeb37217b56a2c22a8",
+          "max_stack": 3,
+          "max_locals": 4,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lke;)V",
+          "access": 4,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "cc2a05cca42a141cc0571ae770dc81d5c7b71635688ef24a7c42226d88377a09",
+          "max_stack": 0,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;II)V",
+          "access": 1,
+          "code_bytes": 49,
+          "code_sha256": "bcc55a60f9a85baaa4f29ffb7e2f2b6967ff91274196dbcc78907092a6526a32",
+          "code_attribute_sha256": "0fb926fd8ff409ff84ff97fe23cf3a38814a87a5f18707ba4b15f768b21f3d1c",
+          "max_stack": 4,
+          "max_locals": 4,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "ebacf1211182a0c9f6668cfac0096a6a3e3fabd835bd82870bb38ff566f52b0d",
+          "max_stack": 0,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "e",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 27,
+          "code_sha256": "646c23424d3ae712f81f6ae2550ed72b34162471169306460910273bad8b9475",
+          "code_attribute_sha256": "5d74fbf55c84f9bfd177cc3bcaa8e92ca9d2b8cb35332f9d0a0978e8d98deddc",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "f",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 110,
+          "code_sha256": "237f6c673d39486640bb159f71158003a0e033a110b00871750762bc9633da6b",
+          "code_attribute_sha256": "c773dbb19a0c9bd3c3aa8d73fd42c5faf47ac5e6ff3394e03891d2877432a7a1",
+          "max_stack": 4,
+          "max_locals": 3,
+          "exceptions": []
+        },
+        {
+          "name": "g",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 33,
+          "code_sha256": "994fc7f90e7bad8bbae989ee433a85d50a4a817419daf3e4bade16b735056465",
+          "code_attribute_sha256": "0b8e8836db48c3820ae9d8db84426f038be94b5caaf201e32a2774c11c46384d",
+          "max_stack": 3,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "5d081d2e87f5d886c943a8cfbd0fc9ecbbac9244fe896e6958daf7d144aa9e39",
+          "max_stack": 0,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "h",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "4b708b3e46c24f7af45744dba5e1a937fe8048899e97dc72b09d2273762c6986",
+          "max_stack": 0,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "i",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 6,
+          "code_sha256": "82b4c167732b7ea0cbe15cc57c1ba5aefd5f60504c1807bd9ca0a0ade8bb4168",
+          "code_attribute_sha256": "69a9934198c1fc10a35a00a9fc034a7a5e97cdb95f9822c871304b77a3ac65d7",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(I)V",
+          "access": 1,
+          "code_bytes": 37,
+          "code_sha256": "4daafba5ca6c93a944677352fedc6f4645faf77182a5a9b9c27ee94627f4778e",
+          "code_attribute_sha256": "e68bda627214de003c5cdbb41964172948d6bfafaf1c8a87008e38be36923139",
+          "max_stack": 7,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "(I)V",
+          "access": 1,
+          "code_bytes": 151,
+          "code_sha256": "c84332b788019d895297b3e4d03b14a0999083d4077f2bacdc201473a3eeb373",
+          "code_attribute_sha256": "d85c58f653391efb60e3226abb6f8ad3719c96dcca7b683034e50a9dee941b73",
+          "max_stack": 11,
+          "max_locals": 4,
+          "exceptions": []
+        },
+        {
+          "name": "c",
+          "descriptor": "()Z",
+          "access": 1,
+          "code_bytes": 2,
+          "code_sha256": "95ef737cd8a13db65e3eb3c18e8816a5179dcbdf341309522ab00e95d5aae6d2",
+          "code_attribute_sha256": "cf80145f0243041107e730f53ea64107da9ba2a8b2785dc782ead5d6bbd6818e",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(ZI)V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "ff77505f461cf73619c0fb32f1e5df2cdc0fb6e57fcb0f411295f7b3cfffcb69",
+          "max_stack": 0,
+          "max_locals": 3,
+          "exceptions": []
+        },
+        {
+          "name": "j",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "f4f405239c05a389054de1ccb7832d354a33f96b59a6bdd522ef4fac4ddd5dfd",
+          "max_stack": 0,
+          "max_locals": 1,
+          "exceptions": []
+        }
+      ]
+    },
+    "ub": {
+      "class_bytes": 1890,
+      "class_sha256": "b06f1cd573e3564c3b6405828a6654218bb9807c694f5a45acaca70f59efb670",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "java/lang/Object",
+      "fields": [
+        {
+          "access": 4,
+          "name": "k",
+          "descriptor": "F",
+          "static": false,
+          "volatile": false,
+          "default": "+0.0"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIII)V",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(IIII)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIIII)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIIIII)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsj;Ljava/lang/String;III)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsj;Ljava/lang/String;III)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(IIIIII)V",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 10,
+          "code_sha256": "8af5237f853c13f43908ca57cd18372b01d1c7fae9a0831af22f8524e4c36e83",
+          "code_attribute_sha256": "68a9971f3c7f9ad72c0a1d9b61609d1838ecd1e7a015c73074bbf54d87c7fffc",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIII)V",
+          "access": 4,
+          "code_bytes": 28,
+          "code_sha256": "15095a89458c005dacb6dc3ed62bd2aa8e16bc3bee299f26c5d862f1863359cc",
+          "code_attribute_sha256": "f8cff04e83ad9beb9e364a56cc6982dc8cb49d2ccc7e8af9c00b398b2d824580",
+          "max_stack": 6,
+          "max_locals": 6,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "(IIII)V",
+          "access": 4,
+          "code_bytes": 28,
+          "code_sha256": "cb683e954fa448fb1c29e058253adc066e3154f4ec90515bed52bacdea122633",
+          "code_attribute_sha256": "821278ca8aa4de166f40121bd29ed1ea604aee75c7d651e466e9f8ca20abf97e",
+          "max_stack": 6,
+          "max_locals": 6,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIIII)V",
+          "access": 4,
+          "code_bytes": 188,
+          "code_sha256": "5526b195c3484de483dbef48b79477f729acd0abd87678647d2993ac7ef53d7d",
+          "code_attribute_sha256": "57fe3c656203de903ddfd46fd4e4e7c731c470511b907bad447943bd94242cf9",
+          "max_stack": 7,
+          "max_locals": 11,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIIIII)V",
+          "access": 4,
+          "code_bytes": 255,
+          "code_sha256": "3f54ad45a9fcd4258c08eac0a98f6c2297f9023aa25876e5b35effeccfe640d8",
+          "code_attribute_sha256": "e6d0965aede668fc5e31b6d0f02a9f7911d7a9b2905256cec2b332ec184b65a6",
+          "max_stack": 7,
+          "max_locals": 16,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsj;Ljava/lang/String;III)V",
+          "access": 1,
+          "code_bytes": 19,
+          "code_sha256": "0fb61962aaba4ce24f81626244091ba74497ce92f46c521095b908b905d32855",
+          "code_attribute_sha256": "64c2064332154dea429d5046d9cccdc1159bd73f8dbf949ef44b43a806427b8c",
+          "max_stack": 5,
+          "max_locals": 6,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsj;Ljava/lang/String;III)V",
+          "access": 1,
+          "code_bytes": 11,
+          "code_sha256": "8e231737369d8e07770aa1da314e2c9e7435ca5320abe770ac4561bd559057b3",
+          "code_attribute_sha256": "4db0cf39b99e4d48c5120f1802bd0ee2240ef4740ab6b040cb2e14c4b771f507",
+          "max_stack": 5,
+          "max_locals": 6,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "(IIIIII)V",
+          "access": 1,
+          "code_bytes": 172,
+          "code_sha256": "df14454aa35689cec523fb16c2c8cb1d169be6524e9734ab790e3dbde4cdba5c",
+          "code_attribute_sha256": "43ad9720a460320c8890cffff6824490351d1570b46854b366b7850475e7f3dc",
+          "max_stack": 11,
+          "max_locals": 10,
+          "exceptions": []
+        }
+      ]
+    },
+    "nh": {
+      "class_bytes": 1275,
+      "class_sha256": "31a2a0650ae239f216faf7c26b45c94b3db07964b453a40baea6ee408ed3e9a4",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "java/lang/Object",
+      "fields": [
+        {
+          "access": 10,
+          "name": "a",
+          "descriptor": "Lnh;",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "b",
+          "descriptor": "Ljava/util/Properties;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "()Lnh;",
+          "access": 9
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;",
+          "access": 129
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 2,
+          "code_bytes": 52,
+          "code_sha256": "063934f070971f92b5fbad264debe7b8384429c46b55dd33af5acbd33a2d0582",
+          "code_attribute_sha256": "731c5a083c4e3ddab8062d9342709f55ce001006471b3ecdbb1ee4cc40084597",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exceptions": [
+            {
+              "from": 15,
+              "to": 43,
+              "target": 46,
+              "catch": "java/io/IOException"
+            }
+          ]
+        },
+        {
+          "name": "a",
+          "descriptor": "()Lnh;",
+          "access": 9,
+          "code_bytes": 4,
+          "code_sha256": "dfb9aff16602b7340870ab7fc902b22294f662e441389a5a6c3b983791acee04",
+          "code_attribute_sha256": "af498c986c64c81e8817f0be36a2213146921710225c06cd543f12495467cd26",
+          "max_stack": 1,
+          "max_locals": 0,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 10,
+          "code_sha256": "a35f0f71812f1f7c8e386ad91fafedaa68221c6ca287ece939dd873348e298c0",
+          "code_attribute_sha256": "29aa97d4a7769d75b61000a5a0541e6641a3b543f63230dfe8925906b830c152",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;",
+          "access": 129,
+          "code_bytes": 16,
+          "code_sha256": "afd69c24b991d9f825aae2ada686c739961613aed5d350e68af4a34b33cbb870",
+          "code_attribute_sha256": "f63aba7c291d3874f9b99a445892438258bc895e1e44484d54367f6292a0112f",
+          "max_stack": 3,
+          "max_locals": 4,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 29,
+          "code_sha256": "c080dcd0f9ff50f13dfb8876a5490aabc06ffe4af625387c8749b5a66d0f64cd",
+          "code_attribute_sha256": "0eea3e12d598163ed8d0d4153e755c38df5cd442bc6ea5ef562d374d28573775",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 11,
+          "code_sha256": "46869a8e1db20c0cff546fdff152c61a7787ebe8ad82b21bb92dd6c60ebbca7d",
+          "code_attribute_sha256": "3fdd9350355cc6778eaa7452166e06ab35ba30788c08ac5f33d04ce90912fcf2",
+          "max_stack": 2,
+          "max_locals": 0,
+          "exceptions": []
+        }
+      ]
+    },
+    "nl": {
+      "class_bytes": 382,
+      "class_sha256": "80b95efa75075475687b8f121adb0df4f551f9d2a1d09fb27997eaad48ab6815",
+      "access": 1537,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "java/lang/Object",
+      "fields": [],
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Z)Lwt;",
+          "access": 1025
+        },
+        {
+          "name": "b",
+          "descriptor": "()Ljava/util/List;",
+          "access": 1025
+        },
+        {
+          "name": "c",
+          "descriptor": "()V",
+          "access": 1025
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)Lei;",
+          "access": 1025
+        },
+        {
+          "name": "c",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;)V",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Z",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Lyb;)Z",
+          "access": 1025
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Z)Lwt;",
+          "access": 1025
+        },
+        {
+          "name": "b",
+          "descriptor": "()Ljava/util/List;",
+          "access": 1025
+        },
+        {
+          "name": "c",
+          "descriptor": "()V",
+          "access": 1025
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)Lei;",
+          "access": 1025
+        },
+        {
+          "name": "c",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;)V",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Z",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Lyb;)Z",
+          "access": 1025
+        }
+      ]
+    },
+    "tq": {
+      "class_bytes": 2500,
+      "class_sha256": "339175cb6bdd4f97024f30c9c501b4efe9221f60672a9fb3b017890b5b2272c8",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [
+        "nl"
+      ],
+      "superclass": "java/lang/Object",
+      "fields": [
+        {
+          "access": 20,
+          "name": "a",
+          "descriptor": "Ljava/io/File;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Ljava/io/File;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()Ljava/util/List;",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)Lei;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;)V",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "([Ljava/io/File;)V",
+          "access": 12
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Z)Lwt;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Lyb;)Z",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Ljava/io/File;)V",
+          "access": 1,
+          "code_bytes": 22,
+          "code_sha256": "6138cad753a47f50950a40a58725cff276cd18035cfe958c1532bc6447e95b31",
+          "code_attribute_sha256": "8e813c895b3e503296c079dbec16cea7adf46037fb22022058bf941fdef3f8fb",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)Lei;",
+          "access": 1,
+          "code_bytes": 138,
+          "code_sha256": "da637c211306296ae10676bd278ed4e27b9b3603c04174f904102d6ef18bc0dd",
+          "code_attribute_sha256": "8e30dd45b30ff7c55d674729ad2c2dbed03d9ba05b84cf2803ade3ba691338ac",
+          "max_stack": 4,
+          "max_locals": 6,
+          "exceptions": [
+            {
+              "from": 40,
+              "to": 71,
+              "target": 72,
+              "catch": "java/lang/Exception"
+            },
+            {
+              "from": 97,
+              "to": 128,
+              "target": 129,
+              "catch": "java/lang/Exception"
+            }
+          ]
+        }
+      ]
+    },
+    "hi": {
+      "class_bytes": 4023,
+      "class_sha256": "f4a89d4268ba827357b151cc73c404be042d76132090224a3834a4ef2b5f43cf",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "tq",
+      "fields": [],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Ljava/io/File;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()Ljava/util/List;",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Z)Lwt;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Lyb;)Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/io/File;Ljava/util/ArrayList;Ljava/util/ArrayList;)V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/io/File;Ljava/util/ArrayList;IILyb;)V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/util/ArrayList;IILyb;)V",
+          "access": 2
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Ljava/io/File;)V",
+          "access": 1,
+          "code_bytes": 6,
+          "code_sha256": "4772ffe893e1bc977cf771a6bc2c44e82f47404e348077b7100de817d2dbfc34",
+          "code_attribute_sha256": "51b4cce602a698abc90a3492a85d956292298aa5814016c289201550446dd2a8",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Z)Lwt;",
+          "access": 1,
+          "code_bytes": 14,
+          "code_sha256": "7d52a74ec79d94268ad695030af73b686b0e4ab65ec4d1b6b0ae95b059cd66b0",
+          "code_attribute_sha256": "5c696701de6aa8692820caed52052bce9f081847365450c9a805f678662e71ce",
+          "max_stack": 5,
+          "max_locals": 3,
+          "exceptions": []
+        }
+      ]
+    },
+    "ke": {
+      "class_bytes": 1643,
+      "class_sha256": "579a6c6f21a32752f3debc8d17f66abba9a7581f288f0e06603930ff7efef8d9",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "ub",
+      "fields": [
+        {
+          "access": 4,
+          "name": "a",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 4,
+          "name": "b",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "c",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "d",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "e",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "f",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "g",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 1,
+          "name": "h",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(IIILjava/lang/String;)V",
+          "access": 1
+        },
+        {
+          "name": "<init>",
+          "descriptor": "(IIIIILjava/lang/String;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Z)I",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;II)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;II)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(II)V",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;II)Z",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(IIILjava/lang/String;)V",
+          "access": 1,
+          "code_bytes": 15,
+          "code_sha256": "a64fdd30299a8c94386bff5dbe91e3a979442e76ebbe7deff3f501c185af1a9a",
+          "code_attribute_sha256": "ba20b3e113d35de7e8a10d093d261e3713a0001acfd086a08771cf66337a5bf8",
+          "max_stack": 7,
+          "max_locals": 5,
+          "exceptions": []
+        },
+        {
+          "name": "<init>",
+          "descriptor": "(IIIIILjava/lang/String;)V",
+          "access": 1,
+          "code_bytes": 61,
+          "code_sha256": "fcf6ca2308240a58535afe6c89dc06af25b1e8fbf5c2ce71b8eeae2a772bcfcb",
+          "code_attribute_sha256": "e456ac985d5e2afdc0aa737151140a77fd3a28848a729f41af3bb276da5a0217",
+          "max_stack": 2,
+          "max_locals": 7,
+          "exceptions": []
+        }
+      ]
+    },
+    "in": {
+      "class_bytes": 1099,
+      "class_sha256": "8693f3179fb0ff1df382e1d3388d23ab688ad3e26415454655da88f10b054f63",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "java/lang/Object",
+      "fields": [
+        {
+          "access": 10,
+          "name": "a",
+          "descriptor": "[F",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(F)F",
+          "access": 25
+        },
+        {
+          "name": "b",
+          "descriptor": "(F)F",
+          "access": 25
+        },
+        {
+          "name": "c",
+          "descriptor": "(F)F",
+          "access": 25
+        },
+        {
+          "name": "a",
+          "descriptor": "(D)F",
+          "access": 25
+        },
+        {
+          "name": "d",
+          "descriptor": "(F)I",
+          "access": 9
+        },
+        {
+          "name": "b",
+          "descriptor": "(D)I",
+          "access": 9
+        },
+        {
+          "name": "e",
+          "descriptor": "(F)F",
+          "access": 9
+        },
+        {
+          "name": "a",
+          "descriptor": "(DD)D",
+          "access": 9
+        },
+        {
+          "name": "a",
+          "descriptor": "(II)I",
+          "access": 9
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Z",
+          "access": 9
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Z",
+          "access": 9,
+          "code_bytes": 17,
+          "code_sha256": "c79435b900a8e6cbbdcaace50c373ff792b1a2e539054f50e374b7a912d6dced",
+          "code_attribute_sha256": "17e8e782e1c6450befdbb3bfe74a194c0a0f21ad2a6469fd56968aa4c41f0bfc",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exceptions": []
+        }
+      ]
+    },
+    "sj": {
+      "class_bytes": 4757,
+      "class_sha256": "c1bec862504ca9b390810ac6eb4e3401032614bf24560757ffb11533ddb66ad3",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "java/lang/Object",
+      "fields": [
+        {
+          "access": 2,
+          "name": "b",
+          "descriptor": "[I",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "c",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "d",
+          "descriptor": "Ljava/nio/IntBuffer;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lkv;Ljava/lang/String;Lji;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;III)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;III)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;IIIZ)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)I",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;IIII)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;I)I",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;III)V",
+          "access": 1,
+          "code_bytes": 24,
+          "code_sha256": "ca719872fd6767a0af0167d4bcf54704142357861c25f0ea67c1f045cfb22fad",
+          "code_attribute_sha256": "6a302239fd8e695f94602f87eafd1186453329c5ba73a7fa1b51380397507c2c",
+          "max_stack": 6,
+          "max_locals": 5,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)I",
+          "access": 1,
+          "code_bytes": 74,
+          "code_sha256": "33f8dc1f3a209754dcb1a45bdf5f774aded2d93975067b21f00026413c99a761",
+          "code_attribute_sha256": "223aaf01fada2d2466f96c1934f8a8dd2f3bc0198e02638c7d9d928533d34f93",
+          "max_stack": 4,
+          "max_locals": 5,
+          "exceptions": []
+        }
+      ]
+    },
+    "rq": {
+      "class_bytes": 4317,
+      "class_sha256": "7f3fdc2729f5895cf414601075fa847d61bb7a719f73d60a39c69bf97a16c90f",
+      "access": 33,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [],
+      "superclass": "da",
+      "fields": [
+        {
+          "access": 18,
+          "name": "j",
+          "descriptor": "Ljava/text/DateFormat;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 4,
+          "name": "a",
+          "descriptor": "Lda;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 4,
+          "name": "i",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "l",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 2,
+          "name": "m",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "n",
+          "descriptor": "Ljava/util/List;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "o",
+          "descriptor": "Lmg;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "p",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "q",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "r",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 2,
+          "name": "s",
+          "descriptor": "Lke;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "t",
+          "descriptor": "Lke;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "u",
+          "descriptor": "Lke;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lda;)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "l",
+          "descriptor": "()V",
+          "access": 2
+        },
+        {
+          "name": "c",
+          "descriptor": "(I)Ljava/lang/String;",
+          "access": 4
+        },
+        {
+          "name": "d",
+          "descriptor": "(I)Ljava/lang/String;",
+          "access": 4
+        },
+        {
+          "name": "k",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lke;)V",
+          "access": 4
+        },
+        {
+          "name": "e",
+          "descriptor": "(I)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(ZI)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIF)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lrq;)Ljava/util/List;",
+          "access": 4104
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lrq;I)I",
+          "access": 4104
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lrq;)I",
+          "access": 4104
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lrq;)Lke;",
+          "access": 4104
+        },
+        {
+          "name": "d",
+          "descriptor": "(Lrq;)Lke;",
+          "access": 4104
+        },
+        {
+          "name": "e",
+          "descriptor": "(Lrq;)Lke;",
+          "access": 4104
+        },
+        {
+          "name": "f",
+          "descriptor": "(Lrq;)Ljava/lang/String;",
+          "access": 4104
+        },
+        {
+          "name": "g",
+          "descriptor": "(Lrq;)Ljava/text/DateFormat;",
+          "access": 4104
+        },
+        {
+          "name": "h",
+          "descriptor": "(Lrq;)Ljava/lang/String;",
+          "access": 4104
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "(Lke;)V",
+          "access": 4,
+          "code_bytes": 241,
+          "code_sha256": "2dfbae039e670b6285dc36db680cbbfcd0e3a3944d37b552b42296c74a329882",
+          "code_attribute_sha256": "5d93fcf49911d766c785c66458f94bcca0c0457d4e7db798e8c158a4afb847c3",
+          "max_stack": 8,
+          "max_locals": 9,
+          "exceptions": []
+        }
+      ]
+    },
+    "net/minecraft/client/Minecraft": {
+      "class_bytes": 26388,
+      "class_sha256": "db99df969e5f30d01ad4424a4d63d3b1f4a11832055dd291e65d476cfa4c38b3",
+      "access": 1057,
+      "major": 49,
+      "minor": 0,
+      "interfaces": [
+        "java/lang/Runnable"
+      ],
+      "superclass": "java/lang/Object",
+      "fields": [
+        {
+          "access": 9,
+          "name": "b",
+          "descriptor": "[B",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 10,
+          "name": "a",
+          "descriptor": "Lnet/minecraft/client/Minecraft;",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "c",
+          "descriptor": "Lob;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "Q",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 2,
+          "name": "R",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 1,
+          "name": "d",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "e",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "S",
+          "descriptor": "Lcx;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "T",
+          "descriptor": "Lpy;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "f",
+          "descriptor": "Lfd;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "g",
+          "descriptor": "Ln;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "h",
+          "descriptor": "Ldc;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "i",
+          "descriptor": "Lls;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "j",
+          "descriptor": "Ldn;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "k",
+          "descriptor": "Lgr;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "l",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "m",
+          "descriptor": "Ljava/awt/Canvas;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "n",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 65,
+          "name": "o",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": true,
+          "default": "false"
+        },
+        {
+          "access": 1,
+          "name": "p",
+          "descriptor": "Lji;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "q",
+          "descriptor": "Lsj;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "r",
+          "descriptor": "Lda;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "s",
+          "descriptor": "Lmk;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "t",
+          "descriptor": "Lpx;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "U",
+          "descriptor": "Lcz;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "V",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "W",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "X",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "Y",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "u",
+          "descriptor": "Lvu;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "v",
+          "descriptor": "Luq;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "w",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 1,
+          "name": "x",
+          "descriptor": "Lfh;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "y",
+          "descriptor": "Lvf;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "z",
+          "descriptor": "Lkv;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 4,
+          "name": "A",
+          "descriptor": "Lnet/minecraft/client/MinecraftApplet;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "B",
+          "descriptor": "Lyo;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "C",
+          "descriptor": "Lvy;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 1,
+          "name": "D",
+          "descriptor": "Lik;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "Z",
+          "descriptor": "Ljava/io/File;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "aa",
+          "descriptor": "Lnl;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 9,
+          "name": "E",
+          "descriptor": "[J",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 9,
+          "name": "F",
+          "descriptor": "[J",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 9,
+          "name": "G",
+          "descriptor": "I",
+          "static": true,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 9,
+          "name": "H",
+          "descriptor": "J",
+          "static": true,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "I",
+          "descriptor": "Lxi;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "ab",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "ac",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "ad",
+          "descriptor": "Lvs;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 2,
+          "name": "ae",
+          "descriptor": "Lcg;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 10,
+          "name": "af",
+          "descriptor": "Ljava/io/File;",
+          "static": true,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 65,
+          "name": "J",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": true,
+          "default": "false"
+        },
+        {
+          "access": 1,
+          "name": "K",
+          "descriptor": "Ljava/lang/String;",
+          "static": false,
+          "volatile": false,
+          "default": "null"
+        },
+        {
+          "access": 0,
+          "name": "L",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 0,
+          "name": "M",
+          "descriptor": "J",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "N",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 2,
+          "name": "ag",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 1,
+          "name": "O",
+          "descriptor": "Z",
+          "static": false,
+          "volatile": false,
+          "default": "false"
+        },
+        {
+          "access": 0,
+          "name": "P",
+          "descriptor": "J",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        },
+        {
+          "access": 2,
+          "name": "ah",
+          "descriptor": "I",
+          "static": false,
+          "volatile": false,
+          "default": "0"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Ljava/awt/Component;Ljava/awt/Canvas;Lnet/minecraft/client/MinecraftApplet;IIZ)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lmh;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lmh;)V",
+          "access": 1025
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;I)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "x",
+          "descriptor": "()V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIIIII)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()Ljava/io/File;",
+          "access": 9
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;)Ljava/io/File;",
+          "access": 9
+        },
+        {
+          "name": "y",
+          "descriptor": "()Lpd;",
+          "access": 10
+        },
+        {
+          "name": "c",
+          "descriptor": "()Lnl;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lda;)V",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 2
+        },
+        {
+          "name": "d",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "run",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "e",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "z",
+          "descriptor": "()V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(J)V",
+          "access": 2
+        },
+        {
+          "name": "f",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "g",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "h",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "i",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(IZ)V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(I)V",
+          "access": 2
+        },
+        {
+          "name": "j",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(II)V",
+          "access": 2
+        },
+        {
+          "name": "A",
+          "descriptor": "()V",
+          "access": 2
+        },
+        {
+          "name": "B",
+          "descriptor": "()V",
+          "access": 2
+        },
+        {
+          "name": "k",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "C",
+          "descriptor": "()V",
+          "access": 2
+        },
+        {
+          "name": "l",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;J)V",
+          "access": 1
+        },
+        {
+          "name": "m",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lfd;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lfd;Ljava/lang/String;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lfd;Ljava/lang/String;Lgs;)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;)V",
+          "access": 2
+        },
+        {
+          "name": "d",
+          "descriptor": "(Ljava/lang/String;)V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Ljava/io/File;)V",
+          "access": 1
+        },
+        {
+          "name": "n",
+          "descriptor": "()Lcx;",
+          "access": 1
+        },
+        {
+          "name": "o",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "p",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "q",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "r",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(ZI)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;)V",
+          "access": 9
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+          "access": 9
+        },
+        {
+          "name": "s",
+          "descriptor": "()Lnb;",
+          "access": 1
+        },
+        {
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "access": 9
+        },
+        {
+          "name": "t",
+          "descriptor": "()Z",
+          "access": 9
+        },
+        {
+          "name": "u",
+          "descriptor": "()Z",
+          "access": 9
+        },
+        {
+          "name": "v",
+          "descriptor": "()Z",
+          "access": 9
+        },
+        {
+          "name": "w",
+          "descriptor": "()Z",
+          "access": 9
+        },
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)Z",
+          "access": 1
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 750,
+          "code_sha256": "80316ed4718ca0a300668801244d736ac48d85beacc82c09f1a4572241962493",
+          "code_attribute_sha256": "a85ecdd4d5e56ce0b0ce7d058d2dbe75cfe73adb227bd82b8623dc64e0b26840",
+          "max_stack": 7,
+          "max_locals": 3,
+          "exceptions": [
+            {
+              "from": 135,
+              "to": 138,
+              "target": 141,
+              "catch": "org/lwjgl/LWJGLException"
+            },
+            {
+              "from": 146,
+              "to": 152,
+              "target": 155,
+              "catch": "java/lang/InterruptedException"
+            },
+            {
+              "from": 383,
+              "to": 386,
+              "target": 389,
+              "catch": "java/lang/Exception"
+            },
+            {
+              "from": 663,
+              "to": 686,
+              "target": 689,
+              "catch": "java/lang/Exception"
+            }
+          ]
+        },
+        {
+          "name": "c",
+          "descriptor": "()Lnl;",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "8729f596d0f0c3e0354efa374566c8e75f8516d3f31f951656acb574493f39d8",
+          "code_attribute_sha256": "48996d15d2814e36f0b8bfc1f027e2483148931dc1771a36bf3930a2448d82d0",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lda;)V",
+          "access": 1,
+          "code_bytes": 169,
+          "code_sha256": "91cb897eb7c87e876243e86dc1eae10fea2d39e32333dd22d9612c2cbd7d32f7",
+          "code_attribute_sha256": "7c31cb573a5d2331012198a4958e32b9a9bfcafbe38b87bea65cc9cc414d2045",
+          "max_stack": 5,
+          "max_locals": 5,
+          "exceptions": []
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ljava/lang/String;Ljava/lang/String;J)V",
+          "access": 1,
+          "code_bytes": 131,
+          "code_sha256": "5f4033d1765771740a68a6d08014d6519ee61f9abcc0a109828a994a3af7b444",
+          "code_attribute_sha256": "4431124e550b41adff180dbb8d0b4187800b4956cfa21a6e90ee02e15a3a236a",
+          "max_stack": 6,
+          "max_locals": 7,
+          "exceptions": []
+        }
+      ]
+    }
+  },
+  "resolved_declarations": {
+    "fj.b()V": "fj",
+    "fj.a()V": "fj",
+    "fj.h()V": "fj",
+    "fj.j()V": "fj",
+    "fj.a(Lke;)V": "fj",
+    "fj.a(CI)V": "fj",
+    "fj.a(III)V": "fj",
+    "fj.a(IIF)V": "fj",
+    "fj.c()Z": "da",
+    "fj.i()V": "da",
+    "fj.a(Lsj;Ljava/lang/String;III)V": "ub",
+    "fj.b(Lsj;Ljava/lang/String;III)V": "ub",
+    "ro.a(IIIII)V": "ub",
+    "ro.b(Lsj;Ljava/lang/String;III)V": "ub",
+    "hi.b(Ljava/lang/String;)Lei;": "tq",
+    "hi.a(Ljava/lang/String;Z)Lwt;": "hi",
+    "nl.b(Ljava/lang/String;)Lei;": "nl"
+  },
+  "selected_references": {
+    "fj.<init>(Lda;)V:1": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "da",
+        "name": "<init>",
+        "descriptor": "()V"
+      }
+    },
+    "fj.<init>(Lda;)V:6": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "fj",
+        "name": "a",
+        "descriptor": "Lda;"
+      }
+    },
+    "fj.a()V:4": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "b",
+        "descriptor": "()V"
+      }
+    },
+    "fj.a()V:11": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "b",
+        "descriptor": "()V"
+      }
+    },
+    "fj.b()V:0": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "()Lnh;"
+      }
+    },
+    "fj.b()V:5": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "org/lwjgl/input/Keyboard",
+        "name": "enableRepeatEvents",
+        "descriptor": "(Z)V"
+      }
+    },
+    "fj.b()V:12": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "java/util/List",
+        "name": "clear",
+        "descriptor": "()V"
+      }
+    },
+    "fj.b()V:21": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "ke"
+      }
+    },
+    "fj.b()V:50": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.b()V:53": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "ke",
+        "name": "<init>",
+        "descriptor": "(IIILjava/lang/String;)V"
+      }
+    },
+    "fj.b()V:56": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "java/util/List",
+        "name": "add",
+        "descriptor": "(Ljava/lang/Object;)Z"
+      }
+    },
+    "fj.b()V:66": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "ke"
+      }
+    },
+    "fj.b()V:95": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.b()V:98": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "ke",
+        "name": "<init>",
+        "descriptor": "(IIILjava/lang/String;)V"
+      }
+    },
+    "fj.b()V:101": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "java/util/List",
+        "name": "add",
+        "descriptor": "(Ljava/lang/Object;)Z"
+      }
+    },
+    "fj.b()V:108": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "ro"
+      }
+    },
+    "fj.b()V:136": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.b()V:139": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "<init>",
+        "descriptor": "(Lda;Lsj;IIIILjava/lang/String;)V"
+      }
+    },
+    "fj.b()V:142": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "fj",
+        "name": "i",
+        "descriptor": "Lro;"
+      }
+    },
+    "fj.b()V:150": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "Z"
+      }
+    },
+    "fj.b()V:159": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(I)V"
+      }
+    },
+    "fj.b()V:163": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "ro"
+      }
+    },
+    "fj.b()V:190": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "<init>",
+        "descriptor": "(Lda;Lsj;IIIILjava/lang/String;)V"
+      }
+    },
+    "fj.b()V:193": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "fj",
+        "name": "j",
+        "descriptor": "Lro;"
+      }
+    },
+    "fj.b()V:197": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "k",
+        "descriptor": "()V"
+      }
+    },
+    "fj.k()V:5": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "fj.k()V:8": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "trim",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "fj.k()V:11": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "fj",
+        "name": "l",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "fj.k()V:14": {
+      "operation": "getstatic",
+      "reference": {
+        "kind": "field",
+        "class": "fp",
+        "name": "b",
+        "descriptor": "[C"
+      }
+    },
+    "fj.k()V:42": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "replace",
+        "descriptor": "(CC)Ljava/lang/String;"
+      }
+    },
+    "fj.k()V:45": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "fj",
+        "name": "l",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "fj.k()V:58": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Z"
+      }
+    },
+    "fj.k()V:67": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "fj",
+        "name": "l",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "fj.k()V:75": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "c",
+        "descriptor": "()Lnl;"
+      }
+    },
+    "fj.k()V:82": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "a",
+        "descriptor": "(Lnl;Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.k()V:85": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "fj",
+        "name": "l",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "fj.a(Lnl;Ljava/lang/String;)Ljava/lang/String;:2": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "nl",
+        "name": "b",
+        "descriptor": "(Ljava/lang/String;)Lei;"
+      }
+    },
+    "fj.a(Lnl;Ljava/lang/String;)Ljava/lang/String;:18": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "append",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      }
+    },
+    "fj.a(Lnl;Ljava/lang/String;)Ljava/lang/String;:23": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "append",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      }
+    },
+    "fj.a(Lnl;Ljava/lang/String;)Ljava/lang/String;:26": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "toString",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "fj.h()V:1": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "org/lwjgl/input/Keyboard",
+        "name": "enableRepeatEvents",
+        "descriptor": "(Z)V"
+      }
+    },
+    "fj.a(Lke;)V:24": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "a",
+        "descriptor": "(Lda;)V"
+      }
+    },
+    "fj.a(Lke;)V:42": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "a",
+        "descriptor": "(Lda;)V"
+      }
+    },
+    "fj.a(Lke;)V:55": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "fj",
+        "name": "m",
+        "descriptor": "Z"
+      }
+    },
+    "fj.a(Lke;)V:58": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "java/util/Random"
+      }
+    },
+    "fj.a(Lke;)V:62": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Random",
+        "name": "<init>",
+        "descriptor": "()V"
+      }
+    },
+    "fj.a(Lke;)V:65": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Random",
+        "name": "nextLong",
+        "descriptor": "()J"
+      }
+    },
+    "fj.a(Lke;)V:73": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "fj.a(Lke;)V:80": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Z"
+      }
+    },
+    "fj.a(Lke;)V:88": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/Long",
+        "name": "parseLong",
+        "descriptor": "(Ljava/lang/String;)J"
+      }
+    },
+    "fj.a(Lke;)V:110": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "hashCode",
+        "descriptor": "()I"
+      }
+    },
+    "fj.a(Lke;)V:119": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "os"
+      }
+    },
+    "fj.a(Lke;)V:127": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "os",
+        "name": "<init>",
+        "descriptor": "(Lnet/minecraft/client/Minecraft;)V"
+      }
+    },
+    "fj.a(Lke;)V:130": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "c",
+        "descriptor": "Lob;"
+      }
+    },
+    "fj.a(Lke;)V:145": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "fj.a(Lke;)V:149": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;Ljava/lang/String;J)V"
+      }
+    },
+    "fj.a(Lke;)V:157": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "a",
+        "descriptor": "(Lda;)V"
+      }
+    },
+    "fj.a(CI)V:16": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(CI)V"
+      }
+    },
+    "fj.a(CI)V:28": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(CI)V"
+      }
+    },
+    "fj.a(CI)V:43": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "java/util/List",
+        "name": "get",
+        "descriptor": "(I)Ljava/lang/Object;"
+      }
+    },
+    "fj.a(CI)V:51": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "a",
+        "descriptor": "(Lke;)V"
+      }
+    },
+    "fj.a(CI)V:59": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "java/util/List",
+        "name": "get",
+        "descriptor": "(I)Ljava/lang/Object;"
+      }
+    },
+    "fj.a(CI)V:71": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "fj.a(CI)V:74": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "length",
+        "descriptor": "()I"
+      }
+    },
+    "fj.a(CI)V:85": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ke",
+        "name": "g",
+        "descriptor": "Z"
+      }
+    },
+    "fj.a(CI)V:89": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "k",
+        "descriptor": "()V"
+      }
+    },
+    "fj.a(III)V:4": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "da",
+        "name": "a",
+        "descriptor": "(III)V"
+      }
+    },
+    "fj.a(III)V:14": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(III)V"
+      }
+    },
+    "fj.a(III)V:24": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(III)V"
+      }
+    },
+    "fj.a(IIF)V:0": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "()Lnh;"
+      }
+    },
+    "fj.a(IIF)V:6": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "i",
+        "descriptor": "()V"
+      }
+    },
+    "fj.a(IIF)V:18": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.a(IIF)V:41": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "a",
+        "descriptor": "(Lsj;Ljava/lang/String;III)V"
+      }
+    },
+    "fj.a(IIF)V:53": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.a(IIF)V:69": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "b",
+        "descriptor": "(Lsj;Ljava/lang/String;III)V"
+      }
+    },
+    "fj.a(IIF)V:88": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.a(IIF)V:122": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "b",
+        "descriptor": "(Lsj;Ljava/lang/String;III)V"
+      }
+    },
+    "fj.a(IIF)V:134": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.a(IIF)V:150": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "b",
+        "descriptor": "(Lsj;Ljava/lang/String;III)V"
+      }
+    },
+    "fj.a(IIF)V:162": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "fj.a(IIF)V:179": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "b",
+        "descriptor": "(Lsj;Ljava/lang/String;III)V"
+      }
+    },
+    "fj.a(IIF)V:186": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "c",
+        "descriptor": "()V"
+      }
+    },
+    "fj.a(IIF)V:193": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "c",
+        "descriptor": "()V"
+      }
+    },
+    "fj.a(IIF)V:200": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "da",
+        "name": "a",
+        "descriptor": "(IIF)V"
+      }
+    },
+    "fj.j()V:15": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(Z)V"
+      }
+    },
+    "fj.j()V:23": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(Z)V"
+      }
+    },
+    "fj.j()V:34": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(Z)V"
+      }
+    },
+    "fj.j()V:42": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(Z)V"
+      }
+    },
+    "ro.<init>(Lda;Lsj;IIIILjava/lang/String;)V:1": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "ub",
+        "name": "<init>",
+        "descriptor": "()V"
+      }
+    },
+    "ro.<init>(Lda;Lsj;IIIILjava/lang/String;)V:16": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "l",
+        "descriptor": "Lda;"
+      }
+    },
+    "ro.<init>(Lda;Lsj;IIIILjava/lang/String;)V:21": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "c",
+        "descriptor": "Lsj;"
+      }
+    },
+    "ro.<init>(Lda;Lsj;IIIILjava/lang/String;)V:50": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)V"
+      }
+    },
+    "ro.a(Ljava/lang/String;)V:2": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "h",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "ro.a()Ljava/lang/String;:1": {
+      "operation": "getfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "h",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "ro.b()V:7": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "j",
+        "descriptor": "I"
+      }
+    },
+    "ro.a(CI)V:25": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "da",
+        "name": "j",
+        "descriptor": "()V"
+      }
+    },
+    "ro.a(CI)V:34": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "da",
+        "name": "d",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "ro.a(CI)V:51": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "length",
+        "descriptor": "()I"
+      }
+    },
+    "ro.a(CI)V:60": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "length",
+        "descriptor": "()I"
+      }
+    },
+    "ro.a(CI)V:67": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "length",
+        "descriptor": "()I"
+      }
+    },
+    "ro.a(CI)V:89": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "append",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      }
+    },
+    "ro.a(CI)V:96": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "substring",
+        "descriptor": "(II)Ljava/lang/String;"
+      }
+    },
+    "ro.a(CI)V:99": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "append",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      }
+    },
+    "ro.a(CI)V:102": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "toString",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "ro.a(CI)V:105": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "h",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "ro.a(CI)V:118": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "length",
+        "descriptor": "()I"
+      }
+    },
+    "ro.a(CI)V:134": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "length",
+        "descriptor": "()I"
+      }
+    },
+    "ro.a(CI)V:139": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "substring",
+        "descriptor": "(II)Ljava/lang/String;"
+      }
+    },
+    "ro.a(CI)V:142": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "h",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "ro.a(CI)V:145": {
+      "operation": "getstatic",
+      "reference": {
+        "kind": "field",
+        "class": "fp",
+        "name": "a",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "ro.a(CI)V:149": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "indexOf",
+        "descriptor": "(I)I"
+      }
+    },
+    "ro.a(CI)V:159": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "length",
+        "descriptor": "()I"
+      }
+    },
+    "ro.a(CI)V:188": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "append",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      }
+    },
+    "ro.a(CI)V:192": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "append",
+        "descriptor": "(C)Ljava/lang/StringBuilder;"
+      }
+    },
+    "ro.a(CI)V:195": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "toString",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "ro.a(CI)V:198": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "h",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "ro.a(III)V:59": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(Z)V"
+      }
+    },
+    "ro.a(Z)V:13": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "j",
+        "descriptor": "I"
+      }
+    },
+    "ro.a(Z)V:18": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "Z"
+      }
+    },
+    "ro.c()V:37": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(IIIII)V"
+      }
+    },
+    "ro.c()V:69": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "a",
+        "descriptor": "(IIIII)V"
+      }
+    },
+    "ro.c()V:120": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "append",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      }
+    },
+    "ro.c()V:134": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "append",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/StringBuilder;"
+      }
+    },
+    "ro.c()V:137": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/StringBuilder",
+        "name": "toString",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "ro.c()V:162": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "b",
+        "descriptor": "(Lsj;Ljava/lang/String;III)V"
+      }
+    },
+    "ro.c()V:199": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ro",
+        "name": "b",
+        "descriptor": "(Lsj;Ljava/lang/String;III)V"
+      }
+    },
+    "ro.a(I)V:2": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "ro",
+        "name": "i",
+        "descriptor": "I"
+      }
+    },
+    "fp.a()Ljava/lang/String;:16": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/Class",
+        "name": "getResourceAsStream",
+        "descriptor": "(Ljava/lang/String;)Ljava/io/InputStream;"
+      }
+    },
+    "fp.a()Ljava/lang/String;:21": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/InputStreamReader",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/InputStream;Ljava/lang/String;)V"
+      }
+    },
+    "fp.a()Ljava/lang/String;:24": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/BufferedReader",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/Reader;)V"
+      }
+    },
+    "fp.a()Ljava/lang/String;:32": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/BufferedReader",
+        "name": "readLine",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "fp.a()Ljava/lang/String;:43": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/String",
+        "name": "startsWith",
+        "descriptor": "(Ljava/lang/String;)Z"
+      }
+    },
+    "fp.a()Ljava/lang/String;:72": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/BufferedReader",
+        "name": "close",
+        "descriptor": "()V"
+      }
+    },
+    "fp.<clinit>()V:0": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "fp",
+        "name": "a",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "fp.<clinit>()V:3": {
+      "operation": "putstatic",
+      "reference": {
+        "kind": "field",
+        "class": "fp",
+        "name": "a",
+        "descriptor": "Ljava/lang/String;"
+      }
+    },
+    "fp.<clinit>()V:93": {
+      "operation": "putstatic",
+      "reference": {
+        "kind": "field",
+        "class": "fp",
+        "name": "b",
+        "descriptor": "[C"
+      }
+    },
+    "da.d()Ljava/lang/String;:0": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "java/awt/Toolkit",
+        "name": "getDefaultToolkit",
+        "descriptor": "()Ljava/awt/Toolkit;"
+      }
+    },
+    "da.d()Ljava/lang/String;:3": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/awt/Toolkit",
+        "name": "getSystemClipboard",
+        "descriptor": "()Ljava/awt/datatransfer/Clipboard;"
+      }
+    },
+    "da.d()Ljava/lang/String;:7": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/awt/datatransfer/Clipboard",
+        "name": "getContents",
+        "descriptor": "(Ljava/lang/Object;)Ljava/awt/datatransfer/Transferable;"
+      }
+    },
+    "da.d()Ljava/lang/String;:16": {
+      "operation": "getstatic",
+      "reference": {
+        "kind": "field",
+        "class": "java/awt/datatransfer/DataFlavor",
+        "name": "stringFlavor",
+        "descriptor": "Ljava/awt/datatransfer/DataFlavor;"
+      }
+    },
+    "da.d()Ljava/lang/String;:19": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "java/awt/datatransfer/Transferable",
+        "name": "isDataFlavorSupported",
+        "descriptor": "(Ljava/awt/datatransfer/DataFlavor;)Z"
+      }
+    },
+    "da.d()Ljava/lang/String;:28": {
+      "operation": "getstatic",
+      "reference": {
+        "kind": "field",
+        "class": "java/awt/datatransfer/DataFlavor",
+        "name": "stringFlavor",
+        "descriptor": "Ljava/awt/datatransfer/DataFlavor;"
+      }
+    },
+    "da.d()Ljava/lang/String;:31": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "java/awt/datatransfer/Transferable",
+        "name": "getTransferData",
+        "descriptor": "(Ljava/awt/datatransfer/DataFlavor;)Ljava/lang/Object;"
+      }
+    },
+    "da.d()Ljava/lang/String;:36": {
+      "operation": "checkcast",
+      "reference": {
+        "kind": "class",
+        "name": "java/lang/String"
+      }
+    },
+    "da.a(Lnet/minecraft/client/Minecraft;II)V:14": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "da",
+        "name": "b",
+        "descriptor": "Lnet/minecraft/client/Minecraft;"
+      }
+    },
+    "da.a(Lnet/minecraft/client/Minecraft;II)V:19": {
+      "operation": "getfield",
+      "reference": {
+        "kind": "field",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "q",
+        "descriptor": "Lsj;"
+      }
+    },
+    "da.a(Lnet/minecraft/client/Minecraft;II)V:22": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "da",
+        "name": "g",
+        "descriptor": "Lsj;"
+      }
+    },
+    "da.a(Lnet/minecraft/client/Minecraft;II)V:39": {
+      "operation": "invokeinterface",
+      "reference": {
+        "kind": "interface_method",
+        "class": "java/util/List",
+        "name": "clear",
+        "descriptor": "()V"
+      }
+    },
+    "da.a(Lnet/minecraft/client/Minecraft;II)V:45": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "da",
+        "name": "b",
+        "descriptor": "()V"
+      }
+    },
+    "ub.a(Lsj;Ljava/lang/String;III)V:5": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "sj",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;)I"
+      }
+    },
+    "ub.a(Lsj;Ljava/lang/String;III)V:15": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "sj",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;III)V"
+      }
+    },
+    "ub.b(Lsj;Ljava/lang/String;III)V:7": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "sj",
+        "name": "a",
+        "descriptor": "(Ljava/lang/String;III)V"
+      }
+    },
+    "nh.<init>()V:23": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/Class",
+        "name": "getResourceAsStream",
+        "descriptor": "(Ljava/lang/String;)Ljava/io/InputStream;"
+      }
+    },
+    "nh.<init>()V:26": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Properties",
+        "name": "load",
+        "descriptor": "(Ljava/io/InputStream;)V"
+      }
+    },
+    "nh.<init>()V:37": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/Class",
+        "name": "getResourceAsStream",
+        "descriptor": "(Ljava/lang/String;)Ljava/io/InputStream;"
+      }
+    },
+    "nh.<init>()V:40": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Properties",
+        "name": "load",
+        "descriptor": "(Ljava/io/InputStream;)V"
+      }
+    },
+    "nh.a()Lnh;:0": {
+      "operation": "getstatic",
+      "reference": {
+        "kind": "field",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "Lnh;"
+      }
+    },
+    "nh.a(Ljava/lang/String;)Ljava/lang/String;:6": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Properties",
+        "name": "getProperty",
+        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+      }
+    },
+    "nh.<clinit>()V:0": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "nh"
+      }
+    },
+    "nh.<clinit>()V:4": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "nh",
+        "name": "<init>",
+        "descriptor": "()V"
+      }
+    },
+    "nh.<clinit>()V:7": {
+      "operation": "putstatic",
+      "reference": {
+        "kind": "field",
+        "class": "nh",
+        "name": "a",
+        "descriptor": "Lnh;"
+      }
+    },
+    "hi.<init>(Ljava/io/File;)V:2": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "tq",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;)V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:9": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/File",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;Ljava/lang/String;)V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:14": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/File",
+        "name": "exists",
+        "descriptor": "()Z"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:29": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/File",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;Ljava/lang/String;)V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:34": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/File",
+        "name": "exists",
+        "descriptor": "()Z"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:45": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/FileInputStream",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;)V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:48": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "as",
+        "name": "a",
+        "descriptor": "(Ljava/io/InputStream;)Lnu;"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:57": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nu",
+        "name": "k",
+        "descriptor": "(Ljava/lang/String;)Lnu;"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:68": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "ei",
+        "name": "<init>",
+        "descriptor": "(Lnu;)V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:76": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/Exception",
+        "name": "printStackTrace",
+        "descriptor": "()V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:86": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/File",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;Ljava/lang/String;)V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:91": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/File",
+        "name": "exists",
+        "descriptor": "()Z"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:102": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "java/io/FileInputStream",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;)V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:105": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "as",
+        "name": "a",
+        "descriptor": "(Ljava/io/InputStream;)Lnu;"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:114": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "nu",
+        "name": "k",
+        "descriptor": "(Ljava/lang/String;)Lnu;"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:125": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "ei",
+        "name": "<init>",
+        "descriptor": "(Lnu;)V"
+      }
+    },
+    "tq.b(Ljava/lang/String;)Lei;:133": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/Exception",
+        "name": "printStackTrace",
+        "descriptor": "()V"
+      }
+    },
+    "rq.a(Lke;)V:162": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "fj"
+      }
+    },
+    "rq.a(Lke;)V:167": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "fj",
+        "name": "<init>",
+        "descriptor": "(Lda;)V"
+      }
+    },
+    "rq.a(Lke;)V:170": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "a",
+        "descriptor": "(Lda;)V"
+      }
+    },
+    "net/minecraft/client/Minecraft.a()V:167": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "hi"
+      }
+    },
+    "net/minecraft/client/Minecraft.a()V:184": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "hi",
+        "name": "<init>",
+        "descriptor": "(Ljava/io/File;)V"
+      }
+    },
+    "net/minecraft/client/Minecraft.a()V:187": {
+      "operation": "putfield",
+      "reference": {
+        "kind": "field",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "aa",
+        "descriptor": "Lnl;"
+      }
+    },
+    "net/minecraft/client/Minecraft.c()Lnl;:1": {
+      "operation": "getfield",
+      "reference": {
+        "kind": "field",
+        "class": "net/minecraft/client/Minecraft",
+        "name": "aa",
+        "descriptor": "Lnl;"
+      }
+    }
+  }
+}

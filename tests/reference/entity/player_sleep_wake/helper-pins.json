@@ -1,0 +1,911 @@
+{
+  "schema": "BED_NIGHT_EXECUTED_HELPER_CODE_V1",
+  "classes": {
+    "BedNightJdi": {
+      "name": "BedNightJdi",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 61,
+      "minor": 0,
+      "access": 49,
+      "class_sha256": "af9fff71ecba18975fdd05f225981839d9a91c51cfe1a4f6c76f69b57c907821",
+      "class_bytes": 20643,
+      "fields": [
+        {
+          "access": 16,
+          "name": "vm",
+          "descriptor": "Lcom/sun/jdi/VirtualMachine;"
+        },
+        {
+          "access": 16,
+          "name": "out",
+          "descriptor": "Ljava/io/PrintWriter;"
+        },
+        {
+          "access": 16,
+          "name": "requests",
+          "descriptor": "Ljava/util/List;"
+        },
+        {
+          "access": 16,
+          "name": "pins",
+          "descriptor": "Ljava/util/Set;"
+        },
+        {
+          "access": 16,
+          "name": "calls",
+          "descriptor": "Ljava/util/List;"
+        },
+        {
+          "access": 16,
+          "name": "events",
+          "descriptor": "Ljava/util/List;"
+        },
+        {
+          "access": 16,
+          "name": "pending",
+          "descriptor": "Ljava/util/Map;"
+        },
+        {
+          "access": 16,
+          "name": "labels",
+          "descriptor": "Ljava/util/Map;"
+        },
+        {
+          "access": 0,
+          "name": "helper",
+          "descriptor": "Lcom/sun/jdi/ReferenceType;"
+        },
+        {
+          "access": 0,
+          "name": "cw",
+          "descriptor": "Lcom/sun/jdi/ReferenceType;"
+        },
+        {
+          "access": 0,
+          "name": "actor",
+          "descriptor": "Lcom/sun/jdi/ObjectReference;"
+        },
+        {
+          "access": 0,
+          "name": "world",
+          "descriptor": "Lcom/sun/jdi/ObjectReference;"
+        },
+        {
+          "access": 0,
+          "name": "bounds",
+          "descriptor": "Lcom/sun/jdi/ObjectReference;"
+        },
+        {
+          "access": 0,
+          "name": "active",
+          "descriptor": "I"
+        },
+        {
+          "access": 0,
+          "name": "rows",
+          "descriptor": "I"
+        },
+        {
+          "access": 0,
+          "name": "clock",
+          "descriptor": "I"
+        },
+        {
+          "access": 0,
+          "name": "fresh",
+          "descriptor": "I"
+        },
+        {
+          "access": 0,
+          "name": "bytes",
+          "descriptor": "J"
+        },
+        {
+          "access": 0,
+          "name": "cold",
+          "descriptor": "Z"
+        }
+      ],
+      "methods": [
+        {
+          "access": 0,
+          "name": "<init>",
+          "descriptor": "(Lcom/sun/jdi/VirtualMachine;Ljava/io/PrintWriter;)V",
+          "code_length": 86,
+          "code_sha256": "270a1e470c856a984a392a8895341f16a813ad64ba5aaf8c4ae5e65a840c9276",
+          "code_attribute_sha256": "31508545b374e14c795e37747ea05d2bc8c8af19aae8a653016703c7209cc74a",
+          "max_stack": 3,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 136,
+          "name": "map",
+          "descriptor": "([Ljava/lang/Object;)Ljava/util/Map;",
+          "code_length": 5,
+          "code_sha256": "2c3de04143419551d9001c4a0c471f92fb33febd27cd9a072d0bdc91d488ac13",
+          "code_attribute_sha256": "89d62df3cadc4d7c1f01b171b67bdc9e6bef0a71606e6e9efa145db81472c5b8",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "emit",
+          "descriptor": "(Ljava/lang/Object;)V",
+          "code_length": 78,
+          "code_sha256": "6a5414304940969b930367f7d35b9a6bc7edd7f25d181b5eb00b318fdf37acef",
+          "code_attribute_sha256": "fc0c1dfe8272a96ceb1efc3179e1668a0d5d800bac7396bf5e620d5992bfe7c6",
+          "max_stack": 5,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "event",
+          "descriptor": "(Ljava/util/Map;)V",
+          "code_length": 60,
+          "code_sha256": "7c1dd43e786e30f7906c63e8894c2044c61d0c4bcc481a457db2399095da8daf",
+          "code_attribute_sha256": "877cc6b47f419a7b51e18063b111d70699d48a87e90624bf5180ce7a6baff94d",
+          "max_stack": 6,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "site",
+          "descriptor": "(Lcom/sun/jdi/Location;)Ljava/lang/Object;",
+          "code_length": 86,
+          "code_sha256": "97b9c8fa48d40b15f3f322d7730d312694863d6bc349346e4ddbee2a0c2d88de",
+          "code_attribute_sha256": "a41c27ddc9bcabc4736780315e0cbbafbb36b93714deca9f78de275b6ce2be25",
+          "max_stack": 5,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "pin",
+          "descriptor": "(Lcom/sun/jdi/Method;)V",
+          "code_length": 162,
+          "code_sha256": "8684296938ca90851bde93715aef3e0aae29682ef393e486029b54aacd268a44",
+          "code_attribute_sha256": "3e82c8af3b8e0e30ceb1436c2a9c6b1ffcb092c7ad0393905fa4ae61b6352dc0",
+          "max_stack": 7,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "label",
+          "descriptor": "(Lcom/sun/jdi/Value;Ljava/lang/String;)V",
+          "code_length": 31,
+          "code_sha256": "9d1eb64b3f327a362e1e573b786643b541803b1ef0dbb5e997cfdb014892e615",
+          "code_attribute_sha256": "d91f6ec6d22380db3194ababeb3394a3280b2d98968b7e984d05379f541774fe",
+          "max_stack": 3,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "value",
+          "descriptor": "(Lcom/sun/jdi/Value;)Ljava/lang/Object;",
+          "code_length": 501,
+          "code_sha256": "3034d5b5949bd48aa46c0b926f66c9f59ba3f63bd18af7c28a523afc47d51d79",
+          "code_attribute_sha256": "3bad45a9b0b5673a1efb114617dfbef43274d809cb928ce8abb01d1484b83986",
+          "max_stack": 10,
+          "max_locals": 10,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "key",
+          "descriptor": "(Lcom/sun/jdi/Method;Lcom/sun/jdi/ThreadReference;)Ljava/lang/String;",
+          "code_length": 41,
+          "code_sha256": "45d2d5ecbd5a29eeedfd36eb13e2025488b2bd86c0b24dfead0d38d7393d6830",
+          "code_attribute_sha256": "3e652c7cb3c47e324f2180891ba15d392c6d46723b9db84586cc3bba0f56ec3b",
+          "max_stack": 6,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "root",
+          "descriptor": "(Lcom/sun/jdi/Method;)Z",
+          "code_length": 86,
+          "code_sha256": "252ad1f57f9fce529aca5f61d2a17af3108f62c98de48af6039baacd47b59d61",
+          "code_attribute_sha256": "d41f97d74eaca243ceb84e753b6ef9d8b980aa8c0417b806f0017fe8837feffb",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "selected",
+          "descriptor": "(Lcom/sun/jdi/Method;Lcom/sun/jdi/ThreadReference;)Z",
+          "code_length": 773,
+          "code_sha256": "3530a057a334a418194f0a60a1bcc1a04b0ea7f2d1aa914a4a37c3c616aa10ef",
+          "code_attribute_sha256": "8c57884430e014cc2d56ca140d7bce008a4665918fd8c47419934d98b6ad9fdb",
+          "max_stack": 4,
+          "max_locals": 9,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "begin",
+          "descriptor": "(I)V",
+          "code_length": 582,
+          "code_sha256": "551e74ba99b22ea45da4c1d31fe63118ec4fc75eb6c04b0f769159347ddac87e",
+          "code_attribute_sha256": "5e79a4565f2ca2e76c8f1ef7060b01084816673433503ba7c5968ce5d6cf249b",
+          "max_stack": 7,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "prepare",
+          "descriptor": "(Lcom/sun/jdi/ReferenceType;)V",
+          "code_length": 326,
+          "code_sha256": "3f3287570bbfac6ddeb65c3d104c9348c1ca7fd88fff1c061610f23c3ce17db6",
+          "code_attribute_sha256": "d3f2c004c42b2dca9f3d402ec27e93f9ac9051928aba3c83e7cf48b0eff5e79b",
+          "max_stack": 17,
+          "max_locals": 8,
+          "exception_table": []
+        },
+        {
+          "access": 0,
+          "name": "run",
+          "descriptor": "(I)V",
+          "code_length": 1647,
+          "code_sha256": "2d19ea8001c04926a393fad0471286e1dec0c61ed50bbbd8225202c231a69fc8",
+          "code_attribute_sha256": "da830fa9224b1320199d8fd3f4ccc4c627041d03bd63135c053b11533b149769",
+          "max_stack": 6,
+          "max_locals": 11,
+          "exception_table": [
+            {
+              "start": 1596,
+              "end": 1603,
+              "handler": 1606,
+              "catch": "com/sun/jdi/VMDisconnectedException"
+            }
+          ]
+        },
+        {
+          "access": 9,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "code_length": 514,
+          "code_sha256": "07458343d81d9bd4bba51f6e007f528ca1b7abc43240cb50647e434dc0726327",
+          "code_attribute_sha256": "5ff3adae19bf35fa1fa9fe7610e1971dd92b45f808efcc712fcf9aa6a22f6c7c",
+          "max_stack": 10,
+          "max_locals": 16,
+          "exception_table": [
+            {
+              "start": 285,
+              "end": 309,
+              "handler": 317,
+              "catch": "java/lang/Throwable"
+            },
+            {
+              "start": 319,
+              "end": 324,
+              "handler": 327,
+              "catch": "java/lang/Throwable"
+            },
+            {
+              "start": 344,
+              "end": 352,
+              "handler": 355,
+              "catch": "com/sun/jdi/VMDisconnectedException"
+            },
+            {
+              "start": 366,
+              "end": 373,
+              "handler": 376,
+              "catch": "com/sun/jdi/VMDisconnectedException"
+            },
+            {
+              "start": 257,
+              "end": 339,
+              "handler": 381,
+              "catch": null
+            },
+            {
+              "start": 388,
+              "end": 396,
+              "handler": 399,
+              "catch": "com/sun/jdi/VMDisconnectedException"
+            },
+            {
+              "start": 410,
+              "end": 417,
+              "handler": 420,
+              "catch": "com/sun/jdi/VMDisconnectedException"
+            },
+            {
+              "start": 381,
+              "end": 383,
+              "handler": 381,
+              "catch": null
+            }
+          ]
+        },
+        {
+          "access": 8,
+          "name": "drain",
+          "descriptor": "(Ljava/io/InputStream;Ljava/nio/file/Path;Ljava/lang/Process;Ljava/util/concurrent/atomic/AtomicReference;)Ljava/lang/Thread;",
+          "code_length": 17,
+          "code_sha256": "00312b0473920a0f92da3cfc500f3a40ac11736deead92a2a4e1413b783c73df",
+          "code_attribute_sha256": "41120e96256c7001cbc07e6e46804f4a52ba3d175d38fd33589df430bf072222",
+          "max_stack": 6,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 4106,
+          "name": "lambda$drain$0",
+          "descriptor": "(Ljava/nio/file/Path;Ljava/io/InputStream;Ljava/util/concurrent/atomic/AtomicReference;Ljava/lang/Process;)V",
+          "code_length": 132,
+          "code_sha256": "0b68f328b330260cf6a931bd8aff918c9b99f5fb63caa580fee96eb6d994a64b",
+          "code_attribute_sha256": "3802d7031e75a4db36848a6dbb1bc7e8eb6a9d9ee727e7b0938602ea1f337a0c",
+          "max_stack": 4,
+          "max_locals": 9,
+          "exception_table": [
+            {
+              "start": 10,
+              "end": 73,
+              "handler": 86,
+              "catch": "java/lang/Throwable"
+            },
+            {
+              "start": 93,
+              "end": 98,
+              "handler": 101,
+              "catch": "java/lang/Throwable"
+            },
+            {
+              "start": 0,
+              "end": 113,
+              "handler": 116,
+              "catch": "java/lang/Throwable"
+            }
+          ]
+        }
+      ]
+    },
+    "BedNightObservation$Guard": {
+      "name": "BedNightObservation$Guard",
+      "super": "java/lang/SecurityManager",
+      "interfaces": [],
+      "major": 61,
+      "minor": 0,
+      "access": 48,
+      "class_sha256": "45dfc8dec94f1c937f15ecdd67c14d104fb367892bc90d6e9660d31b2b1fd70e",
+      "class_bytes": 1064,
+      "fields": [],
+      "methods": [
+        {
+          "access": 0,
+          "name": "<init>",
+          "descriptor": "()V",
+          "code_length": 5,
+          "code_sha256": "d6f7264189858f154b120ac2e9b76f4b4dae9ddb629e4ec627af7810207e1a24",
+          "code_attribute_sha256": "7f2358e83ef5aeef50b9bf1cf6910c03511beb0c1fb86504d00dd70b94f3fe45",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "checkPermission",
+          "descriptor": "(Ljava/security/Permission;)V",
+          "code_length": 1,
+          "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+          "code_attribute_sha256": "a07c7bb60ecd5e8476974f56e8002da0b0d8f0bd3764ad616f78db054fa80c66",
+          "max_stack": 0,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "checkConnect",
+          "descriptor": "(Ljava/lang/String;I)V",
+          "code_length": 18,
+          "code_sha256": "c3470ccb9711e71ccbca66bc7a084025f3f3c21fc1b2648ea80585f9ff24c12e",
+          "code_attribute_sha256": "66de5aef94c5d8d48912b3686e386508cd5ae6f734f0eeb28a661725a2a5f143",
+          "max_stack": 3,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "checkListen",
+          "descriptor": "(I)V",
+          "code_length": 18,
+          "code_sha256": "1252beeb8b24d940b669263f3905a886b62a962580bd403aab3ed67246a9876a",
+          "code_attribute_sha256": "f3884d526d98035faa41fecde5b8e36f8dda2d1389cb460c9e3f6fda83c0ddb4",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "checkLink",
+          "descriptor": "(Ljava/lang/String;)V",
+          "code_length": 18,
+          "code_sha256": "5ad0e6970243dc173f225b36c05a9614162df8ccc879ad0ae434a7dc593071a1",
+          "code_attribute_sha256": "ead79deda735bd9ba5b24e2f283c8a4f771f564a90c821fccc118b78031ae7f0",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "checkExec",
+          "descriptor": "(Ljava/lang/String;)V",
+          "code_length": 18,
+          "code_sha256": "9ffaa93bd88b872de619b44ab8a70a3e9e0486d047add17eba997c9ad0f759bd",
+          "code_attribute_sha256": "8d78f8fe99dd299592204ba7ab7c56fedba1852c0ee23d8b7d239f3ea778dee5",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "checkWrite",
+          "descriptor": "(Ljava/lang/String;)V",
+          "code_length": 18,
+          "code_sha256": "8ca924ca28e758c9c23f3e0c55c52a7b6a7209d0326a59e2682e73b6010be76d",
+          "code_attribute_sha256": "a2e9ee3b8bdb08a9237788c0d196e1933a4ffb65746ae4e782ce0cb4f919c3d3",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "checkDelete",
+          "descriptor": "(Ljava/lang/String;)V",
+          "code_length": 18,
+          "code_sha256": "164cac03249fcc8304d245800113cc4223f8c7c7f131197fba520efe23b28121",
+          "code_attribute_sha256": "dafa7674de5c332698f0363a0cd543c68e1e3814336e0567991b90caae8f6d43",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exception_table": []
+        }
+      ]
+    },
+    "BedNightObservation": {
+      "name": "BedNightObservation",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 61,
+      "minor": 0,
+      "access": 49,
+      "class_sha256": "ca4e135dcb04963c94668826e067115fa3814564a75177d9aa78863a2ac40b47",
+      "class_bytes": 18416,
+      "fields": [
+        {
+          "access": 72,
+          "name": "active",
+          "descriptor": "I"
+        },
+        {
+          "access": 8,
+          "name": "world",
+          "descriptor": "Lfd;"
+        },
+        {
+          "access": 8,
+          "name": "chunk",
+          "descriptor": "Llm;"
+        },
+        {
+          "access": 8,
+          "name": "actor",
+          "descriptor": "Ldc;"
+        },
+        {
+          "access": 8,
+          "name": "other",
+          "descriptor": "Ldc;"
+        },
+        {
+          "access": 8,
+          "name": "originalBounds",
+          "descriptor": "Leq;"
+        },
+        {
+          "access": 8,
+          "name": "beforeV",
+          "descriptor": "Lbr;"
+        },
+        {
+          "access": 8,
+          "name": "beforeQ",
+          "descriptor": "Lbr;"
+        },
+        {
+          "access": 8,
+          "name": "beforeBN",
+          "descriptor": "Lbr;"
+        },
+        {
+          "access": 8,
+          "name": "archive",
+          "descriptor": "Ljava/nio/file/Path;"
+        },
+        {
+          "access": 8,
+          "name": "directory",
+          "descriptor": "Ljava/nio/file/Path;"
+        },
+        {
+          "access": 8,
+          "name": "network",
+          "descriptor": "I"
+        },
+        {
+          "access": 8,
+          "name": "nativeLinks",
+          "descriptor": "I"
+        },
+        {
+          "access": 8,
+          "name": "writes",
+          "descriptor": "I"
+        },
+        {
+          "access": 8,
+          "name": "execs",
+          "descriptor": "I"
+        },
+        {
+          "access": 24,
+          "name": "FACING",
+          "descriptor": "[[I"
+        },
+        {
+          "access": 24,
+          "name": "identities",
+          "descriptor": "Ljava/util/IdentityHashMap;"
+        }
+      ],
+      "methods": [
+        {
+          "access": 1,
+          "name": "<init>",
+          "descriptor": "()V",
+          "code_length": 5,
+          "code_sha256": "d6f7264189858f154b120ac2e9b76f4b4dae9ddb629e4ec627af7810207e1a24",
+          "code_attribute_sha256": "521fba54fb39c2be192b9d82ee2e57e7c9902d5060ca97644510a94e5febb641",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "need",
+          "descriptor": "(ZLjava/lang/String;)V",
+          "code_length": 14,
+          "code_sha256": "e85db2e5260044e99e071da0811a25767de43318bfd527d07525dc700c38b7e6",
+          "code_attribute_sha256": "f3c23fc9e58f9b5d384ce0c15f121e27b413f83cd61452e947313300d3e20e67",
+          "max_stack": 3,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "field",
+          "descriptor": "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;",
+          "code_length": 13,
+          "code_sha256": "edc012edafec0edfb59a76890c55f88c15170c3dad6f56aa658d312c6e7081ad",
+          "code_attribute_sha256": "2b474d428efdb098ec296a4be33d24b5882503d9d291a5352f9bf071991e7b23",
+          "max_stack": 2,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "get",
+          "descriptor": "(Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Object;",
+          "code_length": 10,
+          "code_sha256": "7ef76443b3918fab968defce74ff3a41fefe2a258c3ce254c849e6e73ad71ae5",
+          "code_attribute_sha256": "b3cc27ff2b93443542ff5b45faa54598c57933dcad933919c23087c4d178536c",
+          "max_stack": 2,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "put",
+          "descriptor": "(Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Object;)V",
+          "code_length": 11,
+          "code_sha256": "409bb51726968a04dea1977b4b5938840e82fe582b9f090a4f2e15588e63bee4",
+          "code_attribute_sha256": "8027183b148cc30de848b7e51c50fa7cace6c26e4b723bcd9ebc09758806ed99",
+          "max_stack": 3,
+          "max_locals": 4,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "hex",
+          "descriptor": "([B)Ljava/lang/String;",
+          "code_length": 8,
+          "code_sha256": "0457029fefb75807d4e1ab0a42b7cfcae8b14c883aaeae41cffc53d7d6dbcb66",
+          "code_attribute_sha256": "18761521b680573323bb3248931f4b2c31327a35c03112a2a734a2e37b6e4e2a",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "d",
+          "descriptor": "(D)Ljava/lang/String;",
+          "code_length": 23,
+          "code_sha256": "b405e942bf25e7dbc9fe31f924e2b16f9e892db3c297e3eebecbb062cb3bbeca",
+          "code_attribute_sha256": "82fc3559f872caecb73a2324226b1fbced914c29aa26f93bb724f93ffea66873",
+          "max_stack": 7,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "f",
+          "descriptor": "(F)Ljava/lang/String;",
+          "code_length": 23,
+          "code_sha256": "03bdc9c0f13934f06de646cf7982acf7bc97bcc8bbc41945fec57c73eabb5f20",
+          "code_attribute_sha256": "1ca8a8c16a7fd28f2fc6910d212a4ca749c1e37b60750f919205eb8aea882c34",
+          "max_stack": 6,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "identity",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/Object;",
+          "code_length": 24,
+          "code_sha256": "5793465774b2f670def37b32dc821b5f55d353c1640f65395828db157eb55564",
+          "code_attribute_sha256": "7e891d73dc3af4fb516323c2e9d093dd1bb22ccd6f77dc5ae8eda162368328af",
+          "max_stack": 3,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "scalar",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/Object;",
+          "code_length": 195,
+          "code_sha256": "b6666ff47e42b427ef35a6bd7e6d6c823cb24cc8fe2d03f173a3531c28574112",
+          "code_attribute_sha256": "531cb1f871fa0d230295a766be84661dc5bd00bb87361c6efefdd05574f92920",
+          "max_stack": 9,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 136,
+          "name": "fields",
+          "descriptor": "(Ljava/lang/Object;[Ljava/lang/Class;)Ljava/lang/Object;",
+          "code_length": 197,
+          "code_sha256": "0a9442a38cd61fb6e88ad598e01ceb6855fd218350332799e8350c091cfcbceb",
+          "code_attribute_sha256": "17d2f35249cab88b98c7c459f1f44b0f7d052c1423588c6206e0e3dabaa4f77d",
+          "max_stack": 4,
+          "max_locals": 12,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "random",
+          "descriptor": "(Ljava/util/Random;)Ljava/lang/Object;",
+          "code_length": 74,
+          "code_sha256": "5777dbc262fb1f12dbec2515fb5eb84d8c2f88f05bcf1787b45e21f23347a1df",
+          "code_attribute_sha256": "14601ae95bfe322c6598d31136bfd8e853ab81a62c7d92fc583e3a1efce850c0",
+          "max_stack": 11,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "xyz",
+          "descriptor": "(Lbr;)Ljava/lang/Object;",
+          "code_length": 33,
+          "code_sha256": "e0bcc0f9b4c78e3ec772b05dbcc73fae7b9be595cccc5d13c8dea017f2494259",
+          "code_attribute_sha256": "bf12f9df42d094c8caa2fec2dbe342a249212c3814009ec2e359d97f9c1ea826",
+          "max_stack": 3,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "bounds",
+          "descriptor": "(Leq;)Ljava/lang/Object;",
+          "code_length": 54,
+          "code_sha256": "5faa90f6c39b4b961d55df7536a7b6fc7d077a6782daff74941bf0483271862f",
+          "code_attribute_sha256": "dbee2f8159f8f2f3549028ed537b4ff443bda848dde3fb803289bda1bf26976f",
+          "max_stack": 7,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "hash",
+          "descriptor": "([B)Ljava/lang/String;",
+          "code_length": 14,
+          "code_sha256": "e34adf1f7fb87606255996fc5e7bfe02afe848a070e6e5bbc9879989cba56dc7",
+          "code_attribute_sha256": "e36e33acd6ef72e4e0ee10476994d560703c7108badeadc50d211fbdd9e0d900",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "cell",
+          "descriptor": "(IIIII)V",
+          "code_length": 86,
+          "code_sha256": "9082d7d3fb3a6f4a476643091c84bdd0ac470e51ac7bd06b472eafc269578af7",
+          "code_attribute_sha256": "dcba99d7703c45a0d551e03d8c10a3c7163d84be005060d5a65c40c314f3426e",
+          "max_stack": 5,
+          "max_locals": 7,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "planes",
+          "descriptor": "()Ljava/lang/Object;",
+          "code_length": 112,
+          "code_sha256": "627a9b2c80128727ea007f3263b5fd27f64a2797b6a11a121ccf3fdf969c2c2d",
+          "code_attribute_sha256": "9ab3b7947555f7a8372d27adf11d640fadb97c28dc6ef0279f9a852a4137a139",
+          "max_stack": 4,
+          "max_locals": 0,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "state",
+          "descriptor": "()Ljava/lang/Object;",
+          "code_length": 984,
+          "code_sha256": "969f7878eb1609ea8689de5c507040928f57b02c2cbf751efe2ade417533c9a7",
+          "code_attribute_sha256": "2d30012f673f3e1f5868cb750348debfe5455b5297fbc56a7e2e5d5f2a386bff",
+          "max_stack": 11,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "player",
+          "descriptor": "()Ldc;",
+          "code_length": 78,
+          "code_sha256": "787660554f3b75e27de6e4a2f873b55f97c77b0ee53a2c12f79a0fede30a9ac1",
+          "code_attribute_sha256": "1fa418fa1449b3daf6501168cb6adb08d43940ec7545edbb2a24393b67aac681",
+          "max_stack": 8,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "setup",
+          "descriptor": "([I)V",
+          "code_length": 920,
+          "code_sha256": "b89d7162e571677019a0915b8a84a326315ab21661204924b23ce97c45f474cb",
+          "code_attribute_sha256": "c6609e8b00ce807e942da2d385b5df4fa5f7817dceda58a5d6488a638d1cf5d5",
+          "max_stack": 8,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "bind",
+          "descriptor": "(Ljava/nio/file/Path;)V",
+          "code_length": 184,
+          "code_sha256": "6b54a9a725522e9fd19aff28cca8524a651af7daf07d698fff7fe3e88bcbd6e9",
+          "code_attribute_sha256": "d5f71dbc0d53f2d934897d185c0b778a2894fc3af622fcf89637bab5860d3e78",
+          "max_stack": 4,
+          "max_locals": 8,
+          "exception_table": [
+            {
+              "start": 97,
+              "end": 120,
+              "handler": 133,
+              "catch": "java/lang/Throwable"
+            },
+            {
+              "start": 140,
+              "end": 145,
+              "handler": 148,
+              "catch": "java/lang/Throwable"
+            }
+          ]
+        },
+        {
+          "access": 9,
+          "name": "main",
+          "descriptor": "([Ljava/lang/String;)V",
+          "code_length": 646,
+          "code_sha256": "fdefc4b315c3dadbb0ada240d89248e0348adc92830369a4d17a1f3b99d37b05",
+          "code_attribute_sha256": "b56c7be7c9bb7db7cf8da45f5f856616d3850dbb7885209342bd36d4110828f4",
+          "max_stack": 9,
+          "max_locals": 14,
+          "exception_table": [
+            {
+              "start": 203,
+              "end": 275,
+              "handler": 282,
+              "catch": "java/lang/NullPointerException"
+            },
+            {
+              "start": 203,
+              "end": 275,
+              "handler": 296,
+              "catch": null
+            },
+            {
+              "start": 282,
+              "end": 289,
+              "handler": 296,
+              "catch": null
+            },
+            {
+              "start": 296,
+              "end": 298,
+              "handler": 296,
+              "catch": null
+            }
+          ]
+        },
+        {
+          "access": 136,
+          "name": "map",
+          "descriptor": "([Ljava/lang/Object;)Ljava/util/Map;",
+          "code_length": 42,
+          "code_sha256": "46674071123c5682d93c4515de04b8c879cfcf71e425bf4500121b0c457dd804",
+          "code_attribute_sha256": "20de0405db7627f5749ee22768f7012b9e1951a2f1e3e352ff79ec308e516cf6",
+          "max_stack": 5,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "json",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/String;",
+          "code_length": 338,
+          "code_sha256": "2e9be6ace48ce76a607a7a342b3f1777f936be9e4ed60b8741968440188c81dc",
+          "code_attribute_sha256": "33a11c5fd77af175459fab3aff86e5177d29dbb077165876fbf8d58fa1d4a2a7",
+          "max_stack": 7,
+          "max_locals": 6,
+          "exception_table": []
+        },
+        {
+          "access": 4106,
+          "name": "lambda$fields$1",
+          "descriptor": "(Ljava/lang/reflect/Field;)Ljava/lang/String;",
+          "code_length": 17,
+          "code_sha256": "4beb56a7947fa0ac1db567131404775a48802de1da15683db9422a8b5ca20bf8",
+          "code_attribute_sha256": "34f0febb46eeaddc139a660312d6bbbcfa18ed114865f7b821ece173ada08076",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 4106,
+          "name": "lambda$identity$0",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/Integer;",
+          "code_length": 12,
+          "code_sha256": "dc6a2b01b4912cd6cb86b8923d38321754a6b758500ea050d46ff530b2ecf635",
+          "code_attribute_sha256": "7b785c4d21f8b40c38c410280f2dca6d9b6445a1d7b800aa01a392f149b9d087",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "code_length": 78,
+          "code_sha256": "f966fc625c2aea9df9f9424097295f1539dc16ec61bac0f326dbef2d1e5f5d6f",
+          "code_attribute_sha256": "167b75c1140240efc192b5c9e4a37f9c97f43849c635a67cd095bbb74a3d4176",
+          "max_stack": 7,
+          "max_locals": 0,
+          "exception_table": []
+        }
+      ]
+    }
+  }
+}

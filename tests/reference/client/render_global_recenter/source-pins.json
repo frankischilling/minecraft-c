@@ -1,0 +1,144 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "n": {
+      "class_bytes": 24327,
+      "class_sha256": "d3f85a1136da30d4590b16f7bd5db44d0db3e73f6d42e1f0b018426542da0c16",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 700,
+          "code_sha256": "dacb888009cdef6175ee550b2de50a777dbada4097831482d996d5ce698fa7bf"
+        },
+        {
+          "name": "b",
+          "descriptor": "(III)V",
+          "access": 2,
+          "code_bytes": 374,
+          "code_sha256": "0fcf6e4025d551261ccfea8716e378b20dc37797420f7373b444db9e9ef5333e"
+        }
+      ]
+    },
+    "jo": {
+      "class_bytes": 734,
+      "class_sha256": "b83bf7fb15889da3e47b64b198a6a2f3c9d52e710a64dd02853da00654cb2a6e",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lsn;)V",
+          "access": 1,
+          "code_bytes": 32,
+          "code_sha256": "0e2c4ed740c0bce29e96ea1b9d4a8b9528fb57b43f163cca878337fad777f101"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ldk;Ldk;)I",
+          "access": 1,
+          "code_bytes": 110,
+          "code_sha256": "6fe29263e042579dda3c8d05c2f663a0d30b3c06d79a777260d6c48c8999a70e"
+        },
+        {
+          "name": "compare",
+          "descriptor": "(Ljava/lang/Object;Ljava/lang/Object;)I",
+          "access": 4161,
+          "code_bytes": 13,
+          "code_sha256": "9513c9af2d8d50b7c129dd37726bda43a5f0776870a2fa6a8a57d8b824ad98ae"
+        }
+      ]
+    },
+    "dk": {
+      "class_bytes": 4154,
+      "class_sha256": "ff2ceb72f3587aea07d77d8c0650f49b2070d100caa8092dbc95b9384a0a1168",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(III)V",
+          "access": 1,
+          "code_bytes": 290,
+          "code_sha256": "606f2f8b76ac227ea9e344a292d1dd5b149640f5fa343e8197aff3ac93c6a1bd"
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 31,
+          "code_sha256": "a2cc554683c94e7bf136f95391b3f5fbc1f648c4b367099af2e9a8646b6509fc"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 11,
+          "code_sha256": "e3a03d3e4fa4fc342cca62d0175dc1c2a4e2fa7204a68d06a4f080fbd401e643"
+        }
+      ]
+    },
+    "nw": {
+      "class_bytes": 5557,
+      "class_sha256": "2facc45feb91d0fea0c5888ac6793a87ffa6e4cdf5b0cc4e418c6c162ca8bf33",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(I)V",
+          "access": 2,
+          "code_bytes": 154,
+          "code_sha256": "88e02069d2d57cf3e471ad4dca8627ffa4f23c51c0f2eef14e07fcd3f89f5b7b"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 21,
+          "code_sha256": "f5e5ce584dcd7ec9eb419b0baa06c98fef4666440ffaa05687812c153a20f09e"
+        }
+      ]
+    },
+    "ge": {
+      "class_bytes": 2023,
+      "class_sha256": "4c302c844a8fae626f6ab56de47dc5b1032131e176e1fac7754869c472b57722",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 21,
+          "code_sha256": "3a8ed585e3dbc8536ddaf5101e9a5fb533e4ca276f778a70ba8b3d6eb4ecb4fb"
+        }
+      ]
+    },
+    "in": {
+      "class_bytes": 1099,
+      "class_sha256": "8693f3179fb0ff1df382e1d3388d23ab688ad3e26415454655da88f10b054f63",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "b",
+          "descriptor": "(D)I",
+          "access": 9,
+          "code_bytes": 18,
+          "code_sha256": "5a7aeedddf722305b6bd968315e2f4310252e6ae28cd7b496dff92ff9b73bad5"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 45,
+          "code_sha256": "4ecbb4b6204847a4217dd53db5895ad401ed067ee04a4c3d1034c7570ff8d391"
+        }
+      ]
+    }
+  }
+}

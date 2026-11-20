@@ -1,0 +1,2 @@
+JQ_GUARD source rows=34320 network=0 native=0 writes=0 execs=0
+JQ_GUARD controls network=2 native=1 writes=1 execs=1

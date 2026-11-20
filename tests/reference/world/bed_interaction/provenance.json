@@ -1,0 +1,96 @@
+{
+  "schema": "BED_INTERACTION_CAPTURE_V1",
+  "status": "PASS",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "finite_sha256": "1b20e0fb6216e79c4d0f3997ccbc55928a089f8e6bf358577aef9b1eb1077e06",
+  "source_sha256": {
+    "BedInteractionObservation.java": "851165a38696f8715899184e0c3e06d9f7b780d224e5452f7d2be6818d52adf2",
+    "BedInteractionJdi.java": "d97ba50862eae16db3d2ebdf3e1fe3b200b98f4aceb41f03cc7c6352fc205cfd",
+    "capture_reference.py": "1e8780c1f2b34d2fcda2ef49c726fa22694fe39d789632b5fd872d141231f5b2",
+    "validate.py": "d3c32d41d40135d9ed849084e35c7199bdb7cb597957eece2f9f4cc3b8d3a54e",
+    "profiles.json": "eb1432ea1bb2691dd8b6716941c692c6397c4dbe92fae38686c71f22a4a73348",
+    "profiles.tsv": "0f47496fb6f11188b2ee19ae7ce5ff647cd772e4e859ebe758423410fca0af40",
+    "source-pins.json": "a2f17c28aa1fffd3d91dda5d853c4e410ab764105e8669e9b84bbe776316cb3a",
+    "../../client/controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "../../entity/player/classfile.py": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60"
+  },
+  "tool_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+  },
+  "library_sha256": {
+    "org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+  },
+  "helper_sha256": {
+    "BedInteractionJdi.class": "42bb3d2a017b8f056c215e16c935200130eaba53ef1a66f4022db8f0231d172b",
+    "BedInteractionObservation$1.class": "e2d1ac074dc3c05313d25e96f62606a50cb1d2325a5f9fa562d7703fc3578571",
+    "BedInteractionObservation.class": "23285ffb492c45d9694d6fbefccdafd7256355015b836a8487fbf4c6a15f23a3"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-0.stdout",
+      "stderr_file": "original-0.stderr",
+      "stdout_bytes": 52309,
+      "stderr_bytes": 408,
+      "stdout_sha256": "5380945a1a5e054bd1905e27ed19c2dac34516e382d94d8af516f25a4d203760",
+      "stderr_sha256": "d2206c5d49a3bce4c41a2f8699cc6a4355dff572317c446411d3af46034f2864",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    {
+      "exit": 0,
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-1.stdout",
+      "stderr_file": "original-1.stderr",
+      "stdout_bytes": 52309,
+      "stderr_bytes": 408,
+      "stdout_sha256": "5380945a1a5e054bd1905e27ed19c2dac34516e382d94d8af516f25a4d203760",
+      "stderr_sha256": "d2206c5d49a3bce4c41a2f8699cc6a4355dff572317c446411d3af46034f2864",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  ],
+  "jdi": {
+    "exit": 0,
+    "timeout_seconds": 240,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_file": "jdi-controller.stdout",
+    "stderr_file": "jdi-controller.stderr",
+    "stdout_bytes": 43,
+    "stderr_bytes": 0,
+    "stdout_sha256": "64ca28284a766d5d8acf2fad811864559adfd1f98bf07ff2da9f79190091af9d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576
+  },
+  "jdi_target": {
+    "calls.jsonl": "9edef565c539ed775bf97300a7d25d195d08958411d16b688879ddafc4dfbb48",
+    "target.stderr": "d2206c5d49a3bce4c41a2f8699cc6a4355dff572317c446411d3af46034f2864",
+    "target.stdout": "5380945a1a5e054bd1905e27ed19c2dac34516e382d94d8af516f25a4d203760"
+  },
+  "profiles_per_vm": 85,
+  "query_count": 408,
+  "code_methods": 20,
+  "game_code_methods": 19,
+  "class_count": 24,
+  "input_unchanged": true,
+  "helper_unchanged": true,
+  "reviewed_observations_equal": true,
+  "scope": "85 prepared original VE neighbor/day/remote/absent-partner components. Genuine World/Map-provider/Chunk/DC/NH/UQ; explicitly prepared original App and Font widths. No night, sleep, wake, Nether explosion, startup, GUI or native result. Item Math/default-Random motion/rotation are outside selected outputs."
+}

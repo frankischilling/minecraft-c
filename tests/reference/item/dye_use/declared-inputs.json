@@ -1,0 +1,859 @@
+{
+  "format": 1,
+  "columns": [
+    "via",
+    "count",
+    "damage",
+    "face",
+    "x",
+    "y",
+    "z",
+    "target",
+    "target_metadata",
+    "remote",
+    "null_mask",
+    "item_seed",
+    "world_seed",
+    "scene",
+    "observer_mode"
+  ],
+  "rows": [
+    {
+      "name": "non15_0_wrapper",
+      "inputs": [
+        1,
+        2,
+        0,
+        1,
+        8,
+        64,
+        8,
+        1,
+        0,
+        0,
+        1,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "non15_14_wrapper",
+      "inputs": [
+        1,
+        2,
+        14,
+        1,
+        8,
+        64,
+        8,
+        1,
+        0,
+        0,
+        1,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "non15_16_wrapper",
+      "inputs": [
+        1,
+        2,
+        16,
+        1,
+        8,
+        64,
+        8,
+        1,
+        0,
+        0,
+        1,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "non15_min2147483648_wrapper",
+      "inputs": [
+        1,
+        2,
+        -2147483648,
+        1,
+        8,
+        64,
+        8,
+        1,
+        0,
+        0,
+        1,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "non15_2147483647_wrapper",
+      "inputs": [
+        1,
+        2,
+        2147483647,
+        1,
+        8,
+        64,
+        8,
+        1,
+        0,
+        0,
+        1,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "unsupported_stone_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        -2147483648,
+        8,
+        64,
+        8,
+        1,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "unsupported_mushroom_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        39,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "remote_sapling_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        6,
+        0,
+        1,
+        0,
+        123,
+        456,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "remote_crop_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        59,
+        0,
+        1,
+        0,
+        123,
+        456,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "remote_grass_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        1,
+        0,
+        123,
+        456,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "crop_stage0_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        59,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "crop_mature_wrapper",
+      "inputs": [
+        1,
+        1,
+        15,
+        2147483647,
+        8,
+        64,
+        8,
+        59,
+        7,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "crop_negative_count_wrapper",
+      "inputs": [
+        1,
+        -7,
+        15,
+        1,
+        8,
+        64,
+        8,
+        59,
+        3,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "crop_wrap_count_wrapper",
+      "inputs": [
+        1,
+        -2147483648,
+        15,
+        1,
+        8,
+        64,
+        8,
+        59,
+        6,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "crop_false_setter_alias0_y128_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        0,
+        8,
+        128,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        73,
+        4,
+        0
+      ]
+    },
+    {
+      "name": "crop_callback_fail_first_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        59,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "crop_callback_count99_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        59,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        4
+      ]
+    },
+    {
+      "name": "crop_null_player_after_effects_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        59,
+        0,
+        0,
+        2,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "damage15_null_world_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        1,
+        0,
+        0,
+        1,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "null_stack_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        59,
+        0,
+        0,
+        4,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "sapling_oak_small_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        6,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "sapling_oak_big_selector_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "sapling_spruce_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        6,
+        1,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "sapling_birch_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        6,
+        2,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "sapling_species3_oak_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        6,
+        3,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "sapling_blocked_restore_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        6,
+        10,
+        0,
+        0,
+        0,
+        73,
+        3,
+        0
+      ]
+    },
+    {
+      "name": "sapling_null_player_after_effects_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        64,
+        8,
+        6,
+        2,
+        0,
+        2,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "grass_plane_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "grass_isolated_support_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        0,
+        73,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "grass_occupied_origin_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        1,
+        73,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "grass_negative_count_wrapper",
+      "inputs": [
+        1,
+        -7,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        23,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "grass_wrap_count_wrapper",
+      "inputs": [
+        1,
+        -2147483648,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        23,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "grass_y127_false_writes_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        127,
+        8,
+        2,
+        0,
+        0,
+        0,
+        23,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "grass_callback_fail_first_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "grass_callback_fail_third_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        3
+      ]
+    },
+    {
+      "name": "grass_callback_live_gm_b_to_world_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        2
+      ]
+    },
+    {
+      "name": "grass_callback_count99_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        0,
+        0,
+        73,
+        0,
+        4
+      ]
+    },
+    {
+      "name": "grass_null_player_after_effects_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        0,
+        2,
+        23,
+        73,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "remote_grass_null_player_wrapper",
+      "inputs": [
+        1,
+        2,
+        15,
+        1,
+        8,
+        63,
+        8,
+        2,
+        0,
+        1,
+        2,
+        0,
+        73,
+        0,
+        0
+      ]
+    }
+  ],
+  "shared_inputs": {
+    "item_id": 351,
+    "animation": 5,
+    "loaded_chunk_coordinates": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "initial_floor_y": 63,
+    "normal_floor_id": 2,
+    "plane_light": {
+      "sky": 15,
+      "block": 0
+    },
+    "initial_height": 64
+  },
+  "scene_modes": {
+    "0": "full Grass floor",
+    "1": "Dirt floor except target Grass",
+    "2": "Stone above target Grass",
+    "3": "Stone above Sapling for rejected tree restore",
+    "4": "actual Crop receiver bn field projected to0 for out-of-height false setter; restored after call"
+  },
+  "observer_modes": {
+    "0": "observe only",
+    "1": "throw IllegalStateException at first cell callback",
+    "2": "first cell callback aliases actual mutable GM.b to actual existing World.r; restored after call",
+    "3": "throw IllegalStateException at third cell callback",
+    "4": "first cell callback stores actual Stack.count99"
+  },
+  "null_mask": {
+    "1": "World",
+    "2": "Player",
+    "4": "Stack"
+  },
+  "not_claimed": [
+    "native equivalence",
+    "read-only JDI ordering",
+    "graphics",
+    "server",
+    "unrestricted gameplay"
+  ],
+  "cohort": "new independently executed wrapper-only39 shared-World ordered cohort",
+  "prior_supporting_interleaved_rows": 78
+}

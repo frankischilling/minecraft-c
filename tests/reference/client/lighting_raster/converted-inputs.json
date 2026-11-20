@@ -1,0 +1,16 @@
+{
+  "width": 64,
+  "height": 64,
+  "cases": [
+    {
+      "name": "actual_quad_flat",
+      "frames": 1,
+      "native_index": 56
+    },
+    {
+      "name": "actual_quad_smooth",
+      "frames": 1,
+      "native_index": 57
+    }
+  ]
+}

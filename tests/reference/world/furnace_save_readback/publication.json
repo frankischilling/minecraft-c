@@ -1,0 +1,77 @@
+{
+  "meaning": "Publication-only helper/data fingerprints, added after original execution.",
+  "files": {
+    "capture-receipts.json": {
+      "bytes": 3811,
+      "sha256": "459fdd244848a5c5b6124421d6f6bd021831e95e9373208803f3a97a2e6cab12"
+    },
+    "capture.py": {
+      "bytes": 17203,
+      "sha256": "935a30a64752d047eba4f5237a51fe87d93a7b20b9ef98cb6b549bccc2e7558f"
+    },
+    "classfile.py": {
+      "bytes": 2578,
+      "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+    },
+    "declaration.json": {
+      "bytes": 836,
+      "sha256": "2fa6314fa25caaf179224a35431cbf7bdd44f05ec63d8709cf0f1839454f094f"
+    },
+    "decode.py": {
+      "bytes": 3147,
+      "sha256": "32c9a5901e7e3a5fae06042b875c80d68c4fb1b433d4df101b015a81d9ad6eaa"
+    },
+    "default.stdout": {
+      "bytes": 3054,
+      "sha256": "a606498238a2ae1a86980d963b578802f76f9d7bc3e233494801f5bf7fa4f5f7"
+    },
+    "finite.json": {
+      "bytes": 5261,
+      "sha256": "86fe158cab7f50ddfeb44ca8efeedb431ec21ce4ff28bdae6b396b10b012b368"
+    },
+    "FurnaceReadback.java": {
+      "bytes": 8025,
+      "sha256": "d08f1fc33d2b409b106c9ea5e4a07206d0011fa8c2bb006f19d6bebc5f0ac1a1"
+    },
+    "input-projection.json": {
+      "bytes": 997,
+      "sha256": "0b61c533576803ce899b529225257ef627ffe1a7d65d992f8b0e494c5166c079"
+    },
+    "interpreter.stdout": {
+      "bytes": 3054,
+      "sha256": "a606498238a2ae1a86980d963b578802f76f9d7bc3e233494801f5bf7fa4f5f7"
+    },
+    "packet.py": {
+      "bytes": 8212,
+      "sha256": "ce5ee17360e06a66229bdc5e085f1d00a32fc0c0a86042821488350cce97d543"
+    },
+    "provenance.json": {
+      "bytes": 10000,
+      "sha256": "4111811831d9f7b86a31de82a2978aec25ace62a91e9c344f3a42b572dabbc42"
+    },
+    "publish.py": {
+      "bytes": 6493,
+      "sha256": "c09895acc216e94365e930e2a33aa9e75a7e28d2849a410432a3a0aa4fdb5c8f"
+    },
+    "README.md": {
+      "bytes": 3554,
+      "sha256": "346a3a5672cfef7fc893b0fb561bac6a236a981fadbf60fda5312863f256e7d6"
+    },
+    "save-manifests.json": {
+      "bytes": 7902,
+      "sha256": "9f707d4f441c46a71453e9f117307ba63a6427958749b64bd5da5572b265912f"
+    },
+    "source-pins.json": {
+      "bytes": 138485,
+      "sha256": "0d7b531db77f51e7b279af8eb26c35082165604e574759acc98eac466bfb4774"
+    },
+    "test_packet.py": {
+      "bytes": 6844,
+      "sha256": "aac42e73a3f15187832ec41ab5eac8ef82f6ded6e4caaa2f9323fba436d362f0"
+    },
+    "transport.py": {
+      "bytes": 5281,
+      "sha256": "174e08675a6e14859bab0cd29976d8d15a7af374f0043fd3d44566a42e0da66a"
+    }
+  }
+}

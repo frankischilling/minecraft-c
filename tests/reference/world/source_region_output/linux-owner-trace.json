@@ -1,0 +1,242 @@
+{
+  "status": "PASS_ORIGINAL_STRONG_OWNER_AND_ORDERED_RAF_TRACE_AUDIT",
+  "scope": "Read-only audit of already captured original JDI owner/RAF traces; no new original or native processes",
+  "recipe_sha256": "b2c80c035f65b0d394c38e7824f3186b9c4b830b14844579772b4d772f357630",
+  "hosts": {
+    "linux": {
+      "trace_sha256": "67c3d7a237c741f0e494e27da0c05195b1a89b8f80c3ce0c283d5e12c25a2b91",
+      "commit_bindings": [
+        {
+          "phase": 0,
+          "hz": {
+            "class": "hz",
+            "oid": 2169
+          },
+          "qj": {
+            "class": "qj",
+            "oid": 2156
+          },
+          "raf": {
+            "class": "java.io.RandomAccessFile",
+            "oid": 2160
+          },
+          "buffer": {
+            "class": "byte[]",
+            "oid": 2170,
+            "length": 8096
+          },
+          "count": 61
+        },
+        {
+          "phase": 1,
+          "hz": {
+            "class": "hz",
+            "oid": 2471
+          },
+          "qj": {
+            "class": "qj",
+            "oid": 2156
+          },
+          "raf": {
+            "class": "java.io.RandomAccessFile",
+            "oid": 2160
+          },
+          "buffer": {
+            "class": "byte[]",
+            "oid": 2472,
+            "length": 8096
+          },
+          "count": 61
+        },
+        {
+          "phase": 2,
+          "hz": {
+            "class": "hz",
+            "oid": 2684
+          },
+          "qj": {
+            "class": "qj",
+            "oid": 2156
+          },
+          "raf": {
+            "class": "java.io.RandomAccessFile",
+            "oid": 2160
+          },
+          "buffer": {
+            "class": "byte[]",
+            "oid": 2723,
+            "length": 32384
+          },
+          "count": 20034
+        },
+        {
+          "phase": 3,
+          "hz": {
+            "class": "hz",
+            "oid": 2897
+          },
+          "qj": {
+            "class": "qj",
+            "oid": 2156
+          },
+          "raf": {
+            "class": "java.io.RandomAccessFile",
+            "oid": 2160
+          },
+          "buffer": {
+            "class": "byte[]",
+            "oid": 2898,
+            "length": 8096
+          },
+          "count": 61
+        },
+        {
+          "phase": 4,
+          "hz": {
+            "class": "hz",
+            "oid": 3093
+          },
+          "qj": {
+            "class": "qj",
+            "oid": 2156
+          },
+          "raf": {
+            "class": "java.io.RandomAccessFile",
+            "oid": 2160
+          },
+          "buffer": {
+            "class": "byte[]",
+            "oid": 3164,
+            "length": 16192
+          },
+          "count": 12029
+        },
+        {
+          "phase": 5,
+          "hz": {
+            "class": "hz",
+            "oid": 3309
+          },
+          "qj": {
+            "class": "qj",
+            "oid": 3300
+          },
+          "raf": {
+            "class": "java.io.RandomAccessFile",
+            "oid": 3304
+          },
+          "buffer": {
+            "class": "byte[]",
+            "oid": 3310,
+            "length": 8096
+          },
+          "count": 61
+        },
+        {
+          "phase": 9,
+          "hz": {
+            "class": "hz",
+            "oid": 3599
+          },
+          "qj": {
+            "class": "qj",
+            "oid": 2156
+          },
+          "raf": {
+            "class": "java.io.RandomAccessFile",
+            "oid": 2160
+          },
+          "buffer": {
+            "class": "byte[]",
+            "oid": 3600,
+            "length": 8096
+          },
+          "count": 61
+        }
+      ],
+      "ordered_primitive_writeInt_calls": 17,
+      "ordered_primitive_bytes": 68,
+      "source_RAM_store_before_RAF_seek": [
+        {
+          "phase": 0,
+          "kind": "offsets",
+          "slot": "0",
+          "value": 513,
+          "next_raf_seek": 0
+        },
+        {
+          "phase": 0,
+          "kind": "timestamps",
+          "slot": "0",
+          "value": 1793503464,
+          "next_raf_seek": 4096
+        },
+        {
+          "phase": 1,
+          "kind": "timestamps",
+          "slot": "0",
+          "value": 1793503467,
+          "next_raf_seek": 4096
+        },
+        {
+          "phase": 2,
+          "kind": "offsets",
+          "slot": "0",
+          "value": 773,
+          "next_raf_seek": 0
+        },
+        {
+          "phase": 2,
+          "kind": "timestamps",
+          "slot": "0",
+          "value": 1793503471,
+          "next_raf_seek": 4096
+        },
+        {
+          "phase": 3,
+          "kind": "offsets",
+          "slot": "0",
+          "value": 513,
+          "next_raf_seek": 0
+        },
+        {
+          "phase": 3,
+          "kind": "timestamps",
+          "slot": "0",
+          "value": 1793503476,
+          "next_raf_seek": 4096
+        },
+        {
+          "phase": 4,
+          "kind": "offsets",
+          "slot": "1",
+          "value": 771,
+          "next_raf_seek": 4
+        },
+        {
+          "phase": 4,
+          "kind": "timestamps",
+          "slot": "1",
+          "value": 1793503480,
+          "next_raf_seek": 4100
+        },
+        {
+          "phase": 5,
+          "kind": "offsets",
+          "slot": "1023",
+          "value": 513,
+          "next_raf_seek": 4092
+        },
+        {
+          "phase": 5,
+          "kind": "timestamps",
+          "slot": "1023",
+          "value": 1793503486,
+          "next_raf_seek": 8188
+        }
+      ],
+      "source_cache_RAF_closes": 2,
+      "old_closed_RAF_commit_source_catch": true
+    }
+  }
+}

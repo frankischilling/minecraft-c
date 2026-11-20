@@ -1,0 +1,430 @@
+{
+  "scope": "Offline original class/Code identities and resolved references; no runtime observations.",
+  "jar_bytes": 1465375,
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "net/minecraft/client/Minecraft": {
+      "class_bytes": 26388,
+      "class_sha256": "db99df969e5f30d01ad4424a4d63d3b1f4a11832055dd291e65d476cfa4c38b3",
+      "superclass": "java/lang/Object",
+      "method_count": 55,
+      "method_inventory_sha256": "f0ac927eded3af43135ccb5005e09167f59a9e74156f79ec26dc3135a70d5761",
+      "selected_methods": [
+        {
+          "name": "k",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1336,
+          "code_sha256": "36d015223f3d5d51994588a676fcfa52f270a647644cea97d1c0fc17cbb25054",
+          "code_attribute_sha256": "f4849a14374b8e8b0df9debeb9913378c30bc86c01683b0d09ce490c0bcff6b6",
+          "max_stack": 5,
+          "max_locals": 5
+        }
+      ]
+    },
+    "dc": {
+      "class_bytes": 5285,
+      "class_sha256": "87b04c4731fa66be8a3c6a969d2c5e434b91aa24ab81be0e45906cbc8ed29493",
+      "superclass": "gs",
+      "method_count": 25,
+      "method_inventory_sha256": "bba07bbdd87c37eeeec561855350ca5b5d0dea58480dc08b209a7b344a5c2db0",
+      "selected_methods": []
+    },
+    "gs": {
+      "class_bytes": 13351,
+      "class_sha256": "52e2d97748d9a306703e018822fece7d0ef9ca8ddf3448a1d0e568f2fbe29202",
+      "superclass": "ls",
+      "method_count": 67,
+      "method_inventory_sha256": "8682f13a0f238783a609e25dde39b4415002d32a978b6b64847f1eddc184b31b",
+      "selected_methods": [
+        {
+          "name": "D",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 21,
+          "code_sha256": "d03a34abcfdefd3531e0379fefa115212703429dc2659c3f6b359490ebc2ad6f",
+          "code_attribute_sha256": "68f7087ad685e5f23fbfda0dfcf830c27ea88176871897def9cd52997060301d",
+          "max_stack": 4,
+          "max_locals": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Liz;)V",
+          "access": 1,
+          "code_bytes": 7,
+          "code_sha256": "0b8fe6bac44abe8d9540ecb2b242eb4b1975eff8fa2d4a74089d519f2938cd86",
+          "code_attribute_sha256": "422b1c33ba1ab41013d9463b7e694f8fe7324e47f9663f1b31447e3f4e312ab1",
+          "max_stack": 3,
+          "max_locals": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Liz;Z)V",
+          "access": 1,
+          "code_bytes": 327,
+          "code_sha256": "add451863ae026d1d87bc0008540393b2b8f9aa664493ba1fdb5670b11e46b89",
+          "code_attribute_sha256": "7eb2052525dc2bcfe537169213b1d20df6f09be2a561716b8004b0f5d2dcdbfb",
+          "max_stack": 10,
+          "max_locals": 7
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lhl;)V",
+          "access": 4,
+          "code_bytes": 10,
+          "code_sha256": "07052333f94d3f6ffc3c3fe99ec91ab895c80994fdbf275779dac7ee9245c4ba",
+          "code_attribute_sha256": "e82ae9c6b79305395c981a36ec5b636565e19eca2ca5fa59a4037110b14d6243",
+          "max_stack": 2,
+          "max_locals": 2
+        },
+        {
+          "name": "w",
+          "descriptor": "()F",
+          "access": 1,
+          "code_bytes": 3,
+          "code_sha256": "644266dfaeb68957f1e3926bf0c92dd1e9c8daff0174390e66af10478bc628c9",
+          "code_attribute_sha256": "8e1c0188d3eae3f6c19cc805f79bcf0396c71ceeea4fdaa7c73fdec1df2b5999",
+          "max_stack": 1,
+          "max_locals": 1
+        }
+      ]
+    },
+    "ix": {
+      "class_bytes": 4727,
+      "class_sha256": "03eb35aef64c71087942c5dc8b2849e9b47e9482c97be825895cfc2149b8e009",
+      "superclass": "java/lang/Object",
+      "method_count": 31,
+      "method_inventory_sha256": "555c75a6d5e129e13ddc56e1d685a52cf98be49782040344d767d957baba3f6a",
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "(II)Liz;",
+          "access": 1,
+          "code_bytes": 82,
+          "code_sha256": "49f7d285a4baca8439bf1e6dc8977c6e303a7e6b911b7fa13bd636bdc9dd3b8e",
+          "code_attribute_sha256": "1483b08ca600db1d2890d6eb893209e3348d2c81600bfe262abe68829c44ce23",
+          "max_stack": 3,
+          "max_locals": 5
+        }
+      ]
+    },
+    "iz": {
+      "class_bytes": 4222,
+      "class_sha256": "3e8a07bf8c43729c8367bab454af876e698505620f230e012432c04e3828d6d6",
+      "superclass": "java/lang/Object",
+      "method_count": 42,
+      "method_inventory_sha256": "0aed900571d4abd8a6c0e03591ece708bd273968e4be57e3f5dfe34908e4b8dc",
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "(I)Liz;",
+          "access": 1,
+          "code_bytes": 27,
+          "code_sha256": "d05dde2ae93a1caa1604da44101493e9a6e443c7cf939cc54ae0ced53d9dc99a",
+          "code_attribute_sha256": "c8617fcc576ae632f5bd36de5d12ec79e43c16bdb586f4cba9d00d81bb4a2807",
+          "max_stack": 5,
+          "max_locals": 2
+        }
+      ]
+    },
+    "hl": {
+      "class_bytes": 3201,
+      "class_sha256": "403c67f6e31523ad11931b707effdaedf34a49154b9e1138b7d55ef5b3b1f665",
+      "superclass": "sn",
+      "method_count": 11,
+      "method_inventory_sha256": "80c0386a6f5751e79d7d78dcbcb20416ae68add8aebcd17fbd39a379caa64ea8",
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lfd;DDDLiz;)V",
+          "access": 1,
+          "code_bytes": 118,
+          "code_sha256": "0e7fb50470d8d67d5c0d3428801de36ac6dd07b426d0626204ffc59ac6ab5e29",
+          "code_attribute_sha256": "91e156e87f6ef47add244c5e057ee94e44a243d1738e0e0309e49e95f6ba6b2e",
+          "max_stack": 7,
+          "max_locals": 9
+        }
+      ]
+    },
+    "fd": {
+      "class_bytes": 33396,
+      "class_sha256": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+      "superclass": "java/lang/Object",
+      "method_count": 155,
+      "method_inventory_sha256": "6ed4e62275d89503bc86a4532bace195969c461b3e1e97d97a20ed2fee7388e0",
+      "selected_methods": [
+        {
+          "name": "b",
+          "descriptor": "(Lsn;)Z",
+          "access": 1,
+          "code_bytes": 110,
+          "code_sha256": "0e7863034219094809847aaceaa7844edd5d93005e78e6123307e4aeaac5c07d",
+          "code_attribute_sha256": "54ebd775d63d3d788d5019e60a75fbaa6a9169d5ef0abce06215e7ac976a60fc",
+          "max_stack": 4,
+          "max_locals": 6
+        }
+      ]
+    },
+    "in": {
+      "class_bytes": 1099,
+      "class_sha256": "8693f3179fb0ff1df382e1d3388d23ab688ad3e26415454655da88f10b054f63",
+      "superclass": "java/lang/Object",
+      "method_count": 12,
+      "method_inventory_sha256": "21a3a5b47858a7c91024e128c22b1bfb29f7ed0d326ddc37af1f42460d87e643",
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "(F)F",
+          "access": 25,
+          "code_bytes": 13,
+          "code_sha256": "28da3291b3e2436a660d9429e209555cb2703c6e6558ba2a01bf14b64bad1383",
+          "code_attribute_sha256": "3fb043640b39ed79545dba5347969fb8759f2dc849bb08a8a5bea588bc83d6ae",
+          "max_stack": 3,
+          "max_locals": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(F)F",
+          "access": 25,
+          "code_bytes": 16,
+          "code_sha256": "24c3aef70d5e7418cfb8f346326e9c7327da773d898f957d670bda807e8aa150",
+          "code_attribute_sha256": "f156e15809a5a83ba334b42f29a96577f6deb70d89f78d4876339acb6ebc56be",
+          "max_stack": 3,
+          "max_locals": 1
+        }
+      ]
+    }
+  },
+  "resolved_declarations": {
+    "dc.D()V": "gs",
+    "dc.a(Liz;)V": "gs",
+    "dc.a(Liz;Z)V": "gs",
+    "dc.a(Lhl;)V": "gs",
+    "dc.w()F": "gs"
+  },
+  "selected_references": {
+    "net/minecraft/client/Minecraft.k()V:812": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "dc",
+        "name": "D",
+        "descriptor": "()V"
+      }
+    },
+    "gs.D()V:13": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ix",
+        "name": "a",
+        "descriptor": "(II)Liz;"
+      }
+    },
+    "gs.D()V:17": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "gs",
+        "name": "a",
+        "descriptor": "(Liz;Z)V"
+      }
+    },
+    "gs.a(Liz;Z)V:5": {
+      "operation": "new",
+      "reference": {
+        "kind": "class",
+        "name": "hl"
+      }
+    },
+    "gs.a(Liz;Z)V:26": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "gs",
+        "name": "w",
+        "descriptor": "()F"
+      }
+    },
+    "gs.a(Liz;Z)V:36": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "hl",
+        "name": "<init>",
+        "descriptor": "(Lfd;DDDLiz;)V"
+      }
+    },
+    "gs.a(Liz;Z)V:58": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Random",
+        "name": "nextFloat",
+        "descriptor": "()F"
+      }
+    },
+    "gs.a(Liz;Z)V:70": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Random",
+        "name": "nextFloat",
+        "descriptor": "()F"
+      }
+    },
+    "gs.a(Liz;Z)V:83": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "a",
+        "descriptor": "(F)F"
+      }
+    },
+    "gs.a(Liz;Z)V:97": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "b",
+        "descriptor": "(F)F"
+      }
+    },
+    "gs.a(Liz;Z)V:132": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "a",
+        "descriptor": "(F)F"
+      }
+    },
+    "gs.a(Liz;Z)V:146": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "b",
+        "descriptor": "(F)F"
+      }
+    },
+    "gs.a(Liz;Z)V:168": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "b",
+        "descriptor": "(F)F"
+      }
+    },
+    "gs.a(Liz;Z)V:181": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "b",
+        "descriptor": "(F)F"
+      }
+    },
+    "gs.a(Liz;Z)V:203": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "in",
+        "name": "a",
+        "descriptor": "(F)F"
+      }
+    },
+    "gs.a(Liz;Z)V:225": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Random",
+        "name": "nextFloat",
+        "descriptor": "()F"
+      }
+    },
+    "gs.a(Liz;Z)V:241": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Random",
+        "name": "nextFloat",
+        "descriptor": "()F"
+      }
+    },
+    "gs.a(Liz;Z)V:255": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/Math",
+        "name": "cos",
+        "descriptor": "(D)D"
+      }
+    },
+    "gs.a(Liz;Z)V:275": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Random",
+        "name": "nextFloat",
+        "descriptor": "()F"
+      }
+    },
+    "gs.a(Liz;Z)V:282": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "java/util/Random",
+        "name": "nextFloat",
+        "descriptor": "()F"
+      }
+    },
+    "gs.a(Liz;Z)V:302": {
+      "operation": "invokestatic",
+      "reference": {
+        "kind": "method",
+        "class": "java/lang/Math",
+        "name": "sin",
+        "descriptor": "(D)D"
+      }
+    },
+    "gs.a(Liz;Z)V:315": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "gs",
+        "name": "a",
+        "descriptor": "(Lhl;)V"
+      }
+    },
+    "gs.a(Liz;Z)V:319": {
+      "operation": "getstatic",
+      "reference": {
+        "kind": "field",
+        "class": "jl",
+        "name": "v",
+        "descriptor": "Lvr;"
+      }
+    },
+    "gs.a(Liz;Z)V:323": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "gs",
+        "name": "a",
+        "descriptor": "(Lvr;I)V"
+      }
+    },
+    "gs.a(Lhl;)V:5": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fd",
+        "name": "b",
+        "descriptor": "(Lsn;)Z"
+      }
+    }
+  }
+}

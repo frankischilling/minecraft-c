@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "status": "CAPTURED_ORIGINAL",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "public_sources_pinned_before_capture": true,
+  "source_files": {
+    "InventorySideChainsTarget.java": "e2ad38559e8a614b2a1c132e27c49109baba64030d2a7c5446016d5906a13000",
+    "InventorySideChainsJdi.java": "69a2c3b1b6d49b7838267cf322181823dc9623e5ee9386e07eb9e950c385bb47",
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "capture_reference.py": "6cd9da01640bc88eff24ab26ab3bf06264ea694f7c939212f9ce0894182438f4",
+    "packet.py": "e08564b6db3460c6ffac9fa4516970c41803a2241b93a1f120be9944037f6550",
+    "test_packet.py": "64bdf15b074042d3d909d6c0eca6834be58b82245d78a0a3fde25bf035769673",
+    "inputs.json": "fe8c227dba0402cf83be6a0da62cfc0467a15ef58a7ebf28dbcff02bee8c6f5d"
+  },
+  "fixtures": {
+    "observations.json": "a070a09e2a5f61fa49104e0551052bd5dc93fecd9bdafcd450af5e6a8853725f",
+    "source-pins.json": "ed927990f4933e2b7982b3b0b21f354588d5cb82e6689a06462c8c25f080f743"
+  },
+  "ordinary_fresh_vms": 2,
+  "read_only_jdi_fresh_vms": 1,
+  "inputs_unchanged": true,
+  "helpers_unchanged": true,
+  "source_helper_bytes_equal_preceding_private_capture": true,
+  "source_producer_change": "Portable public driver uses repository-relative paths, explicit output and strict public packet audit. Exact authored Java/JDI helpers are unchanged. Fresh three-VM qualification pins the new public producer/control sources.",
+  "scope": "Direct unchanged-original side getter only; thirty selected calls per actual VM. No GL, enclosing CV draw, cycle or performance qualification.",
+  "transport": "Public observations are typed LF JSON parsed from retained raw target stdout and JDI events. Raw CRLF stdout remains private, with exact byte SHA256 hashes below; no stdout byte-identity claim is made for public JSON.",
+  "processes": {
+    "ordinary": [
+      {
+        "exit": 0,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "output_overflow": false,
+        "stdout_sha256": "a2dbdd20a06b9ba63e89a2ce26e40c88104443dfc64d954fef4bc3e739af45d5",
+        "stderr_sha256": "17254bf5a5789721d9a0c52ed6764647bea11c1842545bef5931e10e7ee6dd31"
+      },
+      {
+        "exit": 0,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "output_overflow": false,
+        "stdout_sha256": "a2dbdd20a06b9ba63e89a2ce26e40c88104443dfc64d954fef4bc3e739af45d5",
+        "stderr_sha256": "17254bf5a5789721d9a0c52ed6764647bea11c1842545bef5931e10e7ee6dd31"
+      }
+    ],
+    "jdi_controller": {
+      "exit": 0,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "output_overflow": false
+    },
+    "raw_target_stdout_sha256": [
+      "a2dbdd20a06b9ba63e89a2ce26e40c88104443dfc64d954fef4bc3e739af45d5",
+      "a2dbdd20a06b9ba63e89a2ce26e40c88104443dfc64d954fef4bc3e739af45d5",
+      "a2dbdd20a06b9ba63e89a2ce26e40c88104443dfc64d954fef4bc3e739af45d5"
+    ],
+    "all_three_raw_target_outputs_equal": true
+  },
+  "actual_source_audit": {
+    "rows": 30,
+    "returned": 20,
+    "source_failures": 10,
+    "getter_entries": 80,
+    "live_code_bodies": 2,
+    "exact_nested_pcs": [
+      5,
+      5
+    ],
+    "network": 0,
+    "native_links": 0
+  },
+  "field_modifiers": 2,
+  "field_final": false,
+  "prerequisites": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+  },
+  "compiler_products_sha256": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "InventorySideChainsJdi.class": "93f83e47b9e014444e323186feffc9255693f65b9a6b504c177ae6812bdfab09",
+    "InventorySideChainsTarget$1.class": "3e8c8d3b9c8b2767e2a8e520c2e3e53348e0fdd1d9f915358007139a8913de06",
+    "InventorySideChainsTarget.class": "40f85c34679ef70289b242a2a20aa73eba318db2a207cd15b1ad96a5da25d846"
+  },
+  "toolchain": {
+    "jdk": "17.0.17.10",
+    "java_options": [
+      "-Xint",
+      "-Xverify:all",
+      "-Xmx128m",
+      "-Djava.awt.headless=true",
+      "-Djava.security.manager=allow"
+    ]
+  },
+  "raw_artifacts": {
+    "capture_label": "public-attempt1",
+    "sha256": {
+      "capture.json": "0fdf59f02e884be6bd839332519f826ea9da571506ceea704cebb65204263d70",
+      "compile.capture.json": "09687fd814abd60150a1ab88cbe227b511a6917cf062ec673c8ac5e772415f1c",
+      "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source-pins.json": "ed927990f4933e2b7982b3b0b21f354588d5cb82e6689a06462c8c25f080f743",
+      "observations.json": "a070a09e2a5f61fa49104e0551052bd5dc93fecd9bdafcd450af5e6a8853725f",
+      "original-0.capture.json": "33c4f1ca15f4ef0d76c2e2dbcc402a6a117db753cb255e9c8a563e32e9a38bd3",
+      "original-0.stdout": "a2dbdd20a06b9ba63e89a2ce26e40c88104443dfc64d954fef4bc3e739af45d5",
+      "original-0.stderr": "17254bf5a5789721d9a0c52ed6764647bea11c1842545bef5931e10e7ee6dd31",
+      "original-1.capture.json": "63ee94a67f2b60f805c88c00f2b0eb51345dac93bd7d0da1ddaa2fba061b09a2",
+      "original-1.stdout": "a2dbdd20a06b9ba63e89a2ce26e40c88104443dfc64d954fef4bc3e739af45d5",
+      "original-1.stderr": "17254bf5a5789721d9a0c52ed6764647bea11c1842545bef5931e10e7ee6dd31",
+      "debugger/controller.capture.json": "3f7805be7d2d0c5fcca8e362fbef73949329a9d843b7d4e5d500f5597f8be703",
+      "debugger/controller.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "debugger/controller.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "debugger/target.stdout": "a2dbdd20a06b9ba63e89a2ce26e40c88104443dfc64d954fef4bc3e739af45d5",
+      "debugger/target.stderr": "17254bf5a5789721d9a0c52ed6764647bea11c1842545bef5931e10e7ee6dd31",
+      "debugger/journal.ndjson": "70a020fb0d68030bf853073a14b0eae7da3ffdf450ae2b32c8bdd0671e90482a"
+    }
+  },
+  "preceding_private_proof": {
+    "capture_label": "inventory-side-chains-reference/attempt1",
+    "status": "PASS",
+    "capture_sha256": "2e76982546b417fbd87666da1bb5bcc0c0ecc6281e3e789e6c81df91a7f74e31",
+    "observations_sha256": "a070a09e2a5f61fa49104e0551052bd5dc93fecd9bdafcd450af5e6a8853725f",
+    "raw_target_output_unchanged": true
+  },
+  "limits": [
+    "Actual nested SS.a(I)I failure positions and receiver aliases qualify the finite source trace; native bounded frame admission is a separate C ownership check.",
+    "No cyclic original source chain was executed. Original StackOverflow behavior is not reproduced or claimed.",
+    "No original classes, raw bytecode, assets, JDK files, native libraries or private absolute paths are published."
+  ]
+}

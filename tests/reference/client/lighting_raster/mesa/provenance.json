@@ -1,0 +1,172 @@
+{
+  "scope": "Separate Linux/Mesa capture of all frozen58 authored profiles/59 complete64x64RGBA8 frames and state/auxiliary rows. Original scene/control/oracle/cleanup bodies are byte-protected; only native guards differ. Actual originalJar and selected class/Code pins retained. Initial36/37 remain genuine empty NW draws; only converted cohort qualifies actual NW quad geometry. No Windows fixture replacement or complete original game frame.",
+  "profiles_completed": 58,
+  "frames": 59,
+  "rows": 138,
+  "capture_receipt_sha256": "eea19d3d82e00d0005f32118b865f5c68c14aedb19803f82c3c86975d4b88373",
+  "capture_harness_sha256": "c2489641f2c92af26ecb19ee45f2cd3d38aaef799d7a6fc6787f7c33ad77c30d",
+  "source_pins_sha256": "dc15bb79fc41db793b45402d58c25d5f5c617fa133ea1784cad6155591ab92d3",
+  "original_client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "driver": {
+    "vendor": "Mesa",
+    "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+    "version": "4.5 (Compatibility Profile) Mesa 25.2.8-0ubuntu0.24.04.4"
+  },
+  "framebuffer": {
+    "rgba": [
+      8,
+      8,
+      8,
+      8
+    ],
+    "depth": 24,
+    "stencil": 0
+  },
+  "fixtures": {
+    "initial": {
+      "path": "mesa/finite.json",
+      "sha256": "d1da0a52750e642982d8e421ac0dddf2f7ba3fff4d1366371d519ead0b2956f1",
+      "original_capture_sha256": "70ff85d5ce80af9ff2ba3725c2ad76fdeb6dcb4ccc32412f17fc82de77b30b55"
+    },
+    "extended": {
+      "path": "mesa/extended-finite.json",
+      "sha256": "67705ea370e01de1579f5d3aff20e5a618ba10470bb4a6f5de1cd208243d655c",
+      "original_capture_sha256": "928325b0b66f1281c34af473ee285aff6fc9ebf0eb56869e62c07afd36b8259c"
+    },
+    "converted": {
+      "path": "mesa/converted-finite.json",
+      "sha256": "13f26c9835c4e0c1df092a4191fa249bd6ae8466bd5dd39c4ba87c6558ef3e20",
+      "original_capture_sha256": "21abf9a27b5683e7f4a16c0ac028e4ce3ea97c8c37f875171503f23f31f4c86b"
+    }
+  },
+  "jdk_native_inputs": {
+    "awt": "f121bd4b025acd2de6dacd7dfba6dfbf7d451fb2e845703e684405acdbe9321d",
+    "awt_xawt": "e721367fa8844499ea3e7020de0c1b292b03d2e5f221be74e5bc52cc830d9da6",
+    "awt_headless": "a7dfab0d6506599c324e66986a295cd64176089e85e2b6e3c02993eac1880543",
+    "jawt": "b08c33ab5185af8671dad805caa93478e5e35db82ccad6270eb7951aa572bb43",
+    "fontmanager": "13aed75741438496de5d2218e0d2b617d3721e94a060900cfada21f2860336bb"
+  },
+  "compiled_helper_sha256": {
+    "ConvertedRasterObservation$1.class": "364fc47d4413ce2dacc24865c17ecb050666b8b6e026c5a0b8319831934477dd",
+    "ConvertedRasterObservation.class": "7b81a3e8e1726dd8eca457b47b062dd487c507429828e87dafa56410ae4be8d7",
+    "RasterExtendedObservation$1.class": "0046153b6a753316c316d91117713561b4c5bb65ef39ba6ae3545140ff09264f",
+    "RasterExtendedObservation.class": "e03bce43dc4d2f7aabfd32e4341384e99ce310927c6a76118c9582c251612210",
+    "RasterObservation$1.class": "36a10fc4bc094fd7ade8c4137ecce9af2067bbcd8ae25175246e52ea6e0a64cb",
+    "RasterObservation.class": "7873e81b0967fe506ed4460b3de918c7d1bfae46cb0c31f75027292e501284ef"
+  },
+  "source_transformations": {
+    "recipe": "Replace exactly one existing SecurityManager.checkLink method per authored helper with the Linux filename/attempt counter/exact named-JDK native guard. No other source edit; reverse replacement must recover complete original bytes before compilation.",
+    "sources": [
+      {
+        "original": "RasterObservation.java",
+        "generated": "RasterObservation.java",
+        "original_sha256": "511f4f8f0c51100e6fffb9e7b70ac4bf40b0f087546730e7f97c00fcb2593d85",
+        "generated_sha256": "80e8bff80878688c593a137615fd04767a2cc26f0adbd43a0b0a6344be45f78d",
+        "unchanged_prefix_sha256": "7b51a1f161330791318bc4897983b1d82af2623ecbdb237a28c9d4223d98f7ee",
+        "unchanged_suffix_sha256": "ce72f1c13a68636b6ea1b479fbd6ee400b80592c8df2b2d4560aa0d434939b71",
+        "line_endings": "LF",
+        "reversed_byte_identical": true,
+        "replacement_count": 1
+      },
+      {
+        "original": "RasterExtendedObservation.java",
+        "generated": "RasterExtendedObservation.java",
+        "original_sha256": "07739d3441c32a5d412409b1052fb2236bc2f8d01303df69c6e7a9bbfd76977a",
+        "generated_sha256": "eee240a71c09be8f93c55a3670f38a60cd022821fbf9b753f1b4ae7c47ecc717",
+        "unchanged_prefix_sha256": "f207d815a9fde97f7cc3815463904fd565a110706f019cba6a924aa0a9041972",
+        "unchanged_suffix_sha256": "b0d2805993f4f83e682d548961d173d4723e2035fa7763a802b0376cb9778981",
+        "line_endings": "LF",
+        "reversed_byte_identical": true,
+        "replacement_count": 1
+      },
+      {
+        "original": "ConvertedRasterObservation.java",
+        "generated": "ConvertedRasterObservation.java",
+        "original_sha256": "759c6ba3a9fb8a344216ee2a99486bfa7b01f3155043ff188110b8f39fb5224f",
+        "generated_sha256": "88338e01a7958252159a77298127887a8056f5c6e112f1eb5f78bce9c4eeee9f",
+        "unchanged_prefix_sha256": "77b3f1b5259ebb632408d712b043cbab9a8a03c17b2dcde2b40ceef2352942ba",
+        "unchanged_suffix_sha256": "f3448369f39efedff3d5ff1d2b1684f4b42a2fe898a393e3f4a07389c50f5251",
+        "line_endings": "LF",
+        "reversed_byte_identical": true,
+        "replacement_count": 1
+      }
+    ]
+  },
+  "input_bytes_unchanged": true,
+  "helper_bytes_unchanged": true,
+  "attribute_observations": {
+    "scope": "Independent actual Mesa observations, never native expected words or a fitted decoder. Frozen array256 TF/current observations plus eight existing precision controls; list256 TF/current/source/poison/replay observations plus six queried states; material16 queried states. OriginalJar is only the unchanged array support helper's unused NW-type compile/runtime dependency; list/material have SDK-only classpaths. No game-body invocation qualification. The frozen array helper's labelled formula comparison column remains authored metadata; it supplies no expected result or new conversion model.",
+    "rows": 798,
+    "probes_completed": 3,
+    "capture_receipt_sha256": "9316c9e15fe17a483f295287a7203d7c678c540a6f548ee5bff3ad9259c237db",
+    "capture_harness_sha256": "6fd7c60d6a7b250bbad6726db42d54f8ad6dcc00a253456d358c3e45bc27cc5d",
+    "input_bytes_unchanged": true,
+    "probes": [
+      {
+        "name": "array",
+        "status": "PASS",
+        "rows": 264,
+        "headers": {
+          "CONVERSION_DRIVER": "CONVERSION_DRIVER Mesa | llvmpipe (LLVM 20.1.2, 256 bits) | 4.5 (Compatibility Profile) Mesa 25.2.8-0ubuntu0.24.04.4",
+          "CONVERSION_FORMAT": "CONVERSION_FORMAT RGBA32F vertex_clamp=1 fragment_clamp=0 read_clamp=0",
+          "NORMAL_ARRAY_LAYOUT": "NORMAL_ARRAY_LAYOUT type=5120 stride=32 buffer_binding=0"
+        },
+        "fixture_file": "normal-conversion-receipts.json",
+        "fixture_sha256": "eada43efc50ebd83c77474e5ce33fe18de5c1ae923d1e5f8c7ec171d14be66a4",
+        "helper_before_sha256": {
+          "NormalConversionReceiptObservation$1.class": "6435c52a73d9a068ab91436fb1bda73647f2fe6ec27a1307b75aade701efe6de",
+          "NormalConversionReceiptObservation.class": "bd299837b6222c4cce084e101df47c32e2eaa1239d751bcca5ffa60c5b33dd70",
+          "RasterObservation$1.class": "36a10fc4bc094fd7ade8c4137ecce9af2067bbcd8ae25175246e52ea6e0a64cb",
+          "RasterObservation.class": "7873e81b0967fe506ed4460b3de918c7d1bfae46cb0c31f75027292e501284ef"
+        },
+        "helper_after_sha256": {
+          "NormalConversionReceiptObservation$1.class": "6435c52a73d9a068ab91436fb1bda73647f2fe6ec27a1307b75aade701efe6de",
+          "NormalConversionReceiptObservation.class": "bd299837b6222c4cce084e101df47c32e2eaa1239d751bcca5ffa60c5b33dd70",
+          "RasterObservation$1.class": "36a10fc4bc094fd7ade8c4137ecce9af2067bbcd8ae25175246e52ea6e0a64cb",
+          "RasterObservation.class": "7873e81b0967fe506ed4460b3de918c7d1bfae46cb0c31f75027292e501284ef"
+        }
+      },
+      {
+        "name": "list",
+        "status": "PASS",
+        "rows": 518,
+        "headers": {
+          "NORMAL_LIST_DRIVER": "NORMAL_LIST_DRIVER Mesa | llvmpipe (LLVM 20.1.2, 256 bits) | 4.5 (Compatibility Profile) Mesa 25.2.8-0ubuntu0.24.04.4",
+          "NORMAL_LIST_FORMAT": "NORMAL_LIST_FORMAT 8 8 8 8 24 0",
+          "NORMAL_LIST_LAYOUT": "NORMAL_LIST_LAYOUT normal_type=5120 normal_stride=32 normal_buffer=0 vertex_type=5126 vertex_size=3 vertex_stride=32 vertex_buffer=0",
+          "NORMAL_LIST_CAPTURE": "NORMAL_LIST_CAPTURE mode=4864 compile_program=0 draw_mode=4 vertices=3 feedback_components=9 sentinel_components=7 lighting=1 normalize=0 rescale=0",
+          "NORMAL_LIST_STATE_LAYOUT": "NORMAL_LIST_STATE_LAYOUT color_type=5121 color_size=4 color_stride=32 color_buffer=0 normal_type=5120 normal_stride=32 normal_buffer=0 vertex_type=5126 vertex_size=3 vertex_stride=32 vertex_buffer=0",
+          "NORMAL_LIST_STATE_STORAGE": "NORMAL_LIST_STATE_STORAGE 0545acac0adee85183acdf245c26ea12c74ddc678b598f1678054387d03d5a01 2ea9ab9198d1638007400cd2c3bef1cc745b864b76011a0e1bc52180ac6452d4"
+        },
+        "fixture_file": "normal-list-conversion-receipts.json",
+        "fixture_sha256": "df20e275d2efc269670050f0b3890b3e96facf3e068bb5c87d5677c4f0861b88",
+        "helper_before_sha256": {
+          "NormalListConversionReceiptObservation$1.class": "c30a0b477603f33c186f82218ec78d09ac61cc08691d7e491766a0c8aec16567",
+          "NormalListConversionReceiptObservation.class": "9b7ab88642212f43697930d98b8ba0908b33b6def045c967fe82abaa6119d6d5"
+        },
+        "helper_after_sha256": {
+          "NormalListConversionReceiptObservation$1.class": "c30a0b477603f33c186f82218ec78d09ac61cc08691d7e491766a0c8aec16567",
+          "NormalListConversionReceiptObservation.class": "9b7ab88642212f43697930d98b8ba0908b33b6def045c967fe82abaa6119d6d5"
+        }
+      },
+      {
+        "name": "material",
+        "status": "PASS",
+        "rows": 16,
+        "headers": {
+          "MATERIAL_DRIVER": "MATERIAL_DRIVER Mesa | llvmpipe (LLVM 20.1.2, 256 bits) | 4.5 (Compatibility Profile) Mesa 25.2.8-0ubuntu0.24.04.4"
+        },
+        "fixture_file": "material.json",
+        "fixture_sha256": "ffd4556a6a86a4a9e5ad1734c987303aa1aebfdc9df7a322d98ac930b80995c8",
+        "helper_before_sha256": {
+          "MaterialObservation$1.class": "760ae0914026f99b8e0573d6cf65e05c88bd371ac210a1b2f4369121b57f198d",
+          "MaterialObservation.class": "3485c86d8940a7b5de268adbbaf786d0f37b24b226c9f47e12e75e0d402b00d1"
+        },
+        "helper_after_sha256": {
+          "MaterialObservation$1.class": "760ae0914026f99b8e0573d6cf65e05c88bd371ac210a1b2f4369121b57f198d",
+          "MaterialObservation.class": "3485c86d8940a7b5de268adbbaf786d0f37b24b226c9f47e12e75e0d402b00d1"
+        }
+      }
+    ]
+  }
+}

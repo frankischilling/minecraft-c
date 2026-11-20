@@ -14,16 +14,14 @@ static char request[2048];
 static mc_noise_perlin layers[PROBE_LAYERS];
 static double values[PROBE_VALUES + 3u];
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static int parse_seed(const char *text, int64_t *out)
-{
+static int parse_seed(const char *text, int64_t *out) {
     char *end = NULL;
     errno = 0;
     intmax_t value = strtoimax(text, &end, 10);
@@ -33,8 +31,7 @@ static int parse_seed(const char *text, int64_t *out)
     return 1;
 }
 
-static int parse_size(const char *text, size_t maximum, size_t *out)
-{
+static int parse_size(const char *text, size_t maximum, size_t *out) {
     if (*text == '\0')
         return 0;
     size_t value = 0;
@@ -50,8 +47,7 @@ static int parse_size(const char *text, size_t maximum, size_t *out)
     return 1;
 }
 
-static int parse_double(const char *text, double *out)
-{
+static int parse_double(const char *text, double *out) {
     if (strlen(text) != 16)
         return 0;
     uint64_t value = 0;
@@ -72,8 +68,7 @@ static int parse_double(const char *text, double *out)
     return 1;
 }
 
-static void print_values(const double *output, size_t length)
-{
+static void print_values(const double *output, size_t length) {
     if (length == 0)
         putchar('-');
     for (size_t i = 0; i < length; ++i) {
@@ -83,8 +78,7 @@ static void print_values(const double *output, size_t length)
     }
 }
 
-static int handle_request(char *line)
-{
+static int handle_request(char *line) {
     char *fields[18];
     size_t field_count = 0;
     fields[field_count++] = line;
@@ -209,8 +203,7 @@ static int handle_request(char *line)
     return 1;
 }
 
-int main(void)
-{
+int main(void) {
     while (fgets(request, (int)sizeof(request), stdin) != NULL) {
         size_t length = strlen(request);
         if (length != 0 && request[length - 1u] == '\n')

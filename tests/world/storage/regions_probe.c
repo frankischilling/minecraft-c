@@ -16,8 +16,7 @@
 #define PROBE_OUTPUT_BYTES (64u * 1024u * 1024u)
 #define PROBE_COMMANDS 4096u
 
-static bool number(const char *text, uint64_t limit, uint64_t *out)
-{
+static bool number(const char *text, uint64_t limit, uint64_t *out) {
     if (*text == '\0' || (text[0] == '0' && text[1] != '\0'))
         return false;
     uint64_t value = 0;
@@ -33,8 +32,7 @@ static bool number(const char *text, uint64_t limit, uint64_t *out)
     return true;
 }
 
-static bool coordinate(const char *text, int32_t *out)
-{
+static bool coordinate(const char *text, int32_t *out) {
     bool negative = *text == '-';
     uint64_t value;
     if (!number(text + (negative ? 1 : 0), negative ? UINT64_C(2147483648) : INT32_MAX, &value) ||
@@ -44,8 +42,7 @@ static bool coordinate(const char *text, int32_t *out)
     return true;
 }
 
-static int digit(unsigned char value)
-{
+static int digit(unsigned char value) {
     if (value >= '0' && value <= '9')
         return value - '0';
     if (value >= 'a' && value <= 'f')
@@ -53,8 +50,7 @@ static int digit(unsigned char value)
     return -1;
 }
 
-static bool decode(const char *text, size_t limit, uint8_t **out, size_t *length)
-{
+static bool decode(const char *text, size_t limit, uint8_t **out, size_t *length) {
     size_t count = strcmp(text, "-") == 0 ? 0 : strlen(text);
     if (count % 2u != 0 || count / 2u > limit)
         return false;
@@ -76,16 +72,14 @@ static bool decode(const char *text, size_t limit, uint8_t **out, size_t *length
     return true;
 }
 
-static bool diagnostic(mc_world_storage_status status, const mc_world_storage_error *error)
-{
+static bool diagnostic(mc_world_storage_status status, const mc_world_storage_error *error) {
     return error->status == status &&
            (status == MC_WORLD_STORAGE_OK
                 ? error->operation == NULL && error->system_error == 0
                 : error->operation != NULL && strlen(error->operation) <= 256u);
 }
 
-static void json_string(const char *text)
-{
+static void json_string(const char *text) {
     if (text == NULL) {
         fputs("null", stdout);
         return;
@@ -105,8 +99,7 @@ static void json_string(const char *text)
 
 static bool response(mc_world_regions *regions, mc_world_storage_status status,
                      const mc_world_storage_error *error, const mc_compression_buffer *data,
-                     const uint32_t *growth, int preserved, size_t *total)
-{
+                     const uint32_t *growth, int preserved, size_t *total) {
     size_t length = data == NULL ? 0 : data->length;
     if (length > PROBE_DATA_BYTES || *total > PROBE_OUTPUT_BYTES - 1024u - length * 2u ||
         !diagnostic(status, error))
@@ -135,8 +128,7 @@ static bool response(mc_world_regions *regions, mc_world_storage_status status,
     return fflush(stdout) == 0 && !ferror(stdout);
 }
 
-static bool check_arguments(mc_world_regions *regions)
-{
+static bool check_arguments(mc_world_regions *regions) {
     uint8_t marker = 73;
     mc_compression_buffer out = {&marker, 19};
     mc_world_storage_error error;
@@ -185,8 +177,7 @@ static bool check_arguments(mc_world_regions *regions)
            before.bytes == after.bytes;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     if (argc != 1)
         return 2;

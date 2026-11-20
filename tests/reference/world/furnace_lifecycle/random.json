@@ -1,0 +1,406 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "streams": {
+    "interpreter": [
+      {
+        "index": 0,
+        "name": "initial",
+        "before": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 1,
+        "name": "ignite",
+        "before": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 2,
+        "name": "warm",
+        "before": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 3,
+        "name": "cook-boundary",
+        "before": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 4,
+        "name": "exhaust",
+        "before": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 5,
+        "name": "after-exhaust",
+        "before": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 6,
+        "name": "second-after-exhaust",
+        "before": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a6f2110e4498",
+          false,
+          "0000000000000000"
+        ]
+      }
+    ],
+    "default": [
+      {
+        "index": 0,
+        "name": "initial",
+        "before": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 1,
+        "name": "ignite",
+        "before": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 2,
+        "name": "warm",
+        "before": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 3,
+        "name": "cook-boundary",
+        "before": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 4,
+        "name": "exhaust",
+        "before": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 5,
+        "name": "after-exhaust",
+        "before": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 6,
+        "name": "second-after-exhaust",
+        "before": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "53e69b0419f4",
+          false,
+          "0000000000000000"
+        ]
+      }
+    ],
+    "trace-interpreter": [
+      {
+        "index": 0,
+        "name": "initial",
+        "before": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 1,
+        "name": "ignite",
+        "before": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 2,
+        "name": "warm",
+        "before": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 3,
+        "name": "cook-boundary",
+        "before": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 4,
+        "name": "exhaust",
+        "before": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 5,
+        "name": "after-exhaust",
+        "before": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 6,
+        "name": "second-after-exhaust",
+        "before": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "35d8f0f0ed8c",
+          false,
+          "0000000000000000"
+        ]
+      }
+    ],
+    "trace-default": [
+      {
+        "index": 0,
+        "name": "initial",
+        "before": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 1,
+        "name": "ignite",
+        "before": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 2,
+        "name": "warm",
+        "before": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 3,
+        "name": "cook-boundary",
+        "before": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 4,
+        "name": "exhaust",
+        "before": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 5,
+        "name": "after-exhaust",
+        "before": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 6,
+        "name": "second-after-exhaust",
+        "before": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "36013f9206e8",
+          false,
+          "0000000000000000"
+        ]
+      }
+    ]
+  }
+}

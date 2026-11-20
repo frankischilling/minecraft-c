@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "prefixes": {
+    "TORCH": "deterministic literal effect projection",
+    "ENTROPY": "full actual own-process entropy observations; NOT cross-process equality",
+    "COMPLETE": "Literal COMPLETE\\t193, after193TORCH/193ENTROPY pairs",
+    "TORCH_GUARD": "supporting external effects/origins/frozen receiver identities"
+  },
+  "profile_columns": [
+    "name",
+    "entry",
+    "x",
+    "y",
+    "z",
+    "metadata",
+    "face",
+    "neighbor_id",
+    "wall_mask",
+    "floor_id",
+    "target_id",
+    "null_world",
+    "null_random"
+  ],
+  "entries": {
+    "0": "actualVM.a(World,III)Z",
+    "1": "actualprivateVM.h(World,III)Z reflectiveinvoke",
+    "2": "actualinheritedUU.a(World,IIII)Z",
+    "3": "actualFD.a(id50,xyz,false,face)Z",
+    "4": "actualVM.e(World,IIII)V",
+    "5": "actualVM.c(World,III)V",
+    "6": "actualprivateVM.i(World,III)Z reflectiveinvoke",
+    "7": "actualVM.b(World,IIII)V",
+    "8": "actualVM.a(World,III,Random)V withactualWorld.r ordeclaredNULLformalRandom"
+  },
+  "profiles": 193,
+  "order": "One genuineWorld/fourcanonicalChunks, orderedprofiles exactlyonce perVM. Reset declared5arrays+i/n BEFORE eachprofile, notqueues,actors,Worldrandom,Mathrandom,clocks orSourcephase. x/z signedcases are readonly. Wallbits1=-X,2=+X,4=-Z,8=+Z Stone1; floor at y-1; target last; integeradditionwraps andstores onlyphysicalx/z0..31,y0..127. Initialmetadata storednibble(metadata&15).",
+  "torch_keys": [
+    "index",
+    "name",
+    "values",
+    "result",
+    "exception",
+    "center_before",
+    "center_after",
+    "changes",
+    "queues_before",
+    "queues_after",
+    "events",
+    "drops",
+    "world_rng_unchanged"
+  ],
+  "torch_shapes": {
+    "values": "12signed TSVintsexcludingname",
+    "result": "string true/false/VOID/UNRETURNED",
+    "exception": "NONE oractualdottedJavaexception; unwrap reflectiveInvocationTargetException only",
+    "center_before/center_after": "[actualID,actualMetadata] fromphysicalarrays; outofdomain=[0,0] declaredobservationprojection",
+    "changes": "ordered [chunkIndex,arrayIndex,byteIndex,beforeUnsignedByte,afterUnsignedByte], all5arrays?4Chunks",
+    "queues_before/queues_after": "fullordered actualFD.C List<st>: [kind0Sky/1Block,x0,y0,z0,x1,y1,z1]",
+    "events": "ordered [cell,x,y,z,ID,metadata], [range,x0,y0,z0,x1,y1,z1], [add,rowLocalOrdinal,hl]; unexpectedactualcallbacktypes retained with taggedliteralarguments",
+    "drops": "[rowLocalOrdinal,hl,stackID,count,damage,pickupDelay,age,health] foractualpublishedItems retained byobserver; no guessedEntity",
+    "world_rng_unchanged": "Boolean actualpre/postseed+Gaussianstateequality"
+  },
+  "entropy_keys": [
+    "index",
+    "name",
+    "world_before",
+    "world_after",
+    "math_before",
+    "math_after",
+    "items"
+  ],
+  "entropy_shapes": {
+    "random_state": "{seed:12hex,gaussian:16hex,have:Boolean}; reflect actualAtomicLongseed/cache fields withoutdraw/store",
+    "math_before": "null before firstprovenoriginalHLuse; thereafter actualprecallMathholderstate. No classinitprobe/warmup, no cross-engine initialseed claim.",
+    "math_after": "null until firstprovenoriginalHLuse, otherwise actualpostcallMathholderstate",
+    "items": "[{ordinal,position:[3doublehex],motion:[3doublehex],yaw:floathex,bob:floathex,entity_random:state,math_post:state}] captured atactualPMadd after unchangedconstructor",
+    "audit": "EachsourceTorchdrop consumes4World.rnextFloatLCGsteps; validate ownWorldstatecontinuation and original f32/f64 positionformula. HL consumes4Math.randomnextDouble calls/8LCGsteps; rewind ownobservedpoststate8steps thenforwardaudit bob=(d0*pi)*2 roundedfloat,yaw=d1*360roundedfloat,motionX/Z originaldoubleexpression->float->double;Y exactwidened0.2f. DefaultSNRandom is genuinelyconstructed andnotdrawn; preserve itsseed/cache withno equalityclaim. LaterMathpre/post mustjoin owncohort. Raw positions/entropy preserved,never forced/normalized toanotherprocess."
+  },
+  "projection": "ordinary-*.stdout exactrawbytecapture maydifferduetoentropy. SelectallTORCHlines verbatim+LF intoeachVMsemanticprojection and compare thosewholeprojections. PreserveallENTROPYrows separately/audit eachVM; doNOTclaimwhole-stdout/constructorentropy equality."
+}

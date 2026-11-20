@@ -1,0 +1,118 @@
+{
+  "children": [
+    {
+      "exit_code": 0,
+      "reaped": true,
+      "role": "compile",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "exit_code": 0,
+      "reaped": true,
+      "role": "client",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1911,
+        "sha256": "900bd25cc4e6f7857cd4faabda18d7b3baa075ae8672f5985152a45161ab831c"
+      }
+    },
+    {
+      "exit_code": 0,
+      "reaped": true,
+      "role": "server",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1911,
+        "sha256": "900bd25cc4e6f7857cd4faabda18d7b3baa075ae8672f5985152a45161ab831c"
+      }
+    }
+  ],
+  "compiled_helper": {
+    "bytes": 7385,
+    "sha256": "4686dc5929c0f7e83b2b96ca24dee51e7c2c93e2ae22c8708e80f1e41c4352e5"
+  },
+  "fixture": {
+    "bytes": 1911,
+    "file": "material_observation.tsv",
+    "sha256": "900bd25cc4e6f7857cd4faabda18d7b3baa075ae8672f5985152a45161ab831c"
+  },
+  "inputs": {
+    "client": {
+      "bytes": 1465375,
+      "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+    },
+    "helper": {
+      "bytes": 6452,
+      "sha256": "8ea23d95d423181f975e0f2858ce2d30afe082b46d63a894ac40f9687b39ee71"
+    },
+    "java": {
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "java_native": {
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "javac": {
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "jvm": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "modules": {
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "process_helper": {
+      "bytes": 10182,
+      "sha256": "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+    },
+    "recorder": {
+      "bytes": 4772,
+      "sha256": "9f1fec37640b0976653bc63da7f39f4e4dd679526126098d1518ce999108e6ec"
+    },
+    "release": {
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "server": {
+      "bytes": 503100,
+      "sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d"
+    },
+    "source_archive": {
+      "bytes": 50855389,
+      "sha256": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+    }
+  },
+  "inputs_unchanged": true,
+  "jdk": "Eclipse Temurin 17.0.17+10 Windows x86-64",
+  "limitations": [
+    "No full game, world, block registry, startup schedule or allocation-failure observation",
+    "No native executable produced expectations",
+    "No original JARs or private command/path receipts distributed"
+  ],
+  "original_sides_equal": true,
+  "private_receipt_sha256": "92107c247baa9805e0f3d1bd4242d7c8c67bcb19bcfcf710eff51b21e7000b73",
+  "requested_vm_options": [
+    "-Xint",
+    "-Xmx256m"
+  ],
+  "row_count": 116,
+  "schema": 1,
+  "scope": "Successful original material/palette initialization and receiver methods only"
+}

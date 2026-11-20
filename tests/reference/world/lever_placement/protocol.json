@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "profile_columns": [
+    "name",
+    "entry",
+    "x",
+    "y",
+    "z",
+    "metadata",
+    "face",
+    "neighbor_id",
+    "wall_mask",
+    "floor_id",
+    "target_id",
+    "null_world",
+    "remote"
+  ],
+  "profiles": 244,
+  "entries": {
+    "0": "xr.a(World,III)Z general support",
+    "1": "private xr.h(World,III)Z support/drop helper",
+    "2": "xr.a(World,IIII)Z face support",
+    "3": "fd.a(id69,xyz,false,face)Z placement wrapper",
+    "4": "xr.e(World,IIII)V placed face",
+    "5": "xr.a(World,III,gs=NULL)Z activation",
+    "6": "xr.b(World,III,gs=NULL)V click",
+    "7": "xr.b(World,IIII)V neighbor",
+    "8": "xr.b(World,III)V removal"
+  },
+  "ordering": "One genuine saved World and four canonical Chunks; reset only declared five arrays and i/n before each call. Set declared remote flag. Never reset queues, actors, World Random, Math Random, clock or source phase. Wall bits 1=X-,2=X+,4=Z-,8=Z+ Stone1; floor supplied id; target last. Metadata stored as nibble.",
+  "random": "Floor placed-face consumes actual default-constructed World.r.nextInt(2). Own streams and exact raw metadata remain retained per process; no cross-process floor orientation identity is claimed. Four nextFloat steps per successful drop; Item Math observations retain own stream and first prestate frontier.",
+  "prefixes": {
+    "LEVER": "literal effect record",
+    "ENTROPY": "actual own-process Random observations",
+    "COMPLETE": "terminal profile count",
+    "LEVER_GUARD": "supporting external/origin guard"
+  }
+}

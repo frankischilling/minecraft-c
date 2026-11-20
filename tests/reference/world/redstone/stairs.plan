@@ -1,0 +1,16 @@
+world 0000000000000017 0 64 0
+acquire 0 0
+setup-set 6 63 8 1 0
+setup-set 7 63 8 1 0
+setup-set 8 64 8 1 0
+setup-set 9 64 8 1 0
+setup-set 6 64 8 70 0
+setup-set 7 64 8 55 0
+setup-set 8 65 8 55 0
+setup-set 9 65 8 55 0
+meta 6 64 8 1
+meta 6 64 8 0
+set 8 65 8 0 0
+meta 6 64 8 1
+set 8 65 8 55 0
+meta 6 64 8 0

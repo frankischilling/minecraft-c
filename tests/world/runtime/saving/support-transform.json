@@ -1,0 +1,7 @@
+{
+  "source": "tests/world/runtime/saving/test_source_saving.c",
+  "source_sha256": "7bf8a68621a1dee80dee9c91d7d1928a8091825b610be3168dcaf1f08fb59233",
+  "transformation": "prepend provenance comment; rename only unused int main to int mn_unused_source_save_program; never execute renamed program",
+  "output": "tests/world/runtime/saving/mob_nbt_source_support.inc",
+  "output_sha256": "3fb528eb245d4373515ce7142b74a1f88f181eb6503819ff77c84cfa81bf87ce"
+}

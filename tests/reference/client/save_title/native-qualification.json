@@ -1,0 +1,362 @@
+{
+  "status": "PASS_BOUNDED_CURRENT_WINDOWS_TINY_NORMAL_AND_SESSION_NATIVE_PROFILES",
+  "date": "2026-11-01",
+  "scope": "Authored disposable native Worlds, visible Frame/Canvas, actual source leave, independent disk verification; no original runtime caller comparison",
+  "inputs": {
+    "view_distance": "Tiny",
+    "options_bytes": "viewDistance:3\\n",
+    "statistics": "Valid pre-bootstrap unsent openInventory achievement 5242880=1, imported GUID and source checksum; loaded by the actual statistics reader",
+    "runtime_flag_or_map_repair": false,
+    "ordinary_sdk_input": "Escape, actual ID4 recovery when needed, separate Escape and Pause ID1"
+  },
+  "windows_qualification": {
+    "build_receipt_sha256": "6d82aec0f499aa99bce0e031a2ff47784b5af05377c318a4554447b70894aba1",
+    "test_receipt_sha256": "790f4edb4fc2bdb3baf43cab108367a9123fe8901a2f39c5742d96b3baf6c7ae",
+    "xml_sha256": "9bd5bba4f45cbdf2c63a16a74b72421db32a8b8ea6f244af6533a696776c2e82",
+    "selected_tests": [
+      {
+        "name": "client.frame_canvas_owner",
+        "seconds": 0.385622
+      },
+      {
+        "name": "client.standalone_canvas_hidden",
+        "seconds": 1.63081
+      },
+      {
+        "name": "client.standalone_canvas_visible",
+        "seconds": 1.65257
+      },
+      {
+        "name": "client.standalone_canvas_visible-fp-position",
+        "seconds": 1.46479
+      },
+      {
+        "name": "client.standalone_canvas_visible-fp-ungrab",
+        "seconds": 1.45228
+      },
+      {
+        "name": "client.standalone_canvas_visible-reactivation",
+        "seconds": 4.70748
+      },
+      {
+        "name": "client.world_save_title",
+        "seconds": 95.0825
+      }
+    ],
+    "ctest_real_seconds": 106.43,
+    "ui_test_seconds": 95.0825,
+    "input_count": 3264,
+    "inputs_unchanged": true,
+    "recorded_source_map_sha256": "56ffe73a46dff3f298edbcceb02b71d8f5d57063a0d4fcea91666855d282ef2c",
+    "compiled_products_and_build_inputs": {
+      "mc_test_standalone_canvas.exe": "2f3ca4d2384d997e32443d9efb77cf7ebbf05a0f13e59c8368c6689f1de60c39",
+      "mc_test_frame_canvas.exe": "d6787844a3f43bfb08c16dcddb290051309308af00977f88c54b5c89dbfb045f",
+      "mc_test_world_selection_loop.exe": "8283de8cafb0c1dc38f7cb35a689b6ac1293e5a3b6b09789f901f18baf091979",
+      "minecraft-client.exe": "7cff618c74c5825dcc80cd8b9deee7ae65d211d8a85df06ed9e22323a4f1b3d8",
+      "SDL_windowsevents.c": "d57482864db7c08e3717fed0f23d078dc1fedb1c9f9832443a81c40840e9fbcb",
+      "CMakeCache.txt": "e48e4f88ec93f8eb4b66dc100e0e62f5bcf3f9f5c0ca85d09ab635d3b2161e01"
+    },
+    "relevant_public_source_and_helper_sha256": {
+      "tests/client/startup/test_world_selection_loop.c": "4a05bab7481470751898e7dc856cad4b2e34d0ab4b96aca0af6fe948b7ffab0e",
+      "tests/tools/client/test_world_selection_loop.py": "7bec67996caaeff8d01498c8024267c6d5783995340210e2a1effcfed768d5f4",
+      "tests/tools/world/test_source_saving.py": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9",
+      "tests/world/runtime/saving/test_source_saving.c": "620fda51f54f194d7651721da28a6ba722ae15bd3cb23c908fb92fd3398ef4cb",
+      "tests/world/runtime/saving/source_session_terminal_controls.inc": "f6df2456d2f85898d2e9d3b43bd824228becfe389bb772b91411bb12ad9cd2b6",
+      "src/client/world/source_leave.inc": "74256cc828188a44a16e209486493f4a7ff3e9ca6053b44b56c7be6bec8576fe",
+      "src/client/world/load_world.c": "72a98ee8f361d16ce72a34adf883b0df7dff0aa95b036eb82f4c6fa82c3a4470",
+      "src/client/world/load_world_terminal_internal.h": "0e51b40b7c18d43839e6235238a8feddff5ad81d28e7c85ec86b6dfcc6a12f3c",
+      "src/client/gui/source_pause_screen.c": "e1ca54ae7640520e2b2bccd225e8d6c434623152b1596980d27562ffaf3c1c04",
+      "src/client/runtime/menu_loop.c": "2e1067cc38e8577b316ea8e1d01614602f95d9fc266e4efd2dcf0a1504d7c95a",
+      "src/client/application.c": "67d004fc1fff2292ea2aca8898a707ae02fa2ff8c20a8f75a6623e1a2f0b17ba",
+      "src/world/storage/store.c": "319ede685a46a26b9a1440f44788748394912a4a998cc0001700222dc7c42d95",
+      "src/world/storage/java_file_io.c": "aef07edcec44ce24664c5f7c12960630bdf712ff411052c34bea0fbf7a39be3b",
+      "src/world/storage/java_file_internal.h": "af1571864c355c8c4a7385469f40c2ad6b978cb3d9c9231f92bb5993b67a2a6d",
+      "cmake/sdl_native_fixes.cmake": "d67491001b18db234d494642697e370fa645ab9dd0a623a6c0987821b01077a8",
+      "cmake/client_runtime.cmake": "42265595c82448d4bccba3ab7ebc91aa460ec043f084f39cd8665b35a4e7faf0",
+      "cmake/tests/source_world_saving.cmake": "76c7c5c2fc615d16f5cb93cc3572968cb1283e69248f0541922f4cc2333e2a20"
+    }
+  },
+  "captures": {
+    "save-title": {
+      "capture_id": "save-title-ulk95ktp",
+      "native_exit_code": 0,
+      "native_cleanup_pass": true,
+      "independent_verification": "PASS from the actual selected CTest controller; no re-execution during metadata extraction",
+      "fixture_checks": 864,
+      "entry": {
+        "mode": "save-title",
+        "escape-sdk": 1,
+        "button-id": 1,
+        "leave-pc": 366,
+        "i": 1,
+        "f": 1,
+        "h": 1,
+        "new-title": 1,
+        "old-renderer-world": 1,
+        "old-effects-world": 1,
+        "original-load-returned": 1,
+        "eligible": 88,
+        "time": 18,
+        "size-before": 3207168,
+        "size-after": 3506176,
+        "first": 1793520317223,
+        "last": 1793520317401,
+        "entry-frame": 1,
+        "entry-bytes": 1278844
+      },
+      "earlier_pause_changed_chunks": 48,
+      "artifact_hashes": {
+        "stdout.txt": {
+          "bytes": 1248,
+          "sha256": "b76cb0e3ae01a9c3fb3a0846411a78bf9977b261a222e87c25d18d5bd36cfc9e"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "execution.json": {
+          "bytes": 3613,
+          "sha256": "3936ebcea0ab9c2dd1faadeb3d5710bb84ab5eaf1352cbcd1a35aad3660e8ce4"
+        },
+        "report.json": {
+          "bytes": 8302,
+          "sha256": "82a648b07890a74e890a6279fdefbf02fbeabe73a1279078d6d9d6461bf4a307"
+        },
+        "options-input.txt": {
+          "bytes": 15,
+          "sha256": "f651be7130a53c901eec9dea83261aaf9dd70155c8e1cac5d63487c88d1e7e95"
+        }
+      },
+      "authored_world_fingerprints": {
+        "before_file_count": 11,
+        "before_map_sha256": "37d6b337f9b872821d77c04e0e767e78ac9255a5f130c604bf9e1c4562971508",
+        "after_file_count": 13,
+        "after_map_sha256": "98371f3f767ed8160487d6b7e9a44aa2397cf56baae4953cb4b53c469a017b56"
+      },
+      "decoded_chunks": 377,
+      "explicit_leave_changed_chunks": 88,
+      "metadata": {
+        "Time": [
+          4,
+          18
+        ],
+        "SizeOnDisk": [
+          4,
+          3207168
+        ],
+        "LastPlayed": [
+          4,
+          1793520317226
+        ]
+      }
+    },
+    "save-title-session": {
+      "capture_id": "save-title-session-9qzmaqsz",
+      "native_exit_code": 0,
+      "native_cleanup_pass": true,
+      "independent_verification": "PASS from the actual selected CTest controller; no re-execution during metadata extraction",
+      "fixture_checks": 1264,
+      "entry": {
+        "mode": "save-title-session",
+        "escape-sdk": 1,
+        "button-id": 1,
+        "leave-pc": 64,
+        "i": 1,
+        "f": 0,
+        "h": 0,
+        "new-title": 0,
+        "old-renderer-world": 1,
+        "old-effects-world": 1,
+        "original-load-returned": 1,
+        "eligible": 9,
+        "time": 18,
+        "size-before": 3506176,
+        "size-after": 3506176,
+        "first": 1793520386064,
+        "last": 1793520386067,
+        "entry-frame": 0,
+        "entry-bytes": 1578076
+      },
+      "earlier_pause_changed_chunks": 121,
+      "artifact_hashes": {
+        "stdout.txt": {
+          "bytes": 1579,
+          "sha256": "3c393b9490608a0c7d813fb9e5b71171d0fce15d37fe738cca0559047d7f18e3"
+        },
+        "stderr.txt": {
+          "bytes": 78,
+          "sha256": "3148845f5f054539d92bf01cfdcc3d9766a6ff8d0d560ab3f6268b6b530aa35f"
+        },
+        "execution.json": {
+          "bytes": 3621,
+          "sha256": "8621eee195050c0fe944a92cdfbc2ba71e899b9e9a797b266a69664a6d9dfc21"
+        },
+        "report.json": {
+          "bytes": 4985,
+          "sha256": "62e5ad4838d07ac51c85f16e5a654bcfba403e0211d2cb147bf2d965c16646b9"
+        },
+        "options-input.txt": {
+          "bytes": 15,
+          "sha256": "f651be7130a53c901eec9dea83261aaf9dd70155c8e1cac5d63487c88d1e7e95"
+        }
+      },
+      "authored_world_fingerprints": {
+        "before_file_count": 11,
+        "before_map_sha256": "37d6b337f9b872821d77c04e0e767e78ac9255a5f130c604bf9e1c4562971508",
+        "after_file_count": 13,
+        "after_map_sha256": "51832134602a622ce65c30c1ed97044729f715f8cc632d1c0f2e495d9f540571"
+      },
+      "failure_scope": {
+        "source_method": "fm.b()V",
+        "bytecode": 42,
+        "native_exception_allocation_frontier": true,
+        "us_thrown": false,
+        "source_input_close_credited": false,
+        "title_return": false,
+        "leave_replay": "BUSY",
+        "original_successful_load_retained": true,
+        "external_effects_admission_busy_then_retry": "PASS in the native fixture",
+        "terminal_retirement": "Known inactive mismatch input only; actual namespace/File identity and sole FileInputStream hold",
+        "fault_restore": "Original exact eight-byte token restored and read back after terminal native cleanup closed the retained Windows handle",
+        "entry_files_preserved": true
+      }
+    }
+  },
+  "source_session_terminal_controls": {
+    "scope": "Actual source World save mismatch plus passive admission and terminal cleanup; not an original us exception",
+    "per_host_profiles": 8,
+    "old_runtime_red_retained": true,
+    "new_runtime_both_hosts_pass": true,
+    "external_fis_and_handler_holds": "BUSY with passive state unchanged, then OK after actual release",
+    "metadata_region_and_info": "Preserved across mismatch and native retirement",
+    "receipts": {
+      "windows": "4dabb31eeee29ff05b6e61b1d5efc0891375f0d430cb281e38443f231d96866e",
+      "linux": "ba5e97cd2c36ab0c77127d1dd4adf16568ee1cce046fa4c20694a560117aa162"
+    }
+  },
+  "static_original_evidence": {
+    "code_pins_file": "class-code-pins.json",
+    "sha256": "8769c402034eb2f352e41bc497a3179e08c3785e4c8c97e1ac0c5b84971c7954",
+    "method_count": 17,
+    "executed_original_pause_to_title": false
+  },
+  "limits": [
+    "Tiny and the declared pre-saved statistics input only; no default-Far or fresh-player notice qualification",
+    "No Linux visible save/title run",
+    "No ordinary World reselection, nonempty named SavedData output, remote disconnect, crash recovery or extended-play qualification",
+    "No thrown us, source finally-close or completed title return in the session mismatch profile",
+    "No complete original/native caller parity or original-world interoperability"
+  ],
+  "extraction": {
+    "kind": "READ_ONLY_RETAINED_DATA_EXTRACTION",
+    "recipe_sha256": "ae6a69b235b44ecd71c27e9ebbed7222395c35482c6ed7f24184843c47617f65",
+    "frozen_input_manifest_sha256": "b1c02de50f540322e293ababf14b41b85091bdec20911a9acb863c42697958ab",
+    "native_or_jvm_processes_started": 0,
+    "raw_world_or_asset_bytes_included": false
+  },
+  "headless_e_final_qualification": {
+    "windows": {
+      "build_receipt_sha256": "1d1d18634fe09d3373ac7905d3215b3de08a9bb4d3a6009e17a2dadaf15cab61",
+      "test_receipt_sha256": "70d8efcb6c0ecb8a12cefa68a8eb31cf45037edb9592e4faa4fa67c8763ca8ea",
+      "build_targets": 34,
+      "build_seconds": 33.01229099999182,
+      "unique_headless_ctests": 33,
+      "test_seconds": 13.077723000082187,
+      "failed": 0,
+      "skipped": 0,
+      "inputs_unchanged": true,
+      "recorded_input_count": 3264,
+      "selected_tests": [
+        "entity.client_mob_nbt",
+        "entity.client_mob_nbt_wolf_owner",
+        "world.source_saving",
+        "storage.source_region_output",
+        "world.piston_tick",
+        "entity.mob_construction",
+        "entity.mob_tick",
+        "entity.wolf_interest",
+        "entity.mob_spawning",
+        "entity.zombie_null_damage",
+        "entity.creeper_attack",
+        "entity.monster_attack",
+        "storage.source_metadata_output",
+        "storage.compressed_output",
+        "storage.java_binary_output",
+        "storage.source_handler_constructor",
+        "storage.source_handler_reads_ordinary",
+        "storage.source_handler_reads_close",
+        "storage.source_regions",
+        "world.source_construction",
+        "world.saved_data_source_ordinary",
+        "world.saved_data_source_close",
+        "world.saving",
+        "world.game_entities",
+        "world.terminal_inventory",
+        "world.construction",
+        "entity.player_nbt",
+        "entity.player_nbt_coordinates",
+        "entity.player_nbt_errors",
+        "entity.nbt",
+        "entity.classes",
+        "entity.factory",
+        "entity.nbt_observation"
+      ],
+      "scope": "Finite selected native headless regressions; separate from the Windows UI and isolated Linux Canvas runs"
+    },
+    "linux": {
+      "build_receipt_sha256": "a65ba231c486f9059cad6593a1abdbf45a23d1b9aed370d0024b5cd94e239f2e",
+      "test_receipt_sha256": "205515741c4d9e35e12c3bbb25ee0e811615d7bfb4bc7000083fa168b2232740",
+      "build_targets": 34,
+      "build_seconds": 21.48991419991944,
+      "unique_headless_ctests": 33,
+      "test_seconds": 47.795260899933055,
+      "failed": 0,
+      "skipped": 0,
+      "inputs_unchanged": true,
+      "recorded_input_count": 3264,
+      "selected_tests": [
+        "entity.client_mob_nbt",
+        "entity.client_mob_nbt_wolf_owner",
+        "world.source_saving",
+        "storage.source_region_output",
+        "world.piston_tick",
+        "entity.mob_construction",
+        "entity.mob_tick",
+        "entity.wolf_interest",
+        "entity.mob_spawning",
+        "entity.zombie_null_damage",
+        "entity.creeper_attack",
+        "entity.monster_attack",
+        "storage.source_metadata_output",
+        "storage.compressed_output",
+        "storage.java_binary_output",
+        "storage.source_handler_constructor",
+        "storage.source_handler_reads_ordinary",
+        "storage.source_handler_reads_close",
+        "storage.source_regions",
+        "world.source_construction",
+        "world.saved_data_source_ordinary",
+        "world.saved_data_source_close",
+        "world.saving",
+        "world.game_entities",
+        "world.terminal_inventory",
+        "world.construction",
+        "entity.player_nbt",
+        "entity.player_nbt_coordinates",
+        "entity.player_nbt_errors",
+        "entity.nbt",
+        "entity.classes",
+        "entity.factory",
+        "entity.nbt_observation"
+      ],
+      "scope": "Finite selected native headless regressions; separate from the Windows UI and isolated Linux Canvas runs"
+    }
+  },
+  "extraction_e_refresh": {
+    "kind": "READ_ONLY_RETAINED_DATA_EXTRACTION",
+    "prior_record_sha256": "6bbf6a831bb863177988cf687851ccf42d83936898eed388e84c1a77fd372430",
+    "recipe_sha256": "3b1e1ad7303c24bfb2055d53b567a591865e763e74587eb907763a261e0d8b7a",
+    "freeze_sha256": "2b2fc173d184a7798ebb7e485b53a218a6ba5c24a559e737e945364d69a7060a",
+    "native_or_jvm_processes_started": 0
+  }
+}

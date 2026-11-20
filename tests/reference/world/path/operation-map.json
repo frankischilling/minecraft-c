@@ -1,0 +1,8375 @@
+{
+  "scope": "Selected unchanged original symbolic field, method and literal operations. Arithmetic/source ordering is pinned by whole Code; no replacement implementations or generated answers.",
+  "methods": {
+    "aq.c()Z": [],
+    "bt.b(DDD)Lbt;": [
+      {
+        "pc": 0,
+        "opcode": "getstatic",
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 3,
+        "opcode": "getstatic",
+        "operation": "Field d:Ljava/util/List;"
+      },
+      {
+        "pc": 6,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 14,
+        "opcode": "getstatic",
+        "operation": "Field d:Ljava/util/List;"
+      },
+      {
+        "pc": 20,
+        "opcode": "invokestatic",
+        "operation": "Method a:(DDD)Lbt;"
+      },
+      {
+        "pc": 23,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z"
+      },
+      {
+        "pc": 29,
+        "opcode": "getstatic",
+        "operation": "Field d:Ljava/util/List;"
+      },
+      {
+        "pc": 32,
+        "opcode": "getstatic",
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 38,
+        "opcode": "putstatic",
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 41,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 46,
+        "opcode": "checkcast",
+        "operation": "class bt"
+      },
+      {
+        "pc": 53,
+        "opcode": "invokespecial",
+        "operation": "Method e:(DDD)Lbt;"
+      }
+    ],
+    "bt.d(DDD)D": [
+      {
+        "pc": 2,
+        "opcode": "getfield",
+        "operation": "Field a:D"
+      },
+      {
+        "pc": 10,
+        "opcode": "getfield",
+        "operation": "Field b:D"
+      },
+      {
+        "pc": 19,
+        "opcode": "getfield",
+        "operation": "Field c:D"
+      }
+    ],
+    "d.<init>(III)V": [
+      {
+        "pc": 1,
+        "opcode": "invokespecial",
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 6,
+        "opcode": "putfield",
+        "operation": "Field d:I"
+      },
+      {
+        "pc": 11,
+        "opcode": "putfield",
+        "operation": "Field i:Z"
+      },
+      {
+        "pc": 16,
+        "opcode": "putfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 21,
+        "opcode": "putfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 26,
+        "opcode": "putfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 33,
+        "opcode": "invokestatic",
+        "operation": "Method a:(III)I"
+      },
+      {
+        "pc": 36,
+        "opcode": "putfield",
+        "operation": "Field j:I"
+      }
+    ],
+    "d.a(III)I": [
+      {
+        "pc": 27,
+        "opcode": "ldc",
+        "operation": "int -2147483648"
+      },
+      {
+        "pc": 38,
+        "opcode": "ldc",
+        "operation": "int 32768"
+      }
+    ],
+    "d.a(Ld;)F": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 5,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 12,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 16,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 23,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 27,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 47,
+        "opcode": "invokestatic",
+        "operation": "Method in.c:(F)F"
+      }
+    ],
+    "d.equals(Ljava/lang/Object;)Z": [
+      {
+        "pc": 1,
+        "opcode": "instanceof",
+        "operation": "class d"
+      },
+      {
+        "pc": 8,
+        "opcode": "checkcast",
+        "operation": "class d"
+      },
+      {
+        "pc": 13,
+        "opcode": "getfield",
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 17,
+        "opcode": "getfield",
+        "operation": "Field j:I"
+      },
+      {
+        "pc": 24,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 28,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 35,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 39,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 46,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 50,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      }
+    ],
+    "d.hashCode()I": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field j:I"
+      }
+    ],
+    "d.a()Z": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field d:I"
+      }
+    ],
+    "dh.<init>([Ld;)V": [
+      {
+        "pc": 1,
+        "opcode": "invokespecial",
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 6,
+        "opcode": "putfield",
+        "operation": "Field b:[Ld;"
+      },
+      {
+        "pc": 12,
+        "opcode": "putfield",
+        "operation": "Field a:I"
+      }
+    ],
+    "dh.a()V": [
+      {
+        "pc": 2,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 7,
+        "opcode": "putfield",
+        "operation": "Field c:I"
+      }
+    ],
+    "dh.b()Z": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 5,
+        "opcode": "getfield",
+        "operation": "Field b:[Ld;"
+      }
+    ],
+    "dh.c()Ld;": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 8,
+        "opcode": "getfield",
+        "operation": "Field b:[Ld;"
+      },
+      {
+        "pc": 12,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      }
+    ],
+    "dh.a(Lsn;)Lbt;": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field b:[Ld;"
+      },
+      {
+        "pc": 5,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 9,
+        "opcode": "getfield",
+        "operation": "Field d.a:I"
+      },
+      {
+        "pc": 14,
+        "opcode": "getfield",
+        "operation": "Field sn.bg:F"
+      },
+      {
+        "pc": 21,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 28,
+        "opcode": "getfield",
+        "operation": "Field b:[Ld;"
+      },
+      {
+        "pc": 32,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 36,
+        "opcode": "getfield",
+        "operation": "Field d.b:I"
+      },
+      {
+        "pc": 43,
+        "opcode": "getfield",
+        "operation": "Field b:[Ld;"
+      },
+      {
+        "pc": 47,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 51,
+        "opcode": "getfield",
+        "operation": "Field d.c:I"
+      },
+      {
+        "pc": 56,
+        "opcode": "getfield",
+        "operation": "Field sn.bg:F"
+      },
+      {
+        "pc": 63,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 75,
+        "opcode": "invokestatic",
+        "operation": "Method bt.b:(DDD)Lbt;"
+      }
+    ],
+    "ew.<init>(Lfd;IIIIII)V": [
+      {
+        "pc": 1,
+        "opcode": "invokespecial",
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 6,
+        "opcode": "putfield",
+        "operation": "Field d:Lfd;"
+      },
+      {
+        "pc": 13,
+        "opcode": "putfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 21,
+        "opcode": "putfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 40,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 49,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 55,
+        "opcode": "multianewarray",
+        "operation": "class \"[[Llm;\""
+      },
+      {
+        "pc": 59,
+        "opcode": "putfield",
+        "operation": "Field c:[[Llm;"
+      },
+      {
+        "pc": 63,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 76,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 89,
+        "opcode": "getfield",
+        "operation": "Field c:[[Llm;"
+      },
+      {
+        "pc": 95,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 103,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 112,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.c:(II)Llm;"
+      }
+    ],
+    "ew.a(III)I": [
+      {
+        "pc": 19,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 29,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 43,
+        "opcode": "getfield",
+        "operation": "Field c:[[Llm;"
+      },
+      {
+        "pc": 58,
+        "opcode": "getfield",
+        "operation": "Field c:[[Llm;"
+      },
+      {
+        "pc": 71,
+        "opcode": "getfield",
+        "operation": "Field c:[[Llm;"
+      },
+      {
+        "pc": 100,
+        "opcode": "invokevirtual",
+        "operation": "Method lm.a:(III)I"
+      }
+    ],
+    "ew.e(III)I": [
+      {
+        "pc": 19,
+        "opcode": "getfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 29,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 36,
+        "opcode": "getfield",
+        "operation": "Field c:[[Llm;"
+      },
+      {
+        "pc": 54,
+        "opcode": "invokevirtual",
+        "operation": "Method lm.b:(III)I"
+      }
+    ],
+    "fd.a(Lsn;Lsn;F)Ldh;": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field sn.aM:D"
+      },
+      {
+        "pc": 4,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 10,
+        "opcode": "getfield",
+        "operation": "Field sn.aN:D"
+      },
+      {
+        "pc": 13,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 19,
+        "opcode": "getfield",
+        "operation": "Field sn.aO:D"
+      },
+      {
+        "pc": 22,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 28,
+        "opcode": "ldc",
+        "operation": "float 16.0f"
+      },
+      {
+        "pc": 76,
+        "opcode": "new",
+        "operation": "class ew"
+      },
+      {
+        "pc": 93,
+        "opcode": "invokespecial",
+        "operation": "Method ew.\"<init>\":(Lfd;IIIIII)V"
+      },
+      {
+        "pc": 98,
+        "opcode": "new",
+        "operation": "class fw"
+      },
+      {
+        "pc": 104,
+        "opcode": "invokespecial",
+        "operation": "Method fw.\"<init>\":(Lxp;)V"
+      },
+      {
+        "pc": 110,
+        "opcode": "invokevirtual",
+        "operation": "Method fw.a:(Lsn;Lsn;F)Ldh;"
+      }
+    ],
+    "fd.a(Lsn;IIIF)Ldh;": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field sn.aM:D"
+      },
+      {
+        "pc": 4,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 10,
+        "opcode": "getfield",
+        "operation": "Field sn.aN:D"
+      },
+      {
+        "pc": 13,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 19,
+        "opcode": "getfield",
+        "operation": "Field sn.aO:D"
+      },
+      {
+        "pc": 22,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 29,
+        "opcode": "ldc",
+        "operation": "float 8.0f"
+      },
+      {
+        "pc": 77,
+        "opcode": "new",
+        "operation": "class ew"
+      },
+      {
+        "pc": 94,
+        "opcode": "invokespecial",
+        "operation": "Method ew.\"<init>\":(Lfd;IIIIII)V"
+      },
+      {
+        "pc": 99,
+        "opcode": "new",
+        "operation": "class fw"
+      },
+      {
+        "pc": 105,
+        "opcode": "invokespecial",
+        "operation": "Method fw.\"<init>\":(Lxp;)V"
+      },
+      {
+        "pc": 115,
+        "opcode": "invokevirtual",
+        "operation": "Method fw.a:(Lsn;IIIF)Ldh;"
+      }
+    ],
+    "fw.<init>(Lxp;)V": [
+      {
+        "pc": 1,
+        "opcode": "invokespecial",
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 5,
+        "opcode": "new",
+        "operation": "class lf"
+      },
+      {
+        "pc": 9,
+        "opcode": "invokespecial",
+        "operation": "Method lf.\"<init>\":()V"
+      },
+      {
+        "pc": 12,
+        "opcode": "putfield",
+        "operation": "Field b:Llf;"
+      },
+      {
+        "pc": 16,
+        "opcode": "new",
+        "operation": "class jx"
+      },
+      {
+        "pc": 20,
+        "opcode": "invokespecial",
+        "operation": "Method jx.\"<init>\":()V"
+      },
+      {
+        "pc": 23,
+        "opcode": "putfield",
+        "operation": "Field c:Ljx;"
+      },
+      {
+        "pc": 29,
+        "opcode": "anewarray",
+        "operation": "class d"
+      },
+      {
+        "pc": 32,
+        "opcode": "putfield",
+        "operation": "Field d:[Ld;"
+      },
+      {
+        "pc": 37,
+        "opcode": "putfield",
+        "operation": "Field a:Lxp;"
+      }
+    ],
+    "fw.a(Lsn;Lsn;F)Ldh;": [
+      {
+        "pc": 3,
+        "opcode": "getfield",
+        "operation": "Field sn.aM:D"
+      },
+      {
+        "pc": 7,
+        "opcode": "getfield",
+        "operation": "Field sn.aW:Leq;"
+      },
+      {
+        "pc": 10,
+        "opcode": "getfield",
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 14,
+        "opcode": "getfield",
+        "operation": "Field sn.aO:D"
+      },
+      {
+        "pc": 18,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;DDDF)Ldh;"
+      }
+    ],
+    "fw.a(Lsn;IIIF)Ldh;": [
+      {
+        "pc": 4,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 10,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 17,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 23,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;DDDF)Ldh;"
+      }
+    ],
+    "fw.a(Lsn;DDDF)Ldh;": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field b:Llf;"
+      },
+      {
+        "pc": 4,
+        "opcode": "invokevirtual",
+        "operation": "Method lf.a:()V"
+      },
+      {
+        "pc": 8,
+        "opcode": "getfield",
+        "operation": "Field c:Ljx;"
+      },
+      {
+        "pc": 11,
+        "opcode": "invokevirtual",
+        "operation": "Method jx.a:()V"
+      },
+      {
+        "pc": 16,
+        "opcode": "getfield",
+        "operation": "Field sn.aW:Leq;"
+      },
+      {
+        "pc": 19,
+        "opcode": "getfield",
+        "operation": "Field eq.a:D"
+      },
+      {
+        "pc": 22,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 26,
+        "opcode": "getfield",
+        "operation": "Field sn.aW:Leq;"
+      },
+      {
+        "pc": 29,
+        "opcode": "getfield",
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 32,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 36,
+        "opcode": "getfield",
+        "operation": "Field sn.aW:Leq;"
+      },
+      {
+        "pc": 39,
+        "opcode": "getfield",
+        "operation": "Field eq.c:D"
+      },
+      {
+        "pc": 42,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 45,
+        "opcode": "invokespecial",
+        "operation": "Method a:(III)Ld;"
+      },
+      {
+        "pc": 53,
+        "opcode": "getfield",
+        "operation": "Field sn.bg:F"
+      },
+      {
+        "pc": 60,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 65,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 71,
+        "opcode": "getfield",
+        "operation": "Field sn.bg:F"
+      },
+      {
+        "pc": 78,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 81,
+        "opcode": "invokespecial",
+        "operation": "Method a:(III)Ld;"
+      },
+      {
+        "pc": 86,
+        "opcode": "new",
+        "operation": "class d"
+      },
+      {
+        "pc": 91,
+        "opcode": "getfield",
+        "operation": "Field sn.bg:F"
+      },
+      {
+        "pc": 96,
+        "opcode": "invokestatic",
+        "operation": "Method in.d:(F)I"
+      },
+      {
+        "pc": 100,
+        "opcode": "getfield",
+        "operation": "Field sn.bh:F"
+      },
+      {
+        "pc": 105,
+        "opcode": "invokestatic",
+        "operation": "Method in.d:(F)I"
+      },
+      {
+        "pc": 109,
+        "opcode": "getfield",
+        "operation": "Field sn.bg:F"
+      },
+      {
+        "pc": 114,
+        "opcode": "invokestatic",
+        "operation": "Method in.d:(F)I"
+      },
+      {
+        "pc": 117,
+        "opcode": "invokespecial",
+        "operation": "Method d.\"<init>\":(III)V"
+      },
+      {
+        "pc": 132,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;Ld;Ld;Ld;F)Ldh;"
+      }
+    ],
+    "fw.a(Lsn;Ld;Ld;Ld;F)Ldh;": [
+      {
+        "pc": 2,
+        "opcode": "putfield",
+        "operation": "Field d.e:F"
+      },
+      {
+        "pc": 8,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 11,
+        "opcode": "putfield",
+        "operation": "Field d.f:F"
+      },
+      {
+        "pc": 16,
+        "opcode": "getfield",
+        "operation": "Field d.f:F"
+      },
+      {
+        "pc": 19,
+        "opcode": "putfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 23,
+        "opcode": "getfield",
+        "operation": "Field b:Llf;"
+      },
+      {
+        "pc": 26,
+        "opcode": "invokevirtual",
+        "operation": "Method lf.a:()V"
+      },
+      {
+        "pc": 30,
+        "opcode": "getfield",
+        "operation": "Field b:Llf;"
+      },
+      {
+        "pc": 34,
+        "opcode": "invokevirtual",
+        "operation": "Method lf.a:(Ld;)Ld;"
+      },
+      {
+        "pc": 42,
+        "opcode": "getfield",
+        "operation": "Field b:Llf;"
+      },
+      {
+        "pc": 45,
+        "opcode": "invokevirtual",
+        "operation": "Method lf.c:()Z"
+      },
+      {
+        "pc": 52,
+        "opcode": "getfield",
+        "operation": "Field b:Llf;"
+      },
+      {
+        "pc": 55,
+        "opcode": "invokevirtual",
+        "operation": "Method lf.b:()Ld;"
+      },
+      {
+        "pc": 63,
+        "opcode": "invokevirtual",
+        "operation": "Method d.equals:(Ljava/lang/Object;)Z"
+      },
+      {
+        "pc": 72,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Ld;Ld;)Ldh;"
+      },
+      {
+        "pc": 79,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 85,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 99,
+        "opcode": "putfield",
+        "operation": "Field d.i:Z"
+      },
+      {
+        "pc": 111,
+        "opcode": "invokespecial",
+        "operation": "Method b:(Lsn;Ld;Ld;Ld;F)I"
+      },
+      {
+        "pc": 127,
+        "opcode": "getfield",
+        "operation": "Field d:[Ld;"
+      },
+      {
+        "pc": 137,
+        "opcode": "getfield",
+        "operation": "Field d.e:F"
+      },
+      {
+        "pc": 144,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 152,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:()Z"
+      },
+      {
+        "pc": 162,
+        "opcode": "getfield",
+        "operation": "Field d.e:F"
+      },
+      {
+        "pc": 173,
+        "opcode": "putfield",
+        "operation": "Field d.h:Ld;"
+      },
+      {
+        "pc": 180,
+        "opcode": "putfield",
+        "operation": "Field d.e:F"
+      },
+      {
+        "pc": 188,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 191,
+        "opcode": "putfield",
+        "operation": "Field d.f:F"
+      },
+      {
+        "pc": 196,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:()Z"
+      },
+      {
+        "pc": 203,
+        "opcode": "getfield",
+        "operation": "Field b:Llf;"
+      },
+      {
+        "pc": 210,
+        "opcode": "getfield",
+        "operation": "Field d.e:F"
+      },
+      {
+        "pc": 215,
+        "opcode": "getfield",
+        "operation": "Field d.f:F"
+      },
+      {
+        "pc": 219,
+        "opcode": "invokevirtual",
+        "operation": "Method lf.a:(Ld;F)V"
+      },
+      {
+        "pc": 229,
+        "opcode": "getfield",
+        "operation": "Field d.e:F"
+      },
+      {
+        "pc": 234,
+        "opcode": "getfield",
+        "operation": "Field d.f:F"
+      },
+      {
+        "pc": 238,
+        "opcode": "putfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 242,
+        "opcode": "getfield",
+        "operation": "Field b:Llf;"
+      },
+      {
+        "pc": 247,
+        "opcode": "invokevirtual",
+        "operation": "Method lf.a:(Ld;)Ld;"
+      },
+      {
+        "pc": 272,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Ld;Ld;)Ldh;"
+      }
+    ],
+    "fw.b(Lsn;Ld;Ld;Ld;F)I": [
+      {
+        "pc": 9,
+        "opcode": "getfield",
+        "operation": "Field d.a:I"
+      },
+      {
+        "pc": 13,
+        "opcode": "getfield",
+        "operation": "Field d.b:I"
+      },
+      {
+        "pc": 19,
+        "opcode": "getfield",
+        "operation": "Field d.c:I"
+      },
+      {
+        "pc": 23,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;IIILd;)I"
+      },
+      {
+        "pc": 36,
+        "opcode": "getfield",
+        "operation": "Field d.a:I"
+      },
+      {
+        "pc": 40,
+        "opcode": "getfield",
+        "operation": "Field d.b:I"
+      },
+      {
+        "pc": 44,
+        "opcode": "getfield",
+        "operation": "Field d.c:I"
+      },
+      {
+        "pc": 52,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;IIILd;I)Ld;"
+      },
+      {
+        "pc": 60,
+        "opcode": "getfield",
+        "operation": "Field d.a:I"
+      },
+      {
+        "pc": 66,
+        "opcode": "getfield",
+        "operation": "Field d.b:I"
+      },
+      {
+        "pc": 70,
+        "opcode": "getfield",
+        "operation": "Field d.c:I"
+      },
+      {
+        "pc": 76,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;IIILd;I)Ld;"
+      },
+      {
+        "pc": 84,
+        "opcode": "getfield",
+        "operation": "Field d.a:I"
+      },
+      {
+        "pc": 90,
+        "opcode": "getfield",
+        "operation": "Field d.b:I"
+      },
+      {
+        "pc": 94,
+        "opcode": "getfield",
+        "operation": "Field d.c:I"
+      },
+      {
+        "pc": 100,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;IIILd;I)Ld;"
+      },
+      {
+        "pc": 108,
+        "opcode": "getfield",
+        "operation": "Field d.a:I"
+      },
+      {
+        "pc": 112,
+        "opcode": "getfield",
+        "operation": "Field d.b:I"
+      },
+      {
+        "pc": 116,
+        "opcode": "getfield",
+        "operation": "Field d.c:I"
+      },
+      {
+        "pc": 124,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;IIILd;I)Ld;"
+      },
+      {
+        "pc": 136,
+        "opcode": "getfield",
+        "operation": "Field d.i:Z"
+      },
+      {
+        "pc": 146,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 156,
+        "opcode": "getfield",
+        "operation": "Field d:[Ld;"
+      },
+      {
+        "pc": 174,
+        "opcode": "getfield",
+        "operation": "Field d.i:Z"
+      },
+      {
+        "pc": 184,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 194,
+        "opcode": "getfield",
+        "operation": "Field d:[Ld;"
+      },
+      {
+        "pc": 212,
+        "opcode": "getfield",
+        "operation": "Field d.i:Z"
+      },
+      {
+        "pc": 222,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 232,
+        "opcode": "getfield",
+        "operation": "Field d:[Ld;"
+      },
+      {
+        "pc": 250,
+        "opcode": "getfield",
+        "operation": "Field d.i:Z"
+      },
+      {
+        "pc": 260,
+        "opcode": "invokevirtual",
+        "operation": "Method d.a:(Ld;)F"
+      },
+      {
+        "pc": 270,
+        "opcode": "getfield",
+        "operation": "Field d:[Ld;"
+      }
+    ],
+    "fw.a(Lsn;IIILd;I)Ld;": [
+      {
+        "pc": 11,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;IIILd;)I"
+      },
+      {
+        "pc": 23,
+        "opcode": "invokespecial",
+        "operation": "Method a:(III)Ld;"
+      },
+      {
+        "pc": 49,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;IIILd;)I"
+      },
+      {
+        "pc": 64,
+        "opcode": "invokespecial",
+        "operation": "Method a:(III)Ld;"
+      },
+      {
+        "pc": 99,
+        "opcode": "invokespecial",
+        "operation": "Method a:(Lsn;IIILd;)I"
+      },
+      {
+        "pc": 132,
+        "opcode": "invokespecial",
+        "operation": "Method a:(III)Ld;"
+      }
+    ],
+    "fw.a(III)Ld;": [
+      {
+        "pc": 3,
+        "opcode": "invokestatic",
+        "operation": "Method d.a:(III)I"
+      },
+      {
+        "pc": 9,
+        "opcode": "getfield",
+        "operation": "Field c:Ljx;"
+      },
+      {
+        "pc": 14,
+        "opcode": "invokevirtual",
+        "operation": "Method jx.a:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 17,
+        "opcode": "checkcast",
+        "operation": "class d"
+      },
+      {
+        "pc": 27,
+        "opcode": "new",
+        "operation": "class d"
+      },
+      {
+        "pc": 34,
+        "opcode": "invokespecial",
+        "operation": "Method d.\"<init>\":(III)V"
+      },
+      {
+        "pc": 40,
+        "opcode": "getfield",
+        "operation": "Field c:Ljx;"
+      },
+      {
+        "pc": 47,
+        "opcode": "invokevirtual",
+        "operation": "Method jx.a:(ILjava/lang/Object;)V"
+      }
+    ],
+    "fw.a(Lsn;IIILd;)I": [
+      {
+        "pc": 8,
+        "opcode": "getfield",
+        "operation": "Field d.a:I"
+      },
+      {
+        "pc": 23,
+        "opcode": "getfield",
+        "operation": "Field d.b:I"
+      },
+      {
+        "pc": 40,
+        "opcode": "getfield",
+        "operation": "Field d.c:I"
+      },
+      {
+        "pc": 48,
+        "opcode": "getfield",
+        "operation": "Field a:Lxp;"
+      },
+      {
+        "pc": 57,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod xp.a:(III)I"
+      },
+      {
+        "pc": 71,
+        "opcode": "getstatic",
+        "operation": "Field uu.aM:Luu;"
+      },
+      {
+        "pc": 74,
+        "opcode": "getfield",
+        "operation": "Field uu.bn:I"
+      },
+      {
+        "pc": 82,
+        "opcode": "getstatic",
+        "operation": "Field uu.aF:Luu;"
+      },
+      {
+        "pc": 85,
+        "opcode": "getfield",
+        "operation": "Field uu.bn:I"
+      },
+      {
+        "pc": 92,
+        "opcode": "getfield",
+        "operation": "Field a:Lxp;"
+      },
+      {
+        "pc": 101,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod xp.e:(III)I"
+      },
+      {
+        "pc": 110,
+        "opcode": "invokestatic",
+        "operation": "Method le.f:(I)Z"
+      },
+      {
+        "pc": 121,
+        "opcode": "getstatic",
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 127,
+        "opcode": "getfield",
+        "operation": "Field uu.bA:Lln;"
+      },
+      {
+        "pc": 134,
+        "opcode": "invokevirtual",
+        "operation": "Method ln.c:()Z"
+      },
+      {
+        "pc": 144,
+        "opcode": "getstatic",
+        "operation": "Field ln.g:Lln;"
+      },
+      {
+        "pc": 154,
+        "opcode": "getstatic",
+        "operation": "Field ln.h:Lln;"
+      }
+    ],
+    "fw.a(Ld;Ld;)Ldh;": [
+      {
+        "pc": 7,
+        "opcode": "getfield",
+        "operation": "Field d.h:Ld;"
+      },
+      {
+        "pc": 18,
+        "opcode": "getfield",
+        "operation": "Field d.h:Ld;"
+      },
+      {
+        "pc": 27,
+        "opcode": "anewarray",
+        "operation": "class d"
+      },
+      {
+        "pc": 46,
+        "opcode": "getfield",
+        "operation": "Field d.h:Ld;"
+      },
+      {
+        "pc": 54,
+        "opcode": "getfield",
+        "operation": "Field d.h:Ld;"
+      },
+      {
+        "pc": 71,
+        "opcode": "new",
+        "operation": "class dh"
+      },
+      {
+        "pc": 77,
+        "opcode": "invokespecial",
+        "operation": "Method dh.\"<init>\":([Ld;)V"
+      }
+    ],
+    "gi.c(Lsn;F)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 6,
+        "opcode": "ldc",
+        "operation": "float 16.0f"
+      },
+      {
+        "pc": 8,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Lsn;Lsn;F)Ldh;"
+      },
+      {
+        "pc": 17,
+        "opcode": "ldc",
+        "operation": "float 12.0f"
+      },
+      {
+        "pc": 24,
+        "opcode": "getfield",
+        "operation": "Field sn.aM:D"
+      },
+      {
+        "pc": 27,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 35,
+        "opcode": "getfield",
+        "operation": "Field sn.aO:D"
+      },
+      {
+        "pc": 38,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 46,
+        "opcode": "getfield",
+        "operation": "Field sn.aW:Leq;"
+      },
+      {
+        "pc": 49,
+        "opcode": "getfield",
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 52,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 103,
+        "opcode": "getfield",
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 120,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 127,
+        "opcode": "getfield",
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 142,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 149,
+        "opcode": "getfield",
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 166,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 179,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 192,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 197,
+        "opcode": "getfield",
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 201,
+        "opcode": "getfield",
+        "operation": "Field aT:F"
+      },
+      {
+        "pc": 204,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(DDDFF)V"
+      },
+      {
+        "pc": 225,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ldh;)V"
+      }
+    ],
+    "ii.f_()V": [
+      {
+        "pc": 2,
+        "opcode": "invokevirtual",
+        "operation": "Method e_:()Z"
+      },
+      {
+        "pc": 5,
+        "opcode": "putfield",
+        "operation": "Field e:Z"
+      },
+      {
+        "pc": 8,
+        "opcode": "ldc",
+        "operation": "float 16.0f"
+      },
+      {
+        "pc": 12,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 20,
+        "opcode": "invokevirtual",
+        "operation": "Method g_:()Lsn;"
+      },
+      {
+        "pc": 23,
+        "opcode": "putfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 27,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 35,
+        "opcode": "getfield",
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 40,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 44,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Lsn;Lsn;F)Ldh;"
+      },
+      {
+        "pc": 47,
+        "opcode": "putfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 54,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 57,
+        "opcode": "invokevirtual",
+        "operation": "Method sn.W:()Z"
+      },
+      {
+        "pc": 65,
+        "opcode": "putfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 72,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 76,
+        "opcode": "invokevirtual",
+        "operation": "Method sn.f:(Lsn;)F"
+      },
+      {
+        "pc": 82,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 85,
+        "opcode": "invokevirtual",
+        "operation": "Method e:(Lsn;)Z"
+      },
+      {
+        "pc": 93,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 97,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lsn;F)V"
+      },
+      {
+        "pc": 105,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 109,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(Lsn;F)V"
+      },
+      {
+        "pc": 113,
+        "opcode": "getfield",
+        "operation": "Field e:Z"
+      },
+      {
+        "pc": 120,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 127,
+        "opcode": "getfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 134,
+        "opcode": "getfield",
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 139,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 147,
+        "opcode": "getfield",
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 152,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 156,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Lsn;Lsn;F)Ldh;"
+      },
+      {
+        "pc": 159,
+        "opcode": "putfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 166,
+        "opcode": "getfield",
+        "operation": "Field e:Z"
+      },
+      {
+        "pc": 173,
+        "opcode": "getfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 180,
+        "opcode": "getfield",
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 185,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 192,
+        "opcode": "getfield",
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 197,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 204,
+        "opcode": "invokevirtual",
+        "operation": "Method E:()V"
+      },
+      {
+        "pc": 208,
+        "opcode": "getfield",
+        "operation": "Field aW:Leq;"
+      },
+      {
+        "pc": 211,
+        "opcode": "getfield",
+        "operation": "Field eq.b:D"
+      },
+      {
+        "pc": 214,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 218,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 223,
+        "opcode": "invokevirtual",
+        "operation": "Method ag:()Z"
+      },
+      {
+        "pc": 228,
+        "opcode": "invokevirtual",
+        "operation": "Method ah:()Z"
+      },
+      {
+        "pc": 235,
+        "opcode": "putfield",
+        "operation": "Field aT:F"
+      },
+      {
+        "pc": 239,
+        "opcode": "getfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 246,
+        "opcode": "getfield",
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 251,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 258,
+        "opcode": "invokespecial",
+        "operation": "Method ls.f_:()V"
+      },
+      {
+        "pc": 263,
+        "opcode": "putfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 268,
+        "opcode": "getfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 272,
+        "opcode": "invokevirtual",
+        "operation": "Method dh.a:(Lsn;)Lbt;"
+      },
+      {
+        "pc": 278,
+        "opcode": "getfield",
+        "operation": "Field bg:F"
+      },
+      {
+        "pc": 294,
+        "opcode": "getfield",
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 299,
+        "opcode": "getfield",
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 303,
+        "opcode": "getfield",
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 306,
+        "opcode": "invokevirtual",
+        "operation": "Method bt.d:(DDD)D"
+      },
+      {
+        "pc": 319,
+        "opcode": "getfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 322,
+        "opcode": "invokevirtual",
+        "operation": "Method dh.a:()V"
+      },
+      {
+        "pc": 326,
+        "opcode": "getfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 329,
+        "opcode": "invokevirtual",
+        "operation": "Method dh.b:()Z"
+      },
+      {
+        "pc": 340,
+        "opcode": "putfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 347,
+        "opcode": "getfield",
+        "operation": "Field a:Ldh;"
+      },
+      {
+        "pc": 351,
+        "opcode": "invokevirtual",
+        "operation": "Method dh.a:(Lsn;)Lbt;"
+      },
+      {
+        "pc": 361,
+        "opcode": "putfield",
+        "operation": "Field az:Z"
+      },
+      {
+        "pc": 371,
+        "opcode": "getfield",
+        "operation": "Field bt.a:D"
+      },
+      {
+        "pc": 375,
+        "opcode": "getfield",
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 383,
+        "opcode": "getfield",
+        "operation": "Field bt.c:D"
+      },
+      {
+        "pc": 387,
+        "opcode": "getfield",
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 395,
+        "opcode": "getfield",
+        "operation": "Field bt.b:D"
+      },
+      {
+        "pc": 407,
+        "opcode": "invokestatic",
+        "operation": "Method java/lang/Math.atan2:(DD)D"
+      },
+      {
+        "pc": 410,
+        "opcode": "ldc2_w",
+        "operation": "double 180.0d"
+      },
+      {
+        "pc": 414,
+        "opcode": "ldc2_w",
+        "operation": "double 3.1415927410125732d"
+      },
+      {
+        "pc": 419,
+        "opcode": "ldc",
+        "operation": "float 90.0f"
+      },
+      {
+        "pc": 427,
+        "opcode": "getfield",
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 435,
+        "opcode": "getfield",
+        "operation": "Field aB:F"
+      },
+      {
+        "pc": 438,
+        "opcode": "putfield",
+        "operation": "Field ax:F"
+      },
+      {
+        "pc": 443,
+        "opcode": "ldc",
+        "operation": "float -180.0f"
+      },
+      {
+        "pc": 451,
+        "opcode": "ldc",
+        "operation": "float 360.0f"
+      },
+      {
+        "pc": 461,
+        "opcode": "ldc",
+        "operation": "float 180.0f"
+      },
+      {
+        "pc": 469,
+        "opcode": "ldc",
+        "operation": "float 360.0f"
+      },
+      {
+        "pc": 479,
+        "opcode": "ldc",
+        "operation": "float 30.0f"
+      },
+      {
+        "pc": 485,
+        "opcode": "ldc",
+        "operation": "float 30.0f"
+      },
+      {
+        "pc": 491,
+        "opcode": "ldc",
+        "operation": "float -30.0f"
+      },
+      {
+        "pc": 497,
+        "opcode": "ldc",
+        "operation": "float -30.0f"
+      },
+      {
+        "pc": 503,
+        "opcode": "getfield",
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 509,
+        "opcode": "putfield",
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 513,
+        "opcode": "getfield",
+        "operation": "Field e:Z"
+      },
+      {
+        "pc": 520,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 527,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 530,
+        "opcode": "getfield",
+        "operation": "Field sn.aM:D"
+      },
+      {
+        "pc": 534,
+        "opcode": "getfield",
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 541,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 544,
+        "opcode": "getfield",
+        "operation": "Field sn.aO:D"
+      },
+      {
+        "pc": 548,
+        "opcode": "getfield",
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 555,
+        "opcode": "getfield",
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 565,
+        "opcode": "invokestatic",
+        "operation": "Method java/lang/Math.atan2:(DD)D"
+      },
+      {
+        "pc": 568,
+        "opcode": "ldc2_w",
+        "operation": "double 180.0d"
+      },
+      {
+        "pc": 572,
+        "opcode": "ldc2_w",
+        "operation": "double 3.1415927410125732d"
+      },
+      {
+        "pc": 577,
+        "opcode": "ldc",
+        "operation": "float 90.0f"
+      },
+      {
+        "pc": 580,
+        "opcode": "putfield",
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 586,
+        "opcode": "getfield",
+        "operation": "Field aS:F"
+      },
+      {
+        "pc": 590,
+        "opcode": "ldc",
+        "operation": "float 90.0f"
+      },
+      {
+        "pc": 593,
+        "opcode": "ldc",
+        "operation": "float 3.1415927f"
+      },
+      {
+        "pc": 596,
+        "opcode": "ldc",
+        "operation": "float 180.0f"
+      },
+      {
+        "pc": 604,
+        "opcode": "invokestatic",
+        "operation": "Method in.a:(F)F"
+      },
+      {
+        "pc": 609,
+        "opcode": "getfield",
+        "operation": "Field ax:F"
+      },
+      {
+        "pc": 615,
+        "opcode": "putfield",
+        "operation": "Field aw:F"
+      },
+      {
+        "pc": 621,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(F)F"
+      },
+      {
+        "pc": 625,
+        "opcode": "getfield",
+        "operation": "Field ax:F"
+      },
+      {
+        "pc": 631,
+        "opcode": "putfield",
+        "operation": "Field ax:F"
+      },
+      {
+        "pc": 643,
+        "opcode": "putfield",
+        "operation": "Field az:Z"
+      },
+      {
+        "pc": 647,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 655,
+        "opcode": "getfield",
+        "operation": "Field d:Lsn;"
+      },
+      {
+        "pc": 658,
+        "opcode": "ldc",
+        "operation": "float 30.0f"
+      },
+      {
+        "pc": 660,
+        "opcode": "ldc",
+        "operation": "float 30.0f"
+      },
+      {
+        "pc": 662,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lsn;FF)V"
+      },
+      {
+        "pc": 666,
+        "opcode": "getfield",
+        "operation": "Field aY:Z"
+      },
+      {
+        "pc": 673,
+        "opcode": "invokevirtual",
+        "operation": "Method F:()Z"
+      },
+      {
+        "pc": 681,
+        "opcode": "putfield",
+        "operation": "Field az:Z"
+      },
+      {
+        "pc": 685,
+        "opcode": "getfield",
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 688,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 691,
+        "opcode": "ldc",
+        "operation": "float 0.8f"
+      },
+      {
+        "pc": 708,
+        "opcode": "putfield",
+        "operation": "Field az:Z"
+      }
+    ],
+    "ii.E()V": [
+      {
+        "pc": 9,
+        "opcode": "ldc",
+        "operation": "float -99999.0f"
+      },
+      {
+        "pc": 24,
+        "opcode": "getfield",
+        "operation": "Field aM:D"
+      },
+      {
+        "pc": 28,
+        "opcode": "getfield",
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 33,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 38,
+        "opcode": "ldc2_w",
+        "operation": "double 6.0d"
+      },
+      {
+        "pc": 42,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 48,
+        "opcode": "getfield",
+        "operation": "Field aN:D"
+      },
+      {
+        "pc": 52,
+        "opcode": "getfield",
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 57,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 62,
+        "opcode": "ldc2_w",
+        "operation": "double 3.0d"
+      },
+      {
+        "pc": 66,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 72,
+        "opcode": "getfield",
+        "operation": "Field aO:D"
+      },
+      {
+        "pc": 76,
+        "opcode": "getfield",
+        "operation": "Field bs:Ljava/util/Random;"
+      },
+      {
+        "pc": 81,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 86,
+        "opcode": "ldc2_w",
+        "operation": "double 6.0d"
+      },
+      {
+        "pc": 90,
+        "opcode": "invokestatic",
+        "operation": "Method in.b:(D)I"
+      },
+      {
+        "pc": 102,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(III)F"
+      },
+      {
+        "pc": 143,
+        "opcode": "getfield",
+        "operation": "Field aI:Lfd;"
+      },
+      {
+        "pc": 151,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 153,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Lsn;IIIF)Ldh;"
+      },
+      {
+        "pc": 156,
+        "opcode": "putfield",
+        "operation": "Field a:Ldh;"
+      }
+    ],
+    "ii.F()Z": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:Ldh;"
+      }
+    ],
+    "ii.a(Ldh;)V": [
+      {
+        "pc": 2,
+        "opcode": "putfield",
+        "operation": "Field a:Ldh;"
+      }
+    ],
+    "in.c(F)F": [
+      {
+        "pc": 2,
+        "opcode": "invokestatic",
+        "operation": "Method java/lang/Math.sqrt:(D)D"
+      }
+    ],
+    "in.d(F)I": [],
+    "in.b(D)I": [],
+    "jx.<init>()V": [
+      {
+        "pc": 1,
+        "opcode": "invokespecial",
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 5,
+        "opcode": "ldc",
+        "operation": "float 0.75f"
+      },
+      {
+        "pc": 7,
+        "opcode": "putfield",
+        "operation": "Field d:F"
+      },
+      {
+        "pc": 13,
+        "opcode": "putfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 19,
+        "opcode": "anewarray",
+        "operation": "class wm"
+      },
+      {
+        "pc": 22,
+        "opcode": "putfield",
+        "operation": "Field a:[Lwm;"
+      }
+    ],
+    "jx.e(I)I": [],
+    "jx.a(II)I": [],
+    "jx.a(I)Ljava/lang/Object;": [
+      {
+        "pc": 1,
+        "opcode": "invokestatic",
+        "operation": "Method e:(I)I"
+      },
+      {
+        "pc": 6,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 11,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 15,
+        "opcode": "invokestatic",
+        "operation": "Method a:(II)I"
+      },
+      {
+        "pc": 25,
+        "opcode": "getfield",
+        "operation": "Field wm.a:I"
+      },
+      {
+        "pc": 33,
+        "opcode": "getfield",
+        "operation": "Field wm.b:Ljava/lang/Object;"
+      },
+      {
+        "pc": 38,
+        "opcode": "getfield",
+        "operation": "Field wm.c:Lwm;"
+      }
+    ],
+    "jx.a(ILjava/lang/Object;)V": [
+      {
+        "pc": 1,
+        "opcode": "invokestatic",
+        "operation": "Method e:(I)I"
+      },
+      {
+        "pc": 7,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 11,
+        "opcode": "invokestatic",
+        "operation": "Method a:(II)I"
+      },
+      {
+        "pc": 17,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 32,
+        "opcode": "getfield",
+        "operation": "Field wm.a:I"
+      },
+      {
+        "pc": 42,
+        "opcode": "putfield",
+        "operation": "Field wm.b:Ljava/lang/Object;"
+      },
+      {
+        "pc": 47,
+        "opcode": "getfield",
+        "operation": "Field wm.c:Lwm;"
+      },
+      {
+        "pc": 57,
+        "opcode": "getfield",
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 62,
+        "opcode": "putfield",
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 71,
+        "opcode": "invokespecial",
+        "operation": "Method a:(IILjava/lang/Object;I)V"
+      }
+    ],
+    "jx.f(I)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 9,
+        "opcode": "ldc",
+        "operation": "int 1073741824"
+      },
+      {
+        "pc": 15,
+        "opcode": "ldc",
+        "operation": "int 2147483647"
+      },
+      {
+        "pc": 17,
+        "opcode": "putfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 22,
+        "opcode": "anewarray",
+        "operation": "class wm"
+      },
+      {
+        "pc": 30,
+        "opcode": "invokespecial",
+        "operation": "Method a:([Lwm;)V"
+      },
+      {
+        "pc": 36,
+        "opcode": "putfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 43,
+        "opcode": "getfield",
+        "operation": "Field d:F"
+      },
+      {
+        "pc": 48,
+        "opcode": "putfield",
+        "operation": "Field c:I"
+      }
+    ],
+    "jx.a([Lwm;)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 36,
+        "opcode": "getfield",
+        "operation": "Field wm.c:Lwm;"
+      },
+      {
+        "pc": 43,
+        "opcode": "getfield",
+        "operation": "Field wm.d:I"
+      },
+      {
+        "pc": 47,
+        "opcode": "invokestatic",
+        "operation": "Method a:(II)I"
+      },
+      {
+        "pc": 58,
+        "opcode": "putfield",
+        "operation": "Field wm.c:Lwm;"
+      }
+    ],
+    "jx.a()V": [
+      {
+        "pc": 2,
+        "opcode": "getfield",
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 7,
+        "opcode": "putfield",
+        "operation": "Field e:I"
+      },
+      {
+        "pc": 11,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 35,
+        "opcode": "putfield",
+        "operation": "Field b:I"
+      }
+    ],
+    "jx.a(IILjava/lang/Object;I)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 10,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 15,
+        "opcode": "new",
+        "operation": "class wm"
+      },
+      {
+        "pc": 24,
+        "opcode": "invokespecial",
+        "operation": "Method wm.\"<init>\":(IILjava/lang/Object;Lwm;)V"
+      },
+      {
+        "pc": 30,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 36,
+        "opcode": "putfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 40,
+        "opcode": "getfield",
+        "operation": "Field c:I"
+      },
+      {
+        "pc": 49,
+        "opcode": "getfield",
+        "operation": "Field a:[Lwm;"
+      },
+      {
+        "pc": 54,
+        "opcode": "invokespecial",
+        "operation": "Method f:(I)V"
+      }
+    ],
+    "le.f(I)Z": [],
+    "lf.<init>()V": [
+      {
+        "pc": 1,
+        "opcode": "invokespecial",
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 8,
+        "opcode": "anewarray",
+        "operation": "class d"
+      },
+      {
+        "pc": 11,
+        "opcode": "putfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 16,
+        "opcode": "putfield",
+        "operation": "Field b:I"
+      }
+    ],
+    "lf.a(Ld;)Ld;": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field d.d:I"
+      },
+      {
+        "pc": 7,
+        "opcode": "new",
+        "operation": "class java/lang/IllegalStateException"
+      },
+      {
+        "pc": 11,
+        "opcode": "ldc",
+        "operation": "String OW KNOWS!"
+      },
+      {
+        "pc": 13,
+        "opcode": "invokespecial",
+        "operation": "Method java/lang/IllegalStateException.\"<init>\":(Ljava/lang/String;)V"
+      },
+      {
+        "pc": 18,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 22,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 30,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 35,
+        "opcode": "anewarray",
+        "operation": "class d"
+      },
+      {
+        "pc": 40,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 47,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 50,
+        "opcode": "invokestatic",
+        "operation": "Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V"
+      },
+      {
+        "pc": 55,
+        "opcode": "putfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 59,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 63,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 70,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 73,
+        "opcode": "putfield",
+        "operation": "Field d.d:I"
+      },
+      {
+        "pc": 79,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 85,
+        "opcode": "putfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 88,
+        "opcode": "invokespecial",
+        "operation": "Method a:(I)V"
+      }
+    ],
+    "lf.a()V": [
+      {
+        "pc": 2,
+        "opcode": "putfield",
+        "operation": "Field b:I"
+      }
+    ],
+    "lf.b()Ld;": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 8,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 13,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 18,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 24,
+        "opcode": "putfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 30,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 34,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 40,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 48,
+        "opcode": "invokespecial",
+        "operation": "Method b:(I)V"
+      },
+      {
+        "pc": 53,
+        "opcode": "putfield",
+        "operation": "Field d.d:I"
+      }
+    ],
+    "lf.a(Ld;F)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 7,
+        "opcode": "putfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 18,
+        "opcode": "getfield",
+        "operation": "Field d.d:I"
+      },
+      {
+        "pc": 21,
+        "opcode": "invokespecial",
+        "operation": "Method a:(I)V"
+      },
+      {
+        "pc": 29,
+        "opcode": "getfield",
+        "operation": "Field d.d:I"
+      },
+      {
+        "pc": 32,
+        "opcode": "invokespecial",
+        "operation": "Method b:(I)V"
+      }
+    ],
+    "lf.a(I)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 8,
+        "opcode": "getfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 24,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 35,
+        "opcode": "getfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 43,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 53,
+        "opcode": "putfield",
+        "operation": "Field d.d:I"
+      },
+      {
+        "pc": 63,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 71,
+        "opcode": "putfield",
+        "operation": "Field d.d:I"
+      }
+    ],
+    "lf.b(I)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 8,
+        "opcode": "getfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 28,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 38,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 48,
+        "opcode": "getfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 56,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      },
+      {
+        "pc": 65,
+        "opcode": "ldc",
+        "operation": "float Infinityf"
+      },
+      {
+        "pc": 73,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 83,
+        "opcode": "getfield",
+        "operation": "Field d.g:F"
+      },
+      {
+        "pc": 104,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 114,
+        "opcode": "putfield",
+        "operation": "Field d.d:I"
+      },
+      {
+        "pc": 131,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 141,
+        "opcode": "putfield",
+        "operation": "Field d.d:I"
+      },
+      {
+        "pc": 151,
+        "opcode": "getfield",
+        "operation": "Field a:[Ld;"
+      },
+      {
+        "pc": 159,
+        "opcode": "putfield",
+        "operation": "Field d.d:I"
+      }
+    ],
+    "lf.c()Z": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field b:I"
+      }
+    ],
+    "li.a(III)I": [],
+    "li.b(III)I": [],
+    "lm.a(III)I": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field b:[B"
+      }
+    ],
+    "lm.b(III)I": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field e:Lwi;"
+      },
+      {
+        "pc": 7,
+        "opcode": "invokevirtual",
+        "operation": "Method wi.a:(III)I"
+      }
+    ],
+    "ln.c()Z": [],
+    "lu.c()Z": [],
+    "ou.c()Z": [],
+    "sg.c()Z": [],
+    "uu.<clinit>()V": [
+      {
+        "pc": 0,
+        "opcode": "new",
+        "operation": "class ct"
+      },
+      {
+        "pc": 4,
+        "opcode": "ldc",
+        "operation": "String stone"
+      },
+      {
+        "pc": 8,
+        "opcode": "invokespecial",
+        "operation": "Method ct.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 11,
+        "opcode": "putstatic",
+        "operation": "Field d:Lct;"
+      },
+      {
+        "pc": 14,
+        "opcode": "new",
+        "operation": "class ct"
+      },
+      {
+        "pc": 18,
+        "opcode": "ldc",
+        "operation": "String wood"
+      },
+      {
+        "pc": 22,
+        "opcode": "invokespecial",
+        "operation": "Method ct.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 25,
+        "opcode": "putstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 28,
+        "opcode": "new",
+        "operation": "class ct"
+      },
+      {
+        "pc": 32,
+        "opcode": "ldc",
+        "operation": "String gravel"
+      },
+      {
+        "pc": 36,
+        "opcode": "invokespecial",
+        "operation": "Method ct.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 39,
+        "opcode": "putstatic",
+        "operation": "Field f:Lct;"
+      },
+      {
+        "pc": 42,
+        "opcode": "new",
+        "operation": "class ct"
+      },
+      {
+        "pc": 46,
+        "opcode": "ldc",
+        "operation": "String grass"
+      },
+      {
+        "pc": 50,
+        "opcode": "invokespecial",
+        "operation": "Method ct.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 53,
+        "opcode": "putstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 56,
+        "opcode": "new",
+        "operation": "class ct"
+      },
+      {
+        "pc": 60,
+        "opcode": "ldc",
+        "operation": "String stone"
+      },
+      {
+        "pc": 64,
+        "opcode": "invokespecial",
+        "operation": "Method ct.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 67,
+        "opcode": "putstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 70,
+        "opcode": "new",
+        "operation": "class ct"
+      },
+      {
+        "pc": 74,
+        "opcode": "ldc",
+        "operation": "String stone"
+      },
+      {
+        "pc": 77,
+        "opcode": "ldc",
+        "operation": "float 1.5f"
+      },
+      {
+        "pc": 79,
+        "opcode": "invokespecial",
+        "operation": "Method ct.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 82,
+        "opcode": "putstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 85,
+        "opcode": "new",
+        "operation": "class al"
+      },
+      {
+        "pc": 89,
+        "opcode": "ldc",
+        "operation": "String stone"
+      },
+      {
+        "pc": 93,
+        "opcode": "invokespecial",
+        "operation": "Method al.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 96,
+        "opcode": "putstatic",
+        "operation": "Field j:Lct;"
+      },
+      {
+        "pc": 99,
+        "opcode": "new",
+        "operation": "class ct"
+      },
+      {
+        "pc": 103,
+        "opcode": "ldc",
+        "operation": "String cloth"
+      },
+      {
+        "pc": 107,
+        "opcode": "invokespecial",
+        "operation": "Method ct.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 110,
+        "opcode": "putstatic",
+        "operation": "Field k:Lct;"
+      },
+      {
+        "pc": 113,
+        "opcode": "new",
+        "operation": "class aj"
+      },
+      {
+        "pc": 117,
+        "opcode": "ldc",
+        "operation": "String sand"
+      },
+      {
+        "pc": 121,
+        "opcode": "invokespecial",
+        "operation": "Method aj.\"<init>\":(Ljava/lang/String;FF)V"
+      },
+      {
+        "pc": 124,
+        "opcode": "putstatic",
+        "operation": "Field l:Lct;"
+      },
+      {
+        "pc": 130,
+        "opcode": "anewarray",
+        "operation": "class uu"
+      },
+      {
+        "pc": 133,
+        "opcode": "putstatic",
+        "operation": "Field m:[Luu;"
+      },
+      {
+        "pc": 141,
+        "opcode": "putstatic",
+        "operation": "Field n:[Z"
+      },
+      {
+        "pc": 149,
+        "opcode": "putstatic",
+        "operation": "Field o:[Z"
+      },
+      {
+        "pc": 157,
+        "opcode": "putstatic",
+        "operation": "Field p:[Z"
+      },
+      {
+        "pc": 165,
+        "opcode": "putstatic",
+        "operation": "Field q:[I"
+      },
+      {
+        "pc": 173,
+        "opcode": "putstatic",
+        "operation": "Field r:[Z"
+      },
+      {
+        "pc": 181,
+        "opcode": "putstatic",
+        "operation": "Field s:[I"
+      },
+      {
+        "pc": 189,
+        "opcode": "putstatic",
+        "operation": "Field t:[Z"
+      },
+      {
+        "pc": 192,
+        "opcode": "new",
+        "operation": "class eo"
+      },
+      {
+        "pc": 198,
+        "opcode": "invokespecial",
+        "operation": "Method eo.\"<init>\":(II)V"
+      },
+      {
+        "pc": 201,
+        "opcode": "ldc",
+        "operation": "float 1.5f"
+      },
+      {
+        "pc": 203,
+        "opcode": "invokevirtual",
+        "operation": "Method eo.c:(F)Luu;"
+      },
+      {
+        "pc": 206,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 208,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 211,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 214,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 217,
+        "opcode": "ldc",
+        "operation": "String stone"
+      },
+      {
+        "pc": 219,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 222,
+        "opcode": "putstatic",
+        "operation": "Field u:Luu;"
+      },
+      {
+        "pc": 225,
+        "opcode": "new",
+        "operation": "class wp"
+      },
+      {
+        "pc": 230,
+        "opcode": "invokespecial",
+        "operation": "Method wp.\"<init>\":(I)V"
+      },
+      {
+        "pc": 233,
+        "opcode": "ldc",
+        "operation": "float 0.6f"
+      },
+      {
+        "pc": 235,
+        "opcode": "invokevirtual",
+        "operation": "Method wp.c:(F)Luu;"
+      },
+      {
+        "pc": 238,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 241,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 244,
+        "opcode": "ldc",
+        "operation": "String grass"
+      },
+      {
+        "pc": 246,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 249,
+        "opcode": "checkcast",
+        "operation": "class wp"
+      },
+      {
+        "pc": 252,
+        "opcode": "putstatic",
+        "operation": "Field v:Lwp;"
+      },
+      {
+        "pc": 255,
+        "opcode": "new",
+        "operation": "class ot"
+      },
+      {
+        "pc": 261,
+        "opcode": "invokespecial",
+        "operation": "Method ot.\"<init>\":(II)V"
+      },
+      {
+        "pc": 264,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 266,
+        "opcode": "invokevirtual",
+        "operation": "Method ot.c:(F)Luu;"
+      },
+      {
+        "pc": 269,
+        "opcode": "getstatic",
+        "operation": "Field f:Lct;"
+      },
+      {
+        "pc": 272,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 275,
+        "opcode": "ldc",
+        "operation": "String dirt"
+      },
+      {
+        "pc": 277,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 280,
+        "opcode": "putstatic",
+        "operation": "Field w:Luu;"
+      },
+      {
+        "pc": 283,
+        "opcode": "new",
+        "operation": "class uu"
+      },
+      {
+        "pc": 290,
+        "opcode": "getstatic",
+        "operation": "Field ln.e:Lln;"
+      },
+      {
+        "pc": 293,
+        "opcode": "invokespecial",
+        "operation": "Method \"<init>\":(IILln;)V"
+      },
+      {
+        "pc": 297,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(F)Luu;"
+      },
+      {
+        "pc": 300,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 302,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 305,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 308,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 311,
+        "opcode": "ldc",
+        "operation": "String stonebrick"
+      },
+      {
+        "pc": 313,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 316,
+        "opcode": "putstatic",
+        "operation": "Field x:Luu;"
+      },
+      {
+        "pc": 319,
+        "opcode": "new",
+        "operation": "class uu"
+      },
+      {
+        "pc": 325,
+        "opcode": "getstatic",
+        "operation": "Field ln.d:Lln;"
+      },
+      {
+        "pc": 328,
+        "opcode": "invokespecial",
+        "operation": "Method \"<init>\":(IILln;)V"
+      },
+      {
+        "pc": 332,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(F)Luu;"
+      },
+      {
+        "pc": 335,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 337,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 340,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 343,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 346,
+        "opcode": "ldc",
+        "operation": "String wood"
+      },
+      {
+        "pc": 348,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 351,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 354,
+        "opcode": "putstatic",
+        "operation": "Field y:Luu;"
+      },
+      {
+        "pc": 357,
+        "opcode": "new",
+        "operation": "class he"
+      },
+      {
+        "pc": 365,
+        "opcode": "invokespecial",
+        "operation": "Method he.\"<init>\":(II)V"
+      },
+      {
+        "pc": 369,
+        "opcode": "invokevirtual",
+        "operation": "Method he.c:(F)Luu;"
+      },
+      {
+        "pc": 372,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 375,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 378,
+        "opcode": "ldc",
+        "operation": "String sapling"
+      },
+      {
+        "pc": 380,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 383,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 386,
+        "opcode": "putstatic",
+        "operation": "Field z:Luu;"
+      },
+      {
+        "pc": 389,
+        "opcode": "new",
+        "operation": "class uu"
+      },
+      {
+        "pc": 397,
+        "opcode": "getstatic",
+        "operation": "Field ln.e:Lln;"
+      },
+      {
+        "pc": 400,
+        "opcode": "invokespecial",
+        "operation": "Method \"<init>\":(IILln;)V"
+      },
+      {
+        "pc": 403,
+        "opcode": "invokevirtual",
+        "operation": "Method l:()Luu;"
+      },
+      {
+        "pc": 406,
+        "opcode": "ldc",
+        "operation": "float 6000000.0f"
+      },
+      {
+        "pc": 408,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 411,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 414,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 417,
+        "opcode": "ldc",
+        "operation": "String bedrock"
+      },
+      {
+        "pc": 419,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 422,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 425,
+        "opcode": "putstatic",
+        "operation": "Field A:Luu;"
+      },
+      {
+        "pc": 428,
+        "opcode": "new",
+        "operation": "class om"
+      },
+      {
+        "pc": 434,
+        "opcode": "getstatic",
+        "operation": "Field ln.g:Lln;"
+      },
+      {
+        "pc": 437,
+        "opcode": "invokespecial",
+        "operation": "Method om.\"<init>\":(ILln;)V"
+      },
+      {
+        "pc": 440,
+        "opcode": "ldc",
+        "operation": "float 100.0f"
+      },
+      {
+        "pc": 442,
+        "opcode": "invokevirtual",
+        "operation": "Method om.c:(F)Luu;"
+      },
+      {
+        "pc": 446,
+        "opcode": "invokevirtual",
+        "operation": "Method g:(I)Luu;"
+      },
+      {
+        "pc": 449,
+        "opcode": "ldc",
+        "operation": "String water"
+      },
+      {
+        "pc": 451,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 454,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 457,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 460,
+        "opcode": "putstatic",
+        "operation": "Field B:Luu;"
+      },
+      {
+        "pc": 463,
+        "opcode": "new",
+        "operation": "class nx"
+      },
+      {
+        "pc": 469,
+        "opcode": "getstatic",
+        "operation": "Field ln.g:Lln;"
+      },
+      {
+        "pc": 472,
+        "opcode": "invokespecial",
+        "operation": "Method nx.\"<init>\":(ILln;)V"
+      },
+      {
+        "pc": 475,
+        "opcode": "ldc",
+        "operation": "float 100.0f"
+      },
+      {
+        "pc": 477,
+        "opcode": "invokevirtual",
+        "operation": "Method nx.c:(F)Luu;"
+      },
+      {
+        "pc": 481,
+        "opcode": "invokevirtual",
+        "operation": "Method g:(I)Luu;"
+      },
+      {
+        "pc": 484,
+        "opcode": "ldc",
+        "operation": "String water"
+      },
+      {
+        "pc": 486,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 489,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 492,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 495,
+        "opcode": "putstatic",
+        "operation": "Field C:Luu;"
+      },
+      {
+        "pc": 498,
+        "opcode": "new",
+        "operation": "class om"
+      },
+      {
+        "pc": 504,
+        "opcode": "getstatic",
+        "operation": "Field ln.h:Lln;"
+      },
+      {
+        "pc": 507,
+        "opcode": "invokespecial",
+        "operation": "Method om.\"<init>\":(ILln;)V"
+      },
+      {
+        "pc": 511,
+        "opcode": "invokevirtual",
+        "operation": "Method om.c:(F)Luu;"
+      },
+      {
+        "pc": 515,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 521,
+        "opcode": "invokevirtual",
+        "operation": "Method g:(I)Luu;"
+      },
+      {
+        "pc": 524,
+        "opcode": "ldc",
+        "operation": "String lava"
+      },
+      {
+        "pc": 526,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 529,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 532,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 535,
+        "opcode": "putstatic",
+        "operation": "Field D:Luu;"
+      },
+      {
+        "pc": 538,
+        "opcode": "new",
+        "operation": "class nx"
+      },
+      {
+        "pc": 544,
+        "opcode": "getstatic",
+        "operation": "Field ln.h:Lln;"
+      },
+      {
+        "pc": 547,
+        "opcode": "invokespecial",
+        "operation": "Method nx.\"<init>\":(ILln;)V"
+      },
+      {
+        "pc": 550,
+        "opcode": "ldc",
+        "operation": "float 100.0f"
+      },
+      {
+        "pc": 552,
+        "opcode": "invokevirtual",
+        "operation": "Method nx.c:(F)Luu;"
+      },
+      {
+        "pc": 556,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 562,
+        "opcode": "invokevirtual",
+        "operation": "Method g:(I)Luu;"
+      },
+      {
+        "pc": 565,
+        "opcode": "ldc",
+        "operation": "String lava"
+      },
+      {
+        "pc": 567,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 570,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 573,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 576,
+        "opcode": "putstatic",
+        "operation": "Field E:Luu;"
+      },
+      {
+        "pc": 579,
+        "opcode": "new",
+        "operation": "class gk"
+      },
+      {
+        "pc": 587,
+        "opcode": "invokespecial",
+        "operation": "Method gk.\"<init>\":(II)V"
+      },
+      {
+        "pc": 590,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 592,
+        "opcode": "invokevirtual",
+        "operation": "Method gk.c:(F)Luu;"
+      },
+      {
+        "pc": 595,
+        "opcode": "getstatic",
+        "operation": "Field l:Lct;"
+      },
+      {
+        "pc": 598,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 601,
+        "opcode": "ldc",
+        "operation": "String sand"
+      },
+      {
+        "pc": 603,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 606,
+        "opcode": "putstatic",
+        "operation": "Field F:Luu;"
+      },
+      {
+        "pc": 609,
+        "opcode": "new",
+        "operation": "class ne"
+      },
+      {
+        "pc": 617,
+        "opcode": "invokespecial",
+        "operation": "Method ne.\"<init>\":(II)V"
+      },
+      {
+        "pc": 620,
+        "opcode": "ldc",
+        "operation": "float 0.6f"
+      },
+      {
+        "pc": 622,
+        "opcode": "invokevirtual",
+        "operation": "Method ne.c:(F)Luu;"
+      },
+      {
+        "pc": 625,
+        "opcode": "getstatic",
+        "operation": "Field f:Lct;"
+      },
+      {
+        "pc": 628,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 631,
+        "opcode": "ldc",
+        "operation": "String gravel"
+      },
+      {
+        "pc": 633,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 636,
+        "opcode": "putstatic",
+        "operation": "Field G:Luu;"
+      },
+      {
+        "pc": 639,
+        "opcode": "new",
+        "operation": "class mt"
+      },
+      {
+        "pc": 647,
+        "opcode": "invokespecial",
+        "operation": "Method mt.\"<init>\":(II)V"
+      },
+      {
+        "pc": 650,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 652,
+        "opcode": "invokevirtual",
+        "operation": "Method mt.c:(F)Luu;"
+      },
+      {
+        "pc": 655,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 657,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 660,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 663,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 666,
+        "opcode": "ldc",
+        "operation": "String oreGold"
+      },
+      {
+        "pc": 668,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 671,
+        "opcode": "putstatic",
+        "operation": "Field H:Luu;"
+      },
+      {
+        "pc": 674,
+        "opcode": "new",
+        "operation": "class mt"
+      },
+      {
+        "pc": 682,
+        "opcode": "invokespecial",
+        "operation": "Method mt.\"<init>\":(II)V"
+      },
+      {
+        "pc": 685,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 687,
+        "opcode": "invokevirtual",
+        "operation": "Method mt.c:(F)Luu;"
+      },
+      {
+        "pc": 690,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 692,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 695,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 698,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 701,
+        "opcode": "ldc",
+        "operation": "String oreIron"
+      },
+      {
+        "pc": 703,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 706,
+        "opcode": "putstatic",
+        "operation": "Field I:Luu;"
+      },
+      {
+        "pc": 709,
+        "opcode": "new",
+        "operation": "class mt"
+      },
+      {
+        "pc": 717,
+        "opcode": "invokespecial",
+        "operation": "Method mt.\"<init>\":(II)V"
+      },
+      {
+        "pc": 720,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 722,
+        "opcode": "invokevirtual",
+        "operation": "Method mt.c:(F)Luu;"
+      },
+      {
+        "pc": 725,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 727,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 730,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 733,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 736,
+        "opcode": "ldc",
+        "operation": "String oreCoal"
+      },
+      {
+        "pc": 738,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 741,
+        "opcode": "putstatic",
+        "operation": "Field J:Luu;"
+      },
+      {
+        "pc": 744,
+        "opcode": "new",
+        "operation": "class vg"
+      },
+      {
+        "pc": 750,
+        "opcode": "invokespecial",
+        "operation": "Method vg.\"<init>\":(I)V"
+      },
+      {
+        "pc": 754,
+        "opcode": "invokevirtual",
+        "operation": "Method vg.c:(F)Luu;"
+      },
+      {
+        "pc": 757,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 760,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 763,
+        "opcode": "ldc",
+        "operation": "String log"
+      },
+      {
+        "pc": 765,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 768,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 771,
+        "opcode": "putstatic",
+        "operation": "Field K:Luu;"
+      },
+      {
+        "pc": 774,
+        "opcode": "new",
+        "operation": "class bk"
+      },
+      {
+        "pc": 782,
+        "opcode": "invokespecial",
+        "operation": "Method bk.\"<init>\":(II)V"
+      },
+      {
+        "pc": 785,
+        "opcode": "ldc",
+        "operation": "float 0.2f"
+      },
+      {
+        "pc": 787,
+        "opcode": "invokevirtual",
+        "operation": "Method bk.c:(F)Luu;"
+      },
+      {
+        "pc": 791,
+        "opcode": "invokevirtual",
+        "operation": "Method g:(I)Luu;"
+      },
+      {
+        "pc": 794,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 797,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 800,
+        "opcode": "ldc",
+        "operation": "String leaves"
+      },
+      {
+        "pc": 802,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 805,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 808,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 811,
+        "opcode": "checkcast",
+        "operation": "class bk"
+      },
+      {
+        "pc": 814,
+        "opcode": "putstatic",
+        "operation": "Field L:Lbk;"
+      },
+      {
+        "pc": 817,
+        "opcode": "new",
+        "operation": "class xf"
+      },
+      {
+        "pc": 823,
+        "opcode": "invokespecial",
+        "operation": "Method xf.\"<init>\":(I)V"
+      },
+      {
+        "pc": 826,
+        "opcode": "ldc",
+        "operation": "float 0.6f"
+      },
+      {
+        "pc": 828,
+        "opcode": "invokevirtual",
+        "operation": "Method xf.c:(F)Luu;"
+      },
+      {
+        "pc": 831,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 834,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 837,
+        "opcode": "ldc",
+        "operation": "String sponge"
+      },
+      {
+        "pc": 839,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 842,
+        "opcode": "putstatic",
+        "operation": "Field M:Luu;"
+      },
+      {
+        "pc": 845,
+        "opcode": "new",
+        "operation": "class fk"
+      },
+      {
+        "pc": 853,
+        "opcode": "getstatic",
+        "operation": "Field ln.p:Lln;"
+      },
+      {
+        "pc": 857,
+        "opcode": "invokespecial",
+        "operation": "Method fk.\"<init>\":(IILln;Z)V"
+      },
+      {
+        "pc": 860,
+        "opcode": "ldc",
+        "operation": "float 0.3f"
+      },
+      {
+        "pc": 862,
+        "opcode": "invokevirtual",
+        "operation": "Method fk.c:(F)Luu;"
+      },
+      {
+        "pc": 865,
+        "opcode": "getstatic",
+        "operation": "Field j:Lct;"
+      },
+      {
+        "pc": 868,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 871,
+        "opcode": "ldc",
+        "operation": "String glass"
+      },
+      {
+        "pc": 873,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 876,
+        "opcode": "putstatic",
+        "operation": "Field N:Luu;"
+      },
+      {
+        "pc": 879,
+        "opcode": "new",
+        "operation": "class mt"
+      },
+      {
+        "pc": 888,
+        "opcode": "invokespecial",
+        "operation": "Method mt.\"<init>\":(II)V"
+      },
+      {
+        "pc": 891,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 893,
+        "opcode": "invokevirtual",
+        "operation": "Method mt.c:(F)Luu;"
+      },
+      {
+        "pc": 896,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 898,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 901,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 904,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 907,
+        "opcode": "ldc",
+        "operation": "String oreLapis"
+      },
+      {
+        "pc": 909,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 912,
+        "opcode": "putstatic",
+        "operation": "Field O:Luu;"
+      },
+      {
+        "pc": 915,
+        "opcode": "new",
+        "operation": "class uu"
+      },
+      {
+        "pc": 924,
+        "opcode": "getstatic",
+        "operation": "Field ln.e:Lln;"
+      },
+      {
+        "pc": 927,
+        "opcode": "invokespecial",
+        "operation": "Method \"<init>\":(IILln;)V"
+      },
+      {
+        "pc": 930,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 932,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(F)Luu;"
+      },
+      {
+        "pc": 935,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 937,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 940,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 943,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 946,
+        "opcode": "ldc",
+        "operation": "String blockLapis"
+      },
+      {
+        "pc": 948,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 951,
+        "opcode": "putstatic",
+        "operation": "Field P:Luu;"
+      },
+      {
+        "pc": 954,
+        "opcode": "new",
+        "operation": "class xq"
+      },
+      {
+        "pc": 960,
+        "opcode": "invokespecial",
+        "operation": "Method xq.\"<init>\":(I)V"
+      },
+      {
+        "pc": 963,
+        "opcode": "ldc",
+        "operation": "float 3.5f"
+      },
+      {
+        "pc": 965,
+        "opcode": "invokevirtual",
+        "operation": "Method xq.c:(F)Luu;"
+      },
+      {
+        "pc": 968,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 971,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 974,
+        "opcode": "ldc",
+        "operation": "String dispenser"
+      },
+      {
+        "pc": 976,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 979,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 982,
+        "opcode": "putstatic",
+        "operation": "Field Q:Luu;"
+      },
+      {
+        "pc": 985,
+        "opcode": "new",
+        "operation": "class rd"
+      },
+      {
+        "pc": 991,
+        "opcode": "invokespecial",
+        "operation": "Method rd.\"<init>\":(I)V"
+      },
+      {
+        "pc": 994,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 997,
+        "opcode": "invokevirtual",
+        "operation": "Method rd.a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1000,
+        "opcode": "ldc",
+        "operation": "float 0.8f"
+      },
+      {
+        "pc": 1002,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(F)Luu;"
+      },
+      {
+        "pc": 1005,
+        "opcode": "ldc",
+        "operation": "String sandStone"
+      },
+      {
+        "pc": 1007,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1010,
+        "opcode": "putstatic",
+        "operation": "Field R:Luu;"
+      },
+      {
+        "pc": 1013,
+        "opcode": "new",
+        "operation": "class pt"
+      },
+      {
+        "pc": 1019,
+        "opcode": "invokespecial",
+        "operation": "Method pt.\"<init>\":(I)V"
+      },
+      {
+        "pc": 1022,
+        "opcode": "ldc",
+        "operation": "float 0.8f"
+      },
+      {
+        "pc": 1024,
+        "opcode": "invokevirtual",
+        "operation": "Method pt.c:(F)Luu;"
+      },
+      {
+        "pc": 1027,
+        "opcode": "ldc",
+        "operation": "String musicBlock"
+      },
+      {
+        "pc": 1029,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1032,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1035,
+        "opcode": "putstatic",
+        "operation": "Field S:Luu;"
+      },
+      {
+        "pc": 1038,
+        "opcode": "new",
+        "operation": "class ve"
+      },
+      {
+        "pc": 1044,
+        "opcode": "invokespecial",
+        "operation": "Method ve.\"<init>\":(I)V"
+      },
+      {
+        "pc": 1047,
+        "opcode": "ldc",
+        "operation": "float 0.2f"
+      },
+      {
+        "pc": 1049,
+        "opcode": "invokevirtual",
+        "operation": "Method ve.c:(F)Luu;"
+      },
+      {
+        "pc": 1052,
+        "opcode": "ldc",
+        "operation": "String bed"
+      },
+      {
+        "pc": 1054,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1057,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 1060,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1063,
+        "opcode": "putstatic",
+        "operation": "Field T:Luu;"
+      },
+      {
+        "pc": 1066,
+        "opcode": "new",
+        "operation": "class pc"
+      },
+      {
+        "pc": 1076,
+        "opcode": "invokespecial",
+        "operation": "Method pc.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 1079,
+        "opcode": "ldc",
+        "operation": "float 0.7f"
+      },
+      {
+        "pc": 1081,
+        "opcode": "invokevirtual",
+        "operation": "Method pc.c:(F)Luu;"
+      },
+      {
+        "pc": 1084,
+        "opcode": "getstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 1087,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1090,
+        "opcode": "ldc",
+        "operation": "String goldenRail"
+      },
+      {
+        "pc": 1092,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1095,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1098,
+        "opcode": "putstatic",
+        "operation": "Field U:Luu;"
+      },
+      {
+        "pc": 1101,
+        "opcode": "new",
+        "operation": "class ph"
+      },
+      {
+        "pc": 1110,
+        "opcode": "invokespecial",
+        "operation": "Method ph.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1113,
+        "opcode": "ldc",
+        "operation": "float 0.7f"
+      },
+      {
+        "pc": 1115,
+        "opcode": "invokevirtual",
+        "operation": "Method ph.c:(F)Luu;"
+      },
+      {
+        "pc": 1118,
+        "opcode": "getstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 1121,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1124,
+        "opcode": "ldc",
+        "operation": "String detectorRail"
+      },
+      {
+        "pc": 1126,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1129,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1132,
+        "opcode": "putstatic",
+        "operation": "Field V:Luu;"
+      },
+      {
+        "pc": 1135,
+        "opcode": "new",
+        "operation": "class jq"
+      },
+      {
+        "pc": 1144,
+        "opcode": "invokespecial",
+        "operation": "Method jq.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 1147,
+        "opcode": "ldc",
+        "operation": "String pistonStickyBase"
+      },
+      {
+        "pc": 1149,
+        "opcode": "invokevirtual",
+        "operation": "Method jq.a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1152,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1155,
+        "opcode": "putstatic",
+        "operation": "Field W:Luu;"
+      },
+      {
+        "pc": 1158,
+        "opcode": "new",
+        "operation": "class rn"
+      },
+      {
+        "pc": 1166,
+        "opcode": "invokespecial",
+        "operation": "Method rn.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1170,
+        "opcode": "invokevirtual",
+        "operation": "Method rn.g:(I)Luu;"
+      },
+      {
+        "pc": 1173,
+        "opcode": "ldc",
+        "operation": "float 4.0f"
+      },
+      {
+        "pc": 1175,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(F)Luu;"
+      },
+      {
+        "pc": 1178,
+        "opcode": "ldc",
+        "operation": "String web"
+      },
+      {
+        "pc": 1180,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1183,
+        "opcode": "putstatic",
+        "operation": "Field X:Luu;"
+      },
+      {
+        "pc": 1186,
+        "opcode": "new",
+        "operation": "class ru"
+      },
+      {
+        "pc": 1194,
+        "opcode": "invokespecial",
+        "operation": "Method ru.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1198,
+        "opcode": "invokevirtual",
+        "operation": "Method ru.c:(F)Luu;"
+      },
+      {
+        "pc": 1201,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 1204,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1207,
+        "opcode": "ldc",
+        "operation": "String tallgrass"
+      },
+      {
+        "pc": 1209,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1212,
+        "opcode": "checkcast",
+        "operation": "class ru"
+      },
+      {
+        "pc": 1215,
+        "opcode": "putstatic",
+        "operation": "Field Y:Lru;"
+      },
+      {
+        "pc": 1218,
+        "opcode": "new",
+        "operation": "class jb"
+      },
+      {
+        "pc": 1226,
+        "opcode": "invokespecial",
+        "operation": "Method jb.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1230,
+        "opcode": "invokevirtual",
+        "operation": "Method jb.c:(F)Luu;"
+      },
+      {
+        "pc": 1233,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 1236,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1239,
+        "opcode": "ldc",
+        "operation": "String deadbush"
+      },
+      {
+        "pc": 1241,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1244,
+        "opcode": "checkcast",
+        "operation": "class jb"
+      },
+      {
+        "pc": 1247,
+        "opcode": "putstatic",
+        "operation": "Field Z:Ljb;"
+      },
+      {
+        "pc": 1250,
+        "opcode": "new",
+        "operation": "class jq"
+      },
+      {
+        "pc": 1259,
+        "opcode": "invokespecial",
+        "operation": "Method jq.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 1262,
+        "opcode": "ldc",
+        "operation": "String pistonBase"
+      },
+      {
+        "pc": 1264,
+        "opcode": "invokevirtual",
+        "operation": "Method jq.a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1267,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1270,
+        "opcode": "putstatic",
+        "operation": "Field aa:Luu;"
+      },
+      {
+        "pc": 1273,
+        "opcode": "new",
+        "operation": "class h"
+      },
+      {
+        "pc": 1281,
+        "opcode": "invokespecial",
+        "operation": "Method h.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1284,
+        "opcode": "invokevirtual",
+        "operation": "Method h.j:()Luu;"
+      },
+      {
+        "pc": 1287,
+        "opcode": "checkcast",
+        "operation": "class h"
+      },
+      {
+        "pc": 1290,
+        "opcode": "putstatic",
+        "operation": "Field ab:Lh;"
+      },
+      {
+        "pc": 1293,
+        "opcode": "new",
+        "operation": "class ee"
+      },
+      {
+        "pc": 1297,
+        "opcode": "invokespecial",
+        "operation": "Method ee.\"<init>\":()V"
+      },
+      {
+        "pc": 1300,
+        "opcode": "ldc",
+        "operation": "float 0.8f"
+      },
+      {
+        "pc": 1302,
+        "opcode": "invokevirtual",
+        "operation": "Method ee.c:(F)Luu;"
+      },
+      {
+        "pc": 1305,
+        "opcode": "getstatic",
+        "operation": "Field k:Lct;"
+      },
+      {
+        "pc": 1308,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1311,
+        "opcode": "ldc",
+        "operation": "String cloth"
+      },
+      {
+        "pc": 1313,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1316,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1319,
+        "opcode": "putstatic",
+        "operation": "Field ac:Luu;"
+      },
+      {
+        "pc": 1322,
+        "opcode": "new",
+        "operation": "class ut"
+      },
+      {
+        "pc": 1328,
+        "opcode": "invokespecial",
+        "operation": "Method ut.\"<init>\":(I)V"
+      },
+      {
+        "pc": 1331,
+        "opcode": "putstatic",
+        "operation": "Field ad:Lut;"
+      },
+      {
+        "pc": 1334,
+        "opcode": "new",
+        "operation": "class wb"
+      },
+      {
+        "pc": 1342,
+        "opcode": "invokespecial",
+        "operation": "Method wb.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1346,
+        "opcode": "invokevirtual",
+        "operation": "Method wb.c:(F)Luu;"
+      },
+      {
+        "pc": 1349,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 1352,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1355,
+        "opcode": "ldc",
+        "operation": "String flower"
+      },
+      {
+        "pc": 1357,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1360,
+        "opcode": "checkcast",
+        "operation": "class wb"
+      },
+      {
+        "pc": 1363,
+        "opcode": "putstatic",
+        "operation": "Field ae:Lwb;"
+      },
+      {
+        "pc": 1366,
+        "opcode": "new",
+        "operation": "class wb"
+      },
+      {
+        "pc": 1374,
+        "opcode": "invokespecial",
+        "operation": "Method wb.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1378,
+        "opcode": "invokevirtual",
+        "operation": "Method wb.c:(F)Luu;"
+      },
+      {
+        "pc": 1381,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 1384,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1387,
+        "opcode": "ldc",
+        "operation": "String rose"
+      },
+      {
+        "pc": 1389,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1392,
+        "opcode": "checkcast",
+        "operation": "class wb"
+      },
+      {
+        "pc": 1395,
+        "opcode": "putstatic",
+        "operation": "Field af:Lwb;"
+      },
+      {
+        "pc": 1398,
+        "opcode": "new",
+        "operation": "class tl"
+      },
+      {
+        "pc": 1406,
+        "opcode": "invokespecial",
+        "operation": "Method tl.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1410,
+        "opcode": "invokevirtual",
+        "operation": "Method tl.c:(F)Luu;"
+      },
+      {
+        "pc": 1413,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 1416,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1419,
+        "opcode": "ldc",
+        "operation": "float 0.125f"
+      },
+      {
+        "pc": 1421,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 1424,
+        "opcode": "ldc",
+        "operation": "String mushroom"
+      },
+      {
+        "pc": 1426,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1429,
+        "opcode": "checkcast",
+        "operation": "class wb"
+      },
+      {
+        "pc": 1432,
+        "opcode": "putstatic",
+        "operation": "Field ag:Lwb;"
+      },
+      {
+        "pc": 1435,
+        "opcode": "new",
+        "operation": "class tl"
+      },
+      {
+        "pc": 1443,
+        "opcode": "invokespecial",
+        "operation": "Method tl.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1447,
+        "opcode": "invokevirtual",
+        "operation": "Method tl.c:(F)Luu;"
+      },
+      {
+        "pc": 1450,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 1453,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1456,
+        "opcode": "ldc",
+        "operation": "String mushroom"
+      },
+      {
+        "pc": 1458,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1461,
+        "opcode": "checkcast",
+        "operation": "class wb"
+      },
+      {
+        "pc": 1464,
+        "opcode": "putstatic",
+        "operation": "Field ah:Lwb;"
+      },
+      {
+        "pc": 1467,
+        "opcode": "new",
+        "operation": "class l"
+      },
+      {
+        "pc": 1475,
+        "opcode": "invokespecial",
+        "operation": "Method l.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1478,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 1480,
+        "opcode": "invokevirtual",
+        "operation": "Method l.c:(F)Luu;"
+      },
+      {
+        "pc": 1483,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 1485,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 1488,
+        "opcode": "getstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 1491,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1494,
+        "opcode": "ldc",
+        "operation": "String blockGold"
+      },
+      {
+        "pc": 1496,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1499,
+        "opcode": "putstatic",
+        "operation": "Field ai:Luu;"
+      },
+      {
+        "pc": 1502,
+        "opcode": "new",
+        "operation": "class l"
+      },
+      {
+        "pc": 1510,
+        "opcode": "invokespecial",
+        "operation": "Method l.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1513,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 1515,
+        "opcode": "invokevirtual",
+        "operation": "Method l.c:(F)Luu;"
+      },
+      {
+        "pc": 1518,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 1520,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 1523,
+        "opcode": "getstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 1526,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1529,
+        "opcode": "ldc",
+        "operation": "String blockIron"
+      },
+      {
+        "pc": 1531,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1534,
+        "opcode": "putstatic",
+        "operation": "Field aj:Luu;"
+      },
+      {
+        "pc": 1537,
+        "opcode": "new",
+        "operation": "class ys"
+      },
+      {
+        "pc": 1544,
+        "opcode": "invokespecial",
+        "operation": "Method ys.\"<init>\":(IZ)V"
+      },
+      {
+        "pc": 1548,
+        "opcode": "invokevirtual",
+        "operation": "Method ys.c:(F)Luu;"
+      },
+      {
+        "pc": 1551,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 1553,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 1556,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 1559,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1562,
+        "opcode": "ldc",
+        "operation": "String stoneSlab"
+      },
+      {
+        "pc": 1564,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1567,
+        "opcode": "putstatic",
+        "operation": "Field ak:Luu;"
+      },
+      {
+        "pc": 1570,
+        "opcode": "new",
+        "operation": "class ys"
+      },
+      {
+        "pc": 1577,
+        "opcode": "invokespecial",
+        "operation": "Method ys.\"<init>\":(IZ)V"
+      },
+      {
+        "pc": 1581,
+        "opcode": "invokevirtual",
+        "operation": "Method ys.c:(F)Luu;"
+      },
+      {
+        "pc": 1584,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 1586,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 1589,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 1592,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1595,
+        "opcode": "ldc",
+        "operation": "String stoneSlab"
+      },
+      {
+        "pc": 1597,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1600,
+        "opcode": "putstatic",
+        "operation": "Field al:Luu;"
+      },
+      {
+        "pc": 1603,
+        "opcode": "new",
+        "operation": "class uu"
+      },
+      {
+        "pc": 1611,
+        "opcode": "getstatic",
+        "operation": "Field ln.e:Lln;"
+      },
+      {
+        "pc": 1614,
+        "opcode": "invokespecial",
+        "operation": "Method \"<init>\":(IILln;)V"
+      },
+      {
+        "pc": 1618,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(F)Luu;"
+      },
+      {
+        "pc": 1621,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 1623,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 1626,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 1629,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1632,
+        "opcode": "ldc",
+        "operation": "String brick"
+      },
+      {
+        "pc": 1634,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1637,
+        "opcode": "putstatic",
+        "operation": "Field am:Luu;"
+      },
+      {
+        "pc": 1640,
+        "opcode": "new",
+        "operation": "class ah"
+      },
+      {
+        "pc": 1648,
+        "opcode": "invokespecial",
+        "operation": "Method ah.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1652,
+        "opcode": "invokevirtual",
+        "operation": "Method ah.c:(F)Luu;"
+      },
+      {
+        "pc": 1655,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 1658,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1661,
+        "opcode": "ldc",
+        "operation": "String tnt"
+      },
+      {
+        "pc": 1663,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1666,
+        "opcode": "putstatic",
+        "operation": "Field an:Luu;"
+      },
+      {
+        "pc": 1669,
+        "opcode": "new",
+        "operation": "class hb"
+      },
+      {
+        "pc": 1677,
+        "opcode": "invokespecial",
+        "operation": "Method hb.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1680,
+        "opcode": "ldc",
+        "operation": "float 1.5f"
+      },
+      {
+        "pc": 1682,
+        "opcode": "invokevirtual",
+        "operation": "Method hb.c:(F)Luu;"
+      },
+      {
+        "pc": 1685,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 1688,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1691,
+        "opcode": "ldc",
+        "operation": "String bookshelf"
+      },
+      {
+        "pc": 1693,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1696,
+        "opcode": "putstatic",
+        "operation": "Field ao:Luu;"
+      },
+      {
+        "pc": 1699,
+        "opcode": "new",
+        "operation": "class uu"
+      },
+      {
+        "pc": 1707,
+        "opcode": "getstatic",
+        "operation": "Field ln.e:Lln;"
+      },
+      {
+        "pc": 1710,
+        "opcode": "invokespecial",
+        "operation": "Method \"<init>\":(IILln;)V"
+      },
+      {
+        "pc": 1714,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(F)Luu;"
+      },
+      {
+        "pc": 1717,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 1719,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 1722,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 1725,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1728,
+        "opcode": "ldc",
+        "operation": "String stoneMoss"
+      },
+      {
+        "pc": 1730,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1733,
+        "opcode": "putstatic",
+        "operation": "Field ap:Luu;"
+      },
+      {
+        "pc": 1736,
+        "opcode": "new",
+        "operation": "class fb"
+      },
+      {
+        "pc": 1744,
+        "opcode": "invokespecial",
+        "operation": "Method fb.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1747,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 1749,
+        "opcode": "invokevirtual",
+        "operation": "Method fb.c:(F)Luu;"
+      },
+      {
+        "pc": 1752,
+        "opcode": "ldc",
+        "operation": "float 2000.0f"
+      },
+      {
+        "pc": 1754,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 1757,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 1760,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1763,
+        "opcode": "ldc",
+        "operation": "String obsidian"
+      },
+      {
+        "pc": 1765,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1768,
+        "opcode": "putstatic",
+        "operation": "Field aq:Luu;"
+      },
+      {
+        "pc": 1771,
+        "opcode": "new",
+        "operation": "class vm"
+      },
+      {
+        "pc": 1779,
+        "opcode": "invokespecial",
+        "operation": "Method vm.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1783,
+        "opcode": "invokevirtual",
+        "operation": "Method vm.c:(F)Luu;"
+      },
+      {
+        "pc": 1786,
+        "opcode": "ldc",
+        "operation": "float 0.9375f"
+      },
+      {
+        "pc": 1788,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 1791,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 1794,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1797,
+        "opcode": "ldc",
+        "operation": "String torch"
+      },
+      {
+        "pc": 1799,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1802,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1805,
+        "opcode": "putstatic",
+        "operation": "Field ar:Luu;"
+      },
+      {
+        "pc": 1808,
+        "opcode": "new",
+        "operation": "class yq"
+      },
+      {
+        "pc": 1816,
+        "opcode": "invokespecial",
+        "operation": "Method yq.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1820,
+        "opcode": "invokevirtual",
+        "operation": "Method yq.c:(F)Luu;"
+      },
+      {
+        "pc": 1824,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 1827,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 1830,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1833,
+        "opcode": "ldc",
+        "operation": "String fire"
+      },
+      {
+        "pc": 1835,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1838,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 1841,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1844,
+        "opcode": "checkcast",
+        "operation": "class yq"
+      },
+      {
+        "pc": 1847,
+        "opcode": "putstatic",
+        "operation": "Field as:Lyq;"
+      },
+      {
+        "pc": 1850,
+        "opcode": "new",
+        "operation": "class dd"
+      },
+      {
+        "pc": 1858,
+        "opcode": "invokespecial",
+        "operation": "Method dd.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1861,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 1863,
+        "opcode": "invokevirtual",
+        "operation": "Method dd.c:(F)Luu;"
+      },
+      {
+        "pc": 1866,
+        "opcode": "getstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 1869,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1872,
+        "opcode": "ldc",
+        "operation": "String mobSpawner"
+      },
+      {
+        "pc": 1874,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1877,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 1880,
+        "opcode": "putstatic",
+        "operation": "Field at:Luu;"
+      },
+      {
+        "pc": 1883,
+        "opcode": "new",
+        "operation": "class ss"
+      },
+      {
+        "pc": 1889,
+        "opcode": "getstatic",
+        "operation": "Field y:Luu;"
+      },
+      {
+        "pc": 1892,
+        "opcode": "invokespecial",
+        "operation": "Method ss.\"<init>\":(ILuu;)V"
+      },
+      {
+        "pc": 1895,
+        "opcode": "ldc",
+        "operation": "String stairsWood"
+      },
+      {
+        "pc": 1897,
+        "opcode": "invokevirtual",
+        "operation": "Method ss.a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1900,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1903,
+        "opcode": "putstatic",
+        "operation": "Field au:Luu;"
+      },
+      {
+        "pc": 1906,
+        "opcode": "new",
+        "operation": "class e"
+      },
+      {
+        "pc": 1912,
+        "opcode": "invokespecial",
+        "operation": "Method e.\"<init>\":(I)V"
+      },
+      {
+        "pc": 1915,
+        "opcode": "ldc",
+        "operation": "float 2.5f"
+      },
+      {
+        "pc": 1917,
+        "opcode": "invokevirtual",
+        "operation": "Method e.c:(F)Luu;"
+      },
+      {
+        "pc": 1920,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 1923,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1926,
+        "opcode": "ldc",
+        "operation": "String chest"
+      },
+      {
+        "pc": 1928,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1931,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1934,
+        "opcode": "putstatic",
+        "operation": "Field av:Luu;"
+      },
+      {
+        "pc": 1937,
+        "opcode": "new",
+        "operation": "class sm"
+      },
+      {
+        "pc": 1946,
+        "opcode": "invokespecial",
+        "operation": "Method sm.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1950,
+        "opcode": "invokevirtual",
+        "operation": "Method sm.c:(F)Luu;"
+      },
+      {
+        "pc": 1953,
+        "opcode": "getstatic",
+        "operation": "Field d:Lct;"
+      },
+      {
+        "pc": 1956,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 1959,
+        "opcode": "ldc",
+        "operation": "String redstoneDust"
+      },
+      {
+        "pc": 1961,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 1964,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 1967,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 1970,
+        "opcode": "putstatic",
+        "operation": "Field aw:Luu;"
+      },
+      {
+        "pc": 1973,
+        "opcode": "new",
+        "operation": "class mt"
+      },
+      {
+        "pc": 1981,
+        "opcode": "invokespecial",
+        "operation": "Method mt.\"<init>\":(II)V"
+      },
+      {
+        "pc": 1984,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 1986,
+        "opcode": "invokevirtual",
+        "operation": "Method mt.c:(F)Luu;"
+      },
+      {
+        "pc": 1989,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 1991,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 1994,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 1997,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2000,
+        "opcode": "ldc",
+        "operation": "String oreDiamond"
+      },
+      {
+        "pc": 2002,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2005,
+        "opcode": "putstatic",
+        "operation": "Field ax:Luu;"
+      },
+      {
+        "pc": 2008,
+        "opcode": "new",
+        "operation": "class l"
+      },
+      {
+        "pc": 2016,
+        "opcode": "invokespecial",
+        "operation": "Method l.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2019,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 2021,
+        "opcode": "invokevirtual",
+        "operation": "Method l.c:(F)Luu;"
+      },
+      {
+        "pc": 2024,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 2026,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 2029,
+        "opcode": "getstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 2032,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2035,
+        "opcode": "ldc",
+        "operation": "String blockDiamond"
+      },
+      {
+        "pc": 2037,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2040,
+        "opcode": "putstatic",
+        "operation": "Field ay:Luu;"
+      },
+      {
+        "pc": 2043,
+        "opcode": "new",
+        "operation": "class fi"
+      },
+      {
+        "pc": 2049,
+        "opcode": "invokespecial",
+        "operation": "Method fi.\"<init>\":(I)V"
+      },
+      {
+        "pc": 2052,
+        "opcode": "ldc",
+        "operation": "float 2.5f"
+      },
+      {
+        "pc": 2054,
+        "opcode": "invokevirtual",
+        "operation": "Method fi.c:(F)Luu;"
+      },
+      {
+        "pc": 2057,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2060,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2063,
+        "opcode": "ldc",
+        "operation": "String workbench"
+      },
+      {
+        "pc": 2065,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2068,
+        "opcode": "putstatic",
+        "operation": "Field az:Luu;"
+      },
+      {
+        "pc": 2071,
+        "opcode": "new",
+        "operation": "class ni"
+      },
+      {
+        "pc": 2079,
+        "opcode": "invokespecial",
+        "operation": "Method ni.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2083,
+        "opcode": "invokevirtual",
+        "operation": "Method ni.c:(F)Luu;"
+      },
+      {
+        "pc": 2086,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 2089,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2092,
+        "opcode": "ldc",
+        "operation": "String crops"
+      },
+      {
+        "pc": 2094,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2097,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 2100,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2103,
+        "opcode": "putstatic",
+        "operation": "Field aA:Luu;"
+      },
+      {
+        "pc": 2106,
+        "opcode": "new",
+        "operation": "class vl"
+      },
+      {
+        "pc": 2112,
+        "opcode": "invokespecial",
+        "operation": "Method vl.\"<init>\":(I)V"
+      },
+      {
+        "pc": 2115,
+        "opcode": "ldc",
+        "operation": "float 0.6f"
+      },
+      {
+        "pc": 2117,
+        "opcode": "invokevirtual",
+        "operation": "Method vl.c:(F)Luu;"
+      },
+      {
+        "pc": 2120,
+        "opcode": "getstatic",
+        "operation": "Field f:Lct;"
+      },
+      {
+        "pc": 2123,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2126,
+        "opcode": "ldc",
+        "operation": "String farmland"
+      },
+      {
+        "pc": 2128,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2131,
+        "opcode": "putstatic",
+        "operation": "Field aB:Luu;"
+      },
+      {
+        "pc": 2134,
+        "opcode": "new",
+        "operation": "class tc"
+      },
+      {
+        "pc": 2141,
+        "opcode": "invokespecial",
+        "operation": "Method tc.\"<init>\":(IZ)V"
+      },
+      {
+        "pc": 2144,
+        "opcode": "ldc",
+        "operation": "float 3.5f"
+      },
+      {
+        "pc": 2146,
+        "opcode": "invokevirtual",
+        "operation": "Method tc.c:(F)Luu;"
+      },
+      {
+        "pc": 2149,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 2152,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2155,
+        "opcode": "ldc",
+        "operation": "String furnace"
+      },
+      {
+        "pc": 2157,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2160,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2163,
+        "opcode": "putstatic",
+        "operation": "Field aC:Luu;"
+      },
+      {
+        "pc": 2166,
+        "opcode": "new",
+        "operation": "class tc"
+      },
+      {
+        "pc": 2173,
+        "opcode": "invokespecial",
+        "operation": "Method tc.\"<init>\":(IZ)V"
+      },
+      {
+        "pc": 2176,
+        "opcode": "ldc",
+        "operation": "float 3.5f"
+      },
+      {
+        "pc": 2178,
+        "opcode": "invokevirtual",
+        "operation": "Method tc.c:(F)Luu;"
+      },
+      {
+        "pc": 2181,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 2184,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2187,
+        "opcode": "ldc",
+        "operation": "float 0.875f"
+      },
+      {
+        "pc": 2189,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 2192,
+        "opcode": "ldc",
+        "operation": "String furnace"
+      },
+      {
+        "pc": 2194,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2197,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2200,
+        "opcode": "putstatic",
+        "operation": "Field aD:Luu;"
+      },
+      {
+        "pc": 2203,
+        "opcode": "new",
+        "operation": "class uj"
+      },
+      {
+        "pc": 2209,
+        "opcode": "ldc",
+        "operation": "class yk"
+      },
+      {
+        "pc": 2212,
+        "opcode": "invokespecial",
+        "operation": "Method uj.\"<init>\":(ILjava/lang/Class;Z)V"
+      },
+      {
+        "pc": 2216,
+        "opcode": "invokevirtual",
+        "operation": "Method uj.c:(F)Luu;"
+      },
+      {
+        "pc": 2219,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2222,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2225,
+        "opcode": "ldc",
+        "operation": "String sign"
+      },
+      {
+        "pc": 2227,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2230,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 2233,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2236,
+        "opcode": "putstatic",
+        "operation": "Field aE:Luu;"
+      },
+      {
+        "pc": 2239,
+        "opcode": "new",
+        "operation": "class le"
+      },
+      {
+        "pc": 2245,
+        "opcode": "getstatic",
+        "operation": "Field ln.d:Lln;"
+      },
+      {
+        "pc": 2248,
+        "opcode": "invokespecial",
+        "operation": "Method le.\"<init>\":(ILln;)V"
+      },
+      {
+        "pc": 2251,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 2253,
+        "opcode": "invokevirtual",
+        "operation": "Method le.c:(F)Luu;"
+      },
+      {
+        "pc": 2256,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2259,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2262,
+        "opcode": "ldc",
+        "operation": "String doorWood"
+      },
+      {
+        "pc": 2264,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2267,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 2270,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2273,
+        "opcode": "putstatic",
+        "operation": "Field aF:Luu;"
+      },
+      {
+        "pc": 2276,
+        "opcode": "new",
+        "operation": "class dp"
+      },
+      {
+        "pc": 2284,
+        "opcode": "invokespecial",
+        "operation": "Method dp.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2287,
+        "opcode": "ldc",
+        "operation": "float 0.4f"
+      },
+      {
+        "pc": 2289,
+        "opcode": "invokevirtual",
+        "operation": "Method dp.c:(F)Luu;"
+      },
+      {
+        "pc": 2292,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2295,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2298,
+        "opcode": "ldc",
+        "operation": "String ladder"
+      },
+      {
+        "pc": 2300,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2303,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2306,
+        "opcode": "putstatic",
+        "operation": "Field aG:Luu;"
+      },
+      {
+        "pc": 2309,
+        "opcode": "new",
+        "operation": "class pc"
+      },
+      {
+        "pc": 2319,
+        "opcode": "invokespecial",
+        "operation": "Method pc.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 2322,
+        "opcode": "ldc",
+        "operation": "float 0.7f"
+      },
+      {
+        "pc": 2324,
+        "opcode": "invokevirtual",
+        "operation": "Method pc.c:(F)Luu;"
+      },
+      {
+        "pc": 2327,
+        "opcode": "getstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 2330,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2333,
+        "opcode": "ldc",
+        "operation": "String rail"
+      },
+      {
+        "pc": 2335,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2338,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2341,
+        "opcode": "putstatic",
+        "operation": "Field aH:Luu;"
+      },
+      {
+        "pc": 2344,
+        "opcode": "new",
+        "operation": "class ss"
+      },
+      {
+        "pc": 2350,
+        "opcode": "getstatic",
+        "operation": "Field x:Luu;"
+      },
+      {
+        "pc": 2353,
+        "opcode": "invokespecial",
+        "operation": "Method ss.\"<init>\":(ILuu;)V"
+      },
+      {
+        "pc": 2356,
+        "opcode": "ldc",
+        "operation": "String stairsStone"
+      },
+      {
+        "pc": 2358,
+        "opcode": "invokevirtual",
+        "operation": "Method ss.a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2361,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2364,
+        "opcode": "putstatic",
+        "operation": "Field aI:Luu;"
+      },
+      {
+        "pc": 2367,
+        "opcode": "new",
+        "operation": "class uj"
+      },
+      {
+        "pc": 2373,
+        "opcode": "ldc",
+        "operation": "class yk"
+      },
+      {
+        "pc": 2376,
+        "opcode": "invokespecial",
+        "operation": "Method uj.\"<init>\":(ILjava/lang/Class;Z)V"
+      },
+      {
+        "pc": 2380,
+        "opcode": "invokevirtual",
+        "operation": "Method uj.c:(F)Luu;"
+      },
+      {
+        "pc": 2383,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2386,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2389,
+        "opcode": "ldc",
+        "operation": "String sign"
+      },
+      {
+        "pc": 2391,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2394,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 2397,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2400,
+        "opcode": "putstatic",
+        "operation": "Field aJ:Luu;"
+      },
+      {
+        "pc": 2403,
+        "opcode": "new",
+        "operation": "class xr"
+      },
+      {
+        "pc": 2411,
+        "opcode": "invokespecial",
+        "operation": "Method xr.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2414,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 2416,
+        "opcode": "invokevirtual",
+        "operation": "Method xr.c:(F)Luu;"
+      },
+      {
+        "pc": 2419,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2422,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2425,
+        "opcode": "ldc",
+        "operation": "String lever"
+      },
+      {
+        "pc": 2427,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2430,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2433,
+        "opcode": "putstatic",
+        "operation": "Field aK:Luu;"
+      },
+      {
+        "pc": 2436,
+        "opcode": "new",
+        "operation": "class bv"
+      },
+      {
+        "pc": 2442,
+        "opcode": "getstatic",
+        "operation": "Field u:Luu;"
+      },
+      {
+        "pc": 2445,
+        "opcode": "getfield",
+        "operation": "Field bm:I"
+      },
+      {
+        "pc": 2448,
+        "opcode": "getstatic",
+        "operation": "Field rt.b:Lrt;"
+      },
+      {
+        "pc": 2451,
+        "opcode": "getstatic",
+        "operation": "Field ln.e:Lln;"
+      },
+      {
+        "pc": 2454,
+        "opcode": "invokespecial",
+        "operation": "Method bv.\"<init>\":(IILrt;Lln;)V"
+      },
+      {
+        "pc": 2457,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 2459,
+        "opcode": "invokevirtual",
+        "operation": "Method bv.c:(F)Luu;"
+      },
+      {
+        "pc": 2462,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 2465,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2468,
+        "opcode": "ldc",
+        "operation": "String pressurePlate"
+      },
+      {
+        "pc": 2470,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2473,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2476,
+        "opcode": "putstatic",
+        "operation": "Field aL:Luu;"
+      },
+      {
+        "pc": 2479,
+        "opcode": "new",
+        "operation": "class le"
+      },
+      {
+        "pc": 2485,
+        "opcode": "getstatic",
+        "operation": "Field ln.f:Lln;"
+      },
+      {
+        "pc": 2488,
+        "opcode": "invokespecial",
+        "operation": "Method le.\"<init>\":(ILln;)V"
+      },
+      {
+        "pc": 2491,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 2493,
+        "opcode": "invokevirtual",
+        "operation": "Method le.c:(F)Luu;"
+      },
+      {
+        "pc": 2496,
+        "opcode": "getstatic",
+        "operation": "Field i:Lct;"
+      },
+      {
+        "pc": 2499,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2502,
+        "opcode": "ldc",
+        "operation": "String doorIron"
+      },
+      {
+        "pc": 2504,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2507,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 2510,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2513,
+        "opcode": "putstatic",
+        "operation": "Field aM:Luu;"
+      },
+      {
+        "pc": 2516,
+        "opcode": "new",
+        "operation": "class bv"
+      },
+      {
+        "pc": 2522,
+        "opcode": "getstatic",
+        "operation": "Field y:Luu;"
+      },
+      {
+        "pc": 2525,
+        "opcode": "getfield",
+        "operation": "Field bm:I"
+      },
+      {
+        "pc": 2528,
+        "opcode": "getstatic",
+        "operation": "Field rt.a:Lrt;"
+      },
+      {
+        "pc": 2531,
+        "opcode": "getstatic",
+        "operation": "Field ln.d:Lln;"
+      },
+      {
+        "pc": 2534,
+        "opcode": "invokespecial",
+        "operation": "Method bv.\"<init>\":(IILrt;Lln;)V"
+      },
+      {
+        "pc": 2537,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 2539,
+        "opcode": "invokevirtual",
+        "operation": "Method bv.c:(F)Luu;"
+      },
+      {
+        "pc": 2542,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2545,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2548,
+        "opcode": "ldc",
+        "operation": "String pressurePlate"
+      },
+      {
+        "pc": 2550,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2553,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2556,
+        "opcode": "putstatic",
+        "operation": "Field aN:Luu;"
+      },
+      {
+        "pc": 2559,
+        "opcode": "new",
+        "operation": "class bs"
+      },
+      {
+        "pc": 2568,
+        "opcode": "invokespecial",
+        "operation": "Method bs.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 2571,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 2573,
+        "opcode": "invokevirtual",
+        "operation": "Method bs.c:(F)Luu;"
+      },
+      {
+        "pc": 2576,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 2578,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 2581,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 2584,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2587,
+        "opcode": "ldc",
+        "operation": "String oreRedstone"
+      },
+      {
+        "pc": 2589,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2592,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2595,
+        "opcode": "putstatic",
+        "operation": "Field aO:Luu;"
+      },
+      {
+        "pc": 2598,
+        "opcode": "new",
+        "operation": "class bs"
+      },
+      {
+        "pc": 2607,
+        "opcode": "invokespecial",
+        "operation": "Method bs.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 2610,
+        "opcode": "ldc",
+        "operation": "float 0.625f"
+      },
+      {
+        "pc": 2612,
+        "opcode": "invokevirtual",
+        "operation": "Method bs.a:(F)Luu;"
+      },
+      {
+        "pc": 2615,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 2617,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(F)Luu;"
+      },
+      {
+        "pc": 2620,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 2622,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 2625,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 2628,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2631,
+        "opcode": "ldc",
+        "operation": "String oreRedstone"
+      },
+      {
+        "pc": 2633,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2636,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2639,
+        "opcode": "putstatic",
+        "operation": "Field aP:Luu;"
+      },
+      {
+        "pc": 2642,
+        "opcode": "new",
+        "operation": "class db"
+      },
+      {
+        "pc": 2651,
+        "opcode": "invokespecial",
+        "operation": "Method db.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 2655,
+        "opcode": "invokevirtual",
+        "operation": "Method db.c:(F)Luu;"
+      },
+      {
+        "pc": 2658,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2661,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2664,
+        "opcode": "ldc",
+        "operation": "String notGate"
+      },
+      {
+        "pc": 2666,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2669,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2672,
+        "opcode": "putstatic",
+        "operation": "Field aQ:Luu;"
+      },
+      {
+        "pc": 2675,
+        "opcode": "new",
+        "operation": "class db"
+      },
+      {
+        "pc": 2684,
+        "opcode": "invokespecial",
+        "operation": "Method db.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 2688,
+        "opcode": "invokevirtual",
+        "operation": "Method db.c:(F)Luu;"
+      },
+      {
+        "pc": 2691,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 2693,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 2696,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2699,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2702,
+        "opcode": "ldc",
+        "operation": "String notGate"
+      },
+      {
+        "pc": 2704,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2707,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2710,
+        "opcode": "putstatic",
+        "operation": "Field aR:Luu;"
+      },
+      {
+        "pc": 2713,
+        "opcode": "new",
+        "operation": "class oi"
+      },
+      {
+        "pc": 2719,
+        "opcode": "getstatic",
+        "operation": "Field u:Luu;"
+      },
+      {
+        "pc": 2722,
+        "opcode": "getfield",
+        "operation": "Field bm:I"
+      },
+      {
+        "pc": 2725,
+        "opcode": "invokespecial",
+        "operation": "Method oi.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2728,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 2730,
+        "opcode": "invokevirtual",
+        "operation": "Method oi.c:(F)Luu;"
+      },
+      {
+        "pc": 2733,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 2736,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2739,
+        "opcode": "ldc",
+        "operation": "String button"
+      },
+      {
+        "pc": 2741,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2744,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2747,
+        "opcode": "putstatic",
+        "operation": "Field aS:Luu;"
+      },
+      {
+        "pc": 2750,
+        "opcode": "new",
+        "operation": "class jr"
+      },
+      {
+        "pc": 2758,
+        "opcode": "invokespecial",
+        "operation": "Method jr.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2761,
+        "opcode": "ldc",
+        "operation": "float 0.1f"
+      },
+      {
+        "pc": 2763,
+        "opcode": "invokevirtual",
+        "operation": "Method jr.c:(F)Luu;"
+      },
+      {
+        "pc": 2766,
+        "opcode": "getstatic",
+        "operation": "Field k:Lct;"
+      },
+      {
+        "pc": 2769,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2772,
+        "opcode": "ldc",
+        "operation": "String snow"
+      },
+      {
+        "pc": 2774,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2777,
+        "opcode": "putstatic",
+        "operation": "Field aT:Luu;"
+      },
+      {
+        "pc": 2780,
+        "opcode": "new",
+        "operation": "class nk"
+      },
+      {
+        "pc": 2788,
+        "opcode": "invokespecial",
+        "operation": "Method nk.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2791,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 2793,
+        "opcode": "invokevirtual",
+        "operation": "Method nk.c:(F)Luu;"
+      },
+      {
+        "pc": 2797,
+        "opcode": "invokevirtual",
+        "operation": "Method g:(I)Luu;"
+      },
+      {
+        "pc": 2800,
+        "opcode": "getstatic",
+        "operation": "Field j:Lct;"
+      },
+      {
+        "pc": 2803,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2806,
+        "opcode": "ldc",
+        "operation": "String ice"
+      },
+      {
+        "pc": 2808,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2811,
+        "opcode": "putstatic",
+        "operation": "Field aU:Luu;"
+      },
+      {
+        "pc": 2814,
+        "opcode": "new",
+        "operation": "class ac"
+      },
+      {
+        "pc": 2822,
+        "opcode": "invokespecial",
+        "operation": "Method ac.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2825,
+        "opcode": "ldc",
+        "operation": "float 0.2f"
+      },
+      {
+        "pc": 2827,
+        "opcode": "invokevirtual",
+        "operation": "Method ac.c:(F)Luu;"
+      },
+      {
+        "pc": 2830,
+        "opcode": "getstatic",
+        "operation": "Field k:Lct;"
+      },
+      {
+        "pc": 2833,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2836,
+        "opcode": "ldc",
+        "operation": "String snow"
+      },
+      {
+        "pc": 2838,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2841,
+        "opcode": "putstatic",
+        "operation": "Field aV:Luu;"
+      },
+      {
+        "pc": 2844,
+        "opcode": "new",
+        "operation": "class or"
+      },
+      {
+        "pc": 2852,
+        "opcode": "invokespecial",
+        "operation": "Method or.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2855,
+        "opcode": "ldc",
+        "operation": "float 0.4f"
+      },
+      {
+        "pc": 2857,
+        "opcode": "invokevirtual",
+        "operation": "Method or.c:(F)Luu;"
+      },
+      {
+        "pc": 2860,
+        "opcode": "getstatic",
+        "operation": "Field k:Lct;"
+      },
+      {
+        "pc": 2863,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2866,
+        "opcode": "ldc",
+        "operation": "String cactus"
+      },
+      {
+        "pc": 2868,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2871,
+        "opcode": "putstatic",
+        "operation": "Field aW:Luu;"
+      },
+      {
+        "pc": 2874,
+        "opcode": "new",
+        "operation": "class rz"
+      },
+      {
+        "pc": 2882,
+        "opcode": "invokespecial",
+        "operation": "Method rz.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2885,
+        "opcode": "ldc",
+        "operation": "float 0.6f"
+      },
+      {
+        "pc": 2887,
+        "opcode": "invokevirtual",
+        "operation": "Method rz.c:(F)Luu;"
+      },
+      {
+        "pc": 2890,
+        "opcode": "getstatic",
+        "operation": "Field f:Lct;"
+      },
+      {
+        "pc": 2893,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2896,
+        "opcode": "ldc",
+        "operation": "String clay"
+      },
+      {
+        "pc": 2898,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2901,
+        "opcode": "putstatic",
+        "operation": "Field aX:Luu;"
+      },
+      {
+        "pc": 2904,
+        "opcode": "new",
+        "operation": "class ri"
+      },
+      {
+        "pc": 2912,
+        "opcode": "invokespecial",
+        "operation": "Method ri.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2916,
+        "opcode": "invokevirtual",
+        "operation": "Method ri.c:(F)Luu;"
+      },
+      {
+        "pc": 2919,
+        "opcode": "getstatic",
+        "operation": "Field g:Lct;"
+      },
+      {
+        "pc": 2922,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2925,
+        "opcode": "ldc",
+        "operation": "String reeds"
+      },
+      {
+        "pc": 2927,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2930,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 2933,
+        "opcode": "putstatic",
+        "operation": "Field aY:Luu;"
+      },
+      {
+        "pc": 2936,
+        "opcode": "new",
+        "operation": "class fo"
+      },
+      {
+        "pc": 2944,
+        "opcode": "invokespecial",
+        "operation": "Method fo.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2948,
+        "opcode": "invokevirtual",
+        "operation": "Method fo.c:(F)Luu;"
+      },
+      {
+        "pc": 2951,
+        "opcode": "ldc",
+        "operation": "float 10.0f"
+      },
+      {
+        "pc": 2953,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 2956,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 2959,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2962,
+        "opcode": "ldc",
+        "operation": "String jukebox"
+      },
+      {
+        "pc": 2964,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 2967,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 2970,
+        "opcode": "putstatic",
+        "operation": "Field aZ:Luu;"
+      },
+      {
+        "pc": 2973,
+        "opcode": "new",
+        "operation": "class jw"
+      },
+      {
+        "pc": 2980,
+        "opcode": "invokespecial",
+        "operation": "Method jw.\"<init>\":(II)V"
+      },
+      {
+        "pc": 2984,
+        "opcode": "invokevirtual",
+        "operation": "Method jw.c:(F)Luu;"
+      },
+      {
+        "pc": 2987,
+        "opcode": "ldc",
+        "operation": "float 5.0f"
+      },
+      {
+        "pc": 2989,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(F)Luu;"
+      },
+      {
+        "pc": 2992,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 2995,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 2998,
+        "opcode": "ldc",
+        "operation": "String fence"
+      },
+      {
+        "pc": 3000,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3003,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 3006,
+        "opcode": "putstatic",
+        "operation": "Field ba:Luu;"
+      },
+      {
+        "pc": 3009,
+        "opcode": "new",
+        "operation": "class fc"
+      },
+      {
+        "pc": 3018,
+        "opcode": "invokespecial",
+        "operation": "Method fc.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 3022,
+        "opcode": "invokevirtual",
+        "operation": "Method fc.c:(F)Luu;"
+      },
+      {
+        "pc": 3025,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 3028,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3031,
+        "opcode": "ldc",
+        "operation": "String pumpkin"
+      },
+      {
+        "pc": 3033,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3036,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 3039,
+        "opcode": "putstatic",
+        "operation": "Field bb:Luu;"
+      },
+      {
+        "pc": 3042,
+        "opcode": "new",
+        "operation": "class yi"
+      },
+      {
+        "pc": 3050,
+        "opcode": "invokespecial",
+        "operation": "Method yi.\"<init>\":(II)V"
+      },
+      {
+        "pc": 3053,
+        "opcode": "ldc",
+        "operation": "float 0.4f"
+      },
+      {
+        "pc": 3055,
+        "opcode": "invokevirtual",
+        "operation": "Method yi.c:(F)Luu;"
+      },
+      {
+        "pc": 3058,
+        "opcode": "getstatic",
+        "operation": "Field h:Lct;"
+      },
+      {
+        "pc": 3061,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3064,
+        "opcode": "ldc",
+        "operation": "String hellrock"
+      },
+      {
+        "pc": 3066,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3069,
+        "opcode": "putstatic",
+        "operation": "Field bc:Luu;"
+      },
+      {
+        "pc": 3072,
+        "opcode": "new",
+        "operation": "class oa"
+      },
+      {
+        "pc": 3080,
+        "opcode": "invokespecial",
+        "operation": "Method oa.\"<init>\":(II)V"
+      },
+      {
+        "pc": 3083,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 3085,
+        "opcode": "invokevirtual",
+        "operation": "Method oa.c:(F)Luu;"
+      },
+      {
+        "pc": 3088,
+        "opcode": "getstatic",
+        "operation": "Field l:Lct;"
+      },
+      {
+        "pc": 3091,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3094,
+        "opcode": "ldc",
+        "operation": "String hellsand"
+      },
+      {
+        "pc": 3096,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3099,
+        "opcode": "putstatic",
+        "operation": "Field bd:Luu;"
+      },
+      {
+        "pc": 3102,
+        "opcode": "new",
+        "operation": "class ly"
+      },
+      {
+        "pc": 3110,
+        "opcode": "getstatic",
+        "operation": "Field ln.e:Lln;"
+      },
+      {
+        "pc": 3113,
+        "opcode": "invokespecial",
+        "operation": "Method ly.\"<init>\":(IILln;)V"
+      },
+      {
+        "pc": 3116,
+        "opcode": "ldc",
+        "operation": "float 0.3f"
+      },
+      {
+        "pc": 3118,
+        "opcode": "invokevirtual",
+        "operation": "Method ly.c:(F)Luu;"
+      },
+      {
+        "pc": 3121,
+        "opcode": "getstatic",
+        "operation": "Field j:Lct;"
+      },
+      {
+        "pc": 3124,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3128,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 3131,
+        "opcode": "ldc",
+        "operation": "String lightgem"
+      },
+      {
+        "pc": 3133,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3136,
+        "opcode": "putstatic",
+        "operation": "Field be:Luu;"
+      },
+      {
+        "pc": 3139,
+        "opcode": "new",
+        "operation": "class ak"
+      },
+      {
+        "pc": 3147,
+        "opcode": "invokespecial",
+        "operation": "Method ak.\"<init>\":(II)V"
+      },
+      {
+        "pc": 3150,
+        "opcode": "ldc",
+        "operation": "float -1.0f"
+      },
+      {
+        "pc": 3152,
+        "opcode": "invokevirtual",
+        "operation": "Method ak.c:(F)Luu;"
+      },
+      {
+        "pc": 3155,
+        "opcode": "getstatic",
+        "operation": "Field j:Lct;"
+      },
+      {
+        "pc": 3158,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3161,
+        "opcode": "ldc",
+        "operation": "float 0.75f"
+      },
+      {
+        "pc": 3163,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 3166,
+        "opcode": "ldc",
+        "operation": "String portal"
+      },
+      {
+        "pc": 3168,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3171,
+        "opcode": "checkcast",
+        "operation": "class ak"
+      },
+      {
+        "pc": 3174,
+        "opcode": "putstatic",
+        "operation": "Field bf:Lak;"
+      },
+      {
+        "pc": 3177,
+        "opcode": "new",
+        "operation": "class fc"
+      },
+      {
+        "pc": 3186,
+        "opcode": "invokespecial",
+        "operation": "Method fc.\"<init>\":(IIZ)V"
+      },
+      {
+        "pc": 3190,
+        "opcode": "invokevirtual",
+        "operation": "Method fc.c:(F)Luu;"
+      },
+      {
+        "pc": 3193,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 3196,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3200,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 3203,
+        "opcode": "ldc",
+        "operation": "String litpumpkin"
+      },
+      {
+        "pc": 3205,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3208,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 3211,
+        "opcode": "putstatic",
+        "operation": "Field bg:Luu;"
+      },
+      {
+        "pc": 3214,
+        "opcode": "new",
+        "operation": "class um"
+      },
+      {
+        "pc": 3222,
+        "opcode": "invokespecial",
+        "operation": "Method um.\"<init>\":(II)V"
+      },
+      {
+        "pc": 3225,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 3227,
+        "opcode": "invokevirtual",
+        "operation": "Method um.c:(F)Luu;"
+      },
+      {
+        "pc": 3230,
+        "opcode": "getstatic",
+        "operation": "Field k:Lct;"
+      },
+      {
+        "pc": 3233,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3236,
+        "opcode": "ldc",
+        "operation": "String cake"
+      },
+      {
+        "pc": 3238,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3241,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 3244,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 3247,
+        "opcode": "putstatic",
+        "operation": "Field bh:Luu;"
+      },
+      {
+        "pc": 3250,
+        "opcode": "new",
+        "operation": "class wo"
+      },
+      {
+        "pc": 3257,
+        "opcode": "invokespecial",
+        "operation": "Method wo.\"<init>\":(IZ)V"
+      },
+      {
+        "pc": 3261,
+        "opcode": "invokevirtual",
+        "operation": "Method wo.c:(F)Luu;"
+      },
+      {
+        "pc": 3264,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 3267,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3270,
+        "opcode": "ldc",
+        "operation": "String diode"
+      },
+      {
+        "pc": 3272,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3275,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 3278,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 3281,
+        "opcode": "putstatic",
+        "operation": "Field bi:Luu;"
+      },
+      {
+        "pc": 3284,
+        "opcode": "new",
+        "operation": "class wo"
+      },
+      {
+        "pc": 3291,
+        "opcode": "invokespecial",
+        "operation": "Method wo.\"<init>\":(IZ)V"
+      },
+      {
+        "pc": 3295,
+        "opcode": "invokevirtual",
+        "operation": "Method wo.c:(F)Luu;"
+      },
+      {
+        "pc": 3298,
+        "opcode": "ldc",
+        "operation": "float 0.625f"
+      },
+      {
+        "pc": 3300,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 3303,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 3306,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3309,
+        "opcode": "ldc",
+        "operation": "String diode"
+      },
+      {
+        "pc": 3311,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3314,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 3317,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 3320,
+        "opcode": "putstatic",
+        "operation": "Field bj:Luu;"
+      },
+      {
+        "pc": 3323,
+        "opcode": "new",
+        "operation": "class ks"
+      },
+      {
+        "pc": 3329,
+        "opcode": "invokespecial",
+        "operation": "Method ks.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3333,
+        "opcode": "invokevirtual",
+        "operation": "Method ks.c:(F)Luu;"
+      },
+      {
+        "pc": 3337,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(F)Luu;"
+      },
+      {
+        "pc": 3340,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 3343,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3346,
+        "opcode": "ldc",
+        "operation": "String lockedchest"
+      },
+      {
+        "pc": 3348,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3352,
+        "opcode": "invokevirtual",
+        "operation": "Method b:(Z)Luu;"
+      },
+      {
+        "pc": 3355,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 3358,
+        "opcode": "putstatic",
+        "operation": "Field bk:Luu;"
+      },
+      {
+        "pc": 3361,
+        "opcode": "new",
+        "operation": "class oq"
+      },
+      {
+        "pc": 3367,
+        "opcode": "getstatic",
+        "operation": "Field ln.d:Lln;"
+      },
+      {
+        "pc": 3370,
+        "opcode": "invokespecial",
+        "operation": "Method oq.\"<init>\":(ILln;)V"
+      },
+      {
+        "pc": 3373,
+        "opcode": "ldc",
+        "operation": "float 3.0f"
+      },
+      {
+        "pc": 3375,
+        "opcode": "invokevirtual",
+        "operation": "Method oq.c:(F)Luu;"
+      },
+      {
+        "pc": 3378,
+        "opcode": "getstatic",
+        "operation": "Field e:Lct;"
+      },
+      {
+        "pc": 3381,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Lct;)Luu;"
+      },
+      {
+        "pc": 3384,
+        "opcode": "ldc",
+        "operation": "String trapdoor"
+      },
+      {
+        "pc": 3386,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(Ljava/lang/String;)Luu;"
+      },
+      {
+        "pc": 3389,
+        "opcode": "invokevirtual",
+        "operation": "Method q:()Luu;"
+      },
+      {
+        "pc": 3392,
+        "opcode": "invokevirtual",
+        "operation": "Method j:()Luu;"
+      },
+      {
+        "pc": 3395,
+        "opcode": "putstatic",
+        "operation": "Field bl:Luu;"
+      },
+      {
+        "pc": 3398,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3401,
+        "opcode": "getstatic",
+        "operation": "Field ac:Luu;"
+      },
+      {
+        "pc": 3404,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3407,
+        "opcode": "new",
+        "operation": "class bi"
+      },
+      {
+        "pc": 3411,
+        "opcode": "getstatic",
+        "operation": "Field ac:Luu;"
+      },
+      {
+        "pc": 3414,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3421,
+        "opcode": "invokespecial",
+        "operation": "Method bi.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3424,
+        "opcode": "ldc",
+        "operation": "String cloth"
+      },
+      {
+        "pc": 3426,
+        "opcode": "invokevirtual",
+        "operation": "Method bi.a:(Ljava/lang/String;)Lgm;"
+      },
+      {
+        "pc": 3430,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3433,
+        "opcode": "getstatic",
+        "operation": "Field K:Luu;"
+      },
+      {
+        "pc": 3436,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3439,
+        "opcode": "new",
+        "operation": "class go"
+      },
+      {
+        "pc": 3443,
+        "opcode": "getstatic",
+        "operation": "Field K:Luu;"
+      },
+      {
+        "pc": 3446,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3453,
+        "opcode": "invokespecial",
+        "operation": "Method go.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3456,
+        "opcode": "ldc",
+        "operation": "String log"
+      },
+      {
+        "pc": 3458,
+        "opcode": "invokevirtual",
+        "operation": "Method go.a:(Ljava/lang/String;)Lgm;"
+      },
+      {
+        "pc": 3462,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3465,
+        "opcode": "getstatic",
+        "operation": "Field al:Luu;"
+      },
+      {
+        "pc": 3468,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3471,
+        "opcode": "new",
+        "operation": "class en"
+      },
+      {
+        "pc": 3475,
+        "opcode": "getstatic",
+        "operation": "Field al:Luu;"
+      },
+      {
+        "pc": 3478,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3485,
+        "opcode": "invokespecial",
+        "operation": "Method en.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3488,
+        "opcode": "ldc",
+        "operation": "String stoneSlab"
+      },
+      {
+        "pc": 3490,
+        "opcode": "invokevirtual",
+        "operation": "Method en.a:(Ljava/lang/String;)Lgm;"
+      },
+      {
+        "pc": 3494,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3497,
+        "opcode": "getstatic",
+        "operation": "Field z:Luu;"
+      },
+      {
+        "pc": 3500,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3503,
+        "opcode": "new",
+        "operation": "class mr"
+      },
+      {
+        "pc": 3507,
+        "opcode": "getstatic",
+        "operation": "Field z:Luu;"
+      },
+      {
+        "pc": 3510,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3517,
+        "opcode": "invokespecial",
+        "operation": "Method mr.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3520,
+        "opcode": "ldc",
+        "operation": "String sapling"
+      },
+      {
+        "pc": 3522,
+        "opcode": "invokevirtual",
+        "operation": "Method mr.a:(Ljava/lang/String;)Lgm;"
+      },
+      {
+        "pc": 3526,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3529,
+        "opcode": "getstatic",
+        "operation": "Field L:Lbk;"
+      },
+      {
+        "pc": 3532,
+        "opcode": "getfield",
+        "operation": "Field bk.bn:I"
+      },
+      {
+        "pc": 3535,
+        "opcode": "new",
+        "operation": "class uy"
+      },
+      {
+        "pc": 3539,
+        "opcode": "getstatic",
+        "operation": "Field L:Lbk;"
+      },
+      {
+        "pc": 3542,
+        "opcode": "getfield",
+        "operation": "Field bk.bn:I"
+      },
+      {
+        "pc": 3549,
+        "opcode": "invokespecial",
+        "operation": "Method uy.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3552,
+        "opcode": "ldc",
+        "operation": "String leaves"
+      },
+      {
+        "pc": 3554,
+        "opcode": "invokevirtual",
+        "operation": "Method uy.a:(Ljava/lang/String;)Lgm;"
+      },
+      {
+        "pc": 3558,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3561,
+        "opcode": "getstatic",
+        "operation": "Field aa:Luu;"
+      },
+      {
+        "pc": 3564,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3567,
+        "opcode": "new",
+        "operation": "class qr"
+      },
+      {
+        "pc": 3571,
+        "opcode": "getstatic",
+        "operation": "Field aa:Luu;"
+      },
+      {
+        "pc": 3574,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3581,
+        "opcode": "invokespecial",
+        "operation": "Method qr.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3585,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3588,
+        "opcode": "getstatic",
+        "operation": "Field W:Luu;"
+      },
+      {
+        "pc": 3591,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3594,
+        "opcode": "new",
+        "operation": "class qr"
+      },
+      {
+        "pc": 3598,
+        "opcode": "getstatic",
+        "operation": "Field W:Luu;"
+      },
+      {
+        "pc": 3601,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 3608,
+        "opcode": "invokespecial",
+        "operation": "Method qr.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3621,
+        "opcode": "getstatic",
+        "operation": "Field m:[Luu;"
+      },
+      {
+        "pc": 3629,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3637,
+        "opcode": "getstatic",
+        "operation": "Field gm.c:[Lgm;"
+      },
+      {
+        "pc": 3641,
+        "opcode": "new",
+        "operation": "class ck"
+      },
+      {
+        "pc": 3650,
+        "opcode": "invokespecial",
+        "operation": "Method ck.\"<init>\":(I)V"
+      },
+      {
+        "pc": 3654,
+        "opcode": "getstatic",
+        "operation": "Field m:[Luu;"
+      },
+      {
+        "pc": 3659,
+        "opcode": "invokevirtual",
+        "operation": "Method k:()V"
+      },
+      {
+        "pc": 3668,
+        "opcode": "getstatic",
+        "operation": "Field r:[Z"
+      },
+      {
+        "pc": 3674,
+        "opcode": "invokestatic",
+        "operation": "Method jl.b:()V"
+      }
+    ],
+    "wm.<init>(IILjava/lang/Object;Lwm;)V": [
+      {
+        "pc": 1,
+        "opcode": "invokespecial",
+        "operation": "Method java/lang/Object.\"<init>\":()V"
+      },
+      {
+        "pc": 6,
+        "opcode": "putfield",
+        "operation": "Field b:Ljava/lang/Object;"
+      },
+      {
+        "pc": 12,
+        "opcode": "putfield",
+        "operation": "Field c:Lwm;"
+      },
+      {
+        "pc": 17,
+        "opcode": "putfield",
+        "operation": "Field a:I"
+      },
+      {
+        "pc": 22,
+        "opcode": "putfield",
+        "operation": "Field d:I"
+      }
+    ],
+    "xp.a(III)I": [],
+    "xp.e(III)I": []
+  }
+}

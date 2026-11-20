@@ -1,9 +1,9 @@
 # Original cache callback boundaries
 
 This comparison verifies the coordinator around successful loading and naturally
-triggered population. Loader decoding, normal generation and terrain-feature
+triggered population. Loader decoding, Overworld generation and terrain-feature
 bodies remain external callbacks. The separate [retained-provider comparison](cache.md)
-composes the real C normal generator and finishing stages with acquisition.
+composes the real C Overworld generator and finishing stages with acquisition.
 
 Both supplied originals use genuine persistent base worlds: client `fd`/`ok`
 with actual `hi` save-format factory, `mx` handler and `ld` region loader; server
@@ -45,7 +45,7 @@ save writer or general saved-world compatibility.
 
 Each fresh persistent base world retains its actual constructor-cached origin.
 The measured schedule is `c(1,0)`, `c(0,1)`, `c(1,1)`, `c(1,1)`. The first three
-calls observe actual load misses, normal generation, finishing before publication
+calls observe actual load misses, Overworld generation, finishing before publication
 and all nine activation registration boundaries. The southeast acquisition
 completes a 2×2 square and naturally triggers the northwest population helper.
 
@@ -78,16 +78,26 @@ the provider returns.
 Output labels every imported load/generation/population effect
 `observed-original-replay`; registration effects are labeled `coordinator`.
 No imported feature or generation result is reported as independently computed
-by this adapter. The real normal generator retains its separate composition and
+by this adapter. The real Overworld generator retains its separate composition and
 original comparisons. Provider numerical buffers are outside this adapter's C
 projection; raw Random owners and seeds remain separately observed in the
 original.
 
+The separate [fresh World comparison](natural-population.md) computes seed23
+origin and ring profiles through the production GAME implementation. The
+four-call origin profile retains this neighborhood; the ten-call ring includes
+negative coordinates, nine normal Chunks, four populated Chunks and 6,968 final
+ordered light regions. Both compare their complete declared numerical and cache
+projections. Public ring replay also has a full original-derived numerical
+oracle, while public origin replay checks the older cache oracle. Those native
+replays use separately declared minimal resources. This MCC1 adapter retains
+its original imported-callback scope and historical corpus.
+
 Original observations retain complete map/list/pending/queue contents, all five
 normal arrays, flags, time and stable context identities. The debugger links
-normal arrays, wrappers, world, tile map and eight entity slices to helper
+normal arrays, wrappers, world, TileEntity map and eight entity slices to helper
 references. Eight explicit fallback backing tags bind the blank array chain.
-Blank tile/entity owners and queue-item identities retain JDI observations
+Blank TileEntity/entity owners and queue-item identities retain JDI observations
 without reflected helper anchors. Blank backing-array values remain outside the C blank dispatch payload.
 Registration collections are genuinely empty in this finite corpus.
 

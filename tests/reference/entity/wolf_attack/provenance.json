@@ -1,0 +1,44 @@
+{
+  "status": "CAPTURED_ORIGINAL",
+  "rows": 24,
+  "platform": "Windows x64",
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\n",
+  "javac_version": "javac 17.0.17\n",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "execution_flags": [
+    "-Xint",
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow",
+    "--add-opens=java.base/java.util=ALL-UNNAMED"
+  ],
+  "helper_sha256": {
+    "WolfAttackObservation$1.class": "9d31a0a8cd518e27a3adf0e47555267432baa63e638e0d9b7eeb5c3e934a8e1e",
+    "WolfAttackObservation.class": "2866a376bc344022d49f0a426b1d046344f90766f464173eeef9b3f003a713df"
+  },
+  "original_receipt": {
+    "exit": 0,
+    "timeout_seconds": 60,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 15564,
+    "stderr_bytes": 394,
+    "stdout_sha256": "94f66a13510ece8e0354d3cd56aab71562592c9036d37e57978e79563bf47c8a",
+    "stderr_sha256": "411cb136cf2198ae563e30eb97d6e0551a2c5d0837e5a2c14f6b1e7727f65581",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576
+  },
+  "finite_sha256": "37838a3b4007a53d5d26b55e712a139690c9df95f6a923563026185b567d4e74",
+  "external_attempts": {
+    "network": 0,
+    "native_links": 0,
+    "writes": 0
+  },
+  "source_inputs_unchanged": true,
+  "helper_unchanged": true,
+  "scope": "Unchanged GI.a(SN,F) over actual GI/JU NULL-World owners with declared primitive/RNG fields. SN.a false-target bite observed; full Living damage, AI/World/GL/pixels excluded.",
+  "native_replay": "separate acceptance; not established by original capture"
+}

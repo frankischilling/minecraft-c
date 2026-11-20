@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "repeats": 2,
+  "rows": 17,
+  "scope": "Unchanged BK.b(I)I metadata colors and inherited UU.g()V bounds on actual constructed uu.L; no original CV/BB/GL or pixels.",
+  "files_sha256": {
+    "observations.txt": "97d6e37ad4ff6596cd7af1a545d42ec870f850b93cd860712f3073d816e89a7f",
+    "source-pins.json": "7d0f7ca34ca5a3f0dcb7f78133c6068cfa81ecc8ce7518cd5b8c3f0917e3e726",
+    "LeafInventoryObservation.java": "8c36be253eed55106c60c161610afc6f43be8d77eab19a8bf1b296b6cc2c23a5",
+    "capture_reference.py": "b67f44ba89ca17e6b885b34658562aa72eb955f64fbeedfab0b561caae60e4fe"
+  },
+  "jdk_files_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+  },
+  "observer_classes_sha256": {
+    "LeafInventoryObservation$1.class": "ba0a71e554ac96d1e2c5a87681794e1fa49db4b708a3906e9ca6f29f7a33a4c5",
+    "LeafInventoryObservation.class": "e4fa5f52e02aaf74576843cbde5bf13f095427ea5bff45c7663bcabc7ee657bb"
+  },
+  "original_stdout_sha256": [
+    "0f548a85189e77fbed29478acf746a5f9632eaac1028c8a6a89fdf0109f98555",
+    "0f548a85189e77fbed29478acf746a5f9632eaac1028c8a6a89fdf0109f98555"
+  ],
+  "source_guards": [
+    {
+      "network_attempts": 0,
+      "native_link_attempts": 0,
+      "actual_jh_array_length": 65536
+    },
+    {
+      "network_attempts": 0,
+      "native_link_attempts": 0,
+      "actual_jh_array_length": 65536
+    }
+  ],
+  "original_inputs_unchanged": true,
+  "source_pin_parser": {
+    "path": "tests/reference/client/controller/classfile.py",
+    "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "vm_arguments": [
+    "-Xint",
+    "-Xverify:all",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow"
+  ],
+  "transport": "ASCII rows with LF; no original classes or assets stored"
+}

@@ -1,0 +1,42 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "ix": {
+      "class_bytes": 4727,
+      "class_sha256": "03eb35aef64c71087942c5dc8b2849e9b47e9482c97be825895cfc2149b8e009",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lgs;)V",
+          "access": 1,
+          "code_bytes": 37,
+          "code_sha256": "fae0900179fe47befecd1486074bc5876e9e536f39c03aae8fb169ebe62b890a"
+        },
+        {
+          "name": "b",
+          "descriptor": "(I)V",
+          "access": 1,
+          "code_bytes": 67,
+          "code_sha256": "cc1338d65bf8f56b0a07706479bd005c953442af274daa23fc4bc86cbdf3f277"
+        }
+      ]
+    },
+    "net.minecraft.client.Minecraft": {
+      "class_bytes": 26388,
+      "class_sha256": "db99df969e5f30d01ad4424a4d63d3b1f4a11832055dd291e65d476cfa4c38b3",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "k",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 1336,
+          "code_sha256": "36d015223f3d5d51994588a676fcfa52f270a647644cea97d1c0fc17cbb25054"
+        }
+      ]
+    }
+  }
+}

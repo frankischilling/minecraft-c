@@ -1,0 +1,1181 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "One fatal cold UE attempt: caught Engine NPE is printed, then distinct camera NPE escapes GV suffix. Fresh process actual TH.frame then two warm UE returns. No cold success, Native, pixel or full-game qualification.",
+  "modes": {
+    "cold": {
+      "mode": "cold",
+      "source_target_exit": 1,
+      "attempted_profiles": [
+        0
+      ],
+      "returned_profiles": [],
+      "source_caught_exceptions": 1,
+      "caught": {
+        "creation": {
+          "event": "exception",
+          "profile": 0,
+          "throw": {
+            "class": "bw",
+            "method": "a",
+            "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
+            "pc": 11,
+            "line": 36,
+            "file": "SourceFile"
+          },
+          "catch": {
+            "class": "gv",
+            "method": "a",
+            "descriptor": "(Lls;DDDFF)V",
+            "pc": 743,
+            "line": 116,
+            "file": "SourceFile"
+          },
+          "source-GV-caught": true,
+          "throwable": {
+            "class": "java.lang.NullPointerException",
+            "id": 2567,
+            "detail-message": null,
+            "extended-message": null,
+            "cause-self": true,
+            "stack-trace": [],
+            "stack-field-null": false
+          },
+          "frames": [
+            {
+              "class": "bw",
+              "method": "a",
+              "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
+              "pc": 11,
+              "line": 36,
+              "file": "SourceFile"
+            },
+            {
+              "class": "gv",
+              "method": "a",
+              "descriptor": "(Lls;DDDFF)V",
+              "pc": 254,
+              "line": 60,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ds",
+              "method": "a",
+              "descriptor": "(Lgs;DDDFF)V",
+              "pc": 112,
+              "line": 81,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ds",
+              "method": "a",
+              "descriptor": "(Lsn;DDDFF)V",
+              "pc": 14,
+              "line": 17,
+              "file": "SourceFile"
+            },
+            {
+              "class": "th",
+              "method": "a",
+              "descriptor": "(Lsn;DDDFF)V",
+              "pc": 24,
+              "line": 141,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ue",
+              "method": "a",
+              "descriptor": "(F)V",
+              "pc": 347,
+              "line": 73,
+              "file": "SourceFile"
+            },
+            {
+              "class": "id",
+              "method": "a",
+              "descriptor": "(IIF)V",
+              "pc": 32,
+              "line": 37,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ue",
+              "method": "a",
+              "descriptor": "(IIF)V",
+              "pc": 4,
+              "line": 32,
+              "file": "SourceFile"
+            },
+            {
+              "class": "PlayerPreviewCaughtTarget",
+              "method": "main",
+              "descriptor": "([Ljava/lang/String;)V",
+              "pc": 2990,
+              "line": 131,
+              "file": "PlayerPreviewCaughtTarget.java"
+            }
+          ]
+        },
+        "after_real_print": {
+          "class": "java.lang.NullPointerException",
+          "id": 2567,
+          "detail-message": null,
+          "extended-message": "Cannot invoke \"ji.a(String, String)\" because \"<local3>\" is null",
+          "cause-self": true,
+          "stack-trace": [
+            {
+              "declaringClass": "bw",
+              "methodName": "a",
+              "fileName": "SourceFile",
+              "lineNumber": 36,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            },
+            {
+              "declaringClass": "gv",
+              "methodName": "a",
+              "fileName": "SourceFile",
+              "lineNumber": 60,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            },
+            {
+              "declaringClass": "ds",
+              "methodName": "a",
+              "fileName": "SourceFile",
+              "lineNumber": 81,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            },
+            {
+              "declaringClass": "ds",
+              "methodName": "a",
+              "fileName": "SourceFile",
+              "lineNumber": 17,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            },
+            {
+              "declaringClass": "th",
+              "methodName": "a",
+              "fileName": "SourceFile",
+              "lineNumber": 141,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            },
+            {
+              "declaringClass": "ue",
+              "methodName": "a",
+              "fileName": "SourceFile",
+              "lineNumber": 73,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            },
+            {
+              "declaringClass": "id",
+              "methodName": "a",
+              "fileName": "SourceFile",
+              "lineNumber": 37,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            },
+            {
+              "declaringClass": "ue",
+              "methodName": "a",
+              "fileName": "SourceFile",
+              "lineNumber": 32,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            },
+            {
+              "declaringClass": "PlayerPreviewCaughtTarget",
+              "methodName": "main",
+              "fileName": "PlayerPreviewCaughtTarget.java",
+              "lineNumber": 131,
+              "classLoaderName": "app",
+              "moduleName": null,
+              "moduleVersion": null,
+              "format": 1
+            }
+          ],
+          "stack-field-null": false
+        },
+        "source_frames": [
+          {
+            "class": "bw",
+            "method": "a",
+            "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
+            "pc": 11,
+            "line": 36,
+            "file": "SourceFile"
+          },
+          {
+            "class": "gv",
+            "method": "a",
+            "descriptor": "(Lls;DDDFF)V",
+            "pc": 254,
+            "line": 60,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ds",
+            "method": "a",
+            "descriptor": "(Lgs;DDDFF)V",
+            "pc": 112,
+            "line": 81,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ds",
+            "method": "a",
+            "descriptor": "(Lsn;DDDFF)V",
+            "pc": 14,
+            "line": 17,
+            "file": "SourceFile"
+          },
+          {
+            "class": "th",
+            "method": "a",
+            "descriptor": "(Lsn;DDDFF)V",
+            "pc": 24,
+            "line": 141,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ue",
+            "method": "a",
+            "descriptor": "(F)V",
+            "pc": 347,
+            "line": 73,
+            "file": "SourceFile"
+          },
+          {
+            "class": "id",
+            "method": "a",
+            "descriptor": "(IIF)V",
+            "pc": 32,
+            "line": 37,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ue",
+            "method": "a",
+            "descriptor": "(IIF)V",
+            "pc": 4,
+            "line": 32,
+            "file": "SourceFile"
+          }
+        ],
+        "authored_caller_frames": [
+          {
+            "class": "PlayerPreviewCaughtTarget",
+            "method": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "pc": 2990,
+            "line": 131,
+            "file": "PlayerPreviewCaughtTarget.java"
+          }
+        ],
+        "printed_stderr": "java.lang.NullPointerException: Cannot invoke \"ji.a(String, String)\" because \"<local3>\" is null\r\n\tat bw.a(SourceFile:36)\r\n\tat gv.a(SourceFile:60)\r\n\tat ds.a(SourceFile:81)\r\n\tat ds.a(SourceFile:17)\r\n\tat th.a(SourceFile:141)\r\n\tat ue.a(SourceFile:73)\r\n\tat id.a(SourceFile:37)\r\n\tat ue.a(SourceFile:32)\r\n\tat PlayerPreviewCaughtTarget.main(PlayerPreviewCaughtTarget.java:131)\r\n"
+      },
+      "escaped": {
+        "creation": {
+          "event": "exception",
+          "profile": 0,
+          "throw": {
+            "class": "sn",
+            "method": "f",
+            "descriptor": "(Lsn;)F",
+            "pc": 5,
+            "line": 678,
+            "file": "SourceFile"
+          },
+          "catch": {
+            "class": "PlayerPreviewCaughtTarget",
+            "method": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "pc": 3139,
+            "line": 133,
+            "file": "PlayerPreviewCaughtTarget.java"
+          },
+          "source-GV-caught": false,
+          "throwable": {
+            "class": "java.lang.NullPointerException",
+            "id": 2602,
+            "detail-message": null,
+            "extended-message": null,
+            "cause-self": true,
+            "stack-trace": [],
+            "stack-field-null": false
+          },
+          "frames": [
+            {
+              "class": "sn",
+              "method": "f",
+              "descriptor": "(Lsn;)F",
+              "pc": 5,
+              "line": 678,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ds",
+              "method": "a",
+              "descriptor": "(Lgs;DDD)V",
+              "pc": 36,
+              "line": 92,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ds",
+              "method": "a",
+              "descriptor": "(Lls;DDD)V",
+              "pc": 10,
+              "line": 17,
+              "file": "SourceFile"
+            },
+            {
+              "class": "gv",
+              "method": "a",
+              "descriptor": "(Lls;DDDFF)V",
+              "pc": 766,
+              "line": 125,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ds",
+              "method": "a",
+              "descriptor": "(Lgs;DDDFF)V",
+              "pc": 112,
+              "line": 81,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ds",
+              "method": "a",
+              "descriptor": "(Lsn;DDDFF)V",
+              "pc": 14,
+              "line": 17,
+              "file": "SourceFile"
+            },
+            {
+              "class": "th",
+              "method": "a",
+              "descriptor": "(Lsn;DDDFF)V",
+              "pc": 24,
+              "line": 141,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ue",
+              "method": "a",
+              "descriptor": "(F)V",
+              "pc": 347,
+              "line": 73,
+              "file": "SourceFile"
+            },
+            {
+              "class": "id",
+              "method": "a",
+              "descriptor": "(IIF)V",
+              "pc": 32,
+              "line": 37,
+              "file": "SourceFile"
+            },
+            {
+              "class": "ue",
+              "method": "a",
+              "descriptor": "(IIF)V",
+              "pc": 4,
+              "line": 32,
+              "file": "SourceFile"
+            },
+            {
+              "class": "PlayerPreviewCaughtTarget",
+              "method": "main",
+              "descriptor": "([Ljava/lang/String;)V",
+              "pc": 2990,
+              "line": 131,
+              "file": "PlayerPreviewCaughtTarget.java"
+            }
+          ]
+        },
+        "message_from_actual_JVM_stderr": "Cannot read field \"aM\" because \"<parameter1>\" is null",
+        "source_frames": [
+          {
+            "class": "sn",
+            "method": "f",
+            "descriptor": "(Lsn;)F",
+            "pc": 5,
+            "line": 678,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ds",
+            "method": "a",
+            "descriptor": "(Lgs;DDD)V",
+            "pc": 36,
+            "line": 92,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ds",
+            "method": "a",
+            "descriptor": "(Lls;DDD)V",
+            "pc": 10,
+            "line": 17,
+            "file": "SourceFile"
+          },
+          {
+            "class": "gv",
+            "method": "a",
+            "descriptor": "(Lls;DDDFF)V",
+            "pc": 766,
+            "line": 125,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ds",
+            "method": "a",
+            "descriptor": "(Lgs;DDDFF)V",
+            "pc": 112,
+            "line": 81,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ds",
+            "method": "a",
+            "descriptor": "(Lsn;DDDFF)V",
+            "pc": 14,
+            "line": 17,
+            "file": "SourceFile"
+          },
+          {
+            "class": "th",
+            "method": "a",
+            "descriptor": "(Lsn;DDDFF)V",
+            "pc": 24,
+            "line": 141,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ue",
+            "method": "a",
+            "descriptor": "(F)V",
+            "pc": 347,
+            "line": 73,
+            "file": "SourceFile"
+          },
+          {
+            "class": "id",
+            "method": "a",
+            "descriptor": "(IIF)V",
+            "pc": 32,
+            "line": 37,
+            "file": "SourceFile"
+          },
+          {
+            "class": "ue",
+            "method": "a",
+            "descriptor": "(IIF)V",
+            "pc": 4,
+            "line": 32,
+            "file": "SourceFile"
+          }
+        ],
+        "authored_caller_frames": [
+          {
+            "class": "PlayerPreviewCaughtTarget",
+            "method": "main",
+            "descriptor": "([Ljava/lang/String;)V",
+            "pc": 2990,
+            "line": 131,
+            "file": "PlayerPreviewCaughtTarget.java"
+          }
+        ],
+        "JVM_uncaught_stderr": "Exception in thread \"main\" java.lang.NullPointerException: Cannot read field \"aM\" because \"<parameter1>\" is null\r\n\tat sn.f(SourceFile:678)\r\n\tat ds.a(SourceFile:92)\r\n\tat ds.a(SourceFile:17)\r\n\tat gv.a(SourceFile:125)\r\n\tat ds.a(SourceFile:81)\r\n\tat ds.a(SourceFile:17)\r\n\tat th.a(SourceFile:141)\r\n\tat ue.a(SourceFile:73)\r\n\tat id.a(SourceFile:37)\r\n\tat ue.a(SourceFile:32)\r\n\tat PlayerPreviewCaughtTarget.main(PlayerPreviewCaughtTarget.java:131)\r\n"
+      },
+      "GV_prefix_PCs": [
+        0,
+        743,
+        745,
+        747,
+        750,
+        753,
+        756,
+        759,
+        766
+      ],
+      "UE_prefix_PCs": [
+        0,
+        347
+      ],
+      "caller_finally_exit": {
+        "profile": 0,
+        "kind": "cold",
+        "returned": false,
+        "pose": {
+          "H": "41d79237",
+          "aS": "42579237",
+          "aT": "c19fa720",
+          "bE": "3f800000",
+          "manager-engine-null": true,
+          "manager-world-null": false,
+          "manager-camera-null": true,
+          "manager-settings-null": true,
+          "manager-font-null": true,
+          "manager-i": "43340000",
+          "mouse-x": "00000000",
+          "mouse-y": "00000000"
+        },
+        "models": [
+          {
+            "role": "a",
+            "class": "fh",
+            "held": false,
+            "sneak": false
+          },
+          {
+            "role": "g",
+            "class": "fh",
+            "held": false,
+            "sneak": false
+          },
+          {
+            "role": "h",
+            "class": "fh",
+            "held": false,
+            "sneak": false
+          }
+        ],
+        "gl": {
+          "modelview": [
+            "41f00001",
+            "b630015d",
+            "b5800000",
+            "00000000",
+            "b6256fb9",
+            "c1e1969c",
+            "c123d3f9",
+            "00000000",
+            "b57049cd",
+            "c123d3f7",
+            "41e1969e",
+            "00000000",
+            "43300000",
+            "4284a301",
+            "c4f5d2ce",
+            "3f800000"
+          ],
+          "projection": [
+            "3b997ae7",
+            "00000000",
+            "00000000",
+            "00000000",
+            "00000000",
+            "bc088889",
+            "00000000",
+            "00000000",
+            "00000000",
+            "00000000",
+            "ba83126f",
+            "00000000",
+            "bf800000",
+            "3f800000",
+            "c0000000",
+            "3f800000"
+          ],
+          "modelview-depth": 2,
+          "projection-depth": 1,
+          "matrix-mode": 5888,
+          "lighting": true,
+          "light0": true,
+          "light1": true,
+          "color-material": true,
+          "rescale-normal": true,
+          "texture": true,
+          "depth": false,
+          "alpha": true,
+          "blend": false
+        },
+        "gl-error": 0
+      }
+    },
+    "warm": {
+      "mode": "warm",
+      "source_target_exit": 0,
+      "attempted_profiles": [
+        2,
+        3
+      ],
+      "returned_profiles": [
+        2,
+        3
+      ],
+      "source_caught_exceptions": 0,
+      "frame_input": {
+        "pose": {
+          "H": "00000000",
+          "aS": "00000000",
+          "aT": "00000000",
+          "bE": "00000000",
+          "manager-engine-null": true,
+          "manager-world-null": false,
+          "manager-camera-null": true,
+          "manager-settings-null": true,
+          "manager-font-null": true,
+          "manager-i": "00000000",
+          "mouse-x": "00000000",
+          "mouse-y": "00000000"
+        }
+      },
+      "frame_return": {
+        "pose": {
+          "H": "00000000",
+          "aS": "00000000",
+          "aT": "00000000",
+          "bE": "00000000",
+          "manager-engine-null": false,
+          "manager-world-null": false,
+          "manager-camera-null": false,
+          "manager-settings-null": false,
+          "manager-font-null": false,
+          "manager-i": "00000000",
+          "mouse-x": "00000000",
+          "mouse-y": "00000000"
+        }
+      },
+      "inputs": [
+        {
+          "profile": 2,
+          "kind": "warm",
+          "mouse": [
+            -90,
+            -100
+          ],
+          "partial": "3ec00000",
+          "pose": {
+            "H": "00000000",
+            "aS": "00000000",
+            "aT": "00000000",
+            "bE": "00000000",
+            "manager-engine-null": false,
+            "manager-world-null": false,
+            "manager-camera-null": false,
+            "manager-settings-null": false,
+            "manager-font-null": false,
+            "manager-i": "00000000",
+            "mouse-x": "00000000",
+            "mouse-y": "00000000"
+          },
+          "models": [
+            {
+              "role": "a",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            },
+            {
+              "role": "g",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            },
+            {
+              "role": "h",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            }
+          ],
+          "gl": {
+            "modelview": [
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "c4fa0000",
+              "3f800000"
+            ],
+            "projection": [
+              "3b997ae7",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "bc088889",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "ba83126f",
+              "00000000",
+              "bf800000",
+              "3f800000",
+              "c0000000",
+              "3f800000"
+            ],
+            "modelview-depth": 1,
+            "projection-depth": 1,
+            "matrix-mode": 5888,
+            "lighting": false,
+            "light0": false,
+            "light1": false,
+            "color-material": false,
+            "rescale-normal": false,
+            "texture": true,
+            "depth": false,
+            "alpha": false,
+            "blend": false
+          }
+        },
+        {
+          "profile": 3,
+          "kind": "warm",
+          "mouse": [
+            -120,
+            -130
+          ],
+          "partial": "3ec00000",
+          "pose": {
+            "H": "00000000",
+            "aS": "00000000",
+            "aT": "00000000",
+            "bE": "00000000",
+            "manager-engine-null": false,
+            "manager-world-null": false,
+            "manager-camera-null": false,
+            "manager-settings-null": false,
+            "manager-font-null": false,
+            "manager-i": "43340000",
+            "mouse-x": "c2b40000",
+            "mouse-y": "c2c80000"
+          },
+          "models": [
+            {
+              "role": "a",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            },
+            {
+              "role": "g",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            },
+            {
+              "role": "h",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            }
+          ],
+          "gl": {
+            "modelview": [
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "c4fa0000",
+              "3f800000"
+            ],
+            "projection": [
+              "3b997ae7",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "bc088889",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "ba83126f",
+              "00000000",
+              "bf800000",
+              "3f800000",
+              "c0000000",
+              "3f800000"
+            ],
+            "modelview-depth": 1,
+            "projection-depth": 1,
+            "matrix-mode": 5888,
+            "lighting": true,
+            "light0": false,
+            "light1": false,
+            "color-material": false,
+            "rescale-normal": false,
+            "texture": true,
+            "depth": true,
+            "alpha": true,
+            "blend": false
+          }
+        }
+      ],
+      "returns": [
+        {
+          "profile": 2,
+          "kind": "warm",
+          "pose": {
+            "H": "00000000",
+            "aS": "00000000",
+            "aT": "00000000",
+            "bE": "00000000",
+            "manager-engine-null": false,
+            "manager-world-null": false,
+            "manager-camera-null": false,
+            "manager-settings-null": false,
+            "manager-font-null": false,
+            "manager-i": "43340000",
+            "mouse-x": "c2b40000",
+            "mouse-y": "c2c80000"
+          },
+          "models": [
+            {
+              "role": "a",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            },
+            {
+              "role": "g",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            },
+            {
+              "role": "h",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            }
+          ],
+          "gl": {
+            "modelview": [
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "c4fa0000",
+              "3f800000"
+            ],
+            "projection": [
+              "3b997ae7",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "bc088889",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "ba83126f",
+              "00000000",
+              "bf800000",
+              "3f800000",
+              "c0000000",
+              "3f800000"
+            ],
+            "modelview-depth": 1,
+            "projection-depth": 1,
+            "matrix-mode": 5888,
+            "lighting": true,
+            "light0": false,
+            "light1": false,
+            "color-material": false,
+            "rescale-normal": false,
+            "texture": true,
+            "depth": true,
+            "alpha": true,
+            "blend": false
+          },
+          "gl-error": 0,
+          "nw": {
+            "A": 10,
+            "B": 2097152,
+            "h": 0,
+            "i": "3feff33340000000",
+            "j": "3fdfccccc0000000",
+            "k": -804253680,
+            "l": false,
+            "m": false,
+            "n": false,
+            "o": 0,
+            "p": 0,
+            "q": false,
+            "r": 7,
+            "s": "0000000000000000",
+            "t": "0000000000000000",
+            "u": "0000000000000000",
+            "v": 8323072,
+            "w": false,
+            "x": false,
+            "z": 0
+          },
+          "last-words": [
+            "be900000",
+            "bf080000",
+            "3e900000",
+            "3f7f999a",
+            "3e81999a",
+            "c0101010",
+            "007f0000",
+            "00000000",
+            "3e900000",
+            "bf080000",
+            "3e900000",
+            "3f606666",
+            "3e81999a",
+            "c0101010",
+            "007f0000",
+            "00000000",
+            "3e900000",
+            "3d000000",
+            "3e900000",
+            "3f606666",
+            "3efe6666",
+            "d0101010",
+            "007f0000",
+            "00000000",
+            "be900000",
+            "bf080000",
+            "3e900000",
+            "3f7f999a",
+            "3e81999a",
+            "c0101010",
+            "00000000",
+            "00000000",
+            "3e900000",
+            "3d000000",
+            "3e900000",
+            "3f606666",
+            "3efe6666",
+            "d0101010",
+            "00000000",
+            "00000000",
+            "be900000",
+            "3d000000",
+            "3e900000",
+            "3f7f999a",
+            "3efe6666",
+            "d0101010",
+            "007f0000",
+            "00000000"
+          ],
+          "default-active-same": true,
+          "downloads-after": 0
+        },
+        {
+          "profile": 3,
+          "kind": "warm",
+          "pose": {
+            "H": "00000000",
+            "aS": "00000000",
+            "aT": "00000000",
+            "bE": "00000000",
+            "manager-engine-null": false,
+            "manager-world-null": false,
+            "manager-camera-null": false,
+            "manager-settings-null": false,
+            "manager-font-null": false,
+            "manager-i": "43340000",
+            "mouse-x": "c2f00000",
+            "mouse-y": "c3020000"
+          },
+          "models": [
+            {
+              "role": "a",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            },
+            {
+              "role": "g",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            },
+            {
+              "role": "h",
+              "class": "fh",
+              "held": false,
+              "sneak": false
+            }
+          ],
+          "gl": {
+            "modelview": [
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "3f800000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "c4fa0000",
+              "3f800000"
+            ],
+            "projection": [
+              "3b997ae7",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "bc088889",
+              "00000000",
+              "00000000",
+              "00000000",
+              "00000000",
+              "ba83126f",
+              "00000000",
+              "bf800000",
+              "3f800000",
+              "c0000000",
+              "3f800000"
+            ],
+            "modelview-depth": 1,
+            "projection-depth": 1,
+            "matrix-mode": 5888,
+            "lighting": true,
+            "light0": false,
+            "light1": false,
+            "color-material": false,
+            "rescale-normal": false,
+            "texture": true,
+            "depth": true,
+            "alpha": true,
+            "blend": false
+          },
+          "gl-error": 0,
+          "nw": {
+            "A": 10,
+            "B": 2097152,
+            "h": 0,
+            "i": "0000000000000000",
+            "j": "0000000000000000",
+            "k": -804253680,
+            "l": false,
+            "m": false,
+            "n": false,
+            "o": 0,
+            "p": 0,
+            "q": false,
+            "r": 7,
+            "s": "0000000000000000",
+            "t": "0000000000000000",
+            "u": "0000000000000000",
+            "v": 8323072,
+            "w": false,
+            "x": false,
+            "z": 0
+          },
+          "last-words": [
+            "42fa0000",
+            "434b0000",
+            "00000000",
+            "00000000",
+            "3f260000",
+            "c0101010",
+            "007f0000",
+            "00000000",
+            "43968000",
+            "434b0000",
+            "00000000",
+            "3f300000",
+            "3f260000",
+            "c0101010",
+            "007f0000",
+            "00000000",
+            "43968000",
+            "42140000",
+            "00000000",
+            "3f300000",
+            "00000000",
+            "d0101010",
+            "007f0000",
+            "00000000",
+            "42fa0000",
+            "434b0000",
+            "00000000",
+            "00000000",
+            "3f260000",
+            "c0101010",
+            "00000000",
+            "00000000",
+            "43968000",
+            "42140000",
+            "00000000",
+            "3f300000",
+            "00000000",
+            "d0101010",
+            "00000000",
+            "00000000",
+            "42fa0000",
+            "42140000",
+            "00000000",
+            "00000000",
+            "00000000",
+            "d0101010",
+            "007f0000",
+            "00000000"
+          ],
+          "default-active-same": true,
+          "downloads-after": 0
+        }
+      ]
+    }
+  }
+}

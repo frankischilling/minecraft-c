@@ -7,9 +7,11 @@ The C adapter imports their complete observed results at those explicit seams.
 
 from __future__ import annotations
 
+import __future__
 import argparse
 import copy
 from dataclasses import asdict
+from functools import lru_cache
 import hashlib
 import os
 from pathlib import Path
@@ -53,6 +55,14 @@ def same_json(left, right):
     return left == right
 
 
+@lru_cache(maxsize=12)
+def _compile_helper(data, filename, mode):
+    # This helper chain inherits postponed annotations. Keep reading and
+    # fingerprinting the sources, and execute each load in a fresh namespace.
+    return compile(data, filename, mode, flags=__future__.annotations.compiler_flag,
+                   dont_inherit=True)
+
+
 def helpers():
     require(Path(__file__).resolve() ==
             (ROOT / "scripts/reference/cache/compare_callbacks.py").resolve(),
@@ -62,8 +72,8 @@ def helpers():
     require(len(data) <= 2 * 1024 * 1024, "bounded acquisition helper source")
     module = types.ModuleType("_callbacks_acquire")
     module.__file__ = str(path)
-    exec(compile(data, str(path), "exec"), module.__dict__)
-    common, old, finish, normal, executed = module.helpers()
+    exec(_compile_helper(data, str(path), "exec"), module.__dict__)
+    common, old, finish, normal, executed = module.helpers(compile_source=_compile_helper)
     executed.append({"path": str(path), "bytes": len(data),
                      "sha256": hashlib.sha256(data).hexdigest()})
     return common, old, finish, normal, module, executed

@@ -1,0 +1,100 @@
+{
+  "schema": "CLIENT_WATER_ANIMATION_REFERENCE_V1",
+  "reference_files": {
+    "README.md": {
+      "bytes": 4128,
+      "sha256": "eceb76197e4939cda57086bfcc8b64ee3aadd84271502ed93fb47e2b2a8764e7"
+    },
+    "compare.py": {
+      "bytes": 8975,
+      "sha256": "ec25ee070f2a730a26cbb144f97906e5504b61afe33ec31601788962e11bada0"
+    },
+    "support.py": {
+      "bytes": 5432,
+      "sha256": "a503f83ca72ca77554b5665551c75e974e81be694e01ac8e8a8b276fa06d0104"
+    },
+    "source-pins.json": {
+      "bytes": 73264,
+      "sha256": "704ea8fc8ebb37eb4e8c9f0abd1a22367192bb77aa106bd81bd648f989f26c58"
+    },
+    "WaterAnimationObservation.java": {
+      "bytes": 7433,
+      "sha256": "5932306c74196a9b1c556705531a98b95ae80674b363cc47b10271dfeb6ad1ed"
+    },
+    "../notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    },
+    "../statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    }
+  },
+  "native_sources": {
+    "include/mc/client/texture_effects/water.h": {
+      "bytes": 4513,
+      "sha256": "0c31bb6964d32453ee1785ad0df17bf4babe8940307bced9bdec4d69a3ea6dcb"
+    },
+    "src/client/texture_effects/water.c": {
+      "bytes": 18292,
+      "sha256": "867318a835651121edb383768c5f7197a0d909832afe8eec3364826dfe0f190a"
+    },
+    "include/mc/core/java/java.h": {
+      "bytes": 3573,
+      "sha256": "87a9d709f5607cacd692dd76c767790b9029fac3fdc8d24481fed6d50a409e53"
+    },
+    "include/mc/core/java/random_profile.h": {
+      "bytes": 4172,
+      "sha256": "db0b1dd483d1c76a96ecd1fd7167b4ac23495f7002ce90ec0aaf58aa922a31d8"
+    },
+    "src/core/java/random_profile_internal.h": {
+      "bytes": 5196,
+      "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+    },
+    "src/core/java/random_profile.c": {
+      "bytes": 14027,
+      "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+    },
+    "src/core/java/java.c": {
+      "bytes": 8217,
+      "sha256": "efa5f6b0c997ed9a160184785f699ab822d2ba2dd501a1b2228d63a5360fa2db"
+    },
+    "src/platform/time/nanotime.c": {
+      "bytes": 6852,
+      "sha256": "f48ce206ff95f5b3aae5b780e916b3625cb82ee95c8150febe13c3b53df7b7a7"
+    },
+    "src/platform/time/nanotime.h": {
+      "bytes": 3933,
+      "sha256": "88db116e2f3f6044f3a6d3faac4bf87134ee833a13b5b24bda8260d653e516f7"
+    },
+    "src/block/registry/registry_internal.h": {
+      "bytes": 13838,
+      "sha256": "ade35ac909f9a1c66f0905095655971fdeede5845d466936952fd32d1ea700ae"
+    },
+    "src/block/registry/runtime.c": {
+      "bytes": 20864,
+      "sha256": "dcd072d81e5ce622d876cec42323b2efd6c4229af425beed8cfae864414c754b"
+    },
+    "src/block/registry/registration.c": {
+      "bytes": 32164,
+      "sha256": "9a7559bcef39e1c73a81ef3a9d969b18ea870390c5723e82129f77b9022a08c3"
+    },
+    "src/block/registry/constructors.c": {
+      "bytes": 35922,
+      "sha256": "6b8eff1cf00801deef14108da8c819400f4cf31f9c2ef994fd1306b2395bc703"
+    },
+    "tests/client/texture_effects/test_water_animation.c": {
+      "bytes": 16905,
+      "sha256": "a0e98eff254243c87119a0037a6f4aeadeb5f24c3c262c0b450c576798b79b44"
+    },
+    "tests/tools/client/test_water_animation.py": {
+      "bytes": 2150,
+      "sha256": "6b96e68a1f02d45124c0930be7568c3c1d86d49ea7426edc2f2222bd9ffe09ee"
+    },
+    "tests/tools/client/test_water_animation_driver.py": {
+      "bytes": 3001,
+      "sha256": "2548cf29e8d81b901df418b8061025197fa1c065a7c822d2f5ae8df86f3a7832"
+    }
+  },
+  "scope": "Actual vs.a()V, genuine shared Math.random holder with declared finite setSeed fixture; lazy native entropy/failure separate. No GL/texture registration/upload."
+}

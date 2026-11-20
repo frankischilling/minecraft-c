@@ -1,0 +1,437 @@
+{
+  "schema": "BED_FOOT_WAKE_V1",
+  "rows": [
+    {
+      "mode": "success",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "health": 20,
+        "idle": 17,
+        "world_sleeping": true,
+        "head": [
+          26,
+          12
+        ],
+        "orphan": [
+          26,
+          0
+        ],
+        "world_random": [
+          "00000005deecefc9",
+          false,
+          "0000000000000000"
+        ],
+        "player_random": [
+          "00000005deece64b",
+          false,
+          "0000000000000000"
+        ],
+        "items": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "health": 20,
+        "idle": 0,
+        "world_sleeping": false,
+        "head": [
+          26,
+          8
+        ],
+        "orphan": [
+          0,
+          0
+        ],
+        "world_random": [
+          "00002f08d408505d",
+          false,
+          "0000000000000000"
+        ],
+        "player_random": [
+          "00000005deece64b",
+          false,
+          "0000000000000000"
+        ],
+        "items": [
+          {
+            "position": [
+              "401d3ea43f000000",
+              "40500a2518200000",
+              "40208ea5f5800000"
+            ],
+            "motion": [
+              "3f9c24a180000000",
+              "3fc99999a0000000",
+              "3f84a8b420000000"
+            ],
+            "yaw": "42ad2fac",
+            "phase": "4092f844",
+            "delay": 10,
+            "stack": [
+              355,
+              1,
+              0
+            ],
+            "inserted": true,
+            "world_same": true
+          }
+        ]
+      },
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "events": [
+        {
+          "kind": "cell",
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            26,
+            0
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        },
+        {
+          "kind": "cell",
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            0,
+            0
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.f",
+            "ve.b",
+            "fd.l",
+            "fd.i",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        },
+        {
+          "kind": "added",
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            0,
+            0
+          ],
+          "sleeping": true,
+          "item": {
+            "position": [
+              "401d3ea43f000000",
+              "40500a2518200000",
+              "40208ea5f5800000"
+            ],
+            "motion": [
+              "3f9c24a180000000",
+              "3fc99999a0000000",
+              "3f84a8b420000000"
+            ],
+            "yaw": "42ad2fac",
+            "phase": "4092f844",
+            "delay": 10,
+            "stack": [
+              355,
+              1,
+              0
+            ],
+            "inserted": true,
+            "world_same": true
+          },
+          "frames": [
+            "fd.c",
+            "fd.b",
+            "uu.a",
+            "uu.a",
+            "ve.a",
+            "uu.g",
+            "ve.b",
+            "fd.l",
+            "fd.i",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "publication-error",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "health": 20,
+        "idle": 17,
+        "world_sleeping": true,
+        "head": [
+          26,
+          12
+        ],
+        "orphan": [
+          26,
+          0
+        ],
+        "world_random": [
+          "00000005deecefc9",
+          false,
+          "0000000000000000"
+        ],
+        "player_random": [
+          "00000005deece64b",
+          false,
+          "0000000000000000"
+        ],
+        "items": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "health": 20,
+        "idle": 0,
+        "world_sleeping": true,
+        "head": [
+          26,
+          8
+        ],
+        "orphan": [
+          0,
+          0
+        ],
+        "world_random": [
+          "00002f08d408505d",
+          false,
+          "0000000000000000"
+        ],
+        "player_random": [
+          "00000005deece64b",
+          false,
+          "0000000000000000"
+        ],
+        "items": [
+          {
+            "position": [
+              "401d3ea43f000000",
+              "40500a2518200000",
+              "40208ea5f5800000"
+            ],
+            "motion": [
+              "3f9c24a180000000",
+              "3fc99999a0000000",
+              "3f84a8b420000000"
+            ],
+            "yaw": "42ad2fac",
+            "phase": "4092f844",
+            "delay": 10,
+            "stack": [
+              355,
+              1,
+              0
+            ],
+            "inserted": true,
+            "world_same": true
+          }
+        ]
+      },
+      "result": null,
+      "exception": "java/lang/IllegalStateException",
+      "exception_frames": [
+        "FootWakeObservation$Observer.a",
+        "fd.c",
+        "fd.b",
+        "uu.a",
+        "uu.a",
+        "ve.a",
+        "uu.g",
+        "ve.b",
+        "fd.l",
+        "fd.i",
+        "fd.g",
+        "fd.d",
+        "ve.a",
+        "gs.a",
+        "gs.a"
+      ],
+      "events": [
+        {
+          "kind": "cell",
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            26,
+            0
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        },
+        {
+          "kind": "cell",
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            0,
+            0
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.f",
+            "ve.b",
+            "fd.l",
+            "fd.i",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        },
+        {
+          "kind": "added",
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            0,
+            0
+          ],
+          "sleeping": true,
+          "item": {
+            "position": [
+              "401d3ea43f000000",
+              "40500a2518200000",
+              "40208ea5f5800000"
+            ],
+            "motion": [
+              "3f9c24a180000000",
+              "3fc99999a0000000",
+              "3f84a8b420000000"
+            ],
+            "yaw": "42ad2fac",
+            "phase": "4092f844",
+            "delay": 10,
+            "stack": [
+              355,
+              1,
+              0
+            ],
+            "inserted": true,
+            "world_same": true
+          },
+          "frames": [
+            "fd.c",
+            "fd.b",
+            "uu.a",
+            "uu.a",
+            "ve.a",
+            "uu.g",
+            "ve.b",
+            "fd.l",
+            "fd.i",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -16,7 +16,7 @@ decoding remain separate implementations.
 | Cache `c`, load at 46, provider at 78 | A nonnull load skips generation. An absent provider selects the retained fallback; a provider returning null follows a different failure path. |
 | Load wrapper `ok/jb.d`, `he.e`, callback at 19, time at 34/37 | Sample current world time after a nonnull load returns, then assign chunk `r:J`. Caught `Exception` becomes a miss; `Error` is outside that catch. |
 | Cache `c`, map put at 95, list append at 107 | Publish and append the same retained result unconditionally, including after a recursive callback inserts the same key. |
-| Cache `c`, lifecycle at 120/125 | Ordinary first method is empty. Normal activation sets `c=true` before tile values and eight ordered entity lists are registered. Blank overrides are no-ops. |
+| Cache `c`, lifecycle at 120/125 | Ordinary first method is empty. Normal activation sets `c=true` before TileEntity values and eight ordered entity lists are registered. Blank overrides are no-ops. |
 | Cache `c`, population calls at 175/244/313/388 | Evaluate current, west, north and northwest anchors against live state, retaining short-circuit order and repeated presence checks. |
 | Population helper, flag at 19, callback at 36, dirty mark at 43 | Set `n=true` before provider invocation. Successful normal dirty marking follows the callback. No provider changes only the flag. |
 | Dedicated `he.b`, hit or force gates | A hit retains pending state. A denied miss returns the exact uninserted fallback. Base `ok/jb.b` instead acquires every miss. |
@@ -79,7 +79,7 @@ arrays, biome output, materials and both Random continuations then match the
 actual original baseline. Captured manager buffers restore the constructor's
 completed biome sampling through their ownership APIs. No generator noise,
 scratch or Random state is imported or overwritten. Subsequent calls compose the
-real C normal generator, cache coordinator, finishing and ordered lighting queue.
+real C Overworld generator, cache coordinator, finishing and ordered lighting queue.
 Each generation returns before publication and preserves prior cached payloads.
 
 The captured original loader methods return null in these fresh-world cases;

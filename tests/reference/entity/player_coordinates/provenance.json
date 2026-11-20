@@ -1,0 +1,66 @@
+{
+  "schema": "PLAYER_COORDINATES_CAPTURE_V1",
+  "status": "PASS",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "rows_per_vm": 5,
+  "ordinary_vms": 2,
+  "selected_sha256": "05cc5e04c225c8c6459f20bc7606114c3533145c92faeae04b24fa0c1b375c1f",
+  "selected_per_vm_sha256": [
+    "05cc5e04c225c8c6459f20bc7606114c3533145c92faeae04b24fa0c1b375c1f",
+    "05cc5e04c225c8c6459f20bc7606114c3533145c92faeae04b24fa0c1b375c1f"
+  ],
+  "source_sha256": {
+    "PlayerCoordinatesObservation.java": "9d7ff2f9fe663097ea9c4e67f04ba12dcdc4b24d305c64a8eea5184212308d42",
+    "capture_reference.py": "d871ef307d61da0351d8ecc95b082febfc883d99256d95dd4ae7ea1776a0c4e5",
+    "packet.py": "811b1e34ca83de3b223af3139d67b56c48b740e91891f96984686288132e262f",
+    "finite.json": "b95e026c2b44d5f073862bc796c411362ae4351db1e24fd1022657617eb4ea48",
+    "source-pins.json": "ff1e709ca38db7d62bcf327a52bd3ee7dd68d096e4c8e11ca998f5320f0aa893",
+    "../player/classfile.py": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60",
+    "../../client/controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+  },
+  "tool_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+  },
+  "helper_sha256": {
+    "PlayerCoordinatesObservation$Guard.class": "fbcea55994da50b66937304a40aacd3c066d383f5671c7640429e1128235789e",
+    "PlayerCoordinatesObservation.class": "e4615cd9b2e7fb0cb022379cecdea21d072df487144f089a42f1a51484f6db39"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-0.stdout",
+      "stderr_file": "original-0.stderr",
+      "stdout_bytes": 1056,
+      "stderr_bytes": 402,
+      "stdout_sha256": "182767c310cf1ab4bbc4cecad501a4e9889e45915c1060782aa8866d0944262c",
+      "stderr_sha256": "4196e61e764d4ed7bc35d3968e79122d2c5ae4e5d72410da3ed8893230804cb1",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    {
+      "exit": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-1.stdout",
+      "stderr_file": "original-1.stderr",
+      "stdout_bytes": 1056,
+      "stderr_bytes": 402,
+      "stdout_sha256": "182767c310cf1ab4bbc4cecad501a4e9889e45915c1060782aa8866d0944262c",
+      "stderr_sha256": "4196e61e764d4ed7bc35d3968e79122d2c5ae4e5d72410da3ed8893230804cb1",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  ],
+  "input_unchanged": true,
+  "helper_unchanged": true,
+  "scope": "Source GS.Q identity, GS.a(BR) copy/null and inherited SN.c float-placement/history/bounds; authored native pin/resource controls remain separate."
+}

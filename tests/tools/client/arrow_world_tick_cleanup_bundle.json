@@ -1,0 +1,230 @@
+{
+  "schema": "ARROW_WORLD_SDK_CLEANUP_BINDINGS_V1",
+  "target": "mc_test_arrow_world_tick_cleanup",
+  "required_parent": "05a1335fe4992e203398388234f672d3a5f439a4d37751303ae681011b31ccad",
+  "required_natural": "4521b32257c2e7e7a0008bacc32bd0996ba17d96469f5ca8564c906bee15b597",
+  "required_sdk": "5870a6e2cdbb5d072d09d4a697d26c1e1c64c98d707ddb706b05e427e9517faa",
+  "supplier_protocol": {
+    "bytes": 2037,
+    "sha256": "ba1eb984e15aacaa4b07b29ca989b48bbabb40e63941783d6bbc0a228e17a0a0"
+  },
+  "sources": {
+    "include/mc/entity/arrow/tick.h": {
+      "bytes": 10264,
+      "sha256": "b8e36bd83ca8869a407abcd283d05fd300a80664bee7ed2c9acbce9f697b3a40"
+    },
+    "include/mc/world/runtime/entity_tick.h": {
+      "bytes": 8437,
+      "sha256": "9c3f505d2c44c1583b8126e6dd703b125df5dc511caecaceef41d8768ada3cb3"
+    },
+    "src/client/runtime/world_tick.c": {
+      "bytes": 21320,
+      "sha256": "1e5a636353d9fb053a9ad42c5ea97d93240bf98a966933fd45aa26b0bb41e272"
+    },
+    "src/entity/arrow/internal.h": {
+      "bytes": 2425,
+      "sha256": "d4837a976155f9502e7c25e70e1f9c8343785c954b960b1923c2eb1cfbacf276"
+    },
+    "src/entity/arrow/tick.c": {
+      "bytes": 39737,
+      "sha256": "2e178048581e4d1ae8d3e764c1458973a205f67f9abf54b53a14b2860d24a76e"
+    },
+    "src/entity/arrow/tick_body.c": {
+      "bytes": 29442,
+      "sha256": "f1827a6f4becd64bf634363c7fd4442c1a77bf5b71a7e66731a277136c6f92ee"
+    },
+    "src/entity/arrow/tick_children.c": {
+      "bytes": 54086,
+      "sha256": "64266b48569458217ee79e6cd5d997c0ae3164e16011873511777cdafefd725f"
+    },
+    "src/entity/arrow/tick_execution_dependencies.h": {
+      "bytes": 1697,
+      "sha256": "1e132b99f21904a46835465d3d4de043b802a927a0f12cf6a17021330053b239"
+    },
+    "src/entity/arrow/tick_internal.h": {
+      "bytes": 8870,
+      "sha256": "3dd073c658a9e63f86a87588461c67803730f5bc145f544bacabd4f29db61c83"
+    },
+    "src/world/runtime/entity_tick.c": {
+      "bytes": 12901,
+      "sha256": "97a15edcf1e026e218545c6ae6cb48425dae2a8d8b85bf139b74078d454a8d07"
+    },
+    "src/world/runtime/entity_tick_dispatch.c": {
+      "bytes": 16904,
+      "sha256": "7146698805c7e63101e3cd2a4af1065a73f5f052dc6d2f8c53654aa69bd90716"
+    },
+    "src/world/runtime/terminal_inventory.c": {
+      "bytes": 47178,
+      "sha256": "739534ade603e51cc4c35690801beffd224ff89f25c8694e42a54211f825486a"
+    },
+    "tests/world/runtime/test_arrow_natural_flight.c": {
+      "bytes": 19352,
+      "sha256": "ef30933831986c962b9f27512a66462a41ee65d01b15220fc83b3ce57f282e47"
+    },
+    "tests/client/gameplay/test_arrow_world_tick_cleanup.c": {
+      "bytes": 13403,
+      "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
+    },
+    "CMakeLists.txt": {
+      "bytes": 352039,
+      "sha256": "cf77ec3bd90d4f5506233d9c863c08a7c0056f5f35ea063164f1f57dc0bbcf32"
+    },
+    "cmake/tests/arrow_world_tick_cleanup.cmake": {
+      "bytes": 2272,
+      "sha256": "05e9f2284eb1f26be9c99e10349939c4cde485a1775a7d11943eb61d93c66546"
+    },
+    "include/mc/world/runtime/movement.h": {
+      "bytes": 5487,
+      "sha256": "4baebeb8607f9a46d6a4565e90969c88872d33b138483e9aa8911f32cde4734f"
+    },
+    "include/mc/world/runtime/world_access_error.h": {
+      "bytes": 2780,
+      "sha256": "74a0abe55aff9e8448be645cc7b0171dffb6f87146bf3f4329154a0d3f51dc18"
+    },
+    "src/core/math/execution_internal.h": {
+      "bytes": 7418,
+      "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
+    },
+    "src/entity/mob/damage.c": {
+      "bytes": 50991,
+      "sha256": "c3a0faac915e3df191894b57006f09b551df5277033093622d112a2606f90d2e"
+    },
+    "src/entity/mob/damage_execution_internal.h": {
+      "bytes": 6121,
+      "sha256": "73d0b58e7d6fdde6d63580c61fbeb84b20157aeaca5dad8fcd4be879ce3b38e4"
+    },
+    "src/entity/mob/damage_internal.h": {
+      "bytes": 3564,
+      "sha256": "e85d4c867790c488b2d36d053693d4536706f8945a79d48bdc7cf62d219c6a85"
+    },
+    "src/entity/mob/wolf_damage.c": {
+      "bytes": 42666,
+      "sha256": "c65e6384d021ec696ee4a6daca30012c6bf81c748d350ca99f6fe7d257f6cd30"
+    },
+    "src/entity/mob/wolf_damage_execution_internal.h": {
+      "bytes": 864,
+      "sha256": "82fa360d0522c59a7937cf3f02709d068a085e208e675c86a4f77e4f559c24c9"
+    },
+    "src/entity/movement/damage_execution_internal.h": {
+      "bytes": 7332,
+      "sha256": "5601732b52306d176047e197f8f55938874a6d0fc6e0b57b08dd9775161e7b74"
+    },
+    "src/entity/movement/effects.c": {
+      "bytes": 91296,
+      "sha256": "d24ed3223002be592ee03c8c2510c119a6caf0c4762786eb8d4edf02aec94d36"
+    },
+    "src/entity/player/death.c": {
+      "bytes": 32084,
+      "sha256": "40b862f457380f6371b86dd0a63b6cbaf4faa437cf44b684d53ed31025084b3f"
+    },
+    "src/entity/player/death_execution_internal.h": {
+      "bytes": 2898,
+      "sha256": "bfb504d3e0251dd0c96bddc2e0e275e2c7b277beaedc6d26851dff1cb4c54bc6"
+    },
+    "src/entity/player/drop.c": {
+      "bytes": 37436,
+      "sha256": "0b0fbde2148dc718d9d538650bceb4c28d860c3b85eedabe13bb8c25666b2098"
+    },
+    "src/entity/player/drop_execution_internal.h": {
+      "bytes": 3957,
+      "sha256": "f8e2bc3dd99f6ee23fb949126f619e1f4e0fbdc21ce88c0335392d403e5e0a7c"
+    },
+    "src/inventory/runtime/scatter.c": {
+      "bytes": 8759,
+      "sha256": "14642de8bda69dd7fcb304a0c0dc8a7a48bc70f87f0dfa2dd8697a88eda7f419"
+    },
+    "src/inventory/runtime/scatter_internal.h": {
+      "bytes": 1939,
+      "sha256": "3334a415fd7ba07140dca944f5cadb856a07d7cabe6fa58802c61fc466dc1263"
+    },
+    "src/world/runtime/collision/class_entities.c": {
+      "bytes": 25943,
+      "sha256": "a285621972c1f904bc23043a3a72f0df15f923c3dd20307be4a84c3c534969c9"
+    },
+    "src/world/runtime/entity_publication.c": {
+      "bytes": 56231,
+      "sha256": "95245feaae82fc2f972c831c48ff6fffc0380e9e687de3ecd084bb9a6dce2182"
+    },
+    "src/world/runtime/movement.c": {
+      "bytes": 31415,
+      "sha256": "2dd892a12cca78b088e0a754a25760fa61524155f8620a4bc3be64bc3a77fe8e"
+    },
+    "src/world/runtime/presentation.c": {
+      "bytes": 23797,
+      "sha256": "83dcab52704f6387fdb89785cad96bf527672aa5eb62be5b5e489136f3596413"
+    },
+    "src/world/runtime/presentation_execution_internal.h": {
+      "bytes": 4143,
+      "sha256": "35bbebf0bc4d1f85552d40bc7b98f5eac5f436044fe0758bd5394ae46da8f951"
+    },
+    "src/world/runtime/runtime_execution.c": {
+      "bytes": 20205,
+      "sha256": "39ebbb88f6bd90dbc3662fdaa2fda9978759cf02fc06b0543bd8a6c7472c9e7f"
+    },
+    "src/world/runtime/runtime_execution_internal.h": {
+      "bytes": 11563,
+      "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
+    },
+    "src/world/runtime/world_access.c": {
+      "bytes": 59580,
+      "sha256": "06734754032eadb1a92414dd244bc8a2a785ef2113bbb96d23907e629c7a2134"
+    },
+    "src/world/runtime/world_access_internal.h": {
+      "bytes": 8532,
+      "sha256": "dfdcb4e00705520d8c9521c0444834512afbbc543bafafe0845d94d3088e878f"
+    }
+  },
+  "helpers": {
+    "tests/tools/world/test_world_query_controls.py": {
+      "bytes": 76652,
+      "sha256": "c60d5b35ea0ba0fc34cc7b14884633e54149babb17d6e3cb5ad20e512468eed6"
+    },
+    "tests/tools/world/test_execution_ownership.py": {
+      "bytes": 8350,
+      "sha256": "1d3616472c10b0c253e881fdd08c33d198765922d5e75bc45ec3f955ece5275e"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    }
+  },
+  "prospective_source_successor": {
+    "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
+    "from_commit": "cf8cb269054eb1f908f6381f4ed5db7679a61f8e",
+    "previous_metadata": {
+      "bytes": 10002,
+      "sha256": "d1a32cdf15cbcf9641bddb9e64e5c08781c44d1dff148d197a4bb3a4b5971000"
+    },
+    "role": "Prospective current-source admission for the loaded Dispenser inventory, activation, eligibility, fresh TileEntity save and native terminal joins. The exact preceding declaration is preserved at tests/reference/source_bindings/history/dispenser/arrow_world_tick_cleanup_bundle.pre-dispenser.json. Historical fixture, supplier, projection and qualification fields remain literal; this revision does not assign their old observations to current code. Fresh native execution and strict current input checks remain required.",
+    "groups": {
+      "sources": {
+        "previous": {
+          "src/world/runtime/terminal_inventory.c": {
+            "bytes": 46595,
+            "sha256": "1d7a39986766016c8c02903d697d86be9804980753746f9d3b57cff87102544a"
+          },
+          "CMakeLists.txt": {
+            "bytes": 354034,
+            "sha256": "36b246f370fe4647be9c820542144f0103e12428d81079bd54c973ea67e06c5a"
+          }
+        },
+        "added": [],
+        "current_count": 41
+      },
+      "helpers": {
+        "previous": {
+          "tests/tools/world/test_world_query_controls.py": {
+            "bytes": 76652,
+            "sha256": "fd1fce80c9d02cfb2e2d927fcf5e195763d851d0ca511b28035aa9593d8f6974"
+          }
+        },
+        "added": [],
+        "current_count": 3
+      }
+    },
+    "current_semantics": {
+      "scope": "The existing declared scenario and supplier protocols remain unchanged. Current implementation adds client Dispenser ownership/dispatch and checked diagnostic lifetime joins; the affected ordinary World TileEntity and terminal suppliers therefore have new current bytes. This declaration is limited to its explicit current source/helper tables; broader current closure stays in the independently revised provenance maps.",
+      "qualification": "CURRENT_SOURCE_ADMISSION_ONLY_PENDING_FRESH_NATIVE_VALIDATION; parent commit identifies the unchanged base of the uncommitted source snapshot, not a claim that this new code executed at that parent."
+    }
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "files": {
+    "dimension_expected.tsv": {
+      "bytes": 1564946,
+      "sha256": "40c5dc3ee58319528eb3133f7c226781fdbf57faedee8403084b967f380564ee"
+    },
+    "dimension_request.tsv": {
+      "bytes": 1124149,
+      "sha256": "e462b968ee981014a3d58fc68b0d79481cbf32d146ddc8a24e1710f78f4e4099"
+    }
+  },
+  "observations": {
+    "client": {
+      "compared": {
+        "angles": 48739,
+        "factories": 8,
+        "references": 12,
+        "rows": 48782,
+        "snapshots": 10,
+        "tables": 3
+      },
+      "original_counts": {
+        "angles": 48739,
+        "factories": 8,
+        "nonnull_factories": 4,
+        "relations": 24,
+        "states": 11,
+        "tables": 3
+      },
+      "original_rows": 48875
+    },
+    "server": {
+      "compared": {
+        "angles": 48739,
+        "factories": 8,
+        "references": 12,
+        "rows": 48782,
+        "snapshots": 10,
+        "tables": 3
+      },
+      "original_counts": {
+        "angles": 48739,
+        "factories": 8,
+        "nonnull_factories": 4,
+        "relations": 24,
+        "states": 11,
+        "tables": 3
+      },
+      "original_rows": 48875
+    }
+  },
+  "origin": {
+    "capture": {
+      "bytes": 13776,
+      "sha256": "419adbbdb4acb4577b8b2527271f0bb19b6ff8011bd1e42119ee1aa5db67e27c"
+    },
+    "classes": {
+      "DimensionObservation$Binding.class": {
+        "bytes": 5532,
+        "sha256": "cf6768f61f2e1ddeacee8e7b435648a5ad3be96fc53061325209aa618787501f"
+      },
+      "DimensionObservation$Snapshot.class": {
+        "bytes": 1741,
+        "sha256": "59b05a8e124ab871e866716ae653b06f53d6eb82a65345f1fb0bb52a539f102f"
+      },
+      "DimensionObservation.class": {
+        "bytes": 14460,
+        "sha256": "1439248a15f64e883a16c131992656f41b376f6ff3ba351cfcfad802d38dc736"
+      }
+    },
+    "inputs": {
+      "client": {
+        "bytes": 1465375,
+        "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+      },
+      "helper": {
+        "bytes": 22927,
+        "sha256": "ce24595652f28a0fe244dae41186b2b8cebe33b5fdbd2b543a25f869eac30959"
+      },
+      "java": {
+        "bytes": 50344,
+        "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+      },
+      "java_native": {
+        "bytes": 148136,
+        "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+      },
+      "javac": {
+        "bytes": 24232,
+        "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+      },
+      "jvm": {
+        "bytes": 12681896,
+        "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+      },
+      "modules": {
+        "bytes": 128648619,
+        "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+      },
+      "process_helper": {
+        "bytes": 10182,
+        "sha256": "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+      },
+      "recorder": {
+        "bytes": 52843,
+        "sha256": "2b10393e1e006a1b7ce4f8df732bc72bed1410753a38176d8eaab9dd6313a69a"
+      },
+      "release": {
+        "bytes": 1667,
+        "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+      },
+      "server": {
+        "bytes": 503100,
+        "sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d"
+      },
+      "source_archive": {
+        "bytes": 50855389,
+        "sha256": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+      }
+    },
+    "raw_transcripts": {
+      "client": {
+        "bytes": 2194509,
+        "sha256": "02cb95ccfbe235b6ce25c89a1e19f046781092ed3ad6339f51c60daa772491e5"
+      },
+      "server": {
+        "bytes": 2194509,
+        "sha256": "6a938970261e302a456cd6ff237689016739de6949b110bc5afc1a580d1d8197"
+      }
+    }
+  },
+  "private_retention": "Complete original stdout/stderr, receipts, null-bind diagnostics and after-state remain in the retained original capture; this public projection does not replay them",
+  "schema": "DIMENSION_ORIGINAL_PROJECTION_V1",
+  "scope": {
+    "array_lengths": "Original observed lengths versus native documented READY constructor allocations f[16]/h[4]; native API exposes pointers without dynamic length descriptors",
+    "compared": "Actual factory/null/kind, eight-field scalar/reference projection, constructor array bits, standalone real light-table mutation, array identity relations, and exact raw celestial returns for the fixed corpus",
+    "excluded": "Declaring Java class/member names are source-binding metadata, not native class objects; no full World/biome bind, startup, clocks, intrinsic selection, all-runtime or unrestricted-input claim",
+    "identity": "A bijection of encountered live owner/array/field references; no JVM native identity/hash or address equivalence",
+    "original_only": "Actual normal null-World bind outcome, diagnostic and AFTER_NULL_BIND state/relations; both fixed-kind bind skips are unexecuted"
+  },
+  "shared_pair": true,
+  "sides": {
+    "client": {
+      "projection": "dimension_expected.tsv",
+      "request": "dimension_request.tsv"
+    },
+    "server": {
+      "projection": "dimension_expected.tsv",
+      "request": "dimension_request.tsv"
+    }
+  },
+  "transformation": "Request schedule and result projection extracted from complete original transcripts; no result recomputation, tolerance, float normalization or class-name impersonation"
+}

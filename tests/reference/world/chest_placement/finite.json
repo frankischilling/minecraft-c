@@ -1,0 +1,1876 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Genuine original direct Chest predicates; no actual block placement, Player or GUI.",
+  "rows": [
+    {
+      "index": 0,
+      "name": "neighbors-0",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 1,
+      "name": "neighbors-1",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 2,
+      "name": "neighbors-2",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          9,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 3,
+      "name": "neighbors-3",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          9,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 4,
+      "name": "neighbors-4",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 5,
+      "name": "neighbors-5",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 6,
+      "name": "neighbors-6",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 7,
+      "name": "neighbors-7",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 8,
+      "name": "neighbors-8",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 9,
+      "name": "neighbors-9",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 10,
+      "name": "neighbors-10",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 11,
+      "name": "neighbors-11",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 12,
+      "name": "neighbors-12",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 13,
+      "name": "neighbors-13",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 14,
+      "name": "neighbors-14",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 15,
+      "name": "neighbors-15",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 16,
+      "name": "extend-west-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          6,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 17,
+      "name": "extend-west-north",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          7,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 18,
+      "name": "extend-west-south",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          7,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 19,
+      "name": "extend-east-east",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          10,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 20,
+      "name": "extend-east-north",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          9,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 21,
+      "name": "extend-east-south",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          9,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 22,
+      "name": "extend-north-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          7,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 23,
+      "name": "extend-north-east",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          9,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 24,
+      "name": "extend-north-north",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          8,
+          64,
+          6,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 25,
+      "name": "extend-south-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          9,
+          54
+        ],
+        [
+          7,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 26,
+      "name": "extend-south-east",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          9,
+          54
+        ],
+        [
+          9,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 27,
+      "name": "extend-south-south",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          9,
+          54
+        ],
+        [
+          8,
+          64,
+          10,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 28,
+      "name": "occupied-1",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 1,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 29,
+      "name": "occupied-1-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 1,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 30,
+      "name": "occupied-7",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 7,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 7,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 31,
+      "name": "occupied-7-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 7,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 7,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 32,
+      "name": "occupied-8",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 8,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 8,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 33,
+      "name": "occupied-8-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 8,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 8,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 34,
+      "name": "occupied-54",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 54,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 35,
+      "name": "occupied-54-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 54,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 36,
+      "name": "chunk-edge-15-empty",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 37,
+      "name": "chunk-edge-15-west",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          14,
+          64,
+          15,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 38,
+      "name": "chunk-edge-15-east",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          16,
+          64,
+          15,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 39,
+      "name": "chunk-edge-15-north",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          15,
+          64,
+          14,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 40,
+      "name": "chunk-edge-15-south",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          15,
+          64,
+          16,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 41,
+      "name": "chunk-edge-16-empty",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 42,
+      "name": "chunk-edge-16-west",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          15,
+          64,
+          16,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 43,
+      "name": "chunk-edge-16-east",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          17,
+          64,
+          16,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 44,
+      "name": "chunk-edge-16-north",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          16,
+          64,
+          15,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 45,
+      "name": "chunk-edge-16-south",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [
+        [
+          16,
+          64,
+          17,
+          54
+        ]
+      ],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 46,
+      "name": "height--2147483648",
+      "operation": 0,
+      "x": 8,
+      "y": -2147483648,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 47,
+      "name": "height--1",
+      "operation": 0,
+      "x": 8,
+      "y": -1,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 48,
+      "name": "height-0",
+      "operation": 0,
+      "x": 8,
+      "y": 0,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 1,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 49,
+      "name": "height-127",
+      "operation": 0,
+      "x": 8,
+      "y": 127,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 1,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 50,
+      "name": "height-128",
+      "operation": 0,
+      "x": 8,
+      "y": 128,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 51,
+      "name": "height-2147483647",
+      "operation": 0,
+      "x": 8,
+      "y": 2147483647,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 52,
+      "name": "x--2147483648",
+      "operation": 0,
+      "x": -2147483648,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 53,
+      "name": "x-2147483647",
+      "operation": 0,
+      "x": 2147483647,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 54,
+      "name": "null-world",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": true,
+      "cells": [],
+      "target_cell": 0,
+      "result": "UNRETURNED",
+      "exception": "java.lang.NullPointerException",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 55,
+      "name": "helper-empty",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 0,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 56,
+      "name": "helper-isolated",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "null_world": false,
+      "cells": [],
+      "target_cell": 54,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 57,
+      "name": "helper-west",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 54,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 58,
+      "name": "helper-east",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "null_world": false,
+      "cells": [
+        [
+          9,
+          64,
+          8,
+          54
+        ]
+      ],
+      "target_cell": 54,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 59,
+      "name": "helper-north",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          7,
+          54
+        ]
+      ],
+      "target_cell": 54,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 60,
+      "name": "helper-south",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "null_world": false,
+      "cells": [
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 54,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 61,
+      "name": "helper-multiple",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 54,
+      "result": "true",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 62,
+      "name": "helper-nonchest",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 1,
+      "null_world": false,
+      "cells": [
+        [
+          7,
+          64,
+          8,
+          54
+        ],
+        [
+          9,
+          64,
+          8,
+          54
+        ],
+        [
+          8,
+          64,
+          7,
+          54
+        ],
+        [
+          8,
+          64,
+          9,
+          54
+        ]
+      ],
+      "target_cell": 1,
+      "result": "false",
+      "exception": "NONE",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    },
+    {
+      "index": 63,
+      "name": "helper-null-world",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "null_world": true,
+      "cells": [],
+      "target_cell": 0,
+      "result": "UNRETURNED",
+      "exception": "java.lang.NullPointerException",
+      "array_changes": 0,
+      "world_fields_unchanged": true,
+      "chunk_fields_unchanged": true,
+      "queues_before": [],
+      "queues_after": [],
+      "events": [],
+      "rng_unchanged": true
+    }
+  ]
+}

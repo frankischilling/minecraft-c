@@ -17,6 +17,12 @@ from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[3]
+import sys
+sys.path.insert(0, str(ROOT / "tests/support"))
+try:
+    from attributed_project import AttributedProject
+finally:
+    sys.path.pop(0)
 DRIVER = ROOT / "scripts/reference/cache/compare_callbacks.py"
 SPEC = importlib.util.spec_from_file_location("callbacks_reference_subject", DRIVER)
 CALLBACKS = importlib.util.module_from_spec(SPEC)
@@ -29,11 +35,39 @@ PROTOCOL, PROTOCOL_SOURCE = CALLBACKS.load_protocol()
 REJECTIONS = (CALLBACKS.Failure, ACQUIRE.Failure, FINISH.Failure, NORMAL.Failure)
 
 
+class CallbackHelperLoading(unittest.TestCase):
+    def test_unchanged_sources_still_create_fresh_helper_modules(self):
+        *first, first_sources = CALLBACKS.helpers()
+        *second, second_sources = CALLBACKS.helpers()
+        for left, right in zip(first, second, strict=True):
+            self.assertIsNot(left, right)
+            self.assertIsNot(left.require, right.require)
+        self.assertIsNot(first[0].ProcessResult, second[0].ProcessResult)
+        self.assertEqual(first_sources, second_sources)
+        self.assertIsNot(first_sources[0], second_sources[0])
+
+    def test_source_change_at_same_path_updates_code_and_fingerprint(self):
+        acquire_path = ROOT / "scripts/reference/cache/compare_acquire.py"
+        original_read = Path.read_bytes
+        changed = acquire_path.read_bytes() + b"\nprobe: UnresolvedAnnotation = 42\n"
+        with patch.object(Path, "read_bytes",
+                          lambda path: changed if path == acquire_path else original_read(path)):
+            *_, acquire, sources = CALLBACKS.helpers()
+        self.assertEqual(acquire.probe, 42)
+        self.assertEqual(acquire.__annotations__["probe"], "UnresolvedAnnotation")
+        self.assertEqual(sources[-1], {"path": str(acquire_path), "bytes": len(changed),
+                                       "sha256": hashlib.sha256(changed).hexdigest()})
+        *_, restored, restored_sources = CALLBACKS.helpers()
+        self.assertFalse(hasattr(restored, "probe"))
+        self.assertEqual(restored_sources, EXECUTED)
+
+
 class CallbackExecutionGuards(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory(prefix="mc-callback-execution-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name).resolve()
+        self.project = AttributedProject(CALLBACKS, self.root / "attributed-project", (*CALLBACKS.SOURCES, "tests/world/cache/callback_probe.c"))
 
     def prerequisites(self):
         paths = {}
@@ -85,7 +119,7 @@ class CallbackExecutionGuards(unittest.TestCase):
             for side in ("client", "server"):
                 if Path(path) == paths[side]:
                     record["sha256"] = FINISH.JAR_HASHES[side]
-            if preservation["changed_source"] and Path(path) == ROOT / "tests/reference/cache/CacheCallbacksObservation.java":
+            if preservation["changed_source"] and Path(path) == self.project.root / "tests/reference/cache/CacheCallbacksObservation.java":
                 record["sha256"] = "0" * 64
             return record
 
@@ -158,7 +192,7 @@ class CallbackExecutionGuards(unittest.TestCase):
                         snapshot.write_text("{}", encoding="utf-8")
             return self.process(command, current_code)
 
-        with patch.dict(os.environ, dict.fromkeys(FINISH.JAVA_ENVIRONMENT, "")), \
+        with self.project, patch.dict(os.environ, dict.fromkeys(FINISH.JAVA_ENVIRONMENT, "")), \
                 patch.object(CALLBACKS, "helpers", return_value=(COMMON, OLD, FINISH, NORMAL, ACQUIRE,
                              copy.deepcopy(EXECUTED if executed is None else executed))), \
                 patch.object(CALLBACKS, "load_protocol", return_value=(protocol, protocol_source)), \
@@ -400,7 +434,13 @@ def visit_dictionaries(value):
 class CallbackProtocolGuards(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.fixture, cls.cases = INTEROP.load_fixture()
+        fixture, cls.cases = INTEROP.load_fixture()
+        # Load and validate the complete public fixture once. Each mutation
+        # decodes its own document trees from these pristine copies.
+        cls.public_documents = tuple(json.dumps((row["snapshot"], row["trace"]), ensure_ascii=False,
+                                                separators=(",", ":")) for row in cls.cases)
+        cls.preparations = {side: INTEROP.unpack(record["snapshot"], INTEROP.MAX_ORIGINAL)
+                            for side, record in fixture["preparations"].items()}
 
     def setUp(self):
         directory = tempfile.TemporaryDirectory(prefix="mc-callback-protocol-")
@@ -408,12 +448,13 @@ class CallbackProtocolGuards(unittest.TestCase):
         self.root = Path(directory.name).resolve()
 
     def original(self, index):
-        row = self.cases[index]
-        return INTEROP.rebind_public(row["snapshot"], row["trace"], row["record"]["side"], row["record"]["scenario"], self.root)
+        record = self.cases[index]["record"]
+        snapshot, trace = json.loads(self.public_documents[index])
+        return INTEROP.bind_public_paths(snapshot, trace, record["side"], record["scenario"], self.root)
 
     def preparation(self, side):
-        document = INTEROP.strict_json(INTEROP.unpack(self.fixture["preparations"][side]["snapshot"], INTEROP.MAX_ORIGINAL))
-        return INTEROP.rebind_public(document, None, side, "prepare", self.root)[0]
+        document = json.loads(self.preparations[side])
+        return INTEROP.bind_public_paths(document, None, side, "prepare", self.root)[0]
 
     def validate(self, value, trace, jar, index):
         side, scenario = CALLBACKS.CASES[index]

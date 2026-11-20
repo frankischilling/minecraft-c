@@ -3,7 +3,7 @@
 
 #include "mc/world/terrain/terrain.h"
 
-#define MC_TERRAIN_NORMAL_SURFACE_VALUES 256u
+#define MC_TERRAIN_OVERWORLD_SURFACE_VALUES 256u
 
 /* Snapshot of an original biome's current public byte fields p/q. These are
  * byte patterns, not immutable defaults or biome registry IDs. Materials use
@@ -16,16 +16,16 @@ typedef struct mc_terrain_surface_material {
 /* Borrowed r/s/t outputs. Each needs at least 256 values. Noise sampling clears
  * each complete span, including its suffix, before filling the normal prefix.
  * Descriptors are never changed. Apply only reads the pointed-to arrays. */
-typedef struct mc_terrain_normal_surface_workspace {
+typedef struct mc_terrain_overworld_surface_workspace {
     mc_terrain_double_span sand;
     mc_terrain_double_span gravel;
     mc_terrain_double_span thickness;
-} mc_terrain_normal_surface_workspace;
+} mc_terrain_overworld_surface_workspace;
 
 /* Original normal-entry seed: signed chunk coordinates promoted separately
  * to long, multiplied by 341873128712/132897987541, then added with Java long
  * wrapping. No world-seed XOR and no Random mutation. */
-int64_t mc_terrain_normal_chunk_seed(int32_t chunk_x, int32_t chunk_z);
+int64_t mc_terrain_overworld_chunk_seed(int32_t chunk_x, int32_t chunk_z);
 
 /* All operations require initialized, unmodified constructor state, an
  * initialized Random where used, and valid borrowed storage. Every complete
@@ -33,7 +33,7 @@ int64_t mc_terrain_normal_chunk_seed(int32_t chunk_x, int32_t chunk_z);
  * materials_length must fit SIZE_MAX/sizeof(mc_terrain_surface_material).
  * Null pointers, short spans or byte-size overflow fail before any mutation.
  * Calls allocate nothing. Exact finite results assume binary32/binary64
- * round-to-nearest with no floating contraction, as for normal terrain.
+ * round-to-nearest with no floating contraction, as for Overworld terrain.
  *
  * Mutable spans/Random must be mutually disjoint and must not overlap state,
  * descriptors or read-only inputs. These are caller storage preconditions,
@@ -46,9 +46,9 @@ int64_t mc_terrain_normal_chunk_seed(int32_t chunk_x, int32_t chunk_z);
  * conversion. Sand/thickness retain their general 16x16x1 grid branch; gravel
  * retains its distinct 16x1x16 height-one branch. No Random draws; state remains
  * unchanged. Workspace descriptors remain unchanged; all three spans clear. */
-bool mc_terrain_normal_surface_noise(const mc_terrain_normal_state *state,
-                                     const mc_terrain_normal_surface_workspace *workspace,
-                                     int32_t chunk_x, int32_t chunk_z);
+bool mc_terrain_overworld_surface_noise(const mc_terrain_overworld_state *state,
+                                        const mc_terrain_overworld_surface_workspace *workspace,
+                                        int32_t chunk_x, int32_t chunk_z);
 
 /* Apply prepared fields and at least 256 material pairs to an existing block
  * prefix, advancing the explicit Random without reseeding. Visits Z then X,
@@ -58,21 +58,21 @@ bool mc_terrain_normal_surface_noise(const mc_terrain_normal_state *state,
  * defined nonfinite behavior. The original comparison domain uses finite
  * generated fields. All non-stone bytes retain their patterns except where
  * the per-Y bedrock decision overrides them. */
-bool mc_terrain_normal_surface_apply(const mc_terrain_normal_surface_workspace *fields,
-                                     const mc_terrain_surface_material *materials,
-                                     size_t materials_length, mc_java_random *random,
-                                     uint8_t *blocks, size_t blocks_length);
+bool mc_terrain_overworld_surface_apply(const mc_terrain_overworld_surface_workspace *fields,
+                                        const mc_terrain_surface_material *materials,
+                                        size_t materials_length, mc_java_random *random,
+                                        uint8_t *blocks, size_t blocks_length);
 
 /* Complete preflight, then surface_noise and surface_apply. Validates block,
  * material and Random arguments before clearing workspace. Checked failures
  * preserve workspace contents/descriptors, blocks, Random and constructor
  * state. No implicit reseeding; callers choose the direct or chunk-seeded
  * Random context explicitly. */
-bool mc_terrain_normal_surface(const mc_terrain_normal_state *state,
-                               const mc_terrain_normal_surface_workspace *workspace,
-                               int32_t chunk_x, int32_t chunk_z,
-                               const mc_terrain_surface_material *materials,
-                               size_t materials_length, mc_java_random *random, uint8_t *blocks,
-                               size_t blocks_length);
+bool mc_terrain_overworld_surface(const mc_terrain_overworld_state *state,
+                                  const mc_terrain_overworld_surface_workspace *workspace,
+                                  int32_t chunk_x, int32_t chunk_z,
+                                  const mc_terrain_surface_material *materials,
+                                  size_t materials_length, mc_java_random *random, uint8_t *blocks,
+                                  size_t blocks_length);
 
 #endif

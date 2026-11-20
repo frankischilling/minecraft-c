@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "scope": "Six direct unchanged-original RA.a(LS,IZ) calls, genuine original constructor graph and real hidden32x32 Pbuffer; no fullframe/pixel claim.",
+  "app": "new kq(null,null,null,854,480,false,null), returned normally; canonical static App identity checked, no RAW/Unsafe allocations",
+  "dependencies": "new kv; new gr; new ik(app,disposable game dir); new ji(packs,settings); new sj(settings,/font/default.png,engine); original RA->CV/IY constructors",
+  "world": "new fd(new wy(),HeldGeometry,xa.a(0),23L); genuine empty lm Chunk0,0 in actual provider cache/list",
+  "player": "new dc(app,World,session,0); actual e(.5,64,.5); App.f/h/i retain genuine owners",
+  "stacks": "new iz(id,1,0) per profile; actual IX.a(0,stack), actual selected identity checked; actual Player.c(stack) supplies icon",
+  "profiles": [[268,64],[272,65],[267,66],[276,67],[283,68],[261,21]],
+  "gl": "genuine LWJGL2.9 Pbuffer32x32 with default PixelFormat; current modelview selected and identity before profiles; original RA executes all GL and NW.draw calls",
+  "nw": "genuine original singleton; actual prior Font-used g footprint retained without clearing, rebinding, buffer-position reset or flag forcing; source quad conversion defaulttrue",
+  "resources": "actual original JAR gui/items.png, font/default.png and pack.png; real texture loader/cache miss/upload; no replacement texture atlas",
+  "entropy": "genuine constructor/private/shared entropy remains independent; no Random.setSeed, Math replacement or invocation-state repair",
+  "observation": "ordinary original completion plus read-only JDI breakpoints at RA.a(LS,IZ) and NW.a() entries; read actual g[0:o], primitive state, source frames and live Code; no target method invocation or target writes from debugger"
+}

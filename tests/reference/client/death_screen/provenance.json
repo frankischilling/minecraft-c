@@ -1,0 +1,58 @@
+{
+  "schema": "DEATH_SCREEN_CAPTURE_V1",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Original CH/DA/KE constructors, CH.b, CH keyboard and c methods; genuine GR Session; prepared original kq App. No complete App construction, drawing, action, loaded World, respawn or gameplay qualification.",
+  "rows": 72,
+  "source_sha256": {
+    "DeathScreenObservation.java": "b8733ae5dac94b477ed1f575ade654991895d9c869c55f54d94d1d1b5e430c6e",
+    "capture_reference.py": "b2f759d486b0a3fdbb396b76e6af627fcb6fd1754c3235285607620d2509af6e",
+    "source-pins.json": "43a702012aa6bf32b6dfcbef7e223d43d2ace229cf7ec9572f384c7a8071be50",
+    "../controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "../controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "finite_sha256": "aafd2684cb4be6ba33364703ec83318d7f59137616278aea624f298df5fa48a3",
+  "tool_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+  },
+  "helper_sha256": {
+    "DeathScreenObservation$1.class": "1878fda57663debeebf7bedb000680cd67e12e2dc9e0e26f3c30bdca0d6f9b71",
+    "DeathScreenObservation.class": "36bae0d9a601f2be89ca0b8ffaeeb9b33f30c0c52f621e4944faa354e6456bc6"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timeout_seconds": 45,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-0.stdout",
+      "stderr_file": "original-0.stderr",
+      "stdout_bytes": 2967,
+      "stderr_bytes": 384,
+      "stdout_sha256": "314b70223fd9a50e676e8346f5c5fe9132da89ed64aada9efb8b1b6ff5f03168",
+      "stderr_sha256": "fc1b522427f0532a836611cc60a984a058d0cad954910151b558ba4ccaf24ff4",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    {
+      "exit": 0,
+      "timeout_seconds": 45,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-1.stdout",
+      "stderr_file": "original-1.stderr",
+      "stdout_bytes": 2967,
+      "stderr_bytes": 384,
+      "stdout_sha256": "314b70223fd9a50e676e8346f5c5fe9132da89ed64aada9efb8b1b6ff5f03168",
+      "stderr_sha256": "fc1b522427f0532a836611cc60a984a058d0cad954910151b558ba4ccaf24ff4",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  ],
+  "input_unchanged": true,
+  "helper_unchanged": true
+}

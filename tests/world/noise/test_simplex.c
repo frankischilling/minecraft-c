@@ -1,6 +1,8 @@
 #include "mc/world/noise/noise.h"
 #include "mc/world/noise/simplex.h"
 
+#include "../../support/java_random.h"
+
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>
@@ -17,29 +19,25 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static double from_bits(uint64_t bits)
-{
+static double from_bits(uint64_t bits) {
     double value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static void prefill(double *values, size_t length)
-{
+static void prefill(double *values, size_t length) {
     for (size_t i = 0; i < length; ++i)
         values[i] = (double)((int)(i % 11u) - 5) * 0.125;
 }
 
-static int test_constants_and_construction(void)
-{
+static int test_constants_and_construction(void) {
     /* Static f/g values observed independently in untouched client cc and
      * server bi on Temurin 17.0.17; observing them consumed no Random draws. */
     CHECK(bits_of(mc_noise_simplex_skew) == UINT64_C(0x3fd76cf5d0b09954));
@@ -67,8 +65,7 @@ static int test_constants_and_construction(void)
     return 0;
 }
 
-static int test_constructor_order(void)
-{
+static int test_constructor_order(void) {
     mc_java_random random;
     mc_java_random manual;
     mc_java_random_seed(&random, 7);
@@ -134,8 +131,7 @@ static const constructor_fixture constructor_fixtures[] = {
       UINT64_C(0xb835e983aae3a033)}},
 };
 
-static int test_observed_constructor_states(void)
-{
+static int test_observed_constructor_states(void) {
     for (size_t fixture = 0;
          fixture < sizeof(constructor_fixtures) / sizeof(constructor_fixtures[0]); ++fixture) {
         const constructor_fixture *expected = &constructor_fixtures[fixture];
@@ -335,8 +331,7 @@ static const grid_fixture grid_fixtures[] = {
       UINT64_C(0x7a5712a42bf2462a)}},
 };
 
-static int test_observed_grids(void)
-{
+static int test_observed_grids(void) {
     for (size_t fixture = 0; fixture < sizeof(grid_fixtures) / sizeof(grid_fixtures[0]);
          ++fixture) {
         const grid_fixture *expected = &grid_fixtures[fixture];
@@ -393,8 +388,40 @@ static int test_observed_grids(void)
     return 0;
 }
 
-static int test_invalid_constructors(void)
-{
+static int test_single_point_matches_grid(void) {
+    static const mc_noise_simplex_grid points[] = {
+        {-89.75, 125.0, 1, 1, 0.025, 0.05},
+        {-0.0, 0.0, 1, 1, -0.0, -0.25},
+        {0x1.0p31, -0x1.0p31, 1, 1, 1.5, 1.5},
+        {INFINITY, -0.0, 1, 1, 0.0, 1.5},
+    };
+    mc_java_random random;
+    mc_java_random_seed(&random, 173);
+    mc_noise_simplex layers[4];
+    mc_noise_simplex_octaves noise;
+    CHECK(mc_noise_simplex_octaves_init(&noise, layers, 4, &random));
+    for (size_t i = 0; i < sizeof(points) / sizeof(points[0]); ++i) {
+        mc_noise_simplex_grid grid = points[i];
+        grid.size_z = 2;
+        double point[5];
+        double reference[2];
+        prefill(point, 5);
+        CHECK(mc_noise_simplex_octaves_fill(&noise, &points[i], -0.4, -0.5, point, 5));
+        CHECK(mc_noise_simplex_octaves_fill(&noise, &grid, -0.4, -0.5, reference, 2));
+        CHECK(isnan(reference[0]) ? isnan(point[0]) : bits_of(point[0]) == bits_of(reference[0]));
+        for (size_t j = 1; j < 5; ++j)
+            CHECK(bits_of(point[j]) == 0);
+    }
+    const mc_noise_simplex_octaves empty = {0};
+    double output[5];
+    prefill(output, 5);
+    CHECK(mc_noise_simplex_octaves_fill(&empty, &points[0], 0.5, 0.5, output, 5));
+    for (size_t i = 0; i < 5; ++i)
+        CHECK(bits_of(output[i]) == 0);
+    return 0;
+}
+
+static int test_invalid_constructors(void) {
     mc_java_random random;
     mc_java_random_seed(&random, 123);
     mc_java_random random_saved = random;
@@ -403,7 +430,7 @@ static int test_invalid_constructors(void)
     memset(&layer, 0xa5, sizeof(layer));
     memcpy(&layer_saved, &layer, sizeof(layer));
     CHECK(!mc_noise_simplex_init(NULL, &random));
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     CHECK(!mc_noise_simplex_init(&layer, NULL));
     CHECK(memcmp(&layer, &layer_saved, sizeof(layer)) == 0);
     mc_noise_simplex_octaves noise;
@@ -417,15 +444,14 @@ static int test_invalid_constructors(void)
     CHECK(!mc_noise_simplex_octaves_init(&noise, &layer, SIZE_MAX, &random));
     CHECK(memcmp(&noise, &saved, sizeof(noise)) == 0);
     CHECK(memcmp(&layer, &layer_saved, sizeof(layer)) == 0);
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     CHECK(mc_noise_simplex_octaves_init(&noise, NULL, 0, &random));
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     return 0;
 }
 
 static int expect_grid_failure(const mc_noise_simplex *layer, const mc_noise_simplex_octaves *noise,
-                               const mc_noise_simplex_grid *grid, size_t capacity)
-{
+                               const mc_noise_simplex_grid *grid, size_t capacity) {
     double output[16];
     double saved[16];
     mc_noise_simplex saved_layer = *layer;
@@ -440,8 +466,7 @@ static int expect_grid_failure(const mc_noise_simplex *layer, const mc_noise_sim
     return 0;
 }
 
-static int test_grid_validation_and_zero_sizes(void)
-{
+static int test_grid_validation_and_zero_sizes(void) {
     mc_java_random random;
     mc_java_random_seed(&random, 0);
     mc_noise_simplex layer;
@@ -501,11 +526,11 @@ static int test_grid_validation_and_zero_sizes(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_constants_and_construction() || test_constructor_order() ||
         test_observed_constructor_states() || test_observed_grids() ||
-        test_invalid_constructors() || test_grid_validation_and_zero_sizes())
+        test_single_point_matches_grid() || test_invalid_constructors() ||
+        test_grid_validation_and_zero_sizes())
         return 1;
     printf("Simplex: %u checks passed\n", checks);
     return 0;

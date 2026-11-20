@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "profiles": 35,
+  "integer_fields": [
+    "metadata_nibble",
+    "light_0dark_1sky15_2block15",
+    "texture_override",
+    "bm_delta_java_wrap",
+    "bounds_0unit_1partial_2outside",
+    "nullable_0none_1cache_2block_3both",
+    "retained_AO",
+    "emission_INT_MIN_preserve",
+    "placement_0standard_1section_2loaded",
+    "renderAll",
+    "side_flip",
+    "rotation",
+    "reserved_zero"
+  ],
+  "xyz": [
+    [
+      8,
+      64,
+      8
+    ],
+    [
+      8,
+      64,
+      8
+    ],
+    [
+      3,
+      65,
+      3
+    ]
+  ],
+  "translations": [
+    [
+      -0.25,
+      0.5,
+      -0.75
+    ],
+    [
+      -8,
+      -64,
+      -8
+    ],
+    [
+      0,
+      -64,
+      0
+    ]
+  ],
+  "bounds": [
+    [
+      0,
+      0,
+      0,
+      1,
+      1,
+      1
+    ],
+    [
+      0.125,
+      0.25,
+      0.375,
+      0.875,
+      0.75,
+      0.625
+    ],
+    [
+      -0.25,
+      -0.5,
+      -0.125,
+      1.5,
+      1.25,
+      1.75
+    ]
+  ],
+  "scope": "Genuine saved World, four loaded Chunks, real EW and one begun singleton NW; one actual declared translation setter per profile. No source body replacement or query adapter. Null states and emission elements are explicit authored inputs."
+}

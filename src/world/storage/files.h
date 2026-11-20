@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define MC_WS_PATH_MAX_BYTES 32768u
 #define MC_WS_FILE_MAX_BYTES UINT32_C(0x7ffff000)
@@ -18,8 +19,11 @@ typedef struct mc_ws_file_bytes {
 /* Private native-file helpers, without world/schema/session ownership. Paths
  * are nonempty NUL-terminated UTF-8 strings, at most PATH_MAX_BYTES excluding
  * NUL. Invalid UTF-8 is rejected, without locale conversion or normalization.
- * Windows uses strict UTF-8 -> UTF-16 and wide CRT/native APIs; converted paths
- * including NUL must fit 32768 UTF-16 units. Native component/total limits still
+ * Windows uses strict UTF-8 -> UTF-16 and wide CRT/native APIs. Long ordinary
+ * paths use a private absolute extended name; its prefix and NUL must fit 32768
+ * UTF-16 units. Long component trailing-dot/space aliases are unsupported rather
+ * than silently addressing a different object. Keep CWD stable during a call.
+ * Native component/total limits still
  * apply. POSIX uses the UTF-8 filename bytes directly.
  *
  * Grant exclusive access to paths/files throughout each call. These helpers
@@ -77,6 +81,26 @@ mc_world_storage_status mc_ws_read_prefix(const char *path, uint8_t *output, siz
  * a partial/truncated target on failure. No fsync/durability promise. */
 mc_world_storage_status mc_ws_write_file(const char *path, const uint8_t *bytes, size_t length,
                                          bool exclusive, mc_world_storage_error *error);
+
+/* Opened direct-overwrite transport for source operations which serialize
+ * after opening/truncating their target. The handle is private, noncopyable,
+ * exclusively borrowed, and must be closed once after successful open. Open
+ * validates a regular file or missing target; no parent directories are made.
+ * The byte bound is cumulative and at most FILE_MAX_BYTES. Writes and close
+ * are checked; earlier bytes/truncation are never rolled back. Always close
+ * even after an encoding/write failure, retaining that earlier diagnostic in
+ * the caller. close flushes/closes and clears file, also on failure. Native
+ * path/stdio overhead has the same bounds/exclusions as write_file. */
+typedef struct mc_ws_output {
+    FILE *file;
+    size_t remaining;
+} mc_ws_output;
+
+mc_world_storage_status mc_ws_output_open(const char *path, size_t max_bytes, mc_ws_output *out,
+                                          mc_world_storage_error *error);
+mc_world_storage_status mc_ws_output_write(mc_ws_output *output, const uint8_t *bytes,
+                                           size_t length, mc_world_storage_error *error);
+mc_world_storage_status mc_ws_output_close(mc_ws_output *output, mc_world_storage_error *error);
 
 /* Checked overwrite rename of regular files: POSIX rename (errno), Windows
  * MoveFileExW(MOVEFILE_REPLACE_EXISTING) (GetLastError). No cross-volume copy,

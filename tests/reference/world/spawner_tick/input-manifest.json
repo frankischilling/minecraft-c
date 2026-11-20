@@ -1,0 +1,307 @@
+{
+  "base_source": {
+    "level.dat": {
+      "bytes": 371,
+      "sha256": "97984264f4695930152dea471f9c885dc13904d04467840e7f91fdcdbc95fa0f"
+    },
+    "level.dat_old": {
+      "bytes": 371,
+      "sha256": "87c434ca4f2e6c8f77da7c6d94442091565d35069411ec4d6d000c10940a9bd6"
+    },
+    "region/r.-1.-1.mcr": {
+      "bytes": 385024,
+      "sha256": "f9684cc1a0a3d3ee454d35ff1ff51bd92a1a239da177a12eaab1dccff3d9c1e4"
+    },
+    "region/r.-1.0.mcr": {
+      "bytes": 348160,
+      "sha256": "9cc736e81d1d2346ee26807b761790148a8de7db2b832f9ab19e35efc56a59fb"
+    },
+    "region/r.0.-1.mcr": {
+      "bytes": 425984,
+      "sha256": "7c0d3162053c1117fe822ac476c8fe06b27fee90b4ceb37dffb6a9ff88b65dd4"
+    },
+    "region/r.0.0.mcr": {
+      "bytes": 380928,
+      "sha256": "1a6384f0afa5a224e09f89923e3dc670abb911c2c4b3cde3c483d94a5d85bfed"
+    },
+    "session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    }
+  },
+  "base_source_unchanged": true,
+  "fixtures": {
+    "case00/level.dat": {
+      "bytes": 379,
+      "sha256": "d6b0d1add7058a7aab49b427a460e8200523b0bce576e3694d6c153d9f5db5a8"
+    },
+    "case00/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case00/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case00/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case00/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "f5288bc1029891fae5c83c232a0400844ae1196149cea1d400430e57eb9e6f44"
+    },
+    "case00/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case01/level.dat": {
+      "bytes": 379,
+      "sha256": "a8a11b7a24ae92f15a09d8d243d08e1b84a0d680cc26b308a183a1ce6a31175f"
+    },
+    "case01/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case01/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case01/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case01/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "cfec30c0177f1187a08364da2fd1f3223f172f94ee6cdd717cb629554e41001c"
+    },
+    "case01/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case02/level.dat": {
+      "bytes": 380,
+      "sha256": "221a4a4b34fc439fbf963516a5472337ec470499f80d130eebddc3514b76256b"
+    },
+    "case02/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case02/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case02/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case02/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "5e029da81178b62aaea1079f151070636458e3afaa1aa21c171c4a756f6ea307"
+    },
+    "case02/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case03/level.dat": {
+      "bytes": 380,
+      "sha256": "fd8dd093dff55c1d0a1c38d8a5453b62a041892d67effce48d31c674c031183f"
+    },
+    "case03/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "a6dc82d1846ca10b22777ac20e64571b0db0e34333b54c6f0f56920bb935a892"
+    },
+    "case03/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "171f36ddbc21aabf971cc907e396a78476afefc00ab359ccd367487df6b2f04a"
+    },
+    "case03/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "abf57f5be5f4105f381c38edd889093d0d6d90b28d0caf7b329a04289f73d183"
+    },
+    "case03/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "0757165435765d7aea939acfb76109a60819ba8ba3db16a70f6a13727493d61c"
+    },
+    "case03/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case04/level.dat": {
+      "bytes": 379,
+      "sha256": "c72320ce504fc95758f61a9c708e415ce0a80f1c0a17baeab2cdc1ab443c9160"
+    },
+    "case04/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case04/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case04/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case04/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "5e029da81178b62aaea1079f151070636458e3afaa1aa21c171c4a756f6ea307"
+    },
+    "case04/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case05/level.dat": {
+      "bytes": 379,
+      "sha256": "498a1b5f500cc88d51f83555ad936f0641f8c151f133c5ce258a77137623089f"
+    },
+    "case05/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case05/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case05/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case05/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "5e029da81178b62aaea1079f151070636458e3afaa1aa21c171c4a756f6ea307"
+    },
+    "case05/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case06/level.dat": {
+      "bytes": 379,
+      "sha256": "1e67010ed651f91f6e4deb136116d9531538516793261af2236b503125798bd1"
+    },
+    "case06/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case06/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case06/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case06/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "5e029da81178b62aaea1079f151070636458e3afaa1aa21c171c4a756f6ea307"
+    },
+    "case06/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case07/level.dat": {
+      "bytes": 379,
+      "sha256": "c17b963ac50630f84c100275eb5280eed1fea485b8557eeb3f679f7530b5187e"
+    },
+    "case07/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case07/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case07/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case07/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "5e029da81178b62aaea1079f151070636458e3afaa1aa21c171c4a756f6ea307"
+    },
+    "case07/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case08/level.dat": {
+      "bytes": 379,
+      "sha256": "d5babce37b9199c2fc045acef48f8ce1894b64c93587180844199e11af2907e8"
+    },
+    "case08/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case08/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case08/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case08/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "5e029da81178b62aaea1079f151070636458e3afaa1aa21c171c4a756f6ea307"
+    },
+    "case08/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    },
+    "case09/level.dat": {
+      "bytes": 379,
+      "sha256": "eb39f6c6085b2af57c1a2a2bff319acb67b7453610d7826c026494b23bdab5c6"
+    },
+    "case09/region/r.-1.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "9429b7a492d6e1adebb63e5be3fbe020570f5a4b90ccb34bc7fe7b58f48f213a"
+    },
+    "case09/region/r.-1.0.mcr": {
+      "bytes": 12288,
+      "sha256": "9be1506d4dccbfb7e4745caeff21aa27d81c40a554291d45fa11dd613177745c"
+    },
+    "case09/region/r.0.-1.mcr": {
+      "bytes": 12288,
+      "sha256": "3c4e70f9d5c7c669611c423e93466bf8835b18e59c69fc06fcbfde5a1a5ebedd"
+    },
+    "case09/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "5e029da81178b62aaea1079f151070636458e3afaa1aa21c171c4a756f6ea307"
+    },
+    "case09/session.lock": {
+      "bytes": 8,
+      "sha256": "95090d22b38fa9e2e2363bfd8444392985ebe64fc3d21f078a946458b6dd54a7"
+    }
+  },
+  "fixture_directories": [
+    "case00",
+    "case00/data",
+    "case00/region",
+    "case01",
+    "case01/data",
+    "case01/region",
+    "case02",
+    "case02/data",
+    "case02/region",
+    "case03",
+    "case03/data",
+    "case03/region",
+    "case04",
+    "case04/data",
+    "case04/region",
+    "case05",
+    "case05/data",
+    "case05/region",
+    "case06",
+    "case06/data",
+    "case06/region",
+    "case07",
+    "case07/data",
+    "case07/region",
+    "case08",
+    "case08/data",
+    "case08/region",
+    "case09",
+    "case09/data",
+    "case09/region"
+  ]
+}

@@ -97,8 +97,7 @@ static bool adapter_failed, output_ok = true;
 static int main_q = -1;
 static size_t event_count, normal_leases, blank_leases, retains, releases, output_bytes;
 
-static void emit(const char *text)
-{
+static void emit(const char *text) {
     size_t count = strlen(text);
     if (!output_ok || count > OUTPUT_LIMIT - output_bytes) {
         output_ok = false;
@@ -109,8 +108,7 @@ static void emit(const char *text)
         output_ok = false;
 }
 
-static void format(const char *pattern, ...)
-{
+static void format(const char *pattern, ...) {
     char text[512];
     va_list arguments;
     va_start(arguments, pattern);
@@ -122,13 +120,11 @@ static void format(const char *pattern, ...)
         emit(text);
 }
 
-static const char *boolean(bool value)
-{
+static const char *boolean(bool value) {
     return value ? "true" : "false";
 }
 
-static void hex(const uint8_t *bytes, size_t count)
-{
+static void hex(const uint8_t *bytes, size_t count) {
     static const char digits[] = "0123456789abcdef";
     char text[257];
     for (size_t offset = 0; offset < count;) {
@@ -143,13 +139,11 @@ static void hex(const uint8_t *bytes, size_t count)
     }
 }
 
-static int identity(const mc_chunk_state *chunk)
-{
+static int identity(const mc_chunk_state *chunk) {
     return chunk == &normal ? 1 : chunk == &fallback ? 0 : -1;
 }
 
-static bool snapshot(graph_snapshot *out)
-{
+static bool snapshot(graph_snapshot *out) {
     if (!mc_chunk_acquire_validate(&acquisition) || !mc_chunk_lifecycle_validate(&lifecycle) ||
         cache.count > MAP_LIMIT || cache.insertion_count > LIST_LIMIT ||
         pending.count > PENDING_LIMIT || !fallback.blank || fallback.data != NULL ||
@@ -207,8 +201,7 @@ static bool snapshot(graph_snapshot *out)
 
 static bool journal(const char *kind, const char *edge, const char *outcome, int slice,
                     mc_chunk_state *selected, bool owner_matched, bool context_matched,
-                    bool has_request, int32_t x, int32_t z)
-{
+                    bool has_request, int32_t x, int32_t z) {
     if (event_count == EVENT_LIMIT) {
         adapter_failed = true;
         return false;
@@ -233,8 +226,7 @@ static bool journal(const char *kind, const char *edge, const char *outcome, int
     return true;
 }
 
-static bool retain(void *owner, mc_chunk_state *chunk)
-{
+static bool retain(void *owner, mc_chunk_state *chunk) {
     int id = identity(chunk);
     size_t *depth = id == 1 ? &normal_leases : &blank_leases;
     if (owner != &reference_owner || id < 0 || *depth == SIZE_MAX || retains == SIZE_MAX) {
@@ -246,8 +238,7 @@ static bool retain(void *owner, mc_chunk_state *chunk)
     return true;
 }
 
-static void release(void *owner, mc_chunk_state *chunk)
-{
+static void release(void *owner, mc_chunk_state *chunk) {
     int id = identity(chunk);
     size_t *depth = id == 1 ? &normal_leases : &blank_leases;
     if (owner != &reference_owner || id < 0 || *depth == 0 || releases == SIZE_MAX) {
@@ -259,8 +250,7 @@ static void release(void *owner, mc_chunk_state *chunk)
 }
 
 static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *context, int32_t x,
-                                 int32_t z, mc_chunk_state **out)
-{
+                                 int32_t z, mc_chunk_state **out) {
     mc_chunk_state *selected = load_available ? &normal : NULL;
     if (!journal("load", "entry", NULL, -1, selected, owner == &loader_owner,
                  context == &acquisition, true, x, z))
@@ -277,23 +267,20 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
 }
 
 static bool registration(void *owner, const mc_chunk_acquire_context *context,
-                         mc_chunk_state *chunk, const char *kind, int slice)
-{
+                         mc_chunk_state *chunk, const char *kind, int slice) {
     return journal(kind, "entry", NULL, slice, chunk, owner == &world_owner,
                    context == &acquisition, false, 0, 0) &&
            journal(kind, "return", "ok", slice, chunk, owner == &world_owner,
                    context == &acquisition, false, 0, 0);
 }
 
-static bool register_tiles(void *owner, const mc_chunk_acquire_context *context,
-                           mc_chunk_state *chunk)
-{
+static bool register_tile_entities(void *owner, const mc_chunk_acquire_context *context,
+                                   mc_chunk_state *chunk) {
     return registration(owner, context, chunk, "register_tiles", -1);
 }
 
 static bool register_entities(void *owner, const mc_chunk_acquire_context *context,
-                              mc_chunk_state *chunk, size_t slice)
-{
+                              mc_chunk_state *chunk, size_t slice) {
     if (slice >= 8) {
         adapter_failed = true;
         return false;
@@ -304,8 +291,7 @@ static bool register_entities(void *owner, const mc_chunk_acquire_context *conte
 static mc_chunk_callback_result lifecycle_callback(void *owner,
                                                    const mc_chunk_lifecycle_context *context,
                                                    mc_chunk_state *chunk, const char *kind,
-                                                   int slice, bool loader)
-{
+                                                   int slice, bool loader) {
     bool matched = owner == (loader ? &loader_owner : &world_owner);
     if (!journal(kind, "entry", NULL, slice, chunk, matched, context == &lifecycle, false, 0, 0))
         return MC_CHUNK_CALLBACK_FATAL;
@@ -316,16 +302,15 @@ static mc_chunk_callback_result lifecycle_callback(void *owner,
                : MC_CHUNK_CALLBACK_FATAL;
 }
 
-static mc_chunk_callback_result
-invalidate_tiles(void *owner, const mc_chunk_lifecycle_context *context, mc_chunk_state *chunk)
-{
+static mc_chunk_callback_result invalidate_tile_entities(void *owner,
+                                                         const mc_chunk_lifecycle_context *context,
+                                                         mc_chunk_state *chunk) {
     return lifecycle_callback(owner, context, chunk, "invalidate_tiles", -1, false);
 }
 
 static mc_chunk_callback_result defer_entities(void *owner,
                                                const mc_chunk_lifecycle_context *context,
-                                               mc_chunk_state *chunk, size_t slice)
-{
+                                               mc_chunk_state *chunk, size_t slice) {
     if (slice >= 8) {
         adapter_failed = true;
         return MC_CHUNK_CALLBACK_FATAL;
@@ -334,31 +319,26 @@ static mc_chunk_callback_result defer_entities(void *owner,
 }
 
 static mc_chunk_callback_result save_main(void *owner, const mc_chunk_lifecycle_context *context,
-                                          mc_chunk_state *chunk)
-{
+                                          mc_chunk_state *chunk) {
     return lifecycle_callback(owner, context, chunk, "save_main", -1, true);
 }
 
 static mc_chunk_callback_result save_extra(void *owner, const mc_chunk_lifecycle_context *context,
-                                           mc_chunk_state *chunk)
-{
+                                           mc_chunk_state *chunk) {
     return lifecycle_callback(owner, context, chunk, "save_extra", -1, true);
 }
 
 static mc_chunk_callback_result loader_maintenance(void *owner,
-                                                   const mc_chunk_lifecycle_context *context)
-{
+                                                   const mc_chunk_lifecycle_context *context) {
     return lifecycle_callback(owner, context, NULL, "loader_maintenance", -1, true);
 }
 
-static mc_chunk_callback_result flush(void *owner, const mc_chunk_lifecycle_context *context)
-{
+static mc_chunk_callback_result flush(void *owner, const mc_chunk_lifecycle_context *context) {
     return lifecycle_callback(owner, context, NULL, "flush", -1, true);
 }
 
 static mc_chunk_callback_result
-provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bool *out)
-{
+provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, bool *out) {
     if (!journal("provider_maintenance", "entry", NULL, -1, NULL, owner == &provider_owner,
                  context == &lifecycle, false, 0, 0))
         return MC_CHUNK_CALLBACK_FATAL;
@@ -369,8 +349,7 @@ provider_maintenance(void *owner, const mc_chunk_lifecycle_context *context, boo
                : MC_CHUNK_CALLBACK_FATAL;
 }
 
-static bool integer(const char *text, int32_t *out)
-{
+static bool integer(const char *text, int32_t *out) {
     bool negative = *text == '-';
     text += negative ? 1 : 0;
     if (*text == '\0' || (text[0] == '0' && text[1] != '\0'))
@@ -391,15 +370,13 @@ static bool integer(const char *text, int32_t *out)
     return true;
 }
 
-static int digit(unsigned char byte)
-{
+static int digit(unsigned char byte) {
     return byte >= '0' && byte <= '9'   ? byte - '0'
            : byte >= 'a' && byte <= 'f' ? byte - 'a' + 10
                                         : -1;
 }
 
-static bool decode(const char *text, uint8_t *out, size_t count)
-{
+static bool decode(const char *text, uint8_t *out, size_t count) {
     if (strlen(text) != count * 2u)
         return false;
     for (size_t i = 0; i < count; ++i) {
@@ -412,8 +389,7 @@ static bool decode(const char *text, uint8_t *out, size_t count)
     return true;
 }
 
-static bool clock_value(const char *text, int64_t *out)
-{
+static bool clock_value(const char *text, int64_t *out) {
     uint8_t bytes[8];
     if (!decode(text, bytes, sizeof(bytes)))
         return false;
@@ -424,16 +400,14 @@ static bool clock_value(const char *text, int64_t *out)
     return true;
 }
 
-static bool parse_bool(const char *text, bool *out)
-{
+static bool parse_bool(const char *text, bool *out) {
     if (strcmp(text, "0") != 0 && strcmp(text, "1") != 0)
         return false;
     *out = text[0] == '1';
     return true;
 }
 
-static bool flags(const char *text, mc_chunk_state *chunk)
-{
+static bool flags(const char *text, mc_chunk_state *chunk) {
     if (strlen(text) != 5)
         return false;
     for (size_t i = 0; i < 5; ++i)
@@ -447,8 +421,7 @@ static bool flags(const char *text, mc_chunk_state *chunk)
     return true;
 }
 
-static bool open_context(char **fields, size_t count)
-{
+static bool open_context(char **fields, size_t count) {
     if (opened || count != 12 ||
         (strcmp(fields[1], "base") != 0 && strcmp(fields[1], "dedicated") != 0) ||
         !clock_value(fields[2], &world_time) || !integer(fields[3], &spawn_x) ||
@@ -479,7 +452,7 @@ static bool open_context(char **fields, size_t count)
                                              .world = &world_owner,
                                              .loader = &loader_owner,
                                              .load = load,
-                                             .register_tiles = register_tiles,
+                                             .register_tile_entities = register_tile_entities,
                                              .register_entities = register_entities,
                                              .references = &references};
     lifecycle = (mc_chunk_lifecycle_context){.cache = &cache,
@@ -494,7 +467,7 @@ static bool open_context(char **fields, size_t count)
                                              .save_extra = save_extra,
                                              .flush = flush,
                                              .loader_maintenance = loader_maintenance,
-                                             .invalidate_tiles = invalidate_tiles,
+                                             .invalidate_tile_entities = invalidate_tile_entities,
                                              .defer_entities = defer_entities,
                                              .provider_maintenance = provider_maintenance,
                                              .references = &references};
@@ -502,8 +475,7 @@ static bool open_context(char **fields, size_t count)
     return true;
 }
 
-static bool import_chunk(char **fields, size_t count)
-{
+static bool import_chunk(char **fields, size_t count) {
     if (!opened || imported || count != 11 || !integer(fields[1], &normal.x) ||
         !integer(fields[2], &normal.z) || !flags(fields[3], &normal) ||
         !clock_value(fields[4], &normal.last_save_time) ||
@@ -520,8 +492,7 @@ static bool import_chunk(char **fields, size_t count)
     return true;
 }
 
-static void print_chunk(const mc_chunk_state *chunk, bool blank, const graph_snapshot *state)
-{
+static void print_chunk(const mc_chunk_state *chunk, bool blank, const graph_snapshot *state) {
     format("{\"id\":%u,\"coordinates\":[%" PRId32 ",%" PRId32 "],\"blank\":%s,"
            "\"flags\":{\"c\":%s,\"n\":%s,\"o\":%s,\"p\":%s,\"q\":%s},"
            "\"last_save_time\":\"%016" PRIx64 "\",\"minimum_height\":",
@@ -545,8 +516,7 @@ static void print_chunk(const mc_chunk_state *chunk, bool blank, const graph_sna
     emit("\"}}");
 }
 
-static void print_state(const graph_snapshot *state)
-{
+static void print_state(const graph_snapshot *state) {
     format("{\"policy\":\"%s\",\"time\":\"%016" PRIx64 "\",\"spawn\":[%" PRId32 ",%" PRId32 "],"
            "\"world_force_load\":%s,\"provider_force_load\":%s,\"saving_disabled\":%s,"
            "\"imported\":%s,\"load_available\":%s,\"main_q_effect\":",
@@ -582,8 +552,7 @@ static void print_state(const graph_snapshot *state)
 }
 
 static bool respond(size_t index, const char *command, const char *category, unsigned status,
-                    int result, int returned)
-{
+                    int result, int returned) {
     if (!snapshot(&final_state))
         return false;
     format("{\"schema\":1,\"kind\":\"RESPONSE\",\"index\":%zu,\"command\":\"%s\","
@@ -630,8 +599,7 @@ static bool respond(size_t index, const char *command, const char *category, uns
     return output_ok && fflush(stdout) == 0;
 }
 
-static bool execute(char **fields, size_t count, size_t index, bool *quit)
-{
+static bool execute(char **fields, size_t count, size_t index, bool *quit) {
     const char *command = fields[0], *category = "adapter";
     unsigned status = 0;
     int result = -1, returned = -1;
@@ -700,8 +668,7 @@ static bool execute(char **fields, size_t count, size_t index, bool *quit)
            normal_leases == 0 && blank_leases == 0 && retains == releases;
 }
 
-int main(void)
-{
+int main(void) {
 #ifdef _WIN32
     if (_setmode(_fileno(stdin), _O_BINARY) < 0 || _setmode(_fileno(stdout), _O_BINARY) < 0)
         return 1;

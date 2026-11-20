@@ -1,0 +1,8 @@
+{
+  "schema": "ORIGINAL_PISTON_MOBILITY_INPUTS_V1",
+  "scope": "Direct virtual UU.h()I on every nonnull ordinary Block.m singleton, ascending actual array index; repeat each call, then read actual Material.j()I.",
+  "startup": "Class.forName uu with ordinary untouched original class initialization",
+  "inputs": "Actual occupied Block.m cells; no fabricated receiver or Material",
+  "forbidden": ["source field writes", "Map or array mutation", "World construction", "piston activation", "tick", "GL", "native execution", "JDI or live-Code claim"],
+  "modes": ["interpreter", "default"]
+}

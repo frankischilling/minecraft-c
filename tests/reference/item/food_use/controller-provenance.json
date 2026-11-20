@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "inputs_unchanged": true,
+  "inputs": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/bin/java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/bin/javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "ControllerFoodObservation.java": "4a0143f871f0b5dbb2096d9b9d16fc211e07d6f4073b2436a5c3a08fecb71fa1",
+    "profiles.tsv": "655a82e05d49e8cd0901eba2970a620c5d5d761e5d99980a0f08fcb6df9b9d52",
+    "private-original-capture-driver.py": "c68e2a7fe66565fd358d863788a05b977106dedfb5bf1ca0f5d19fea988cacc3"
+  },
+  "ordinary_fresh_vms": 2,
+  "profiles": 14,
+  "selected_sha256": "5f6c711c3fdcc439be9e4ba6712fe0408e81eac9ccf23f454b97983c03b39fd7",
+  "stdout_sha256": [
+    "5cdc9d237be8a39ac32c61832f6e50dff5f8bf97b4ad04e4675f12a4a337918d",
+    "5cdc9d237be8a39ac32c61832f6e50dff5f8bf97b4ad04e4675f12a4a337918d"
+  ],
+  "helpers": {
+    "ControllerFoodObservation$1.class": "51a308626f3e5554edab612915e6b83690f1b846ada8f6c03c13351614ff3bc2",
+    "ControllerFoodObservation.class": "a98ed608b5aaabada2cba91a985957c1845d6e320ee04f3933eaec0f1befa334"
+  },
+  "scope": "Unchanged original OS/OB controller in-air calls; ordinary fresh VMs only, genuine App, World, Player, Stack and statistics owners. No direct Item-only observation, JDI, graphics, save cycle, audio, server or full gameplay qualification.",
+  "metadata_projection": {
+    "format": 1,
+    "policy": "Portable artifact identities replace absolute private input paths; scope identifies the actual enclosing call. Raw ordinary stdout bytes and all observed scalar fields remain unchanged.",
+    "private_raw_receipt_sha256": "f174712b25c3662d6ec19b58c6f44368c44b849770997e90b8b356fd33b3451f"
+  }
+}

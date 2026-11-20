@@ -1,0 +1,54 @@
+[
+  {
+    "name": "intact-night-timer99",
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "intact-day-direction0",
+    "values": [
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "local-null-v-prefix",
+    "values": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      1,
+      99,
+      1
+    ]
+  },
+  {
+    "name": "local-null-world-prefix",
+    "values": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      99,
+      2
+    ]
+  }
+]

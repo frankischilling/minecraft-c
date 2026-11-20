@@ -1,0 +1,285 @@
+{
+  "status": "PASS_REACHED_SOURCE_METADATA_TRANSPORT_ORIGINAL_COMPARISON",
+  "reference_receipt": {
+    "bytes": 77122,
+    "sha256": "6c5a92d237c380e2104dfbd16afe70d5727a21c412e7c2a1424e982491a1df05"
+  },
+  "native_report": {
+    "bytes": 1943493,
+    "sha256": "f5db97450574a5eeab7697b235449b224df3c2a5d91915a8542c6e52f13e3693"
+  },
+  "comparison_recipe": {
+    "bytes": 12163,
+    "sha256": "b3d52d534f9fe5747cb830c082ae3d21616a833219f7a23482d2798f579e6ec0"
+  },
+  "cases": {
+    "fresh": {
+      "original_phase": 0,
+      "file_returns": [
+        [
+          "old_exists",
+          false
+        ],
+        [
+          "old_rename",
+          false
+        ],
+        [
+          "current_exists",
+          false
+        ],
+        [
+          "new_rename",
+          true
+        ],
+        [
+          "new_exists",
+          false
+        ]
+      ],
+      "native_clock_interval": [
+        1793500968241,
+        1793500968241
+      ],
+      "native_last_played": 1793500968241,
+      "native_file": {
+        "bytes": 211,
+        "sha256": "936741ea7411e02c1963874087fbf49d5d6b5267496f443f95b0857e09d1b5b5"
+      },
+      "exact_stable_typed_values": true,
+      "exact_sentinel_paths": []
+    },
+    "existing-first": {
+      "original_phase": 1,
+      "file_returns": [
+        [
+          "old_exists",
+          true
+        ],
+        [
+          "old_delete",
+          true
+        ],
+        [
+          "old_rename",
+          true
+        ],
+        [
+          "current_exists",
+          false
+        ],
+        [
+          "new_rename",
+          true
+        ],
+        [
+          "new_exists",
+          false
+        ]
+      ],
+      "native_clock_interval": [
+        1793500968259,
+        1793500968259
+      ],
+      "native_last_played": 1793500968259,
+      "native_file": {
+        "bytes": 211,
+        "sha256": "553d0a6be569cae6f085ac100b7e5b9d3b2118774e5e7fe8eaf2eb982ae0db13"
+      },
+      "exact_stable_typed_values": true,
+      "exact_sentinel_paths": []
+    },
+    "existing-second": {
+      "original_phase": 2,
+      "file_returns": [
+        [
+          "old_exists",
+          true
+        ],
+        [
+          "old_delete",
+          true
+        ],
+        [
+          "old_rename",
+          true
+        ],
+        [
+          "current_exists",
+          false
+        ],
+        [
+          "new_rename",
+          true
+        ],
+        [
+          "new_exists",
+          false
+        ]
+      ],
+      "native_clock_interval": [
+        1793500968276,
+        1793500968276
+      ],
+      "native_last_played": 1793500968276,
+      "native_file": {
+        "bytes": 215,
+        "sha256": "1d035fefbdfd561e22a317e618c9e5df42e36eeda86fae838abb97ba609a439d"
+      },
+      "exact_stable_typed_values": true,
+      "exact_sentinel_paths": []
+    },
+    "old-directory": {
+      "original_phase": 3,
+      "file_returns": [
+        [
+          "old_exists",
+          true
+        ],
+        [
+          "old_delete",
+          false
+        ],
+        [
+          "old_rename",
+          false
+        ],
+        [
+          "current_exists",
+          true
+        ],
+        [
+          "current_delete",
+          true
+        ],
+        [
+          "new_rename",
+          true
+        ],
+        [
+          "new_exists",
+          false
+        ]
+      ],
+      "native_clock_interval": [
+        1793500968294,
+        1793500968294
+      ],
+      "native_last_played": 1793500968294,
+      "native_file": {
+        "bytes": 215,
+        "sha256": "9dda07a027110aae635a46d02d995d4e274b1d46f08889bb8c7629f56f4937b9"
+      },
+      "exact_stable_typed_values": true,
+      "exact_sentinel_paths": [
+        "level.dat_old/sentinel"
+      ]
+    },
+    "both-directories": {
+      "original_phase": 4,
+      "file_returns": [
+        [
+          "old_exists",
+          true
+        ],
+        [
+          "old_delete",
+          false
+        ],
+        [
+          "old_rename",
+          false
+        ],
+        [
+          "current_exists",
+          true
+        ],
+        [
+          "current_delete",
+          false
+        ],
+        [
+          "new_rename",
+          false
+        ],
+        [
+          "new_exists",
+          true
+        ],
+        [
+          "new_delete",
+          true
+        ]
+      ],
+      "native_clock_interval": [
+        1793500968312,
+        1793500968312
+      ],
+      "native_last_played": 1793500968312,
+      "exact_sentinel_paths": [
+        "level.dat/sentinel",
+        "level.dat_old/sentinel"
+      ]
+    },
+    "open-failure": {
+      "original_phase": 5,
+      "file_returns": [],
+      "native_clock_interval": [
+        1793500968329,
+        1793500968329
+      ],
+      "native_last_played": 1793500968329,
+      "exact_sentinel_paths": [
+        "level.dat_new/sentinel"
+      ]
+    },
+    "null-first": {
+      "original_phase": 6,
+      "file_returns": [
+        [
+          "old_exists",
+          false
+        ],
+        [
+          "old_rename",
+          false
+        ],
+        [
+          "current_exists",
+          false
+        ],
+        [
+          "new_rename",
+          true
+        ],
+        [
+          "new_exists",
+          false
+        ]
+      ],
+      "native_clock_interval": [
+        1793500968347,
+        1793500968347
+      ],
+      "native_last_played": 1793500968347,
+      "native_file": {
+        "bytes": 211,
+        "sha256": "c61a54fde29be8f43002822c8729498e8daf1089f1bc37c4ff9214537b874b72"
+      },
+      "exact_stable_typed_values": true,
+      "exact_sentinel_paths": []
+    }
+  },
+  "clock_policy": "Only LastPlayed differs across processes; every actual value retains Long type and is checked within its own actual call interval.",
+  "backup_policy": "Exact preceding-current bytes preserved within each original/native cohort; gzip bytes/compound iteration are not equated across implementations.",
+  "boolean_receipt_policy": "Original call order comes from direct fm caller MethodExit events. Native receipts expose reached File call flags/results and the controller lists them in the reviewed implementation source order; no separate native per-primitive trace is claimed.",
+  "scope": "Prepared completed-Info source File/FOS metadata transport and source ignored-booleans/effects only. Native empty/null-first selected-null records match original List omission values; no native List or LocalPlayer serializer call is qualified. Existing-first/second native calls use separate process Handlers; native repeat control separately exercises one Handler.",
+  "failure_limit": "Original FOS-open failure catches/prints/returns150. Native C retains that actual FOS cause at explicit fm147 printStackTrace dependency. Only the common pre-rotation prefix/effects and lack of File rotations are compared; native catch return completion is not credited.",
+  "not_qualified": [
+    "whole World/Chunk save or reload",
+    "nonempty live Player serialization",
+    "HashMap order or compressed byte identity",
+    "native codec/JDK direct payload controls",
+    "authored source write/close fault OS equivalence"
+  ]
+}

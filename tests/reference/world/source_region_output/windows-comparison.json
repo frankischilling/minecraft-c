@@ -1,0 +1,276 @@
+{
+  "status": "PASS_PREPARED_SOURCE_REGION_OUTPUT_ORIGINAL_COMPARISON",
+  "recipe": {
+    "bytes": 16810,
+    "sha256": "22dedcc7bade65c0bf04b62eb5e37a141e87f670151db0f10bbc1172a6f29f7e"
+  },
+  "reference_receipt": {
+    "bytes": 78900,
+    "sha256": "1a689c1b6f4c9bd97e71ea88e99f29bb34218ad889a574f1a8562672471fc032"
+  },
+  "native_report": {
+    "bytes": 2475003,
+    "sha256": "3c88eb6c71980387ba7407b8149a3f0daefadb5046f0401cb19cd91ef5d12d19"
+  },
+  "normal_cases": {
+    "fresh": {
+      "phase": 0,
+      "x": 0,
+      "z": 0,
+      "payload": 32,
+      "sector": 2,
+      "required": 1,
+      "appended": 1,
+      "growth": 12288,
+      "native_timestamp": 1793505865,
+      "native_interval": [
+        1793505865982,
+        1793505865982
+      ],
+      "source_processes": {
+        "ordinary": {
+          "timestamp": 1793503445,
+          "interval": [
+            1793503445071,
+            1793503445071
+          ],
+          "compressed": {
+            "bytes": 61,
+            "sha256": "efc65a4f45a55d3f0d972b89098ca209bb1f5be739bcae27e28fa759621b67a5"
+          }
+        },
+        "debugger": {
+          "timestamp": 1793503453,
+          "interval": [
+            1793503452932,
+            1793503453370
+          ],
+          "compressed": {
+            "bytes": 61,
+            "sha256": "efc65a4f45a55d3f0d972b89098ca209bb1f5be739bcae27e28fa759621b67a5"
+          }
+        }
+      },
+      "native_compressed_bytes": 61
+    },
+    "rewrite": {
+      "phase": 1,
+      "x": 0,
+      "z": 0,
+      "payload": 32,
+      "sector": 2,
+      "required": 1,
+      "appended": 0,
+      "growth": 0,
+      "native_timestamp": 1793505865,
+      "native_interval": [
+        1793505865993,
+        1793505865993
+      ],
+      "source_processes": {
+        "ordinary": {
+          "timestamp": 1793503445,
+          "interval": [
+            1793503445127,
+            1793503445127
+          ],
+          "compressed": {
+            "bytes": 61,
+            "sha256": "efc65a4f45a55d3f0d972b89098ca209bb1f5be739bcae27e28fa759621b67a5"
+          }
+        },
+        "debugger": {
+          "timestamp": 1793503456,
+          "interval": [
+            1793503456051,
+            1793503456259
+          ],
+          "compressed": {
+            "bytes": 61,
+            "sha256": "efc65a4f45a55d3f0d972b89098ca209bb1f5be739bcae27e28fa759621b67a5"
+          }
+        }
+      },
+      "native_compressed_bytes": 61
+    },
+    "grow": {
+      "phase": 2,
+      "x": 0,
+      "z": 0,
+      "payload": 20000,
+      "sector": 3,
+      "required": 5,
+      "appended": 5,
+      "growth": 20480,
+      "native_timestamp": 1793505866,
+      "native_interval": [
+        1793505866005,
+        1793505866005
+      ],
+      "source_processes": {
+        "ordinary": {
+          "timestamp": 1793503445,
+          "interval": [
+            1793503445181,
+            1793503445181
+          ],
+          "compressed": {
+            "bytes": 20034,
+            "sha256": "37f07afa5d37f58b65d8daa0a849bed568a500853db223049667fbd9bba07185"
+          }
+        },
+        "debugger": {
+          "timestamp": 1793503459,
+          "interval": [
+            1793503459101,
+            1793503459566
+          ],
+          "compressed": {
+            "bytes": 20034,
+            "sha256": "37f07afa5d37f58b65d8daa0a849bed568a500853db223049667fbd9bba07185"
+          }
+        }
+      },
+      "native_compressed_bytes": 20034
+    },
+    "shrink": {
+      "phase": 3,
+      "x": 0,
+      "z": 0,
+      "payload": 32,
+      "sector": 2,
+      "required": 1,
+      "appended": 0,
+      "growth": 0,
+      "native_timestamp": 1793505866,
+      "native_interval": [
+        1793505866018,
+        1793505866018
+      ],
+      "source_processes": {
+        "ordinary": {
+          "timestamp": 1793503445,
+          "interval": [
+            1793503445264,
+            1793503445264
+          ],
+          "compressed": {
+            "bytes": 61,
+            "sha256": "efc65a4f45a55d3f0d972b89098ca209bb1f5be739bcae27e28fa759621b67a5"
+          }
+        },
+        "debugger": {
+          "timestamp": 1793503464,
+          "interval": [
+            1793503463840,
+            1793503464199
+          ],
+          "compressed": {
+            "bytes": 61,
+            "sha256": "efc65a4f45a55d3f0d972b89098ca209bb1f5be739bcae27e28fa759621b67a5"
+          }
+        }
+      },
+      "native_compressed_bytes": 61
+    },
+    "reuse": {
+      "phase": 4,
+      "x": 1,
+      "z": 0,
+      "payload": 12000,
+      "sector": 3,
+      "required": 3,
+      "appended": 0,
+      "growth": 0,
+      "native_timestamp": 1793505866,
+      "native_interval": [
+        1793505866031,
+        1793505866031
+      ],
+      "source_processes": {
+        "ordinary": {
+          "timestamp": 1793503445,
+          "interval": [
+            1793503445332,
+            1793503445332
+          ],
+          "compressed": {
+            "bytes": 12029,
+            "sha256": "eb7dcb154a74856fbf9a0affb1fe8556d0c443b8a602c09d6c440a0dd2a14730"
+          }
+        },
+        "debugger": {
+          "timestamp": 1793503468,
+          "interval": [
+            1793503468110,
+            1793503468599
+          ],
+          "compressed": {
+            "bytes": 12029,
+            "sha256": "eb7dcb154a74856fbf9a0affb1fe8556d0c443b8a602c09d6c440a0dd2a14730"
+          }
+        }
+      },
+      "native_compressed_bytes": 12029
+    },
+    "negative": {
+      "phase": 5,
+      "x": -1,
+      "z": -33,
+      "payload": 32,
+      "sector": 2,
+      "required": 1,
+      "appended": 1,
+      "growth": 12288,
+      "native_timestamp": 1793505866,
+      "native_interval": [
+        1793505866089,
+        1793505866089
+      ],
+      "source_processes": {
+        "ordinary": {
+          "timestamp": 1793503445,
+          "interval": [
+            1793503445455,
+            1793503445455
+          ],
+          "compressed": {
+            "bytes": 61,
+            "sha256": "efc65a4f45a55d3f0d972b89098ca209bb1f5be739bcae27e28fa759621b67a5"
+          }
+        },
+        "debugger": {
+          "timestamp": 1793503473,
+          "interval": [
+            1793503472846,
+            1793503473173
+          ],
+          "compressed": {
+            "bytes": 61,
+            "sha256": "efc65a4f45a55d3f0d972b89098ca209bb1f5be739bcae27e28fa759621b67a5"
+          }
+        }
+      },
+      "native_compressed_bytes": 61
+    }
+  },
+  "common_abandon_and_flush_snapshots": [
+    "abandon-written",
+    "flush-before",
+    "flush-old",
+    "flush-replacement",
+    "flush-old-failed",
+    "flush-new-uncommitted"
+  ],
+  "clock_policy": "Each real int timestamp is checked in its own process millisecond interval with Java divide1000/narrow. Unrelated timestamps remain unchanged within that process; no timestamp value is forced equal across processes.",
+  "compression_policy": "Every actual live native/original selector2 payload is independently zlib/Adler decoded and every typed ByteArray byte regenerated. Actual offset/free mask/allocation/growth are exact. Compressed lengths/hashes are retained separately; no cross-zlib byte identity or whole-file equality is asserted.",
+  "identity_policy": "Actual same-node and distinct replacement QJ/RAF relationships are compared within each process. Raw pointer/VM identity numbers and Java/native reference counts are not equated. Native readback, owners and cleanup-fault profiles remain extra native controls.",
+  "failure_scope": "Original old-Hz close reaches the same source-closed RAF, catches/prints IOException and returns. Native stops at qj441 with prior rewrite74/lower seek33. Only the common pre-write RAM/file/closed-RAF/outer-close prefix is compared; no native caught return or later replacement commit/growth is credited.",
+  "order_scope": "Native passive RAM/RAF counters and actual disk snapshots qualify whole successful branches. Original source order has separate read-only JDI evidence; no new native per-operation or injected-failure trace is claimed.",
+  "not_qualified": [
+    "source Chunk/World/Entity/TileEntity caller or gameplay save/reload",
+    "Info.SizeOnDisk caller addition",
+    "255/256 sectors or exact4096 boundary",
+    "actual native OS failure equivalence or full Throwable identity"
+  ]
+}

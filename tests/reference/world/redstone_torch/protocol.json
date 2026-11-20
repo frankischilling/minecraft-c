@@ -1,0 +1,106 @@
+{
+  "status": "PROSPECTIVE_NOT_EXECUTED",
+  "row_tag": "DB",
+  "cohorts": [
+    "lifecycle",
+    "powered",
+    "burnout",
+    "aging"
+  ],
+  "row_order": "exact TSV order; fresh process per cohort/repeat, 2 prescribed ordinary VMs each",
+  "method_entries": {
+    "0": [
+      "db",
+      "c",
+      "(Lfd;III)V"
+    ],
+    "1": [
+      "db",
+      "b",
+      "(Lfd;III)V"
+    ],
+    "2": [
+      "db",
+      "b",
+      "(Lfd;IIII)V"
+    ],
+    "3": [
+      "db",
+      "a",
+      "(Lfd;IIILjava/util/Random;)V"
+    ],
+    "4": [
+      "db",
+      "h",
+      "(Lfd;III)Z"
+    ],
+    "5": [
+      "db",
+      "a",
+      "(Lfd;IIIZ)Z"
+    ]
+  },
+  "layout_rules": {
+    "0": "clear authored blocks and metadata; center only if inside genuine saved extent",
+    "1": "Stone1 at metadata attachment:1 west,2 east,3 north,4 south,5 below;0/7/15 choose below as explicit unrelated support input",
+    "2": "metadata1..4 wall Torch, real Stone attachment, Plate70 metadata1 on top of that Stone; no extra entity or fabricated power answer",
+    "3": "separate unsupported edge: Plate70 metadata1 directly below target, Stone below Plate"
+  },
+  "setup_writes": "Before row only b/e bytes (actual blocks/metadata) cleared and declared geometry authored, plus declared World.B remote; no replacement of arrays. Never write other three arrays, minimum-height/population flags, World time, Random, phase, queue, Set or DB.b. Each World and its queues/entities persist across its ordered rows.",
+  "center": "target raw id is center_id; receiver is independently actual registered75 or76 and its actual on flag is asserted. Signed coordinates use Java wrapped arithmetic; out-of-saved-range raw setup has no write and is declared, actual calls keep full signed operands.",
+  "selected_fields": [
+    "cohort",
+    "index",
+    "name",
+    "values",
+    "world_role",
+    "actual_world_time_before_after",
+    "result",
+    "exception",
+    "center_before_after",
+    "full_five_array_sparse_deltas",
+    "array_identity_and_hashes",
+    "World_flags_before_after",
+    "all_world_light_C_and_scheduled_E_F_before_after",
+    "actual_shared_db_list_before_after",
+    "actual_SM_position_Set_before_after",
+    "ordered_logical_callbacks",
+    "dropped_stack/defaults",
+    "source_exception_frames"
+  ],
+  "topology": "Passively read actual ArrayList size/capacity/modCount/elementData identity/slots; XU owner alias+a/b/c/d; ordered light regions; E TreeSet TreeMap node/key/left/right/parent/color/root/modCount; F HashSet actual HashMap table/nodes/next/hash/key/size/modCount; Source QY counter/time/id/coordinates. Assign retained linear == identities only; never inject hash, reorder/reset, substitute owners or assume empty collections.",
+  "entropy": "DB_ENTROPY preserves actual pre/post World.r and supplied Random owner IDs, seed/Gaussian/have, raw sound pitch/particle coordinate/motion bits, drops positions/default Entity Random and actual Math continuation. First cold Math prestate unavailable, reconstructed backward only as audit per prior Torch packet. Separate raw own-entropy observations from deterministic logical projections by explicit event ordinals; do not silently delete raw fields or require random bits equal across VMs. Audit actual continuation with independent Java LCG/FP steps, alias branches and reached callback/exception prefixes. Mode1 is a declared seed31 constructor input and its entire continuation persists across all rows; full mode1 particle coordinates can compare literally. Alias World.r/default drop constructors remain own-entropy scope.",
+  "exceptions": "Reflect only exact private DB declarations and unwrap InvocationTargetException once. Retain every Throwable class/frame/prefix. Any unplanned class/method/native/external boundary fails interpretation without changing rosters or caps. No name-only lookup of private VM.h.",
+  "constructor_assertions": "Every actual constructor must return fd.t() equal to frozen saved NBT Time and loaded-world s=false; assert time again after canonical Chunk gets, then passively before/after each row. All six Worlds of aging are created in fixed role order in one classloader; DB.b survives every World change.",
+  "rng_args": {
+    "0": "exact actual observedWorld.r alias",
+    "1": "one ordinary independent new Random(31L) constructed ONCE per VM/cohort; never reseeded, replaced or copied from Source state",
+    "2": "null"
+  },
+  "callback_modes": {
+    "0": "passive only",
+    "1": "first cell callback throws declared ISE after receipt",
+    "2": "first sound callback throws after raw receipt",
+    "3": "first particle callback throws after raw receipt"
+  },
+  "bounds": {
+    "ordinary_vm_seconds": 90,
+    "compile_seconds": 30,
+    "stdout_bytes": 4194304,
+    "stderr_bytes": 1048576,
+    "heap": "-Xmx256m",
+    "passive_identity_limit": 4096,
+    "policy": "reuse Item331 bounded capture; no escalation. Any exceeded cap retains failure and needs separate review."
+  },
+  "limits": [
+    "Public input/helper projection prepared for eight fresh captures; no historical raw capture is copied or relabeled.",
+    "No future due-time dispatch or synthetic time setter. Actual schedule insertion/dedupe/deadline only; existing scheduler evidence and later ordinary GUI ticks cover broader execution separately.",
+    "Pressed Plate metadata1 is an explicitly authored transient state, not proof of sustained Entity occupancy.",
+    "No renderer, loaded-original game, complete powered circuit, default-identity hash-tree tie branch, audible output or FPS claim."
+  ],
+  "observation_limits": [
+    "Physical Java collection backing, aliases and tree/bucket topology are Source-only observations. Native comparisons use a separately declared semantic projection.",
+    "Four signed-coordinate calls construct but do not publish an HL: observed World/Math/default-constructor accounting is bounded to exact frozen inputs; no unpublished identity, fields, Entity.bs seed or System.nanoTime is inferred. Full entropy qualification remains false.",
+    "First Math prestate is unobserved; the actual holder class initializer and post cache are checked. QY and Math initialization are passively probed, never initialized to inspect counters."
+  ]
+}

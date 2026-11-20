@@ -1,0 +1,223 @@
+{
+  "schema": 1,
+  "status": "QUALIFIED_FINITE_NATIVE_SCENARIO",
+  "platform": "Windows x64; MSVC Release; actual SDK input; locally imported supplied assets",
+  "scope": "Craft Logs through 2x2 recipes, place/activate crafted Table, real 3x3 Pickaxe, Shift transfers, close drops and ordinary Save and Quit; exact independent NBT. No original pixel/FPS, global focus, Linux SDK, live-open terminal join or unrestricted play claim.",
+  "runtime_source_files": 1425,
+  "runtime_source_snapshot_sha256": "e468fc1c6edcc0f8da71105d69981c156541d36216fce579e22f58f1b0a869ec",
+  "sdk_seconds": 22.96,
+  "checks": 1853,
+  "receipt": {
+    "ui-frames": "3",
+    "world-ticks": "7",
+    "held-pickaxe-frames": "3",
+    "save-samples": "1",
+    "real-place": "1",
+    "real-activate": "1",
+    "craft2x2": "1",
+    "craft3x3": "1",
+    "shift": "1",
+    "cursor-grid-close": "1",
+    "ordinary-save": "1"
+  },
+  "source_inputs_unchanged": true,
+  "assets_unchanged": true,
+  "initial_inventory": [
+    [
+      9,
+      17,
+      4,
+      0
+    ]
+  ],
+  "statistics_input": {
+    "declared": [
+      {
+        "5242880": 1
+      },
+      {
+        "5242881": 1
+      }
+    ],
+    "buildWorkbench_initially_present": false,
+    "buildPickaxe_initially_present": false,
+    "sha256": "1422db78ddb0336639f648c6c134a06299a89e6d4eb43ec705f0b3daeb1f63a0",
+    "wire": "{\"stats-change\": [{\"5242880\": 1}, {\"5242881\": 1}], \"checksum\": \"822866ee0f578147a4ed7b2dab7c0697\"}\n"
+  },
+  "saved_inventory": [
+    9,
+    [
+      10,
+      [
+        {
+          "Slot": [
+            1,
+            0
+          ],
+          "id": [
+            2,
+            270
+          ],
+          "Count": [
+            1,
+            1
+          ],
+          "Damage": [
+            2,
+            0
+          ]
+        }
+      ]
+    ]
+  ],
+  "saved_world_items": [
+    {
+      "stack": [
+        295,
+        1,
+        0
+      ],
+      "pos": [
+        "c04d699d5c280000",
+        "40536dbaba600000",
+        "c061d894874c0000"
+      ],
+      "ysize": "00000000",
+      "motion": [
+        "bfa978a760000000",
+        "3fc99999a0000000",
+        "bfabd00420000000"
+      ],
+      "rotation": [
+        "439ae14d",
+        "00000000"
+      ],
+      "fall": "00000000",
+      "fire": 0,
+      "air": 300,
+      "ground": false,
+      "health": 5,
+      "age": 0
+    },
+    {
+      "stack": [
+        5,
+        7,
+        0
+      ],
+      "pos": [
+        "3fdcd2bbce645106",
+        "4050080000000000",
+        "3fec000000000000"
+      ],
+      "ysize": "00000000",
+      "motion": [
+        "bee40e0b28c14fc9",
+        "8000000000000000",
+        "0000000000000000"
+      ],
+      "rotation": [
+        "42f30dcb",
+        "00000000"
+      ],
+      "fall": "00000000",
+      "fire": -1,
+      "air": 300,
+      "ground": true,
+      "health": 5,
+      "age": 18
+    },
+    {
+      "stack": [
+        280,
+        2,
+        0
+      ],
+      "pos": [
+        "3fe0ac27716b05bc",
+        "4050080000000000",
+        "3fec000000000000"
+      ],
+      "ysize": "00000000",
+      "motion": [
+        "3ec6e0cac8a02bab",
+        "8000000000000000",
+        "0000000000000000"
+      ],
+      "rotation": [
+        "438f862a",
+        "00000000"
+      ],
+      "fall": "00000000",
+      "fire": -1,
+      "air": 300,
+      "ground": true,
+      "health": 5,
+      "age": 18
+    }
+  ],
+  "saved_world_item_count": 3,
+  "saved_chunks": 403,
+  "known_material_totals": {
+    "270": 1,
+    "5": 7,
+    "280": 2
+  },
+  "placed_table": {
+    "x": 0,
+    "y": 64,
+    "z": 1,
+    "id": 58,
+    "metadata": 0,
+    "original_target_dirt_preserved": true
+  },
+  "unrelated_region_bytes_unchanged": true,
+  "cleanup": true,
+  "source_windows_absent": true,
+  "screenshots": {
+    "workbench-crafted-2x2.png": "a9288fa8b3576244a6cf434b4ed0401d852f53e441ab1489f6f6fba2bb9844a5",
+    "workbench-cursor-grid-before-close.png": "6bb43813df39ca20a192ac2a005785e00e1cc56aa655b219771751e202b8a915",
+    "workbench-held-pickaxe.png": "8bfe7889cdb94d865a5170a6834370224499433b5b2ba75a595e296d1318d53a",
+    "workbench-open-3x3.png": "577dbc10315ce06712ed87a8ad527633bed4489b1710b9b5dc6559652661d79c",
+    "workbench-pickaxe-recipe.png": "f4abb6b4d88c7918c41eda2c5122e1f40c04108ab2fa2c41079dec5acc8e078a",
+    "workbench-placed.png": "57b056f25e111b534f599787e2aaee076e5ce567f405dbc99dc5bf7c4f11d4f3",
+    "workbench-save-title.png": "4dc35cbaea9141f975f932a8366d2e0547f93cb72f45087237ae12b0baa6a6a6"
+  },
+  "component_scope": {
+    "workbench_original_calls": 116,
+    "workbench_native_checks": 39702,
+    "old_player_inventory_original_calls": 73,
+    "shared_UB_selected_active_words": 108,
+    "shared_UB_native_completed_draws": 0,
+    "creeper_native_checks": 182,
+    "creeper_original_damage_calls": 0,
+    "billboard_native_prefixes": 10,
+    "billboard_active_words": 340,
+    "billboard_own_inactive_words": 140,
+    "billboard_original_unwritten_tail_words": 160,
+    "billboard_original_completed_draws_per_process": 10,
+    "billboard_native_cpu_completed_draws": 0,
+    "billboard_packet_controls": 40,
+    "creeper_evidence": "Static archive pins and authored native environment/damage controls only."
+  },
+  "inventory_sdk_regressions": [
+    {
+      "helmet": false,
+      "seconds": 16.71,
+      "receipt": "INVENTORY_SDK draws=3 world-ticks=14 same-player=1 same-container=1 slots=45 left-right=1 tooltip=1 held-dirt=1 cursor-close-drop=1 dirt-count=6 ordinary-save=1 helmet=0",
+      "checks": 705,
+      "source_inputs_unchanged": true,
+      "assets_unchanged": true,
+      "saved_chunks": 403
+    },
+    {
+      "helmet": true,
+      "seconds": 22.75,
+      "receipt": "INVENTORY_SDK draws=3 world-ticks=21 same-player=1 same-container=1 slots=45 left-right=1 tooltip=1 held-dirt=1 cursor-close-drop=1 dirt-count=6 ordinary-save=1 helmet=1",
+      "checks": 828,
+      "source_inputs_unchanged": true,
+      "assets_unchanged": true,
+      "saved_chunks": 399
+    }
+  ]
+}

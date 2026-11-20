@@ -1,0 +1,187 @@
+{
+  "schema": "PRIVATE_ORIGINAL_EXPIRED_SPAWNER_INPUTS_V1",
+  "scope": "Direct unchanged CY.n_ expired tick with genuine saved FD World, original DC Player and World publication; no FD.g/AG/GL/save claim.",
+  "modes": [
+    "interpreter",
+    "default"
+  ],
+  "cases": [
+    {
+      "index": 0,
+      "folder": "case00",
+      "name": "__bounded_unknown__",
+      "terrain": "grass",
+      "prep_pigs": 0,
+      "positive_admissible": false
+    },
+    {
+      "index": 1,
+      "folder": "case01",
+      "name": "Arrow",
+      "terrain": "grass",
+      "prep_pigs": 0,
+      "positive_admissible": false
+    },
+    {
+      "index": 2,
+      "folder": "case02",
+      "name": "Pig",
+      "terrain": "grass",
+      "prep_pigs": 6,
+      "positive_admissible": false
+    },
+    {
+      "index": 3,
+      "folder": "case03",
+      "name": "Pig",
+      "terrain": "stone",
+      "prep_pigs": 0,
+      "positive_admissible": false
+    },
+    {
+      "index": 4,
+      "folder": "case04",
+      "name": "Pig",
+      "terrain": "grass",
+      "prep_pigs": 0,
+      "positive_admissible": true
+    },
+    {
+      "index": 5,
+      "folder": "case05",
+      "name": "Pig",
+      "terrain": "grass",
+      "prep_pigs": 0,
+      "positive_admissible": true
+    },
+    {
+      "index": 6,
+      "folder": "case06",
+      "name": "Pig",
+      "terrain": "grass",
+      "prep_pigs": 0,
+      "positive_admissible": true
+    },
+    {
+      "index": 7,
+      "folder": "case07",
+      "name": "Pig",
+      "terrain": "grass",
+      "prep_pigs": 0,
+      "positive_admissible": true
+    },
+    {
+      "index": 8,
+      "folder": "case08",
+      "name": "Pig",
+      "terrain": "grass",
+      "prep_pigs": 0,
+      "positive_admissible": true
+    },
+    {
+      "index": 9,
+      "folder": "case09",
+      "name": "Pig",
+      "terrain": "grass",
+      "prep_pigs": 0,
+      "positive_admissible": true
+    }
+  ],
+  "source_seed": 123,
+  "source_time": 8,
+  "tile_xyz": [
+    0,
+    64,
+    2
+  ],
+  "delay": 0,
+  "player_pose": [
+    14.5,
+    64.0,
+    2.5,
+    0.0,
+    0.0
+  ],
+  "prep_pig_pose": [
+    2.5,
+    64.0,
+    2.5,
+    0.0,
+    0.0
+  ],
+  "chunks": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      0
+    ],
+    [
+      0,
+      -1
+    ],
+    [
+      0,
+      0
+    ]
+  ],
+  "existing_world_directories": [
+    "data",
+    "region"
+  ],
+  "terrain_inputs": {
+    "ground_y": 63,
+    "grass_id": 2,
+    "stone_id": 1,
+    "sky_light_nibbles": 15,
+    "block_light_nibbles": 0,
+    "all_other_blocks": "air except Spawner52 at selected Tile",
+    "TerrainPopulated": 1
+  },
+  "preparation": [
+    "load all four saved Chunks through actual World.c",
+    "construct actual DC(null,World,new GR,0)",
+    "actual SN.c Player pose",
+    "actual World.b Player",
+    "for cap case only actual named Pig factory, SN.c and World.b six times",
+    "register passive PM through actual World.a(PM)",
+    "snapshot",
+    "invoke actual CY.n_ once",
+    "snapshot",
+    "unregister passive PM through actual World.b(PM)"
+  ],
+  "observations": [
+    "actual thrown/returned result",
+    "same loaded CY and coords/World aliases",
+    "Tile delay and rotation bits",
+    "actual SN counter before/after",
+    "all World Entity/Player/Tile lists and Chunk Entity slices",
+    "World time",
+    "actual World and retained Entity Random raw seed/Gaussian cache",
+    "selected constructor Math entropy",
+    "every reached WorldAccess callback in order with arguments, Tile delay, World Random and published Entity state"
+  ],
+  "cross_vm_rule": "Compare deterministic common input/ID-delta/rotation/result invariants; validate each raw mode independently. Positive publication/effect cardinality and delay may differ with genuine World Random. No raw observation is normalized.",
+  "nondeterminism_retained": [
+    "World.r seed and Gaussian cache",
+    "Math shared Random state",
+    "each retained Entity own Random and Gaussian cache",
+    "Living ctor ls.aj/G/F and Entity yaw",
+    "actual published positions/yaw/effect vectors",
+    "positive outcome count/IDs subset/final random delay"
+  ],
+  "unobservable": "Rejected/unpublished candidates are not available at this ordinary Java observer boundary; only actual global ID counter delta is sampled. No internal query/predicate/PC-call trace is claimed.",
+  "forbidden": [
+    "field/Map/clock/Random repairs",
+    "Unsafe",
+    "factory/subclass gameplay replacement",
+    "synthetic nearest/predicate/query/publication result",
+    "captured RNG injection into native runtime",
+    "original save",
+    "AG/GL",
+    "desktop",
+    "JDI/live-Code claim"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "command": [
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+    "-Xint",
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow",
+    "-cp",
+    "C:\\Users\\admin\\minecraft\\.local\\redstone-torch-texture-public-original-1\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+    "TorchTextureObservation",
+    "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\redstone_torch_texture\\profiles.tsv"
+  ],
+  "exit": 0,
+  "timeout_seconds": 90,
+  "timed_out": false,
+  "pipe_capture_complete": true,
+  "reader_errors": {},
+  "output_overflow": false,
+  "stdout_file": "original.stdout",
+  "stderr_file": "original.stderr",
+  "stdout_bytes": 15309,
+  "stderr_bytes": 403,
+  "stdout_sha256": "b344c62c6288df1c6be540e95ce3f5f52653c85cc56a1231ee8407f264673dbd",
+  "stderr_sha256": "f10215ff9a893c078c2a7c4cac5a4b5f0ce2e1642db2ff3fa6af5724fe8f0eaa",
+  "stdout_limit": 4194304,
+  "stderr_limit": 1048576
+}

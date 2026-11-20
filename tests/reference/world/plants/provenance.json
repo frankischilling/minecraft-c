@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "cases_per_side": 59,
+  "scope": "Original Block lifecycle and mutation callbacks with prepared World services; complete native-extent block/metadata maps, both Random continuations and selected Item fields.",
+  "extent": [
+    0,
+    31,
+    0,
+    127,
+    0,
+    31
+  ],
+  "observer": {
+    "bytes": 28339,
+    "sha256": "031489df257b2fe1142120390530f85077360b61b4dc0dc2b30117a4d3bd913d"
+  },
+  "requests": {
+    "bytes": 4135,
+    "sha256": "a41b997dbc6e7c88c1fac68709caad97121db796610a6d64f6f393450ba1313d"
+  },
+  "sides": {
+    "client": {
+      "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+      "raw_observation": {
+        "bytes": 3558876,
+        "sha256": "99d220bdb7eeb49a3845ea33b574fcf4a33baa80143058dc1936fae0f5d79389"
+      },
+      "fixture": {
+        "bytes": 1441104,
+        "sha256": "7c14cafd5b51fee63fadd869227c46d1ad216bf47769d7fcf36317b5b8b838c6"
+      }
+    },
+    "server": {
+      "jar_sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
+      "raw_observation": {
+        "bytes": 3558876,
+        "sha256": "3f174c05c0864bb8e0683ac8aa65badef060228809e150b81b0b6534362fce1b"
+      },
+      "fixture": {
+        "bytes": 1441104,
+        "sha256": "1dcf86c327e38a9c71ae0aa1336f808da13f9cd72380a6f3ef6fa88729576616"
+      }
+    }
+  }
+}

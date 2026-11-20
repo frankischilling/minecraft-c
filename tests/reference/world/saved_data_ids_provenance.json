@@ -1,0 +1,138 @@
+{
+  "capture_receipt": {
+    "bytes": 231046,
+    "sha256": "32f5e3bdf788e9828e1d7633efe1a78dad5d72a1687d126503023915c5c15a20"
+  },
+  "compiled_classes": {
+    "SavedDataIdObservation$Action.class": {
+      "bytes": 383,
+      "sha256": "a31248b7bb3071f43bb0c8caf03d6ff0cb833a9b44f58bd7e5505935c9ff20bb"
+    },
+    "SavedDataIdObservation$Binding.class": {
+      "bytes": 6503,
+      "sha256": "33ed1b65c7f10410f1fb6eae7675b70aedb5b553af6be84fbff8420a79fd5c56"
+    },
+    "SavedDataIdObservation$LimitedBytes.class": {
+      "bytes": 664,
+      "sha256": "b7c6dd772472f2e6dbca7683fbc7f20f4e8ab3839f923accc3bcb258a0ba49f1"
+    },
+    "SavedDataIdObservation$Owner.class": {
+      "bytes": 435,
+      "sha256": "5e04bbb7ff336b4d85a2106416ee95257f126c107647a787fb22b54c267fd264"
+    },
+    "SavedDataIdObservation.class": {
+      "bytes": 25444,
+      "sha256": "b6a39b47bb9611a768e83653514de8f2bdd805dee1d4e86bd4ae6c4e7482036f"
+    }
+  },
+  "fixtures": {
+    "saved_data_ids_client.commands": {
+      "bytes": 435,
+      "sha256": "5267402bb8124ffba8a5f37871edcba46e5cfcf5df5e63065f2714d0c18943f5"
+    },
+    "saved_data_ids_client.tsv": {
+      "bytes": 626,
+      "sha256": "386525ca0f6d27ff7e242b90543a498a692a25d954d21bb2822b2c53784d9cf1"
+    },
+    "saved_data_ids_server.commands": {
+      "bytes": 435,
+      "sha256": "5267402bb8124ffba8a5f37871edcba46e5cfcf5df5e63065f2714d0c18943f5"
+    },
+    "saved_data_ids_server.tsv": {
+      "bytes": 626,
+      "sha256": "386525ca0f6d27ff7e242b90543a498a692a25d954d21bb2822b2c53784d9cf1"
+    }
+  },
+  "inputs": {
+    "client": {
+      "bytes": 1465375,
+      "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+    },
+    "helper": {
+      "bytes": 28953,
+      "sha256": "dca5cf6d736433877b719b1c25b311a280337bb46588fdf3c848c7b4defd5600"
+    },
+    "java": {
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "java_native": {
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "javac": {
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "jvm": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "modules": {
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "process_helper": {
+      "bytes": 10182,
+      "sha256": "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+    },
+    "recorder": {
+      "bytes": 12187,
+      "sha256": "ddfba0f6c93fc43a7cf88b39a7ba51ef37d01dfa095ddb98f63a0ede6fd1c99e"
+    },
+    "release": {
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "server": {
+      "bytes": 503100,
+      "sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d"
+    },
+    "source_archive": {
+      "bytes": 50855389,
+      "sha256": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+    }
+  },
+  "limitations": [
+    "Memory state/returns only; native copies key spans, without a Java String identity graph",
+    "Original disk/diagnostic/session artifacts remain separately retained, without a native file-equivalence claim",
+    "No named SavedData subtype, actual World startup or collection-dependent collision persistence acceptance"
+  ],
+  "observations": {
+    "client": {
+      "actual_maps": 7,
+      "actual_next_calls": 65543,
+      "actual_values": 15,
+      "exported_rows": 39,
+      "raw_rows": 320,
+      "raw_stdout": {
+        "bytes": 101301,
+        "sha256": "8af263be01331c2905084abc9e1a8c4b5eff105e9d0815f44e0a01b54df2bb56"
+      },
+      "retained_files": 110,
+      "selected_returns": 15
+    },
+    "server": {
+      "actual_maps": 7,
+      "actual_next_calls": 65543,
+      "actual_values": 15,
+      "exported_rows": 39,
+      "raw_rows": 320,
+      "raw_stdout": {
+        "bytes": 101301,
+        "sha256": "cd0f6d871ef57e7a13e947148704d6354b8bf83de2292dabc1a8dcf152b90036"
+      },
+      "retained_files": 110,
+      "selected_returns": 15
+    }
+  },
+  "schema": "SAVED_DATA_IDS_MEMORY_V1",
+  "transformation": [
+    "Select all original null-store NEW/NEXT/MAP/VALUE rows",
+    "Map the sole original owner handle 1 to native command slot 0",
+    "Use actual zero-based call-index differences for repeat counts; execute every omitted call",
+    "Project UTF-16 key contents and nullability through observed key handles; omit String argument identity",
+    "Preserve every observed signed return and all seven actual map snapshots; create no extra expected maps",
+    "Frame commands and literal-LF native records without changing scalar or UTF-16 values"
+  ]
+}

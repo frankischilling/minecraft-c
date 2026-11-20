@@ -69,4 +69,25 @@ mc_level_status mc_level_build(const mc_level_info *info, const mc_nbt_tag *base
                                int64_t saved_at_ms, const mc_nbt_limits *limits,
                                mc_nbt_document **out, mc_level_error *error);
 
+/* Package an actual immutable inner Data record into an independent owned
+ * document. Require exactly the thirteen known scalar/String fields, each with
+ * its original NBT type, plus optional Player of type Compound. All fields are
+ * required except Player; extra physical entries are rejected. Do not read or
+ * validate Player.Dimension, replace LastPlayed/version, sample a clock, or
+ * mutate any name/Player. Known record nodes are borrowed directly until codec
+ * use; record and its Player must remain live, exclusive and immutable.
+ *
+ * baseline has the same valid immutable-tree contract as mc_level_build.
+ * Preserve its unknown root/Data children and root name, replace all fourteen
+ * known fields, and remove old Player when record omits it. This is additional
+ * native preservation, not the original fresh-root serializer's behavior.
+ * Normal NBT writer/read ownership and all limits/peak-allocation accounting
+ * match mc_level_build, including canonical NaNs and Byte-typed empty lists.
+ * out is required and unchanged on failure; free success with
+ * mc_nbt_document_free. All inputs/results must be disjoint except that record
+ * and baseline may borrow the same valid source tree. */
+mc_level_status mc_level_build_record(const mc_nbt_tag *record, const mc_nbt_tag *baseline,
+                                      const mc_nbt_limits *limits, mc_nbt_document **out,
+                                      mc_level_error *error);
+
 #endif

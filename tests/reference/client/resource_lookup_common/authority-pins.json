@@ -1,0 +1,21 @@
+{
+  "scope": "Preexisting complete original class/Code/JDK/SDK metadata identities, not regenerated",
+  "files": {
+    "game": {
+      "bytes": 3311812,
+      "sha256": "20ac6c47a25468f415dae867f279f4e16e39029a081afae148e78025bdd80b20"
+    },
+    "sdk": {
+      "bytes": 8107963,
+      "sha256": "4c344300bde812e79a235ac0e865437dc0f72a1bfa70603340d7ddcda64a39e0"
+    },
+    "nests": {
+      "bytes": 406350,
+      "sha256": "5fbc50c024f536d2ac449244a6366d06a2e1b6a9b11379acdeb9121d68db4681"
+    },
+    "runtime": {
+      "bytes": 3966,
+      "sha256": "8ac0b7debd5bfe7f8a0b27d50b8c6b2dc51cf19b17584cc29593533ef8a093d7"
+    }
+  }
+}

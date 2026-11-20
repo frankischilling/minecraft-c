@@ -1,0 +1,69 @@
+{
+  "meaning": "Postexecution publication-only helper/data fingerprints.",
+  "files": {
+    "NamedFactoryObservation.java": {
+      "bytes": 11378,
+      "sha256": "1d136a72fbc09989b650c8d6e867e09e3185282eab7fd5e8ec8402dd97d63a29"
+    },
+    "README.md": {
+      "bytes": 4670,
+      "sha256": "da7c317f082bc4fd5b139867f59135a627542cdf69ff28c68004904d696e577f"
+    },
+    "capture.py": {
+      "bytes": 15890,
+      "sha256": "f9850eb505014232a42cff4c0fdc388af92c401a47695d0eada5d9bff9f5f8ee"
+    },
+    "cases.json": {
+      "bytes": 1549,
+      "sha256": "050565e068b330dad99cfbe105635791d50d31847f9c5ce98df9f13389d07914"
+    },
+    "diagnostics.json": {
+      "bytes": 875,
+      "sha256": "0b297aec75ac9b55844b1c1c5af68598c9d98aa49ccc6d2ff632b5650a10a53a"
+    },
+    "finite.json": {
+      "bytes": 71108,
+      "sha256": "5b0a3da47838189a90c5821ad58e45d248a74f6afc158739e5fbebd24b37c531"
+    },
+    "input-world.json": {
+      "bytes": 997,
+      "sha256": "0b61c533576803ce899b529225257ef627ffe1a7d65d992f8b0e494c5166c079"
+    },
+    "native-observations.h": {
+      "bytes": 1402,
+      "sha256": "25c57362b782d039cb862361eddc7150e3685efe4a52f46bf6f5eb2a7ba64729"
+    },
+    "packet.py": {
+      "bytes": 19366,
+      "sha256": "481dc1191faefb1ed20f495dcdabd39d70bd12708c54957c8eab48b571de0ccd"
+    },
+    "provenance.json": {
+      "bytes": 8619,
+      "sha256": "7839c14dff21f1ae3a6d8f7db17c0ebcc20b83689d37e970498d024402c50bef"
+    },
+    "publish.py": {
+      "bytes": 14757,
+      "sha256": "a0c2949ac66f0d08ed162d06d06e029bacdccbc6e4074ef7e6f1184a312b99a5"
+    },
+    "receipts.json": {
+      "bytes": 4653,
+      "sha256": "d0741c51040e7d84b1409c578bfb041b4bd5a1f1332aea6e6cd552706923cd34"
+    },
+    "run_native.py": {
+      "bytes": 6368,
+      "sha256": "42c0425b2f9e5d16547d6a26e4a8754638ddd09e99f4583e4cfb0276f44030e9"
+    },
+    "source-manifests.json": {
+      "bytes": 7694,
+      "sha256": "9aaf3eb1ffdbe518f3a840c57cdacbca13f0e0222dccde9ab6563cfa48b55a13"
+    },
+    "source-pins.json": {
+      "bytes": 150955,
+      "sha256": "ebfff6c27ad985e36146b352920f76a0346a6717f0c47fced373b53476c00b88"
+    },
+    "test_packet.py": {
+      "bytes": 11826,
+      "sha256": "995f2ef62baf6d6dbb2b6377e34e5b1c5a80169d40aa9b4320cffdaa74072b32"
+    }
+  }
+}

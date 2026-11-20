@@ -1,0 +1,347 @@
+[
+  {
+    "profile": "uw-size1-damage4",
+    "kind": "uw",
+    "size": 1,
+    "amount": 4,
+    "seed": 38,
+    "result": true,
+    "health": 16,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 4,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000fa815c77497d",
+    "dying": false,
+    "dead": false,
+    "sounds": [
+      {
+        "name": "mob.slime",
+        "volume": "3f19999a",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": []
+  },
+  {
+    "profile": "uw-size1-damage20",
+    "kind": "uw",
+    "size": 1,
+    "amount": 20,
+    "seed": 38,
+    "result": true,
+    "health": 0,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 20,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000014ab00c9844",
+    "dying": true,
+    "dead": false,
+    "sounds": [
+      {
+        "name": "mob.slime",
+        "volume": "3f19999a",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": [
+      [
+        341,
+        1,
+        0,
+        10,
+        true,
+        1
+      ]
+    ]
+  },
+  {
+    "profile": "uw-size4-damage4",
+    "kind": "uw",
+    "size": 4,
+    "amount": 4,
+    "seed": 38,
+    "result": true,
+    "health": 16,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 4,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000fa815c77497d",
+    "dying": false,
+    "dead": false,
+    "sounds": [
+      {
+        "name": "mob.slime",
+        "volume": "3f19999a",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": []
+  },
+  {
+    "profile": "uw-size4-damage20",
+    "kind": "uw",
+    "size": 4,
+    "amount": 20,
+    "seed": 38,
+    "result": true,
+    "health": 0,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 20,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000fa815c77497d",
+    "dying": true,
+    "dead": false,
+    "sounds": [
+      {
+        "name": "mob.slime",
+        "volume": "3f19999a",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": []
+  },
+  {
+    "profile": "xt-size0-damage4",
+    "kind": "xt",
+    "size": 0,
+    "amount": 4,
+    "seed": 38,
+    "result": true,
+    "health": 16,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 4,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000fa815c77497d",
+    "dying": false,
+    "dead": false,
+    "sounds": [
+      {
+        "name": null,
+        "volume": "3ecccccd",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": []
+  },
+  {
+    "profile": "xt-size0-damage20",
+    "kind": "xt",
+    "size": 0,
+    "amount": 20,
+    "seed": 38,
+    "result": true,
+    "health": 0,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 20,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000014ab00c9844",
+    "dying": true,
+    "dead": false,
+    "sounds": [
+      {
+        "name": null,
+        "volume": "3ecccccd",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": [
+      [
+        351,
+        1,
+        0,
+        10,
+        true,
+        1
+      ],
+      [
+        351,
+        1,
+        0,
+        10,
+        true,
+        1
+      ]
+    ]
+  },
+  {
+    "profile": "bp-size0-damage4",
+    "kind": "bp",
+    "size": 0,
+    "amount": 4,
+    "seed": 38,
+    "result": true,
+    "health": 16,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 4,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000fa815c77497d",
+    "dying": false,
+    "dead": false,
+    "sounds": [
+      {
+        "name": "mob.ghast.scream",
+        "volume": "41200000",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": []
+  },
+  {
+    "profile": "bp-size0-damage20",
+    "kind": "bp",
+    "size": 0,
+    "amount": 20,
+    "seed": 38,
+    "result": true,
+    "health": 0,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 20,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000014ab00c9844",
+    "dying": true,
+    "dead": false,
+    "sounds": [
+      {
+        "name": "mob.ghast.death",
+        "volume": "41200000",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": [
+      [
+        289,
+        1,
+        0,
+        10,
+        true,
+        1
+      ]
+    ]
+  },
+  {
+    "profile": "gi-size0-damage4",
+    "kind": "gi",
+    "size": 0,
+    "amount": 4,
+    "seed": 38,
+    "result": true,
+    "health": 18,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 2,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000fa815c77497d",
+    "dying": false,
+    "dead": false,
+    "sounds": [
+      {
+        "name": "mob.wolf.hurt",
+        "volume": "3ecccccd",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": []
+  },
+  {
+    "profile": "gi-size0-damage40",
+    "kind": "gi",
+    "size": 0,
+    "amount": 40,
+    "seed": 38,
+    "result": true,
+    "health": 0,
+    "previous_health": 20,
+    "resistance": 20,
+    "last_damage": 20,
+    "hurt": 10,
+    "max_hurt": 10,
+    "angle": "41b90a72",
+    "velocity": [
+      "bfbd70a3e6666666",
+      "3fcb333340000000",
+      "bfd87ae14ccccccd"
+    ],
+    "random": "0000fa815c77497d",
+    "dying": true,
+    "dead": false,
+    "sounds": [
+      {
+        "name": "mob.wolf.death",
+        "volume": "3ecccccd",
+        "pitch": "3f732b26"
+      }
+    ],
+    "items": []
+  }
+]

@@ -1,0 +1,881 @@
+{
+  "schema": 1,
+  "time": 8,
+  "seed": 123,
+  "tile_xyz": [
+    8,
+    64,
+    8
+  ],
+  "draw_xyz_bits": [
+    "3fd8000000000000",
+    "3fe4000000000000",
+    "bfc0000000000000"
+  ],
+  "cases": [
+    {
+      "index": 0,
+      "folder": "case00",
+      "kind": "wall-first-board-only",
+      "block": 68,
+      "metadata": 2,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 00",
+      "seed": 123
+    },
+    {
+      "index": 1,
+      "folder": "case01",
+      "kind": "standing-first-pole-compilation",
+      "block": 63,
+      "metadata": 0,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 01",
+      "seed": 123
+    },
+    {
+      "index": 2,
+      "folder": "case02",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 1,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 02",
+      "seed": 123
+    },
+    {
+      "index": 3,
+      "folder": "case03",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 2,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 03",
+      "seed": 123
+    },
+    {
+      "index": 4,
+      "folder": "case04",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 3,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 04",
+      "seed": 123
+    },
+    {
+      "index": 5,
+      "folder": "case05",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 4,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 05",
+      "seed": 123
+    },
+    {
+      "index": 6,
+      "folder": "case06",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 5,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 06",
+      "seed": 123
+    },
+    {
+      "index": 7,
+      "folder": "case07",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 6,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 07",
+      "seed": 123
+    },
+    {
+      "index": 8,
+      "folder": "case08",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 7,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 08",
+      "seed": 123
+    },
+    {
+      "index": 9,
+      "folder": "case09",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 8,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 09",
+      "seed": 123
+    },
+    {
+      "index": 10,
+      "folder": "case10",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 9,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 10",
+      "seed": 123
+    },
+    {
+      "index": 11,
+      "folder": "case11",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 10,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 11",
+      "seed": 123
+    },
+    {
+      "index": 12,
+      "folder": "case12",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 11,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 12",
+      "seed": 123
+    },
+    {
+      "index": 13,
+      "folder": "case13",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 12,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 13",
+      "seed": 123
+    },
+    {
+      "index": 14,
+      "folder": "case14",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 13,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 14",
+      "seed": 123
+    },
+    {
+      "index": 15,
+      "folder": "case15",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 14,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 15",
+      "seed": 123
+    },
+    {
+      "index": 16,
+      "folder": "case16",
+      "kind": "standing-rotation",
+      "block": 63,
+      "metadata": 15,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 16",
+      "seed": 123
+    },
+    {
+      "index": 17,
+      "folder": "case17",
+      "kind": "wall-facing",
+      "block": 68,
+      "metadata": 3,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 17",
+      "seed": 123
+    },
+    {
+      "index": 18,
+      "folder": "case18",
+      "kind": "wall-facing",
+      "block": 68,
+      "metadata": 4,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 18",
+      "seed": 123
+    },
+    {
+      "index": 19,
+      "folder": "case19",
+      "kind": "wall-facing",
+      "block": 68,
+      "metadata": 5,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 19",
+      "seed": 123
+    },
+    {
+      "index": 20,
+      "folder": "case20",
+      "kind": "saved-wall-fallback",
+      "block": 68,
+      "metadata": 0,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 20",
+      "seed": 123
+    },
+    {
+      "index": 21,
+      "folder": "case21",
+      "kind": "saved-wall-fallback",
+      "block": 68,
+      "metadata": 1,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 21",
+      "seed": 123
+    },
+    {
+      "index": 22,
+      "folder": "case22",
+      "kind": "saved-wall-fallback",
+      "block": 68,
+      "metadata": 6,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 22",
+      "seed": 123
+    },
+    {
+      "index": 23,
+      "folder": "case23",
+      "kind": "saved-wall-fallback",
+      "block": 68,
+      "metadata": 15,
+      "input_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 23",
+      "seed": 123
+    },
+    {
+      "index": 24,
+      "folder": "case24",
+      "kind": "plain-ascii",
+      "block": 63,
+      "metadata": 3,
+      "input_units": [
+        "005300690067006e",
+        "0066006f007500720020006c0069006e00650073",
+        "00310032003300340035",
+        "006c006100730074"
+      ],
+      "loaded_units": [
+        "005300690067006e",
+        "0066006f007500720020006c0069006e00650073",
+        "00310032003300340035",
+        "006c006100730074"
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 24",
+      "seed": 123
+    },
+    {
+      "index": 25,
+      "folder": "case25",
+      "kind": "format-colors",
+      "block": 68,
+      "metadata": 4,
+      "input_units": [
+        "00a700610047007200650065006e",
+        "00a70063005200a700660057",
+        "00a7007a00460061006c006c006200610063006b",
+        "0074007200610069006c00a7"
+      ],
+      "loaded_units": [
+        "00a700610047007200650065006e",
+        "00a70063005200a700660057",
+        "00a7007a00460061006c006c006200610063006b",
+        "0074007200610069006c00a7"
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 25",
+      "seed": 123
+    },
+    {
+      "index": 26,
+      "folder": "case26",
+      "kind": "unicode-bitmap-and-unmapped",
+      "block": 63,
+      "metadata": 7,
+      "input_units": [
+        "00e903a94e2d",
+        "00a7006200e903a9",
+        "0000",
+        ""
+      ],
+      "loaded_units": [
+        "00e903a94e2d",
+        "00a7006200e903a9",
+        "0000",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 26",
+      "seed": 123
+    },
+    {
+      "index": 27,
+      "folder": "case27",
+      "kind": "fifteen-bmp-units",
+      "block": 68,
+      "metadata": 5,
+      "input_units": [
+        "006100620063006400650066006700680069006a006b006c006d006e006f",
+        "006100620063006400650066006700680069006a006b006c006d006e006f0070",
+        "006c",
+        "0069"
+      ],
+      "loaded_units": [
+        "006100620063006400650066006700680069006a006b006c006d006e006f",
+        "006100620063006400650066006700680069006a006b006c006d006e006f",
+        "006c",
+        "0069"
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 27",
+      "seed": 123
+    },
+    {
+      "index": 28,
+      "folder": "case28",
+      "kind": "supplementary-boundaries",
+      "block": 63,
+      "metadata": 9,
+      "input_units": [
+        "006100620063006400650066006700680069006a006b006c006dd83dde00",
+        "006100620063006400650066006700680069006a006b006c006d006ed83dde00",
+        "d83dde00",
+        "00a70061004100420043004400450046004700480049004a004b004c004d"
+      ],
+      "loaded_units": [
+        "006100620063006400650066006700680069006a006b006c006dd83dde00",
+        "006100620063006400650066006700680069006a006b006c006d006ed83d",
+        "d83dde00",
+        "00a70061004100420043004400450046004700480049004a004b004c004d"
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 28",
+      "seed": 123
+    },
+    {
+      "index": 29,
+      "folder": "case29",
+      "kind": "odd-width-candidates",
+      "block": 63,
+      "metadata": 0,
+      "input_units": [
+        "006c",
+        "0027",
+        "0069",
+        "0040"
+      ],
+      "loaded_units": [
+        "006c",
+        "0027",
+        "0069",
+        "0040"
+      ],
+      "edit_row": -1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 29",
+      "seed": 123
+    },
+    {
+      "index": 30,
+      "folder": "case30",
+      "kind": "public-editor-row",
+      "block": 63,
+      "metadata": 0,
+      "input_units": [
+        "006c",
+        "0065006400690074",
+        "00a700610058",
+        "00e9"
+      ],
+      "loaded_units": [
+        "006c",
+        "0065006400690074",
+        "00a700610058",
+        "00e9"
+      ],
+      "edit_row": 0,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 30",
+      "seed": 123
+    },
+    {
+      "index": 31,
+      "folder": "case31",
+      "kind": "public-editor-row",
+      "block": 63,
+      "metadata": 1,
+      "input_units": [
+        "006c",
+        "0065006400690074",
+        "00a700610058",
+        "00e9"
+      ],
+      "loaded_units": [
+        "006c",
+        "0065006400690074",
+        "00a700610058",
+        "00e9"
+      ],
+      "edit_row": 1,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 31",
+      "seed": 123
+    },
+    {
+      "index": 32,
+      "folder": "case32",
+      "kind": "public-editor-row",
+      "block": 63,
+      "metadata": 2,
+      "input_units": [
+        "006c",
+        "0065006400690074",
+        "00a700610058",
+        "00e9"
+      ],
+      "loaded_units": [
+        "006c",
+        "0065006400690074",
+        "00a700610058",
+        "00e9"
+      ],
+      "edit_row": 2,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 32",
+      "seed": 123
+    },
+    {
+      "index": 33,
+      "folder": "case33",
+      "kind": "public-editor-row",
+      "block": 63,
+      "metadata": 3,
+      "input_units": [
+        "006c",
+        "0065006400690074",
+        "00a700610058",
+        "00e9"
+      ],
+      "loaded_units": [
+        "006c",
+        "0065006400690074",
+        "00a700610058",
+        "00e9"
+      ],
+      "edit_row": 3,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 33",
+      "seed": 123
+    },
+    {
+      "index": 34,
+      "folder": "case34",
+      "kind": "editor-outside-array",
+      "block": 68,
+      "metadata": 2,
+      "input_units": [
+        "006c",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "006c",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": 4,
+      "null_font": false,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 34",
+      "seed": 123
+    },
+    {
+      "index": 35,
+      "folder": "case35",
+      "kind": "terminal-null-font",
+      "block": 63,
+      "metadata": 0,
+      "input_units": [
+        "006c006100730074",
+        "",
+        "",
+        ""
+      ],
+      "loaded_units": [
+        "006c006100730074",
+        "",
+        "",
+        ""
+      ],
+      "edit_row": -1,
+      "null_font": true,
+      "partial_bits": "3f000000",
+      "level_name": "Original Sign draw 35",
+      "seed": 123
+    }
+  ]
+}

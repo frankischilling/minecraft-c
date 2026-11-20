@@ -1,0 +1,3920 @@
+{
+  "schema": 1,
+  "scope": "Declared controlled LW arguments to untouched CD/OG; native_candidate is an input subset, not a qualification claim.",
+  "physical_slots_per_controlled_inventory": 64,
+  "cases": [
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "cd-layout-27"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          54
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "cd-layout-54"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          0
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-layout-0"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          8
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-layout-8"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          9
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-layout-9"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          28
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-layout-28"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          -1
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-layout--1"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          -9
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-layout--9"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": true,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-null-player"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-null-storage"
+    },
+    {
+      "target": "cd",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-usable-true"
+    },
+    {
+      "target": "cd",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": false,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-usable-false"
+    },
+    {
+      "target": "og",
+      "operation": "size",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "og-size"
+    },
+    {
+      "target": "og",
+      "operation": "size",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": true,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "og-size-alias"
+    },
+    {
+      "target": "og",
+      "operation": "size",
+      "left": {
+        "sizes": [
+          2147483647
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          1
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-size-overflow"
+    },
+    {
+      "target": "og",
+      "operation": "size",
+      "left": {
+        "sizes": [
+          -4
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-size-negative"
+    },
+    {
+      "target": "og",
+      "operation": "size",
+      "left": null,
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-size-null-left"
+    },
+    {
+      "target": "og",
+      "operation": "size",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-size-null-right"
+    },
+    {
+      "target": "og",
+      "operation": "name",
+      "left": null,
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "og-name-plain"
+    },
+    {
+      "target": "og",
+      "operation": "name",
+      "left": null,
+      "right": null,
+      "shared": false,
+      "name": "Chest \ud83d\udce6",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-name-unicode"
+    },
+    {
+      "target": "og",
+      "operation": "name",
+      "left": null,
+      "right": null,
+      "shared": false,
+      "name": null,
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-name-null"
+    },
+    {
+      "target": "og",
+      "operation": "limit",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 16,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 31,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-limit-left-only"
+    },
+    {
+      "target": "og",
+      "operation": "limit",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-limit-null-right"
+    },
+    {
+      "target": "og",
+      "operation": "limit",
+      "left": null,
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-limit-null-left"
+    },
+    {
+      "target": "og",
+      "operation": "changed",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "og-changed-ordered"
+    },
+    {
+      "target": "og",
+      "operation": "changed",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": true,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "og-changed-alias"
+    },
+    {
+      "target": "og",
+      "operation": "changed",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "changed",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-changed-throws-left"
+    },
+    {
+      "target": "og",
+      "operation": "changed",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "changed",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-changed-throws-right"
+    },
+    {
+      "target": "og",
+      "operation": "changed",
+      "left": null,
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-changed-null-left"
+    },
+    {
+      "target": "og",
+      "operation": "changed",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-changed-null-right"
+    },
+    {
+      "target": "og",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-usable-true-true"
+    },
+    {
+      "target": "og",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": false,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-usable-false-true"
+    },
+    {
+      "target": "og",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": false,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-usable-true-false"
+    },
+    {
+      "target": "og",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": true,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-usable-alias"
+    },
+    {
+      "target": "og",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": false,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-usable-null-right-short-circuit"
+    },
+    {
+      "target": "og",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-usable-null-right"
+    },
+    {
+      "target": "og",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "usable",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-usable-throws-left"
+    },
+    {
+      "target": "og",
+      "operation": "usable",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "usable",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-usable-throws-right"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-0"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 26,
+      "amount": -7,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-26"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-27"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 53,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-53"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": -1,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get--1"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 54,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-54"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": -2147483648,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get--2147483648"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 2147483647,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-2147483647"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27,
+          28
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "1": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-repeated-size-28"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27,
+          26
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "1": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-repeated-size-26"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": true,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-get-alias"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": null,
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-get-null-left"
+    },
+    {
+      "target": "og",
+      "operation": "get",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-get-null-right"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-0"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 26,
+      "amount": -7,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-26"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-27"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 53,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-53"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": -1,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set--1"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 54,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-54"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": -2147483648,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set--2147483648"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 2147483647,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-2147483647"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27,
+          28
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "1": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-repeated-size-28"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27,
+          26
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "1": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-repeated-size-26"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": true,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-set-alias"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": null,
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-set-null-left"
+    },
+    {
+      "target": "og",
+      "operation": "set",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-set-null-right"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-0"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 26,
+      "amount": -7,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-26"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-27"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 53,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-53"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": -1,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split--1"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 54,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-54"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": -2147483648,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split--2147483648"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A",
+          "26": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 2147483647,
+      "amount": 3,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 4
+        },
+        "B": {
+          "id": 5,
+          "count": 7,
+          "damage": 2,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-2147483647"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27,
+          28
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "1": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-repeated-size-28"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27,
+          26
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "1": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-repeated-size-26"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": true,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": false,
+      "profile": "og-split-alias"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": null,
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-split-null-left"
+    },
+    {
+      "target": "og",
+      "operation": "split",
+      "left": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "og-split-null-right"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-storage-first"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "26": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 26,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-storage-last"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "9": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-main-first"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "35": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 53,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-main-last"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 54,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-hotbar-first"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "8": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 62,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-hotbar-last"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          54
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "53": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 53,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-large-storage-last"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "9": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          54
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 54,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-large-main-first"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "8": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          54
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 89,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-large-hotbar-last"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 130,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": false,
+      "profile": "cd-shift-oversized"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-zero"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": -2,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-negative"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "8": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        },
+        "B": {
+          "id": 1,
+          "count": 60,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-reverse-existing"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "9": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 27,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        },
+        "B": {
+          "id": 1,
+          "count": 60,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-forward-existing"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "B",
+          "1": "B",
+          "2": "B",
+          "3": "B",
+          "4": "B",
+          "5": "B",
+          "6": "B",
+          "7": "B",
+          "8": "B",
+          "9": "B",
+          "10": "B",
+          "11": "B",
+          "12": "B",
+          "13": "B",
+          "14": "B",
+          "15": "B",
+          "16": "B",
+          "17": "B",
+          "18": "B",
+          "19": "B",
+          "20": "B",
+          "21": "B",
+          "22": "B",
+          "23": "B",
+          "24": "B",
+          "25": "B",
+          "26": "B",
+          "27": "B",
+          "28": "B",
+          "29": "B",
+          "30": "B",
+          "31": "B",
+          "32": "B",
+          "33": "B",
+          "34": "B",
+          "35": "B"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        },
+        "B": {
+          "id": 5,
+          "count": 64,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-unchanged-full"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "8": "A"
+        }
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 10,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-source-destination-alias"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {
+          "0": "A"
+        }
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {
+        "A": {
+          "id": 256,
+          "count": 2,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "native_candidate": true,
+      "profile": "cd-shift-unstackable"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": -1,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-shift-invalid--1"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 63,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-shift-invalid-63"
+    },
+    {
+      "target": "cd",
+      "operation": "shift",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "cd-shift-empty"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "hp-layout-27"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          54
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": true,
+      "profile": "hp-layout-54"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          0
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-layout-0"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          8
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-layout-8"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          9
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-layout-9"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          28
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-layout-28"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          -1
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-layout--1"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          -9
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-layout--9"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27,
+          54
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-fresh-size-54"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          54,
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-fresh-size-27"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          27
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": true,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-null-player"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": null,
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-null-storage"
+    },
+    {
+      "target": "cd",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          -2147483648
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "cd-layout-min-int"
+    },
+    {
+      "target": "hp",
+      "operation": "construct",
+      "left": {
+        "sizes": [
+          36
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "right": {
+        "sizes": [
+          -2147483648
+        ],
+        "limit": 64,
+        "usable": true,
+        "failure": "none",
+        "slots": {}
+      },
+      "shared": false,
+      "name": "Large chest",
+      "index": 0,
+      "amount": 1,
+      "player_null": false,
+      "stacks": {},
+      "native_candidate": false,
+      "profile": "hp-layout-min-int"
+    }
+  ]
+}

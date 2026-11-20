@@ -41,6 +41,11 @@ then advances each factor by its own caller multiplier. Passing
 overload's second factor of 0.5. There is no final normalization. Zero layers
 still clear output.
 
+For a one-by-one fill, each octave samples the single coordinate directly.
+The calculation still adds the zero indices, uses the same kernel and advances
+both factors in layer order. The fill still clears every element of the supplied
+span, including the suffix of a larger buffer reused by a Biome manager.
+
 Dimensions and their product must fit `INT32_MAX`. Capacity must cover the product,
 and the full output span must fit `SIZE_MAX / sizeof(double)`. Invalid arguments
 return false before changing state, Random or output. Zero-size additive grids

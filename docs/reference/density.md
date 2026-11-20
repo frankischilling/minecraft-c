@@ -1,4 +1,4 @@
-# Normal-dimension density and base blocks
+# Overworld density and base blocks
 
 This note records bytecode evidence for Beta 1.7.3 density composition and the
 following base-block interpolation. Genuine original setup and three fixed
@@ -190,7 +190,7 @@ short-array or incompatible-shape faults need not be executed to define that
 contract. An intervening manager call can change the climate input state.
 
 The [C interface](../../include/mc/world/terrain/terrain.h) implements this fixed
-shape with caller-owned state and borrowed buffers. `mc_terrain_normal_init`
+shape with caller-owned state and borrowed buffers. `mc_terrain_overworld_init`
 constructs all channels and retains Random continuation; density, base and
 combined generation have separate entry points. All validate null pointers,
 minimum lengths and double-span byte-size overflow before mutation. Combined
@@ -221,13 +221,13 @@ for direct `fd` construction.
 Client map storage `hc.b()V` asks for `idcounts` at 23 and skips file reads
 when the handler returns null at 30. `fd.b()Lcl;` accepts the null loader,
 obtains a generator from the provider at 24 and constructs `ok` at 27.
-Provider `xa.a(Lfd;)V` builds climate at 6; `xa.b()Lcl;` constructs
+WorldProvider `xa.a(Lfd;)V` builds climate at 6; `xa.b()Lcl;` constructs
 `yf(world,world.s())` at 15. These are static dependencies for a genuine
 constructor route; successful execution and its resource closure must be
 recorded separately.
 
-Normal provider constructors `rh.<init>()V` / `kp.<init>()V` only call their
-superclass at 1 and return at 4. Provider initialization `xa.e()V` / `os.c()V`
+Overworld WorldProvider constructors `rh.<init>()V` / `kp.<init>()V` only call their
+superclass at 1 and return at 4. WorldProvider initialization `xa.e()V` / `os.c()V`
 fills sixteen brightness floats at 5-44 without calls. World static initializers
 `fd/dj.<clinit>()V` only set static `A` to zero at 1. Chunk-provider constructors
 `ok/jb` construct blank `li/hg` chunks at 49, then store the supplied loader at
@@ -236,11 +236,11 @@ fills sixteen brightness floats at 5-44 without calls. World static initializers
 The server's original `dq implements om` uses writable storage. Its constructor
 creates world/data directories at 28/70 and invokes the session-lock writer at
 87; `dq.f()V` opens the output at 23 and writes at 35. Genuine fresh setup can
-use it with normal provider `kp` and
+use it with Overworld WorldProvider `kp` and
 `dj.<init>(Lom;Ljava/lang/String;JLos;)V`. This constructor reads metadata at
 281, creates fresh metadata at 373 when absent, attaches the provider at 398,
 constructs its chunk provider at 403 and searches for spawn at 415 for a new
-world. Provider `os.a(Ldj;)V` builds climate at 6; `os.b()Lbl;` constructs
+world. WorldProvider `os.a(Ldj;)V` builds climate at 6; `os.b()Lbl;` constructs
 `pk(world,world.l())` at 15. Spawn search `dj.c()V` calls provider `os.a(II)Z`
 at 18, which calls the world's block query `dj.a(II)I` at 6. This route can
 perform chunk generation beyond the numerical observation pass.
@@ -320,7 +320,7 @@ numerical execution/assertion failures return 1.
 | `init seed` | Genuine setup and fresh generator; reset observation buffers. |
 | `state` | All 82 layers' offsets and full 512-entry permutation arrays. |
 | `buffers d e f g h density blocks` | Allocate valid bounded spans with deterministic nonzero prefills. |
-| `density x z` | Refresh actual 16x16 climate, then invoke private normal density. |
+| `density x z` | Refresh actual 16x16 climate, then invoke private Overworld density. |
 | `base x z` | Invoke original base for the matching preceding density and current climate. |
 | `generate x z` | Refresh climate, obtain density, then invoke original base. |
 

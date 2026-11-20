@@ -1,0 +1,13 @@
+case	entry	scene	amount	world	Y	by	au	attacker	callback	scope
+0	damage	fresh_null_survive	1	local	20	0	0	NULL	empty	selected_null_survival
+1	damage	remote_gate	1	remote	20	0	0	NULL	empty	selected_early_gate
+2	damage	dead_gate	1	local	0	0	0	NULL	empty	selected_early_gate
+3	damage	resistance_gate	1	local	20	11	1	NULL	empty	selected_early_gate
+4	damage	stronger_repeat	3	local	20	11	1	NULL	empty	selected_repeat_survival
+5	damage	null_world	1	NULL	20	0	0	NULL	empty	selected_source_failure
+6	damage	null_private_random	1	local	20	0	0	NULL	empty	selected_source_failure
+7	damage	fatal_null	1	local	1	0	0	NULL	empty	after_native_frontier
+8	damage	nonnull_distant_cow	1	local	20	0	0	COW	empty	after_native_frontier
+9	living_environment	periodic_fire20	1	local	20	0	0	NULL	empty	source_parent_route
+10	damage	throwing_sound_observer	1	local	20	0	0	NULL	throw_sound	authored_source_callback_failure
+11	damage	existing_target_null_hit	1	local	20	0	0	NULL	empty	selected_target_preservation

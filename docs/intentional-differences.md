@@ -3,9 +3,16 @@
 | Decision | Approval | Scope |
 | --- | --- | --- |
 | Local usernames; omit Minecraft/Microsoft account authentication | Owner's development prompt | Does not exclude multiplayer handshakes, joining, skins, or any other gameplay behavior. Servers requiring authenticated accounts are outside supported identity operation. |
+| [Native startup for object identity](adr/0001-native-object-identity-profile.md) | Owner decision, 2026-11-16 | Use a native startup stream with the selected lazy hashing algorithm and Java HashSet rules. Concrete hashes and resulting identity-based order may differ from a JVM launch; caching, current Thread consumption, collisions and full collection behavior remain required. |
 
-There are no other approved gameplay exceptions. The MIT license choice covers
+There are no other approved differences in normal runtime behavior. The MIT license choice covers
 new project work and does not grant rights to distribute original resources.
+
+The account-authentication exclusion includes the `kp` session-validation
+worker reached from `Minecraft.k` at tick6000. The native local-name runtime
+omits that request and its response-dependent license-status update. Multiplayer
+handshakes, join messages and other online-resource behavior retain their scopes
+in the table and notes above.
 
 Malformed input uses bounded memory and defined C behavior. Necessary
 departures from original malformed-input behavior are recorded separately
@@ -50,7 +57,7 @@ growth and explicit ownership. Classifier inputs must be finite and within
 original rectangular biome width/width call pattern remains documented evidence,
 not a supported comparison domain or an approved gameplay exception.
 
-The [normal terrain interface](world/terrain.md) accepts the fixed5×17×5 density
+The [Overworld terrain interface](world/terrain.md) accepts the fixed5×17×5 density
 and16×128×16 base-block shapes used by the original normal consumer. Explicit
 span validation replaces original short-array failures. This is an interface
 scope and memory contract; complete generation and valid gameplay remain required.

@@ -1,0 +1,63 @@
+{
+  "format": 1,
+  "ordered_profiles": 39,
+  "worlds_per_vm": 1,
+  "chunks_per_world": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "per_profile_direct_array_resets": {
+    "blocks_fill_byte": 0,
+    "metadata_fill_byte": 0,
+    "sky_light_fill_byte": 15,
+    "block_light_fill_byte": 0,
+    "height_fill_byte": 64,
+    "lm.i": 64,
+    "lm.n": true
+  },
+  "sky_light_meaning": "Fill byte0x0f means even-Y nibble15 and odd-Y nibble0; do not reinterpret as uniform light15.",
+  "per_profile_other_resets": [
+    "declared floor/target/block metadata assignments",
+    "World.B",
+    "live GM.b restored to the original saved Item Random owner",
+    "setSeed on that original saved owner and actual World.r",
+    "fresh Stack351/count/damage/animation5",
+    "observer event list and declared callback mode"
+  ],
+  "not_reset_or_drained_between_profiles": [
+    "World owner identity",
+    "canonical Chunk identities",
+    "pending lighting queues",
+    "scheduled queues",
+    "other residual World state"
+  ],
+  "random_owner_labels": {
+    "item_random_before/after": "Original saved GM.b Random identity at helper startup; remains the sampled owner even after live GM.b is aliased to World.r.",
+    "notification.item_random": "Same original saved Item Random identity, not a lookup of the live GM.b cell.",
+    "world_random_before/after": "The actual World.r Random identity.",
+    "gm_b_is_world_after": "Live GM.b aliases actual World.r at the end of the original call, before restoration."
+  },
+  "callback2": "First real WorldAccess cell callback writes nonfinal GM.b to the existing World.r Random owner, records the declared alias event, and original source resumes; live GM.b restored after call. No Random subclass or original method body replacement.",
+  "scene4": "Reflectively set the actual Crop receiver bn field to0 before the call, to match out-of-height World air and observe ordinary false metadata setter behavior; restore original bn after call. This is a declared alias fixture, not ordinary gameplay.",
+  "limits": [
+    "Rows form one ordered shared-World cohort per VM; they are not independent fresh-World cases.",
+    "The complete five-array byte diffs and Block/metadata maps are measured; other World queues and full World state are unqualified.",
+    "No source-runtime ordering trace was captured with JDI. Bytecode PCs remain static evidence."
+  ],
+  "cohort": "primary independently executed wrapper-only39 ordered cohort; same helper bytes, filtered declared profilefile frozen before two new VM launches",
+  "supporting_history": "supporting-interleaved-78 retains earlier distinct78-row orderedcohort; do not substitute its filteredwrapperrows for this primarydataset"
+}

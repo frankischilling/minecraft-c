@@ -184,7 +184,7 @@ depth arithmetic, atomic preflight, dirty effects, trace order and identity
 visibility. They complement actual original observations and do not independently
 prove original parity. Neither the fixed corpus nor its public fixtures
 establish cache lifecycle, arbitrary provider behavior, propagation, complete
-normal generation or playable client/server parity.
+Overworld generation or playable client/server parity.
 
 ## Exact-source results
 

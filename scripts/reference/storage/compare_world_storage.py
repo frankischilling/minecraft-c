@@ -1100,8 +1100,29 @@ def c_batch(target, parent, commands, label):
 def source_paths():
     names={"CMakeLists.txt",*JAVA_SOURCES,"tests/world/storage/store_probe.c","tests/tools/storage/test_store.py","tests/tools/storage/test_world_storage.py",
            "tests/reference/storage/level_fixtures.json","tests/reference/storage/chunk_storage_fixtures.json"}
-    for folder,pattern in (("include","*.h"),("src","*.c"),("src","*.h"),("scripts/reference/storage","*.py")):
-        names.update(path.relative_to(ROOT).as_posix() for path in (ROOT/folder).rglob(pattern))
+    for folder,patterns in (("include",("*.h",)),("src",("*.c","*.h")),("scripts/reference/storage",("*.py",))):
+        root=ROOT/folder
+        if not root.is_dir():continue
+        pending=[root]
+        while pending:
+            parent=pending.pop()
+            try:
+                with os.scandir(parent) as entries:children=list(entries)
+            except OSError:
+                # Let this Python version's glob retain its existing error
+                # policy if a directory cannot be completely enumerated.
+                for pattern in patterns:
+                    names.update(path.relative_to(ROOT).as_posix() for path in root.rglob(pattern))
+                break
+            for entry in children:
+                path=Path(entry.path)
+                # rglob includes matching directories and links, but does not
+                # descend through directory links. Match with Path so case
+                # handling stays the same on Windows and POSIX.
+                if any(path.match(pattern) for pattern in patterns):names.add(path.relative_to(ROOT).as_posix())
+                try:directory=entry.is_dir(follow_symlinks=False)
+                except OSError:directory=False
+                if directory:pending.append(path)
     # Imported existing storage drivers themselves import these project comparison helpers.
     for folder in ("caves","chunk","cache","generation","climate","noise","surface"):
         directory=ROOT/"scripts/reference"/folder
@@ -1234,7 +1255,13 @@ def validate_work_dir(work_dir, protected=()):
         if selected is None:continue
         path=Path(selected).resolve()
         check(resolved!=path and resolved not in path.parents,"output would contain/alias an attributed input")
-        if work.exists() and path.exists():check(not os.path.samefile(work,path),"output aliases an input")
+        try:
+            work_info=work.stat()
+            path_info=path.stat()
+        except (OSError,ValueError):
+            # Retain the host Path.exists/samefile error policy on failed probes.
+            if work.exists() and path.exists():check(not os.path.samefile(work,path),"output aliases an input")
+        else:check(not os.path.samestat(work_info,path_info),"output aliases an input")
     return work
 
 

@@ -1,0 +1,324 @@
+{
+  "format": 1,
+  "status": "DECLARED_PRELAUNCH_NO_NATIVE_EXECUTION",
+  "profile": "wall-circuit",
+  "assets_root": ".local/imported-icons",
+  "fresh_native_processes": 1,
+  "native_scene_stores": "NONE; only prelaunch saved NBT/Region input authoring",
+  "world": {
+    "chunk_bounds": [
+      -10,
+      10,
+      -10,
+      10
+    ],
+    "chunks": 441,
+    "folder": "alpha",
+    "initial_BlockLight": 0,
+    "name": "Lever world",
+    "native_pending_E_F": "ordinary construction empty; no authored or live schedule insertion",
+    "scene_base": "unchanged Torch PRELAUNCH441 builder; after its audit edit only Chunk0,0",
+    "seed": 123,
+    "terrain_populated": true,
+    "unchanged_chunk_records": 440,
+    "version": 19132,
+    "native_registry_redstone_state": "ordinary Registry/class construction; no repair"
+  },
+  "player": {
+    "HealthShort": 5,
+    "Inventory": [
+      [
+        0,
+        69,
+        2,
+        0
+      ]
+    ],
+    "Motion": [
+      0,
+      0,
+      0
+    ],
+    "Pos": [
+      3.5,
+      66.62000000476837,
+      0.5
+    ],
+    "Rotation": [
+      0.0,
+      26.0
+    ],
+    "feet_y": 65,
+    "selected": 0
+  },
+  "options": {
+    "difficulty": 2,
+    "viewDistance": 3,
+    "ambient_occlusion": "source default true"
+  },
+  "cells": [
+    {
+      "name": "standing-platform",
+      "xyz": [
+        3,
+        64,
+        0
+      ],
+      "id": 1,
+      "metadata": 0
+    },
+    {
+      "name": "wall-column-base",
+      "xyz": [
+        3,
+        64,
+        3
+      ],
+      "id": 3,
+      "metadata": 0
+    },
+    {
+      "name": "wall-support",
+      "xyz": [
+        3,
+        65,
+        3
+      ],
+      "id": 1,
+      "metadata": 0
+    },
+    {
+      "name": "no-Plate",
+      "xyz": [
+        3,
+        66,
+        3
+      ],
+      "id": 0,
+      "metadata": 0
+    },
+    {
+      "name": "placement-target",
+      "xyz": [
+        3,
+        65,
+        2
+      ],
+      "id": 0,
+      "metadata": 0
+    },
+    {
+      "name": "Dust-floor",
+      "xyz": [
+        4,
+        64,
+        2
+      ],
+      "id": 1,
+      "metadata": 0
+    },
+    {
+      "name": "circuit-Dust",
+      "xyz": [
+        4,
+        65,
+        2
+      ],
+      "id": 55,
+      "metadata": 0
+    }
+  ],
+  "saved_column_light_height": [
+    {
+      "HeightMap": 66,
+      "SkyLight_y64_y65": [
+        0,
+        0
+      ],
+      "SkyLight_y66_y67": [
+        15,
+        15
+      ],
+      "xz": [
+        3,
+        3
+      ]
+    },
+    {
+      "HeightMap": 65,
+      "SkyLight_y64_y65": [
+        0,
+        15
+      ],
+      "xz": [
+        4,
+        2
+      ]
+    }
+  ],
+  "source_ray": {
+    "xyz": [
+      3,
+      65,
+      3
+    ],
+    "face": 2,
+    "hit": "Stone north face before placement; actual Lever north face afterward",
+    "destination": [
+      3,
+      65,
+      2
+    ],
+    "placed_attachment_metadata": 4,
+    "derived_at_z3": "eye_y - 2.5*tan(26deg), lies within [65,66]",
+    "derived_at_z2_625": "eye_y - 2.125*tan(26deg), lies within XR metadata4 selection bounds; native hit required"
+  },
+  "SDK_protocol": [
+    "ordinary save selection/load",
+    "require actual declared wall ray and off Dust0",
+    "one RMB down/up pair places Lever69 metadata4 count2->1 used statistic0->1",
+    "one RMB down/up pair activates Lever12 and Dust15",
+    "one LMB down/up pair enters actual mining initial hook and switches Lever4/Dust0 without destruction",
+    "one RMB down/up pair activates Lever12/Dust15 again",
+    "capture all six actual section batches, Store arrays and copied outline batches with default AOtrue",
+    "three continuing returned World/HUD/held frames",
+    "ordinary Save and Quit with actual paused entry",
+    "ordinary reselection of same save into distinct World/Player",
+    "require powered Lever12/Dust15/Inventory69count1 and independent disk verification",
+    "ordinary terminal retirement"
+  ],
+  "input_steps": [
+    {
+      "action": "place",
+      "button": "right",
+      "before": {
+        "target": [
+          0,
+          0
+        ],
+        "dust": [
+          55,
+          0
+        ]
+      },
+      "after": {
+        "target": [
+          69,
+          4
+        ],
+        "dust": [
+          55,
+          0
+        ]
+      }
+    },
+    {
+      "action": "on",
+      "button": "right",
+      "before": {
+        "target": [
+          69,
+          4
+        ],
+        "dust": [
+          55,
+          0
+        ]
+      },
+      "after": {
+        "target": [
+          69,
+          12
+        ],
+        "dust": [
+          55,
+          15
+        ]
+      }
+    },
+    {
+      "action": "off",
+      "button": "left",
+      "before": {
+        "target": [
+          69,
+          12
+        ],
+        "dust": [
+          55,
+          15
+        ]
+      },
+      "after": {
+        "target": [
+          69,
+          4
+        ],
+        "dust": [
+          55,
+          0
+        ]
+      }
+    },
+    {
+      "action": "powered",
+      "button": "right",
+      "before": {
+        "target": [
+          69,
+          4
+        ],
+        "dust": [
+          55,
+          0
+        ]
+      },
+      "after": {
+        "target": [
+          69,
+          12
+        ],
+        "dust": [
+          55,
+          15
+        ]
+      }
+    }
+  ],
+  "geometry_phases": [
+    "before",
+    "placed",
+    "on",
+    "off",
+    "powered",
+    "reloaded"
+  ],
+  "bounds": {
+    "bootstrap_close_milliseconds": 35000,
+    "load_frames": 180,
+    "load_milliseconds": 180000,
+    "outer_seconds": 1200,
+    "settle_draw_frames": 64,
+    "settle_draw_milliseconds": 60000,
+    "tap_transition_frames": 64,
+    "tap_transition_milliseconds": 60000
+  },
+  "claims": [
+    "genuine native SDK/controller/circuit/render/save/reselection path only",
+    "separate original CPU scene-geometry comparison has its own precise operand scope",
+    "no original JVM loaded GUI, full-frame pixels, audio parity, unrestricted circuits or FPS claim"
+  ],
+  "uncontrolled_frontier": [
+    "retain focus/picking/queue/transition failures; no runtime field repair",
+    "a final tick scalar suffix may be unavailable; retain its availability separately",
+    "a future source light or AO operand mismatch is a failure to diagnose, not permission to change live input"
+  ],
+  "source_input_sha256": {
+    "tests/client/startup/test_world_selection_loop.c": "cf7a70d2639ac6ed37a4aff7950b6e3bc244b337247ff33b7fc0c46cacda5690",
+    "tests/tools/client/test_world_selection_loop.py": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f",
+    "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
+    "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
+    "tests/tools/client/test_mining_loop.py": "96f055d9ff7085b136c61db7864b1ae6a98ce5959e761374f6b7a646a1969916",
+    "tests/tools/world/test_source_saving.py": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
+  }
+}

@@ -1,0 +1,333 @@
+{
+  "schema": "NATIVE_SPAWNER_WINDOWS_V1",
+  "date": "2026-11-16",
+  "scope": "One authored saved Pig MobSpawner on native Windows, two ordinary selection epochs with save/reselection, sixteen returned World/HUD frames; no original GL/pixel, HID, Linux desktop, sustained play or FPS qualification.",
+  "sdk": {
+    "checks": 1236,
+    "epochs": 2,
+    "frames": 16,
+    "cache_misses": 1,
+    "cache_hits": 15,
+    "factory_calls": 1,
+    "model_part_returns": 96,
+    "newly_compiled_parts": 6,
+    "newly_compiled_faces": 36,
+    "newly_compiled_vertices": 144,
+    "draw_columns": [
+      "epoch",
+      "frame",
+      "cache_hit",
+      "cache_miss",
+      "factory_calls",
+      "part_returns",
+      "compiled_parts",
+      "compiled_faces",
+      "compiled_vertices"
+    ],
+    "draws": [
+      [
+        0,
+        0,
+        0,
+        1,
+        1,
+        6,
+        6,
+        36,
+        144
+      ],
+      [
+        0,
+        1,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        2,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        3,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        4,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        5,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        6,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        7,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        2,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        3,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        4,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        5,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        6,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        7,
+        1,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0
+      ]
+    ],
+    "same_preview_across_world_replacement": true,
+    "preview_absent_from_live_world_entity_list_each_draw": true,
+    "selected_saved_chunk": {
+      "tile": {
+        "id": [
+          8,
+          "MobSpawner"
+        ],
+        "x": [
+          3,
+          0
+        ],
+        "y": [
+          3,
+          64
+        ],
+        "z": [
+          3,
+          2
+        ],
+        "EntityId": [
+          8,
+          "Pig"
+        ],
+        "Delay": [
+          2,
+          32767
+        ]
+      },
+      "selected_saved_chunk_entities_empty": true,
+      "preview_absent_from_live_world_list_each_draw": true
+    },
+    "native_windows_closed": true,
+    "physical_monitor": {
+      "number": 2,
+      "work": [
+        -1920,
+        0,
+        1920,
+        1040
+      ],
+      "frame_and_canvas": [
+        -1387,
+        280,
+        854,
+        480
+      ]
+    },
+    "images": {
+      "spawner-frame.png": {
+        "bytes": 193236,
+        "sha256": "534be1b92b23acbe5c33d33affabced6ed195d647f9f385790bf6382e9c9d146",
+        "width": 854,
+        "height": 480,
+        "color_type": 6
+      },
+      "spawner-title.png": {
+        "bytes": 32676,
+        "sha256": "1318a7535337b9a486c01c7dad19717d4ebdbefb7c7f64b445393926a45612db",
+        "width": 854,
+        "height": 480,
+        "color_type": 6
+      },
+      "spawner-reloaded.png": {
+        "bytes": 200586,
+        "sha256": "1d14895baa34b5f2050ba3bc337f06b0e1a98f73f2db827ac9c5cd1a440471f5",
+        "width": 854,
+        "height": 480,
+        "color_type": 6
+      }
+    },
+    "selected_input_count": 2356,
+    "selected_input_inventory_sha256": "27074c5763c0a7d5a3c2ac87f16e9516b693ce12a9d7b9de8193c9d58860c753",
+    "selected_current_inputs_unchanged": true,
+    "assets_unchanged": true,
+    "selected_executed_input_sha256": {
+      "native-product/mc_test_spawner_frame.exe": "6791e8c13e695361eaade19d80606db58f0effa5efc12860ea8dde19a38cfe7d",
+      "native-product/OpenAL32.dll": "19defbcda72c472bf078719f444665f887e8bf9206c5ec59d61320d5a8a2146d",
+      "cmake/client_spawner.cmake": "df135d4534c75edb82d9ec020259ed8521dbe474053bd76c886c5b5c3feb292d",
+      "cmake/entity_named_factory.cmake": "96eae485debd0f99b76a6f935d4dd4ef4fafd56361ee800e27a327da8b074fff",
+      "CMakeLists.txt": "eb8099e234ea05a72876b4e7f43b2014d37e000b9d3e25767628452ddd1f8e88",
+      "include/mc/entity/factory/factory.h": "4e2035d3c5632382cb5b68c07e61ff11b9d3239a6d011951626c4bf870b72a5b",
+      "src/client/render/tile_entity_renderer/draw.c": "e37735ef0ce68f6fd8fb1662bc57a2156960e20a3fc7a355f509eca5c4ee0b98",
+      "src/client/render/tile_entity_renderer/spawner.c": "e56e150aed2cf5b5326a3516c2945686618947e86161010bfca4306318b5b4a0",
+      "src/client/world/render_global_entities/body.inc": "dfa750fd64204ad34f32930b98c9608be5a09426353b24b536de06e47cb809a1",
+      "src/client/world/render_global_entities.c": "e6f43cc58957127f43a6c5dd0f639e7322f37fb407e1b75f68925963b6df67ae",
+      "src/client/world/source_chunk_compile.c": "66b2ab5845a9bb3a12401e6f28f9f0ff4a2fe80d4d279b5ad3d003231d4beaf8",
+      "src/client/world/source_chunk_renderer.c": "7e88ee0534d63b3169d4134758b91e42f412df0d6b5819e8487e548ced6baa7c",
+      "src/entity/entity.c": "6678f83aa822020d6c1f8691bed279aab5720231e86f7c5739e9eb256ab35a1f",
+      "src/entity/factory/factory.c": "2ad9f430334078e7ff71e972d6c88bac4865b49b62e586616cced220b009fa79",
+      "tests/client/test_spawner_frame.py": "f7db93569738d92b37de5eec57340beb177348f9f0125c023c24873e2ee04c51",
+      "tests/client/test_spawner_frame_sdk.c": "38ffe2196c3b712878a05b6923f19d35974339dc7c1a0cdd389d4ca195dc1d24"
+    },
+    "private_summary_sha256": "121badb7754e1ae99c05a4c1d22f3bb65c29943f9d8312e8bf4611056da14d68",
+    "private_execution_receipt_sha256": "ccbe2427f1ba987850a03e07878cf1b6380c148dbe431a5c4e0ab6788d1231ec",
+    "stdout": {
+      "bytes": 4933,
+      "sha256": "bc2f9605af3dd5cdae8f21565be00902f2215106c95c2ff9ee1928824487fd3b",
+      "representation": "UTF-8 from subprocess text=True, newline normalized; not raw native pipe bytes"
+    },
+    "stderr_bytes": 0,
+    "continuity_scope": "Existing source_inputs selector: selected src/include/cmake/tests/client/tests/tools/client files, CMake entry, shared decoder, executable and adjacent DLLs; imported assets separately. Excludes compiler, complete dependencies and desktop state."
+  },
+  "named_factory": {
+    "checks": 552,
+    "direct_original_projection": "Three finite Pig constructor projections and same E0 NULL-to-World transition; other checks cover native ownership and failure frontiers, not constructor entropy or abstract-Mob printing.",
+    "exit": 0,
+    "pipe_capture_complete": true,
+    "timed_out": false,
+    "output_overflow": false,
+    "stdout_bytes": 113,
+    "stdout_sha256": "698819d3aace016b968dd634dcfa15145d88343d115a489dea3703b37264a4ce",
+    "stderr_bytes": 0,
+    "reader_errors": {},
+    "selected_input_count": 15,
+    "selected_inputs_unchanged": true,
+    "executable_sha256": "33514f2918fb2f7a7fe6e92edbfdd6fe7872a1802ff88f9ab0373965d600525c",
+    "publication_sha256": "ee873f5a3e455a37cad3d2838a482a282a9114497a1c3a7efd3f511eeeb1d200",
+    "native_header_sha256": "25c57362b782d039cb862361eddc7150e3685efe4a52f46bf6f5eb2a7ba64729",
+    "private_summary_sha256": "e16a43c6da772dc8f71f6fa9897248a1094f2eb132a2125ca1bdcc07a57299a8",
+    "private_raw_receipt_sha256": "106c3fb9c0b2fe9f4962fc824a00db12603d4f7dbca7ab00b16a4c0f2a5cd8f2"
+  },
+  "limits": [
+    "DK additions of more than one new Tile identity per compilation remain an explicit HashSet-order frontier.",
+    "Sign and MovingPiston draw bodies, Spawner spawning and unsupported named constructors remain separate work.",
+    "Late real-GL failure and external preview holds across dispatcher teardown have static review, not new dynamic qualification.",
+    "Initial compile/test/transport failures and earlier shorter captures remain private and are excluded from these fresh qualifying processes."
+  ]
+}

@@ -1,0 +1,2577 @@
+[
+  {
+    "mode": "ore-left-73",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-left-74",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-walk-73",
+    "operation": "walk",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-walk-74",
+    "operation": "walk",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-right-73",
+    "operation": "right",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-right-74",
+    "operation": "right",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-opaque-face-0",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ],
+      [
+        15,
+        65,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-opaque-face-1",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ],
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-opaque-face-2",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ],
+      [
+        15,
+        64,
+        16,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-opaque-face-3",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ],
+      [
+        15,
+        64,
+        14,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-opaque-face-4",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ],
+      [
+        16,
+        64,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-opaque-face-5",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ],
+      [
+        14,
+        64,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-opaque-all",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ],
+      [
+        15,
+        65,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        16,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        14,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        1,
+        0
+      ],
+      [
+        14,
+        64,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-height-0",
+    "operation": "left",
+    "xyz": [
+      15,
+      0,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        0,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-height-127",
+    "operation": "left",
+    "xyz": [
+      15,
+      127,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        127,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-receiver-lit-cell-unlit",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-receiver-unlit-cell-lit",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-height-prepared",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": [
+      [
+        15,
+        15,
+        65
+      ]
+    ]
+  },
+  {
+    "mode": "ore-particle-error-1",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 1,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-particle-error-3",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 3,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-particle-error-5",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 5,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-cell-error",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-range-error",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 1,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-73",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-null-argument-73",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": true,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-display-73",
+    "operation": "display",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-74",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-null-argument-74",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": true,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-display-74",
+    "operation": "display",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-cell-error",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-range-error",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 1,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-world-random-null",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": true,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-world-random-null",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": true,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-provider-null",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": true,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-random-provider-null",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": true,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": true,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-unlit-static-null",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": true,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-lit-static-null",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": true,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-particle-before-lit-static-null",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 1,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": true,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-provider-before-unlit-static-null",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": true,
+    "null_access": false,
+    "null_unlit": true,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-unlit-static-null",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": true,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-lit-static-null",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": true,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-unlit-receiver-lit-static-null",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": true,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-world-scheduled-73",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-world-scheduled-74",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-world-scheduled-cell-error",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-world-scheduled-range-error",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 1,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-world-random-player",
+    "operation": "world-tick",
+    "xyz": [
+      -57,
+      64,
+      -56
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": true,
+    "player": false,
+    "g": -332372929,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        -57,
+        64,
+        -56,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-mining",
+    "operation": "mining",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-mining-particle-error",
+    "operation": "mining",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 1,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-mining-cell-error",
+    "operation": "mining",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-mining-range-error",
+    "operation": "mining",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 1,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-right-use",
+    "operation": "right-use",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-right-use-particle-error",
+    "operation": "right-use",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 1,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-right-use-cell-error",
+    "operation": "right-use",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-right-use-range-error",
+    "operation": "right-use",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 1,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-right-use-sound-error",
+    "operation": "right-use",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 1,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": true,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-null-world-73",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": true,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-null-world-74",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": true,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-left-null-world-73",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": true,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-walk-null-world-73",
+    "operation": "walk",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": true,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-right-null-world-73",
+    "operation": "right",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": true,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-display-null-world-73",
+    "operation": "display",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": true,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-display-null-world-74",
+    "operation": "display",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": true,
+    "null_provider": false,
+    "null_access": false,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-access-null",
+    "operation": "left",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": true,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-access-null-73",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 73,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": true,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        73,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-access-null-74",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": true,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "ore-tick-access-null-cell-74",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 74,
+    "random_seed": 1,
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "particle_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_random": false,
+    "null_tick_random": false,
+    "null_world": false,
+    "null_provider": false,
+    "null_access": true,
+    "null_unlit": false,
+    "null_lit": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        74,
+        5
+      ]
+    ],
+    "heights": [
+      [
+        15,
+        15,
+        65
+      ]
+    ]
+  }
+]

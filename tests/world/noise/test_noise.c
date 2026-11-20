@@ -1,5 +1,7 @@
 #include "mc/world/noise/noise.h"
 
+#include "../../support/java_random.h"
+
 #include <limits.h>
 #include <math.h>
 #include <stdio.h>
@@ -16,23 +18,20 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static uint64_t bits_of(double value)
-{
+static uint64_t bits_of(double value) {
     uint64_t bits;
     _Static_assert(sizeof(bits) == sizeof(value), "binary64 storage required");
     memcpy(&bits, &value, sizeof(bits));
     return bits;
 }
 
-static double from_bits(uint64_t bits)
-{
+static double from_bits(uint64_t bits) {
     double value;
     memcpy(&value, &bits, sizeof(value));
     return value;
 }
 
-static void prefill(double *values, size_t length)
-{
+static void prefill(double *values, size_t length) {
     for (size_t i = 0; i < length; ++i)
         values[i] = (double)((int)(i % 11u) - 5) * 0.125;
 }
@@ -43,8 +42,7 @@ static const uint64_t seed_zero_next[] = {
     UINT64_C(0xa15aa3684d0173ab), UINT64_C(0xd15dcc46f84f5c2a), UINT64_C(0xbdb9ee86519b4e29),
     UINT64_C(0xa1a566f569d0f53c)};
 
-static int test_constructor_state(void)
-{
+static int test_constructor_state(void) {
     static const uint16_t prefix[] = {140, 157, 53, 179, 117, 253, 229, 104,
                                       247, 35,  20, 221, 25,  51,  211, 18};
     mc_java_random random;
@@ -84,8 +82,7 @@ static int test_constructor_state(void)
     return 0;
 }
 
-static int test_scalar_observations(void)
-{
+static int test_scalar_observations(void) {
     static const struct {
         double x;
         double y;
@@ -95,6 +92,7 @@ static int test_scalar_observations(void)
         {0, 0, 0, UINT64_C(0xbfb87d67ea2e10e4)},      {0.25, -0.5, 3, UINT64_C(0xbfcbc67fadfed28b)},
         {0, 0.0625, 0, UINT64_C(0xbfc506c0d62e376f)}, {0, 0.125, 0, UINT64_C(0xbfcb7a0ace42bb80)},
         {0, 0.1875, 0, UINT64_C(0xbfcedece6708ef75)}, {0, 10, 0, UINT64_C(0xbfaec7d155a123c1)}};
+
     mc_java_random random;
     mc_java_random_seed(&random, 0);
     mc_noise_perlin noise;
@@ -124,8 +122,7 @@ static int test_scalar_observations(void)
     return 0;
 }
 
-static int test_bulk_observations(void)
-{
+static int test_bulk_observations(void) {
     static const uint64_t height_one[] = {
         UINT64_C(0xbfe19b172975fc00), UINT64_C(0xbfe70613a0c31139), UINT64_C(0xbfd6187760625228),
         UINT64_C(0xbf99e48a8e3d7e98), UINT64_C(0xbfc0000000000000), UINT64_C(0),
@@ -164,8 +161,7 @@ static int test_bulk_observations(void)
     return 0;
 }
 
-static int test_octave_observations_and_order(void)
-{
+static int test_octave_observations_and_order(void) {
     static const uint64_t expected[] = {UINT64_C(0xc0010366a8e07e76),
                                         UINT64_C(0xbffd290e3bcb77ae),
                                         UINT64_C(0xc00025eb5750107a),
@@ -210,8 +206,7 @@ static int test_octave_observations_and_order(void)
     return 0;
 }
 
-static int test_invalid_constructors(void)
-{
+static int test_invalid_constructors(void) {
     mc_java_random random;
     mc_java_random_seed(&random, 123);
     mc_java_random random_saved = random;
@@ -220,7 +215,7 @@ static int test_invalid_constructors(void)
     memset(&layer, 0xa5, sizeof(layer));
     memcpy(&layer_saved, &layer, sizeof(layer));
     CHECK(!mc_noise_perlin_init(NULL, &random));
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     CHECK(!mc_noise_perlin_init(&layer, NULL));
     CHECK(memcmp(&layer, &layer_saved, sizeof(layer)) == 0);
     mc_noise_octaves noise;
@@ -234,15 +229,14 @@ static int test_invalid_constructors(void)
     CHECK(!mc_noise_octaves_init(&noise, &layer, SIZE_MAX, &random));
     CHECK(memcmp(&noise, &saved, sizeof(noise)) == 0);
     CHECK(memcmp(&layer, &layer_saved, sizeof(layer)) == 0);
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     CHECK(mc_noise_octaves_init(&noise, NULL, 0, &random));
-    CHECK(memcmp(&random, &random_saved, sizeof(random)) == 0);
+    CHECK(mc_test_java_random_equal(&random, &random_saved));
     return 0;
 }
 
 static int expect_grid_failure(const mc_noise_perlin *layer, const mc_noise_octaves *noise,
-                               const mc_noise_grid *grid, size_t capacity)
-{
+                               const mc_noise_grid *grid, size_t capacity) {
     double output[16];
     double saved[16];
     prefill(output, 16);
@@ -254,8 +248,7 @@ static int expect_grid_failure(const mc_noise_perlin *layer, const mc_noise_octa
     return 0;
 }
 
-static int test_grid_validation_and_zero_sizes(void)
-{
+static int test_grid_validation_and_zero_sizes(void) {
     mc_java_random random;
     mc_java_random_seed(&random, 0);
     mc_noise_perlin layer;
@@ -317,8 +310,7 @@ static int test_grid_validation_and_zero_sizes(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_constructor_state() || test_scalar_observations() || test_bulk_observations() ||
         test_octave_observations_and_order() || test_invalid_constructors() ||
         test_grid_validation_and_zero_sizes())

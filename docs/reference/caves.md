@@ -1,4 +1,4 @@
-# Normal cave evidence
+# Overworld cave evidence
 
 These observations cover the normal
 cave stage after surface replacement. The [C interface](../world/caves.md) uses
@@ -24,12 +24,12 @@ supply the evidence.
 | Cave-base constructor | `fv.<init>()V` | `dy.<init>()V` | 21 / 11 |
 | Public neighbor scheduler | `fv.a(Lcl;Lfd;II[B)V` | `dy.a(Lbl;Ldj;II[B)V` | 138 / 74 |
 | Base neighbor hook | `fv.a(Lfd;IIII[B)V` | `dy.a(Ldj;IIII[B)V` | 0 / 1 |
-| Normal cave constructor | `sq.<init>()V` | `lt.<init>()V` | 4 / 3 |
+| Overworld cave constructor | `sq.<init>()V` | `lt.<init>()V` | 4 / 3 |
 | Room wrapper | `sq.a(II[BDDD)V` | `lt.a(II[BDDD)V` | 32 / 21 |
 | Path geometry | `sq.a(II[BDDDFFFIID)V` | `lt.a(II[BDDDFFFIID)V` | 1213 / 653 |
-| Normal neighbor hook | `sq.a(Lfd;IIII[B)V` | `lt.a(Ldj;IIII[B)V` | 250 / 132 |
+| Overworld neighbor hook | `sq.a(Lfd;IIII[B)V` | `lt.a(Ldj;IIII[B)V` | 250 / 132 |
 
-The seven bodies total 895 instructions. The normal generators `yf/pk` construct
+The seven bodies total 895 instructions. The Overworld generators `yf/pk` construct
 the actual `sq/lt` into `u` before their separate explicit-seed `j` and 82 noise
 layers. The full normal entry runs base at 93, surface at 104, caves at 119 and
 chunk finishing at 124. The measured public cave pass reads only the world's
@@ -51,7 +51,7 @@ These differences are preserved in C.
 
 The initial capture used native Temurin 17.0.17+10, untouched pinned JARs and
 project-owned reflective source. It preceded numerical C fixtures. Each case
-constructs a fresh genuine world, then a fresh measured normal generator.
+constructs a fresh genuine world, then a fresh measured Overworld generator.
 Actual climate/base/surface prepare the input before invoking the actual `u`
 public entry. Genuine server constructor setup can itself generate complete
 chunks before the fresh measured generator; those setup effects are inventoried
@@ -249,7 +249,7 @@ It identifies the exact accepted source and hashes all 30 reference manifests.
 The original-only baseline hashes above remain unchanged and separate from this
 later C acceptance.
 
-These results cover the bounded normal cave stage, its finite protected adapters
+These results cover the bounded Overworld cave stage, its finite protected adapters
 and the configured regression suite. Complete chunk finishing, lighting,
 population, other dimensions and save integration remain separate work in the
 [broader parity inventory](../parity.md).

@@ -1,0 +1,148 @@
+{
+  "status": "PASS",
+  "ordinary_fresh_vms": 2,
+  "original_game_class_replacements": 0,
+  "inputs_before": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "tools/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tools/placement-static-verify.py": "7fa89bbad2c83e682c1e372a7f9c2e7438c4ac9bd5aa2803f714ce31f8bb626b",
+    "inputs/placement-static-pins.json": "15733359e5b1c2009edeb47ed96a9980c20767a572e0b3a0be27a028c60273e4",
+    "tools/world-inputs.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "tools/region-inputs.py": "d79b65d5740cd1e2846e4398a517604f20bb5b02696f052126ecf1c64eaad854",
+    "authored/TorchPlacementObservation.java": "57ca0b5623fa2f220bdd30329724dbdd214df82c3f82bf253d2324c9ed7cfc99",
+    "authored/profiles.tsv": "253a0b67fd1b90cfbf6bd56b96f47404adb116d5bd06d54f3362d321324a5ddb",
+    "authored/protocol.json": "4da588560ebac9c6b6eeed7b29e341ccfaf1181eab616fb625f4e00658fe5df1",
+    "authored/declared-inputs.json": "c8df7a000cefac9a2c8d864634b0a903081d27384ce88fdf07f1573b4a776f9c",
+    "authored/entropy.py": "2177e3012c7fe4a6f876300373ab3125421c19af24dab15947195b534d710d9c",
+    "authored/capture_reference.py": "208cc6f8d03b1823e0337665f171450b47e95b1f8fee51cc11daff972410807c",
+    "jdk/java.base.jmod": "6eed1c9a90ae0f2ede839d7e50d8be939c1e8585647be55586e1b3c7390ee723",
+    "authored/source-pins.json": "36ff7b20d8a01ef3b2c916c8c3cedc5c105100468a18db290ef9a8f71d4c0e92"
+  },
+  "inputs_after": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "tools/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tools/placement-static-verify.py": "7fa89bbad2c83e682c1e372a7f9c2e7438c4ac9bd5aa2803f714ce31f8bb626b",
+    "inputs/placement-static-pins.json": "15733359e5b1c2009edeb47ed96a9980c20767a572e0b3a0be27a028c60273e4",
+    "tools/world-inputs.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "tools/region-inputs.py": "d79b65d5740cd1e2846e4398a517604f20bb5b02696f052126ecf1c64eaad854",
+    "authored/TorchPlacementObservation.java": "57ca0b5623fa2f220bdd30329724dbdd214df82c3f82bf253d2324c9ed7cfc99",
+    "authored/profiles.tsv": "253a0b67fd1b90cfbf6bd56b96f47404adb116d5bd06d54f3362d321324a5ddb",
+    "authored/protocol.json": "4da588560ebac9c6b6eeed7b29e341ccfaf1181eab616fb625f4e00658fe5df1",
+    "authored/declared-inputs.json": "c8df7a000cefac9a2c8d864634b0a903081d27384ce88fdf07f1573b4a776f9c",
+    "authored/entropy.py": "2177e3012c7fe4a6f876300373ab3125421c19af24dab15947195b534d710d9c",
+    "authored/capture_reference.py": "208cc6f8d03b1823e0337665f171450b47e95b1f8fee51cc11daff972410807c",
+    "jdk/java.base.jmod": "6eed1c9a90ae0f2ede839d7e50d8be939c1e8585647be55586e1b3c7390ee723",
+    "authored/source-pins.json": "36ff7b20d8a01ef3b2c916c8c3cedc5c105100468a18db290ef9a8f71d4c0e92"
+  },
+  "inputs_unchanged": true,
+  "helpers_before": {
+    "TorchPlacementObservation$1.class": "ce95327f3cb6b5d779b99ee5c755ffef049afc9c329ef4a6346d3397f93da8f4",
+    "TorchPlacementObservation$Observer.class": "94784175f85f992e8790da1da437821ebe65e8e50c408b7766ed6e039ce04005",
+    "TorchPlacementObservation.class": "f1741d59f52b6fd6f61578f312e1536567889bc2624f2c30b4db520a8adeac41"
+  },
+  "helpers_after": {
+    "TorchPlacementObservation$1.class": "ce95327f3cb6b5d779b99ee5c755ffef049afc9c329ef4a6346d3397f93da8f4",
+    "TorchPlacementObservation$Observer.class": "94784175f85f992e8790da1da437821ebe65e8e50c408b7766ed6e039ce04005",
+    "TorchPlacementObservation.class": "f1741d59f52b6fd6f61578f312e1536567889bc2624f2c30b4db520a8adeac41"
+  },
+  "helpers_unchanged": true,
+  "compile": {
+    "returncode": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_raw_private_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runs": [
+    {
+      "returncode": 0,
+      "stdout_sha256": "4a7f8dfaf45a37af1fb87782b0d18edc7b819b005320a4b1a91f0c7a1fa542f8",
+      "stderr_raw_private_sha256": "b812877d1a04fbf16f284863c695f07b8fa13d96ea32a03bf2be5e21013d962e"
+    },
+    {
+      "returncode": 0,
+      "stdout_sha256": "d2bb87b9c7010892600af0504ad4b9f5bbe8ff15c9ff8e94765747463aca4b6c",
+      "stderr_raw_private_sha256": "b812877d1a04fbf16f284863c695f07b8fa13d96ea32a03bf2be5e21013d962e"
+    }
+  ],
+  "world_inputs_before": [
+    {
+      "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+      "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+      "session.lock": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    },
+    {
+      "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+      "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+      "session.lock": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    }
+  ],
+  "world_files_after": [
+    {
+      "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+      "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+      "session.lock": "ff891abf18f79348a5460a4815cf6cf2ac0a4a9e9f9cab06aee2ced196b2755a"
+    },
+    {
+      "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+      "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+      "session.lock": "c1ef09e042d6d985261e865774168a2da620c496a47a9eaa9771c5ce282ecbed"
+    }
+  ],
+  "world_inputs_except_source_session_lock_unchanged": true,
+  "ordinary_vm_flags": [
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow",
+    "--add-opens",
+    "java.base/java.util=ALL-UNNAMED",
+    "--add-opens",
+    "java.base/java.lang=ALL-UNNAMED"
+  ],
+  "removed_environment_names": [],
+  "raw_outputs_identical": false,
+  "logical_outputs_identical": true,
+  "own_entropy_audits": [
+    {
+      "status": "PASS",
+      "drops": 34,
+      "world_float_steps": 136,
+      "math_lcg_steps": 272,
+      "first_math_prestate_unobserved": 1
+    },
+    {
+      "status": "PASS",
+      "drops": 34,
+      "world_float_steps": 136,
+      "math_lcg_steps": 272,
+      "first_math_prestate_unobserved": 1
+    }
+  ],
+  "supporting_guards": [
+    [
+      "TORCH_GUARD\tnetwork=0\tnative=0\texecs=0\tdenied-writes=0\tworld-writes=3\tcanonical-chunks=4\tgame-code-replacements=0\tremote=0"
+    ],
+    [
+      "TORCH_GUARD\tnetwork=0\tnative=0\texecs=0\tdenied-writes=0\tworld-writes=3\tcanonical-chunks=4\tgame-code-replacements=0\tremote=0"
+    ]
+  ],
+  "original_stdout_sha256": "05e5b02107c34d304ab933c8011b0f04c0befa84e694a4b686e780369a555361",
+  "projection": "Portable artifact identities replace absolute paths. ordinary-*.stdout are exact raw captured bytes; entropy values are not compared across processes. original.stdout selects every TORCH/COMPLETE ASCII line with LF. Each ordinary-*.entropy.jsonl selects every ENTROPY-prefixed raw observation with LF and is independently own-stream audited. No entropy field is silently normalized. Private raw stderr hashes retain identity without publishing private helper paths. Source session.lock changes are recorded separately.",
+  "private_freeze_sha256": "c99acb111a8fa7fcea540fc8f29b09f631b3046540a4c9f72cfe2d436f88f311",
+  "private_helper_freeze_sha256": "9846554437944896f98e12453698db9bff57974fdbd3652dbc974acf72e9536a"
+}

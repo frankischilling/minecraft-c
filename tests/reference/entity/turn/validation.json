@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-25",
+  "operation": "client sn.d(FF)V",
+  "code_bytes": 109,
+  "code_sha256": "d8aefac68a65818cea92e7b95ae7c98762fefba0c70c7c642fcc6bd62078fe1f",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "source_sha256": {
+    "include/mc/entity/movement/turn.h": "0de4e3bccc8661d5601fe52a6498a19b1ebad30a313dfaeb19a43fed30ba4a57",
+    "src/entity/movement/turn.c": "78a778063fd2cff2d5bce5b735c58153f34449b1613d06c233b7d78ce910c0ca",
+    "tests/entity/movement/turn_fixture.h": "f4523636ae9b9d2c58805d1cb32132932c8a02a83362bafae11d73c5c5373acf",
+    "tests/entity/movement/test_turn.c": "60c2aa84d81928b51e9ec5a0a6b996bf9b75fe84c5c1c8c5fb192fc94956cf91",
+    "tests/entity/movement/turn_probe.c": "8e350cfb0a0fc9792231d71f99e128d79024b173831922dce6b972eecc55e876",
+    "tests/reference/entity/turn/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tests/reference/entity/turn/compare.py": "90c7bfff053b478562a95394c27473dfebe61d5f1237ffbd47861f180a1c8e2d",
+    "tests/reference/entity/turn/EntityTurnProbe.java": "3d9825aa3cb4a0ff1d9204a50567706bb6fcc57ac1f6be846b776083ef60ea34",
+    "tests/reference/entity/turn/inputs.json": "dad099b13104dcf399c7678c73f4258092b666aee743c2fde77c7690233dec56",
+    "tests/reference/entity/turn/provenance.json": "6d666f78e45987adfb4c4009b2590febe9bf4e61beac10eeb41c63e617259b9d"
+  },
+  "retained_existing_header_manifest_sha256": "31e8526e5081cfbab5548c0e213632c6e2883c2022dc3be9dab1f30dd67daf10",
+  "profiles": {
+    "msvc": {
+      "compiler": "MSVC 19.51.36260.0",
+      "jdk": "Temurin 17.0.17+10",
+      "flags": [
+        "C17",
+        "Debug",
+        "/W4",
+        "/WX",
+        "/fp:strict",
+        "/experimental:c11atomics"
+      ],
+      "native_checks_passed": 137,
+      "cases": 3280,
+      "records_matched": 3330,
+      "projected_fields_matched": 16650,
+      "binary_sha256": {
+        "probe": "301cd4573ab212a1dd1074339b670d01cdf90b7fcedc8595a72b78a63e7ccae7",
+        "unit_test": "05ddeedd351f1ed8e10f7a4e2cc5efbe3bbb364763528ec28bcdcb4554a7901a",
+        "turn_object": "7bb8dbf8c334104dd05e658ed15e5342ed525ef0c88464100c380b85067bfb2f"
+      },
+      "retained_native_libraries": 14,
+      "native_library_manifest_sha256": "d85224d0ff3a4d7a178e9013301319126044803c89acdb5b8fdf80c395d1b7c0",
+      "original_initialized_classes": [
+        "eq",
+        "hl",
+        "ju",
+        "ma",
+        "sn",
+        "ud"
+      ]
+    },
+    "gcc": {
+      "compiler": "GCC 13.3.0",
+      "jdk": "Ubuntu OpenJDK 21.0.12.1+1",
+      "flags": [
+        "C17",
+        "Debug",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Wconversion",
+        "-Wshadow",
+        "-Werror",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer"
+      ],
+      "native_checks_passed": 137,
+      "cases": 3280,
+      "records_matched": 3330,
+      "projected_fields_matched": 16650,
+      "binary_sha256": {
+        "probe": "c4b82afb2cb3189547b29cf9c6921db7ffb540d7b376ac1df9c4a75a8426535c",
+        "unit_test": "304a1cd8083d1fe0ed10c4490675af4c888f482b25a54a7dc961d7908105a7c3",
+        "turn_object": "c9bcd8a4913aa390bde5d80ac11ec5bca27a74e1825e0bb14e574aec43b2d4b5"
+      },
+      "retained_native_libraries": 14,
+      "native_library_manifest_sha256": "cd58b6d2dd84852c70fb71bea949764cb429014348285dc9edab732e9298f0d3",
+      "original_initialized_classes": [
+        "eq",
+        "hl",
+        "ju",
+        "ma",
+        "sn",
+        "ud"
+      ],
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1"
+      }
+    },
+    "clang": {
+      "compiler": "Clang 18.1.3",
+      "jdk": "Ubuntu OpenJDK 21.0.12.1+1",
+      "flags": [
+        "C17",
+        "Debug",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Wconversion",
+        "-Wshadow",
+        "-Werror",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer"
+      ],
+      "native_checks_passed": 137,
+      "cases": 3280,
+      "records_matched": 3330,
+      "projected_fields_matched": 16650,
+      "binary_sha256": {
+        "probe": "faa832d9ea1d8d5391d853e8f35f2232da59949a3225fa5f246be6b58f1fc674",
+        "unit_test": "61e0e669e9adc6e0061ddead26a9863543ff575fa36131c6653e872d709a97c9",
+        "turn_object": "8d57bc52e53578fb92e710807afff30b1c61ebc14b8c5f0db60074e34cf0375c"
+      },
+      "retained_native_libraries": 14,
+      "native_library_manifest_sha256": "fe895e9c536c1d2ad6a9c9edf45c49dcb68f34cd60021c52008934f6b8834f1b",
+      "original_initialized_classes": [
+        "eq",
+        "hl",
+        "ju",
+        "ma",
+        "sn",
+        "ud"
+      ],
+      "environment": {
+        "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1"
+      }
+    }
+  },
+  "float_comparison": "raw bits, including observed NaNs; no tolerance/canonicalization",
+  "root_builds_run": false,
+  "existing_native_libraries_rebuilt": false,
+  "original_game_classes_modified": false,
+  "player_or_world_constructed": false,
+  "format": "clang-format 18.1.3, all five new C/header files passed",
+  "limitations": [
+    "Finite client Item/Falling inherited-turn projection; not all binary32 input tuples or other JVM/compiler profiles.",
+    "Actual native public constructors run; input controls assign only four source public angle fields.",
+    "New source/observers relink retained real construction archives; full integrated root rebuild remains separate.",
+    "Native READY/FP admission is separate from original Java method behavior.",
+    "No server-turn qualification, actual Player construction, platform mouse or camera integration."
+  ],
+  "publication_note": "Metadata JSON normalized to LF; executable source bytes unchanged. Integrated products are verified separately."
+}

@@ -1,6 +1,10 @@
 # Unpopulated normal chunk generation
 
-`mc/world/generation/normal.h` composes the normal generator's direct chunk
+The separate [concrete GAME provider operation](chunk-provider-generation.md) uses
+actual World/Registry owners and preserves reached failure effects. The
+interface below remains the numerical composition with its original preflight.
+
+`mc/world/generation/overworld.h` composes the Overworld generator's direct chunk
 entry: fresh chunk data, climate and biomes, density and base terrain, surface
 replacement, caves, then full finishing. A successful result is a new normal
 chunk that has not been published to the cache. This interface belongs to
@@ -14,8 +18,8 @@ unpublished entry does not establish gameplay parity.
 
 ## Generator and world ownership
 
-Zero-initialize `mc_normal_generator` before calling
-`mc_normal_generator_init(generator, world_seed, manager, trig)`. The manager
+Zero-initialize `mc_overworld_generator` before calling
+`mc_overworld_generator_init(generator, world_seed, manager, trig)`. The manager
 must already be initialized for that same world seed. The generator borrows
 the world's existing mutable `mc_biome_manager`, its allocation owner and an
 initialized immutable `mc_math_trig` table. It neither replaces nor reseeds the
@@ -30,7 +34,7 @@ output owns dynamic storage; it uses the borrowed manager's existing
 descriptors, dependencies, initialized flag or terrain layers. Scratch values
 and Random continuations remain available for inspection between calls.
 
-`mc_normal_generator_free` releases the separate biome output and restores the
+`mc_overworld_generator_free` releases the separate biome output and restores the
 generator's zero state. It accepts `NULL` or a zero-initialized object. It does
 not release the manager, manager arrays `a/b/c/d`, trig table, chunk results or
 block storage. The manager and allocation owner must outlive the generator;
@@ -38,7 +42,7 @@ free the generator before releasing either borrowed owner.
 
 ## Per-call resources and returned chunks
 
-`mc_normal_generation_resources` supplies the current world lighting/cache
+`mc_overworld_generation_resources` supplies the current world lighting/cache
 context, material pairs, opacity table, optional finishing trace and optional
 queue-abort count. The lighting context, generator seed and borrowed biome
 manager must describe the same logical world. Keep all inputs stable and grant
@@ -46,7 +50,7 @@ exclusive access to the generator, manager, world and outputs for the whole
 call. No callbacks may observe or mutate intermediate state.
 
 Supply every original biome identity's current top/filler byte patterns through
-`mc_normal_generator_materials.by_biome`. Its 13 slots use `mc_biome_id - 1`;
+`mc_overworld_generator_materials.by_biome`. Its 13 slots use `mc_biome_id - 1`;
 `MC_BIOME_NONE` has no slot. Hell and Sky still require slots even though the
 normal climate classifier ordinarily selects other identities. All byte
 patterns are accepted. The implementation substitutes no default materials.
@@ -55,7 +59,7 @@ The first 256 opacity entries must be nonnegative signed integers. Additional
 entries are ignored. The supplied material and opacity snapshots are borrowed
 for the call and remain unchanged.
 
-`mc_normal_generator_generate` receives a caller-owned `mc_normal_chunk` and
+`mc_overworld_generator_generate` receives a caller-owned `mc_overworld_chunk` and
 separate mutable block storage of at least 32768 bytes. The result embeds both
 `mc_chunk_state` and `mc_chunk_data`; its state points to that embedded data,
 which borrows the supplied blocks. Keep the wrapper at a stable address while
@@ -80,7 +84,7 @@ Each successful call performs these stages in order:
    `chunk_z * 16`. The borrowed manager updates processed temperature `a`,
    processed rainfall `b` and raw auxiliary noise `c`. The generator receives
    the biome identities in its separate output; manager `d` remains untouched.
-4. Compute normal density and base blocks from that processed climate and the
+4. Compute Overworld density and base blocks from that processed climate and the
    retained terrain layers. Retain density and octave scratch for inspection.
 5. Select each column's current top/filler material pair and apply the original
    surface operation using the chunk-seeded generator Random.
@@ -124,11 +128,11 @@ and follows the [finishing contract](finishing.md).
 
 | Status | Meaning and retained state |
 | --- | --- |
-| `MC_NORMAL_GENERATOR_OK` | The complete chunk and final Random states are usable. |
-| `MC_NORMAL_GENERATOR_INVALID_ARGUMENT` | Invalid input or imported state; preserves caller outputs, generator, manager, world, trace and allocation accounting. |
-| `MC_NORMAL_GENERATOR_LIMIT` | Insufficient queue/trace reserve or biome allocation budget; preserves the same state. |
-| `MC_NORMAL_GENERATOR_ALLOCATION_FAILED` | A required biome allocation failed; preserves the same state. |
-| `MC_NORMAL_GENERATOR_STATE_ERROR` | A defensive downstream invariant failed; partial effects may remain and the result is unusable. Random continuations are not committed. |
+| `MC_OVERWORLD_GENERATOR_OK` | The complete chunk and final Random states are usable. |
+| `MC_OVERWORLD_GENERATOR_INVALID_ARGUMENT` | Invalid input or imported state; preserves caller outputs, generator, manager, world, trace and allocation accounting. |
+| `MC_OVERWORLD_GENERATOR_LIMIT` | Insufficient queue/trace reserve or biome allocation budget; preserves the same state. |
+| `MC_OVERWORLD_GENERATOR_ALLOCATION_FAILED` | A required biome allocation failed; preserves the same state. |
+| `MC_OVERWORLD_GENERATOR_STATE_ERROR` | A defensive downstream invariant failed; partial effects may remain and the result is unusable. Random continuations are not committed. |
 
 Biome sampling is the only allocating stage. Its existing allocator stages all
 needed replacements before committing any buffer or accounting change. Fixed

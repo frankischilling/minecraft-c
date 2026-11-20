@@ -7,8 +7,14 @@
 
 enum { PROBE_BYTES = 2 * 1024 * 1024 };
 
-static int digit(int value)
-{
+static const char *transport_status(mc_stored_chunk_status status) {
+    /* This reader's existing transport retains its recorded status spelling;
+     * the current diagnostic API uses the canonical TileEntity name. */
+    return status == MC_STORED_CHUNK_UNSUPPORTED_EDIT ? "unsupported entity or tile edit"
+                                                      : mc_stored_chunk_status_string(status);
+}
+
+static int digit(int value) {
     if (value >= '0' && value <= '9')
         return value - '0';
     if (value >= 'a' && value <= 'f')
@@ -16,8 +22,7 @@ static int digit(int value)
     return -1;
 }
 
-static bool hex_bytes(const char *text, uint8_t *out, size_t length)
-{
+static bool hex_bytes(const char *text, uint8_t *out, size_t length) {
     if (strlen(text) != length * 2u)
         return false;
     for (size_t i = 0; i < length; ++i) {
@@ -30,8 +35,7 @@ static bool hex_bytes(const char *text, uint8_t *out, size_t length)
     return true;
 }
 
-static bool time_bits(const char *text, int64_t *out)
-{
+static bool time_bits(const char *text, int64_t *out) {
     uint8_t bytes[8];
     if (!hex_bytes(text, bytes, sizeof(bytes)))
         return false;
@@ -42,21 +46,28 @@ static bool time_bits(const char *text, int64_t *out)
     return true;
 }
 
-static void print_hex(const uint8_t *bytes, size_t length)
-{
-    for (size_t i = 0; i < length; ++i)
-        printf("%02x", (unsigned int)bytes[i]);
+static void print_hex(const uint8_t *bytes, size_t length) {
+    static const char digits[] = "0123456789abcdef";
+    char text[256];
+    for (size_t offset = 0; offset < length;) {
+        size_t count = length - offset < sizeof(text) / 2u ? length - offset : sizeof(text) / 2u;
+        for (size_t i = 0; i < count; ++i) {
+            const uint8_t byte = bytes[offset + i];
+            text[2u * i] = digits[byte >> 4u];
+            text[2u * i + 1u] = digits[byte & 15u];
+        }
+        fwrite(text, 1, 2u * count, stdout);
+        offset += count;
+    }
 }
 
-static void array(const char *name, const uint8_t *bytes, size_t length)
-{
+static void array(const char *name, const uint8_t *bytes, size_t length) {
     printf("\"%s\":{\"length\":%zu,\"values\":\"", name, length);
     print_hex(bytes, length);
     fputs("\"}", stdout);
 }
 
-static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name)
-{
+static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name) {
     uint16_t units[16];
     size_t length = strlen(name);
     for (size_t i = 0; i < length; ++i)
@@ -64,17 +75,15 @@ static const mc_nbt_tag *field(const mc_nbt_tag *parent, const char *name)
     return mc_nbt_compound_get(parent, units, length);
 }
 
-static bool opaque_records(const mc_stored_chunk *owner)
-{
+static bool opaque_records(const mc_stored_chunk *owner) {
     const mc_nbt_tag *level = field(mc_stored_chunk_root(owner), "Level");
     const mc_nbt_tag *entities = field(level, "Entities");
-    const mc_nbt_tag *tiles = field(level, "TileEntities");
+    const mc_nbt_tag *tile_entities = field(level, "TileEntities");
     return (entities != NULL && entities->value.list.length != 0) ||
-           (tiles != NULL && tiles->value.list.length != 0);
+           (tile_entities != NULL && tile_entities->value.list.length != 0);
 }
 
-static void state(const mc_chunk_state *value)
-{
+static void state(const mc_chunk_state *value) {
     const mc_chunk_data *data = value->data;
     printf("{\"coordinates\":[%" PRId32 ",%" PRId32 "],\"blank\":%s,\"flags\":{\"c\":%s,\"n\":%s,"
            "\"o\":%s,\"p\":%s,\"q\":%s},\"last_save_time\":\"%016" PRIx64 "\",\"data\":{",
@@ -94,8 +103,7 @@ static void state(const mc_chunk_state *value)
     printf(",\"minimum_height\":%" PRId32 "}}", data->minimum_height);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     bool build = argc == 6 && strcmp(argv[1], "build") == 0;
     if (!build && !(argc == 3 && strcmp(argv[1], "decode") == 0)) {
         fputs("usage: chunk_probe decode MAP|- | build TIME_HEX MAP|- keep|fresh "
@@ -143,7 +151,7 @@ int main(int argc, char **argv)
         mc_stored_chunk_decode(input, length, &limits, &owner, &consumed, &error);
     free(input);
     if (status != MC_STORED_CHUNK_OK) {
-        printf("{\"status\":\"%s\",\"field\":", mc_stored_chunk_status_string(status));
+        printf("{\"status\":\"%s\",\"field\":", transport_status(status));
         if (error.field == NULL)
             fputs("null", stdout);
         else
@@ -160,7 +168,7 @@ int main(int argc, char **argv)
         status = mc_stored_chunk_normalize(owner, map, sizeof(map));
         if (status != MC_STORED_CHUNK_OK) {
             mc_stored_chunk_free(owner);
-            printf("{\"status\":\"%s\"}\n", mc_stored_chunk_status_string(status));
+            printf("{\"status\":\"%s\"}\n", transport_status(status));
             return ferror(stdout) ? 2 : 0;
         }
     }
@@ -174,7 +182,7 @@ int main(int argc, char **argv)
         status = mc_stored_chunk_create(mc_stored_chunk_state(owner), &limits, &fresh, &error);
         if (status != MC_STORED_CHUNK_OK) {
             mc_stored_chunk_free(owner);
-            printf("{\"status\":\"%s\"}\n", mc_stored_chunk_status_string(status));
+            printf("{\"status\":\"%s\"}\n", transport_status(status));
             return ferror(stdout) ? 2 : 0;
         }
     }
@@ -247,8 +255,7 @@ int main(int argc, char **argv)
             }
         }
     }
-    printf("{\"status\":\"%s\",\"consumed\":%zu,\"chunk\":", mc_stored_chunk_status_string(status),
-           consumed);
+    printf("{\"status\":\"%s\",\"consumed\":%zu,\"chunk\":", transport_status(status), consumed);
     state(view);
     fputs(",\"nbt_hex\":", stdout);
     if (encoded == NULL)

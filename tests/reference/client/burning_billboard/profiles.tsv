@@ -1,0 +1,8 @@
+case	kind width height bv x y z yaw partial
+0 cn constructor constructor 20 0 0 0 30 0.375
+1 uw constructor constructor 20 0 0 0 30 0.375
+2 xt constructor constructor 20 0 0 0 30 0.375
+3 gb constructor constructor 20 0 0 0 30 0.375
+4 cn constructor 0 20 0 0 0 30 0.375
+5 gb 1 1.4 20 0 0 0 30 0.375
+6 gb 1 2.1 20 0 0 0 30 0.375

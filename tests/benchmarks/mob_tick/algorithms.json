@@ -1,0 +1,32 @@
+{
+  "schema": "MOB_DIAGNOSTIC_CAUSAL_ADAPTERS_V1",
+  "legacy_algorithm_source_commit": "2d9ea870c8be4566d02328e46813cc020743f78e",
+  "scope": "Legacy diagnostic algorithms on identical final common source/interfaces; not historical whole-product timing. Four crossed World-tail/dispatch object combinations, one identical workload object, identical ordered archives. Production source calls, ownership, native fallback entry and workspace cleanup remain common.",
+  "production_inputs_at_generation": {
+    "src/world/runtime/entity_tick.c": "4ab9706dcfc82f4477720ff6e4fa697576ba58b74cbf360d16870d86c9cc8920",
+    "src/world/runtime/entity_tick_dispatch.c": "87271e6bb0cdd04daf131e3ff8b0cf6f4ebc7a08b240d59ec6c49aacdf7863ee"
+  },
+  "legacy_algorithms": {
+    "world_tail_sha256": "b46f5f5376125b862cffe321b00916e6cb4a2a969dec6d6365707f1fa6a02bb7",
+    "dispatch_call_sha256": "54371371dcc5b5d841fa0edb66e2c2fa8383891d07ee150a57ae57ecd9edd1d6"
+  },
+  "common_observer": "Both Mob dispatch algorithms call the identical single-workload passive reservation counter after the actual Mob invocation; no source getter, allocation or gameplay decision is added.",
+  "adapters": {
+    "tests/benchmarks/mob_tick/dispatch_candidate.c": {
+      "bytes": 14861,
+      "sha256": "024e2843bfc1c9522cc6abdbda698161e9b80a4c31705d90889217be5d5f79ee"
+    },
+    "tests/benchmarks/mob_tick/dispatch_legacy.c": {
+      "bytes": 14358,
+      "sha256": "e872511d34fcc2615469529d83f31769ae43c17e84db12631372c161079431d4"
+    },
+    "tests/benchmarks/mob_tick/world_candidate.c": {
+      "bytes": 249,
+      "sha256": "a407a4eb41b1f0108cae5baf4bf5bf7fc778783e8f78363f99b7742d29e469cd"
+    },
+    "tests/benchmarks/mob_tick/world_legacy.c": {
+      "bytes": 12222,
+      "sha256": "41a12a33552f7d428b993fbc42cafa234a3187c6ba103448d51cb98efc63cf9f"
+    }
+  }
+}

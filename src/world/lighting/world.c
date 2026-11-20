@@ -2,14 +2,12 @@
 
 #include "mc/core/java/java.h"
 
-static bool queue_valid(const mc_light_queue *queue)
-{
+static bool queue_valid(const mc_light_queue *queue) {
     return queue != NULL && queue->capacity <= MC_LIGHT_QUEUE_LIMIT &&
            queue->count <= queue->capacity && (queue->capacity == 0 || queue->entries != NULL);
 }
 
-bool mc_world_lighting_validate(const mc_world_lighting *world)
-{
+bool mc_world_lighting_validate(const mc_world_lighting *world) {
     if (world == NULL || world->enqueue_depth == NULL || !queue_valid(world->queue) ||
         !mc_chunk_cache_validate(world->cache)) {
         return false;
@@ -22,8 +20,7 @@ bool mc_world_lighting_validate(const mc_world_lighting *world)
     return true;
 }
 
-bool mc_world_height(const mc_chunk_cache *cache, int32_t x, int32_t z, int32_t *height)
-{
+bool mc_world_height(const mc_chunk_cache *cache, int32_t x, int32_t z, int32_t *height) {
     if (cache == NULL || height == NULL || cache->count > cache->capacity ||
         (cache->capacity > 0 && cache->entries == NULL)) {
         return false;
@@ -46,8 +43,7 @@ bool mc_world_height(const mc_chunk_cache *cache, int32_t x, int32_t z, int32_t 
 }
 
 mc_light_submit_result mc_world_light_submit(mc_world_lighting *world,
-                                             const mc_light_region *region, bool coalesce)
-{
+                                             const mc_light_region *region, bool coalesce) {
     if (world == NULL || world->cache == NULL || world->enqueue_depth == NULL ||
         !queue_valid(world->queue) || region == NULL ||
         (region->kind != MC_LIGHT_SKY && region->kind != MC_LIGHT_BLOCK)) {

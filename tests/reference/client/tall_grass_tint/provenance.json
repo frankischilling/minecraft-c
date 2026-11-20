@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "scope": "28 unchanged RU/QM calls per fresh VM; real saved FD World, registered TallGrass and real QM constructors. Declared metadata/climate/palette inputs. No rendering, movement, full mining/harvest or constructor-entropy comparison.",
+  "fresh_vms": 2,
+  "rows_per_vm": 28,
+  "inputs_unchanged": true,
+  "source_inputs": {
+    "tests/reference/client/tall_grass_tint/TallGrassTintObservation.java": {
+      "bytes": 6943,
+      "sha256": "6760196af8f108e3c69c79b044ccfff60125192098968b4381b3f826b93eba70"
+    },
+    "tests/reference/client/tall_grass_tint/inputs.py": {
+      "bytes": 1106,
+      "sha256": "cce71865392733564978c2889089c9cdc31ec69a7409247b65e88019c2f96d86"
+    },
+    "tests/reference/client/tall_grass_tint/profiles.tsv": {
+      "bytes": 684,
+      "sha256": "cc8185d7fa7041da757fc7b932a0b2519bae275dae7348f174cbccc0c299065f"
+    },
+    "tests/reference/client/tall_grass_tint/capture_reference.py": {
+      "bytes": 7016,
+      "sha256": "7a1e489a25a48c3a7e72db3fb51a96e116853e9f8b38f281dc192cb5e2c220bf"
+    },
+    "tests/reference/client/controller/capture.py": {
+      "bytes": 8065,
+      "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+    },
+    "tests/reference/client/controller/classfile.py": {
+      "bytes": 2578,
+      "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+    },
+    "tests/reference/client/picking/observe.py": {
+      "bytes": 6420,
+      "sha256": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23"
+    },
+    "tests/tools/client/test_picking.py": {
+      "bytes": 6599,
+      "sha256": "d79b65d5740cd1e2846e4398a517604f20bb5b02696f052126ecf1c64eaad854"
+    }
+  },
+  "runtime_inputs": {
+    "client_jar": {
+      "bytes": 1465375,
+      "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+    },
+    "lwjgl-2.9.0.jar": {
+      "bytes": 994633,
+      "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+    },
+    "lwjgl_util-2.9.0.jar": {
+      "bytes": 173360,
+      "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+    },
+    "jinput-2.0.5.jar": {
+      "bytes": 208338,
+      "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+    },
+    "jutils-1.0.0.jar": {
+      "bytes": 7508,
+      "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+    },
+    "java.exe": {
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "javac.exe": {
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "modules": {
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "jvm.dll": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    }
+  },
+  "files": {
+    "profiles.tsv": {
+      "bytes": 684,
+      "sha256": "cc8185d7fa7041da757fc7b932a0b2519bae275dae7348f174cbccc0c299065f"
+    },
+    "observations.tsv": {
+      "bytes": 5018,
+      "sha256": "9638e0482c07c9fd4f16075d187bebd018579ea17a63ca9fe656cc0736ddfe04"
+    },
+    "guards.tsv": {
+      "bytes": 130,
+      "sha256": "d8988c6097b88f28352cc03d241fea1c2e06f4376fdb48c772443cceada20ffc"
+    },
+    "source-pins.json": {
+      "bytes": 96087,
+      "sha256": "66e2900951bb5c84b3eb990186dd9ccb3da8827ad88bcc603c371626e82eb488"
+    },
+    "schema.json": {
+      "bytes": 1245,
+      "sha256": "01807cf99773846c49e9400490d4b681c7a7a51fb3dc82aaa3b43afc257a91cf"
+    }
+  },
+  "runs": [
+    {
+      "exit": 0,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_sha256": "5f1741b23900354e75920b0011816869072ddcd2fd1cb6aca7819bf668e632a3",
+      "stderr_sha256": "c92f1a2077dfefc8c6a9b77f8a80f8c3dddae9cfc6e858aac83bef044b6417ca"
+    },
+    {
+      "exit": 0,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_sha256": "5f1741b23900354e75920b0011816869072ddcd2fd1cb6aca7819bf668e632a3",
+      "stderr_sha256": "c92f1a2077dfefc8c6a9b77f8a80f8c3dddae9cfc6e858aac83bef044b6417ca"
+    }
+  ],
+  "guard_scope": "Zero actual source connect/listen/link attempts; then one real denied connect, listener bind and native link in each VM. JDK socket owners prepared before guard installation.",
+  "world_scope": "Original saved inputs immutable except original session.lock; metadata writes remain in genuine in-memory Chunks, no tick/save/draw occurs.",
+  "private_capture_sha256": "17af9fa20a555df62cefc800d3c2626afaca55b6d3604610985b9f1426072e02",
+  "limits": [
+    "Prepared fixtures qualify the projected finite callers and values, not every possible owner or failure.",
+    "IA/JH columns observe actual array presence, not a second class-initialization flag.",
+    "No original class bytes, JARs, assets, screenshots, save payloads, addresses or private paths are published."
+  ]
+}

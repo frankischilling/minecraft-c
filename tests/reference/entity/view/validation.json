@@ -1,0 +1,40 @@
+{
+  "scope": "Authored receiver fields; actual original LS.e/f/ac + IN/BT bodies only",
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "compile_command": [
+    "C:/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot/bin/javac.exe",
+    "-cp",
+    "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+    "-d",
+    "C:\\Users\\admin\\minecraft\\.local\\entity-view-original-20261029",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\view\\ViewObservation.java"
+  ],
+  "command": [
+    "C:/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot/bin/java.exe",
+    "-Xint",
+    "-cp",
+    "C:\\Users\\admin\\minecraft\\.local\\entity-view-original-20261029;C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+    "ViewObservation",
+    "C:\\Users\\admin\\minecraft\\.local\\entity-view-original-20261029\\inputs.tsv"
+  ],
+  "source_sha256": "533ed9790475d58c33ec4c6442ee079d7cd33f2fa71ab45d9b6fff13411e7c41",
+  "input_sha256": "33daa60eb80147e2a432a0996b19f1ea122808feaf35156b7e0d25c205653b95",
+  "output_sha256": "03d3bb0bb5e24c1f69ff2f26ab3909d10c36d46069306983401100c58da54897",
+  "cases": 192,
+  "jdk": [
+    "openjdk version \"17.0.17\" 2025-10-21",
+    "OpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)",
+    "OpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)"
+  ],
+  "native_qualification": {
+    "result": "PASS",
+    "profiles": [
+      "Windows MSVC x64 Debug",
+      "Linux x86-64 GCC13 ASan/UBSan",
+      "Linux x86-64 Clang18 ASan/UBSan"
+    ],
+    "scope": "Finite frozen observations and native ownership controls; four new public CTests executed together",
+    "runtime_requires_original_jar": false,
+    "linux_leak_detection": true
+  }
+}

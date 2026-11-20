@@ -1,0 +1,616 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "observation_date": "2026-11-16",
+  "scope": "Original Sign constructor and NBT-object components; no native, factory, World, GL, editor, network, binary NBT or region-save qualification",
+  "jdk": {
+    "implementor": "Eclipse Adoptium",
+    "implementor_version": "Temurin-17.0.17+10",
+    "runtime": "17.0.17+10",
+    "os": "Windows 10",
+    "arch": "amd64"
+  },
+  "hidden_jvm_option_environment": {
+    "JAVA_TOOL_OPTIONS": "absent-or-empty",
+    "_JAVA_OPTIONS": "absent-or-empty",
+    "JDK_JAVA_OPTIONS": "absent-or-empty"
+  },
+  "cohorts": [
+    {
+      "name": "main",
+      "status": "PASS",
+      "scope": "22 original Sign constructor/NBT-object component cases; no native/World/GL/factory/binary-save qualification.",
+      "private_receipt_fingerprint": {
+        "bytes": 11751,
+        "sha256": "0080e98fd9643e11c2725bf4f0303bc958cce5f4948897edfc32af43a46b3f6c"
+      },
+      "cases_per_vm": 22,
+      "selected_calls_per_vm": 101,
+      "rows_per_vm": 126,
+      "raw_outputs_equal": true,
+      "inputs": {
+        "b1.7.3.jar": {
+          "before": {
+            "bytes": 1465375,
+            "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+          },
+          "after": {
+            "bytes": 1465375,
+            "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+          }
+        },
+        "java.exe": {
+          "before": {
+            "bytes": 50344,
+            "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+          },
+          "after": {
+            "bytes": 50344,
+            "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+          }
+        },
+        "javac.exe": {
+          "before": {
+            "bytes": 24232,
+            "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+          },
+          "after": {
+            "bytes": 24232,
+            "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+          }
+        },
+        "release": {
+          "before": {
+            "bytes": 1667,
+            "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+          },
+          "after": {
+            "bytes": 1667,
+            "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+          }
+        },
+        "executed-main-controller.py": {
+          "before": {
+            "bytes": 7904,
+            "sha256": "baad24ca28aa1e3019a45899d61bd73dcd83eb59a86908efb16b7f1ef5b833d0"
+          },
+          "after": {
+            "bytes": 7904,
+            "sha256": "baad24ca28aa1e3019a45899d61bd73dcd83eb59a86908efb16b7f1ef5b833d0"
+          }
+        },
+        "bounded-transport.py": {
+          "before": {
+            "bytes": 8065,
+            "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+          },
+          "after": {
+            "bytes": 8065,
+            "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+          }
+        },
+        "SignNbtObservation.java": {
+          "before": {
+            "bytes": 23455,
+            "sha256": "f52c6c9b5b4bd77ce4df4979e4605603b114590410f0c0a7a69795be4e15df47"
+          },
+          "after": {
+            "bytes": 23455,
+            "sha256": "f52c6c9b5b4bd77ce4df4979e4605603b114590410f0c0a7a69795be4e15df47"
+          }
+        },
+        "JAVA-FREEZE.json": {
+          "before": {
+            "bytes": 637,
+            "sha256": "1abe793994805036a00b05497a04b64d3bfc580107a5c6db0ae30ad693ee0a1d"
+          },
+          "after": {
+            "bytes": 637,
+            "sha256": "1abe793994805036a00b05497a04b64d3bfc580107a5c6db0ae30ad693ee0a1d"
+          }
+        },
+        "PREPARATION.json": {
+          "before": {
+            "bytes": 895,
+            "sha256": "a27dcdb43d87e2f4b37a02bbea911d6d9dbcff8e5f37d06e03c1b5e052acebd8"
+          },
+          "after": {
+            "bytes": 895,
+            "sha256": "a27dcdb43d87e2f4b37a02bbea911d6d9dbcff8e5f37d06e03c1b5e052acebd8"
+          }
+        },
+        "PROTOCOL.md": {
+          "before": {
+            "bytes": 9751,
+            "sha256": "243cadb6735e35da07ddd9baeaee1b8eb7baad1e797962425bbef751e8021d9f"
+          },
+          "after": {
+            "bytes": 9751,
+            "sha256": "243cadb6735e35da07ddd9baeaee1b8eb7baad1e797962425bbef751e8021d9f"
+          }
+        },
+        "inspect_classes.py": {
+          "before": {
+            "bytes": 4549,
+            "sha256": "81274b0dcf91e7f40f08194054f9ae678460ea4e2a118ac93c222ae9ece78475"
+          },
+          "after": {
+            "bytes": 4549,
+            "sha256": "81274b0dcf91e7f40f08194054f9ae678460ea4e2a118ac93c222ae9ece78475"
+          }
+        },
+        "source-pins-v2.json": {
+          "before": {
+            "bytes": 54990,
+            "sha256": "727e72f95ad19082644a16c56ca8d65d8369965676cd990d71b176b10a089ffe"
+          },
+          "after": {
+            "bytes": 54990,
+            "sha256": "727e72f95ad19082644a16c56ca8d65d8369965676cd990d71b176b10a089ffe"
+          }
+        }
+      },
+      "compiled_helper_products": {
+        "SignNbtObservation$1.class": {
+          "bytes": 1867,
+          "sha256": "2aa5c5c9231beae1eade6508754b6f450bfda6622a078e3cfb179bb852c0d31b"
+        },
+        "SignNbtObservation$SourceCall.class": {
+          "bytes": 283,
+          "sha256": "debec2d77e3f727c690a26fc6ad0591fb496a808c6fd20d5597325b881ce9810"
+        },
+        "SignNbtObservation.class": {
+          "bytes": 22077,
+          "sha256": "91a63259bd22f9411f74b0af3298fc8609e5051df3ddfea232ed4d6683aabeb7"
+        }
+      },
+      "product_bracket": "Controller checks every product after every child; main cohort also records final product hashes",
+      "compiler": {
+        "exit": 0,
+        "timeout_seconds": 60,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576,
+        "command_roles": [
+          "SELECTED_JAVAC",
+          "--release",
+          "17",
+          "-encoding",
+          "UTF-8",
+          "-cp",
+          "UNCHANGED_CLIENT_JAR",
+          "-d",
+          "AUTHORED_CLASSES",
+          "SignNbtObservation.java"
+        ],
+        "stdout_artifact": null,
+        "stderr_artifact": null,
+        "stderr_disclosure": "Empty compiler output"
+      },
+      "processes": [
+        {
+          "mode": "interpreter",
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 267675,
+          "stderr_bytes": 399,
+          "stdout_sha256": "49424fd1624d8582be567130b1d4fef3bff26b0cfd8ce53f25b1d69823cf1411",
+          "stderr_sha256": "48a4e85b2fd33f4427cfeaa783c9d66d3766dbffdd05012130ab3c2823241536",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576,
+          "command_roles": [
+            "SELECTED_JAVA",
+            "-Xmx128m",
+            "-XX:-UsePerfData",
+            "-Xint",
+            "-cp",
+            "AUTHORED_CLASSES;UNCHANGED_CLIENT_JAR",
+            "SignNbtObservation",
+            "UNCHANGED_CLIENT_JAR"
+          ],
+          "stdout_artifact": "main.stdout",
+          "stderr_artifact": null,
+          "stderr_disclosure": "Raw SHA-256/length retained; private helper-directory URI is not published"
+        },
+        {
+          "mode": "default",
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 267675,
+          "stderr_bytes": 399,
+          "stdout_sha256": "49424fd1624d8582be567130b1d4fef3bff26b0cfd8ce53f25b1d69823cf1411",
+          "stderr_sha256": "48a4e85b2fd33f4427cfeaa783c9d66d3766dbffdd05012130ab3c2823241536",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576,
+          "command_roles": [
+            "SELECTED_JAVA",
+            "-Xmx128m",
+            "-XX:-UsePerfData",
+            "-cp",
+            "AUTHORED_CLASSES;UNCHANGED_CLIENT_JAR",
+            "SignNbtObservation",
+            "UNCHANGED_CLIENT_JAR"
+          ],
+          "stdout_artifact": "main.stdout",
+          "stderr_artifact": null,
+          "stderr_disclosure": "Raw SHA-256/length retained; private helper-directory URI is not published"
+        },
+        {
+          "mode": "interpreter",
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 267675,
+          "stderr_bytes": 399,
+          "stdout_sha256": "49424fd1624d8582be567130b1d4fef3bff26b0cfd8ce53f25b1d69823cf1411",
+          "stderr_sha256": "48a4e85b2fd33f4427cfeaa783c9d66d3766dbffdd05012130ab3c2823241536",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576,
+          "command_roles": [
+            "SELECTED_JAVA",
+            "-Xmx128m",
+            "-XX:-UsePerfData",
+            "-Xint",
+            "-cp",
+            "AUTHORED_CLASSES;UNCHANGED_CLIENT_JAR",
+            "SignNbtObservation",
+            "UNCHANGED_CLIENT_JAR"
+          ],
+          "stdout_artifact": "main.stdout",
+          "stderr_artifact": null,
+          "stderr_disclosure": "Raw SHA-256/length retained; private helper-directory URI is not published"
+        },
+        {
+          "mode": "default",
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 267675,
+          "stderr_bytes": 399,
+          "stdout_sha256": "49424fd1624d8582be567130b1d4fef3bff26b0cfd8ce53f25b1d69823cf1411",
+          "stderr_sha256": "48a4e85b2fd33f4427cfeaa783c9d66d3766dbffdd05012130ab3c2823241536",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576,
+          "command_roles": [
+            "SELECTED_JAVA",
+            "-Xmx128m",
+            "-XX:-UsePerfData",
+            "-cp",
+            "AUTHORED_CLASSES;UNCHANGED_CLIENT_JAR",
+            "SignNbtObservation",
+            "UNCHANGED_CLIENT_JAR"
+          ],
+          "stdout_artifact": "main.stdout",
+          "stderr_artifact": null,
+          "stderr_disclosure": "Raw SHA-256/length retained; private helper-directory URI is not published"
+        }
+      ],
+      "stderr_warning_lines_with_private_uri_replaced": [
+        "WARNING: A terminally deprecated method in java.lang.System has been called",
+        "WARNING: System::setSecurityManager has been called by SignNbtObservation (file:/AUTHORED_CLASSES/)",
+        "WARNING: Please consider reporting this to the maintainers of SignNbtObservation",
+        "WARNING: System::setSecurityManager will be removed in a future release"
+      ]
+    },
+    {
+      "name": "null-lines",
+      "status": "PASS",
+      "scope": "Supplemental public-null-line prestate actual original YK writer; no native mutable Compound or GL qualification",
+      "private_receipt_fingerprint": {
+        "bytes": 10983,
+        "sha256": "78641305fa4997688e6dfbf25de756ec4730bd74a90135d5bbf795a445684de3"
+      },
+      "cases_per_vm": 4,
+      "selected_calls_per_vm": 8,
+      "rows_per_vm": 17,
+      "raw_outputs_equal": true,
+      "inputs": {
+        "b1.7.3.jar": {
+          "before": {
+            "bytes": 1465375,
+            "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+          },
+          "after": {
+            "bytes": 1465375,
+            "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+          }
+        },
+        "java.exe": {
+          "before": {
+            "bytes": 50344,
+            "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+          },
+          "after": {
+            "bytes": 50344,
+            "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+          }
+        },
+        "javac.exe": {
+          "before": {
+            "bytes": 24232,
+            "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+          },
+          "after": {
+            "bytes": 24232,
+            "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+          }
+        },
+        "release": {
+          "before": {
+            "bytes": 1667,
+            "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+          },
+          "after": {
+            "bytes": 1667,
+            "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+          }
+        },
+        "capture_null_write.py": {
+          "before": {
+            "bytes": 4952,
+            "sha256": "3d8819aad4e152676307f6932aa18a7e15a536d2f0785142f69d22962c3d7f43"
+          },
+          "after": {
+            "bytes": 4952,
+            "sha256": "3d8819aad4e152676307f6932aa18a7e15a536d2f0785142f69d22962c3d7f43"
+          }
+        },
+        "executed-main-controller.py": {
+          "before": {
+            "bytes": 7904,
+            "sha256": "baad24ca28aa1e3019a45899d61bd73dcd83eb59a86908efb16b7f1ef5b833d0"
+          },
+          "after": {
+            "bytes": 7904,
+            "sha256": "baad24ca28aa1e3019a45899d61bd73dcd83eb59a86908efb16b7f1ef5b833d0"
+          }
+        },
+        "bounded-transport.py": {
+          "before": {
+            "bytes": 8065,
+            "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+          },
+          "after": {
+            "bytes": 8065,
+            "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+          }
+        },
+        "SignNbtObservation.java": {
+          "before": {
+            "bytes": 23455,
+            "sha256": "f52c6c9b5b4bd77ce4df4979e4605603b114590410f0c0a7a69795be4e15df47"
+          },
+          "after": {
+            "bytes": 23455,
+            "sha256": "f52c6c9b5b4bd77ce4df4979e4605603b114590410f0c0a7a69795be4e15df47"
+          }
+        },
+        "NullSignWriteObservation.java": {
+          "before": {
+            "bytes": 3079,
+            "sha256": "07ab86f5c7cd12c2112ec1106a98e4b248f946a93b63d8c934ed1aafdc59b08c"
+          },
+          "after": {
+            "bytes": 3079,
+            "sha256": "07ab86f5c7cd12c2112ec1106a98e4b248f946a93b63d8c934ed1aafdc59b08c"
+          }
+        },
+        "inspect_classes.py": {
+          "before": {
+            "bytes": 4549,
+            "sha256": "81274b0dcf91e7f40f08194054f9ae678460ea4e2a118ac93c222ae9ece78475"
+          },
+          "after": {
+            "bytes": 4549,
+            "sha256": "81274b0dcf91e7f40f08194054f9ae678460ea4e2a118ac93c222ae9ece78475"
+          }
+        },
+        "source-pins-v2.json": {
+          "before": {
+            "bytes": 54990,
+            "sha256": "727e72f95ad19082644a16c56ca8d65d8369965676cd990d71b176b10a089ffe"
+          },
+          "after": {
+            "bytes": 54990,
+            "sha256": "727e72f95ad19082644a16c56ca8d65d8369965676cd990d71b176b10a089ffe"
+          }
+        }
+      },
+      "compiled_helper_products": {
+        "NullSignWriteObservation$1.class": {
+          "bytes": 1518,
+          "sha256": "f0397c47555c79fc8a2e0fc1b1ceb04e33d2418888bf43f8d1e7749ff2658448"
+        },
+        "NullSignWriteObservation.class": {
+          "bytes": 3338,
+          "sha256": "761f21535b769145673749d588c1789e16fbee421c2654e0b8476a9c7e33c7fa"
+        },
+        "SignNbtObservation$1.class": {
+          "bytes": 1867,
+          "sha256": "2aa5c5c9231beae1eade6508754b6f450bfda6622a078e3cfb179bb852c0d31b"
+        },
+        "SignNbtObservation$SourceCall.class": {
+          "bytes": 283,
+          "sha256": "debec2d77e3f727c690a26fc6ad0591fb496a808c6fd20d5597325b881ce9810"
+        },
+        "SignNbtObservation.class": {
+          "bytes": 22077,
+          "sha256": "91a63259bd22f9411f74b0af3298fc8609e5051df3ddfea232ed4d6683aabeb7"
+        }
+      },
+      "product_bracket": "Controller checks every product after every child; main cohort also records final product hashes",
+      "compiler": {
+        "exit": 0,
+        "timeout_seconds": 60,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576,
+        "command_roles": [
+          "SELECTED_JAVAC",
+          "--release",
+          "17",
+          "-cp",
+          "UNCHANGED_CLIENT_JAR",
+          "-d",
+          "AUTHORED_CLASSES",
+          "SignNbtObservation.java",
+          "NullSignWriteObservation.java"
+        ],
+        "stdout_artifact": null,
+        "stderr_artifact": null,
+        "stderr_disclosure": "Empty compiler output"
+      },
+      "processes": [
+        {
+          "mode": "interpreter",
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 24729,
+          "stderr_bytes": 414,
+          "stdout_sha256": "9d34b8ab299312b0fd015f5640738d9f5b69ccdbe2b3caab6da4d622d6693167",
+          "stderr_sha256": "b3e1cab8c67e44a471a206e1d457598741290b3b1749d492be1aa2ffa3458c3e",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576,
+          "command_roles": [
+            "SELECTED_JAVA",
+            "-Xmx128m",
+            "-XX:-UsePerfData",
+            "-Xint",
+            "-cp",
+            "AUTHORED_CLASSES;UNCHANGED_CLIENT_JAR",
+            "NullSignWriteObservation",
+            "UNCHANGED_CLIENT_JAR"
+          ],
+          "stdout_artifact": "null-lines.stdout",
+          "stderr_artifact": null,
+          "stderr_disclosure": "Raw SHA-256/length retained; private helper-directory URI is not published"
+        },
+        {
+          "mode": "default",
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 24729,
+          "stderr_bytes": 414,
+          "stdout_sha256": "9d34b8ab299312b0fd015f5640738d9f5b69ccdbe2b3caab6da4d622d6693167",
+          "stderr_sha256": "b3e1cab8c67e44a471a206e1d457598741290b3b1749d492be1aa2ffa3458c3e",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576,
+          "command_roles": [
+            "SELECTED_JAVA",
+            "-Xmx128m",
+            "-XX:-UsePerfData",
+            "-cp",
+            "AUTHORED_CLASSES;UNCHANGED_CLIENT_JAR",
+            "NullSignWriteObservation",
+            "UNCHANGED_CLIENT_JAR"
+          ],
+          "stdout_artifact": "null-lines.stdout",
+          "stderr_artifact": null,
+          "stderr_disclosure": "Raw SHA-256/length retained; private helper-directory URI is not published"
+        },
+        {
+          "mode": "interpreter",
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 24729,
+          "stderr_bytes": 414,
+          "stdout_sha256": "9d34b8ab299312b0fd015f5640738d9f5b69ccdbe2b3caab6da4d622d6693167",
+          "stderr_sha256": "b3e1cab8c67e44a471a206e1d457598741290b3b1749d492be1aa2ffa3458c3e",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576,
+          "command_roles": [
+            "SELECTED_JAVA",
+            "-Xmx128m",
+            "-XX:-UsePerfData",
+            "-Xint",
+            "-cp",
+            "AUTHORED_CLASSES;UNCHANGED_CLIENT_JAR",
+            "NullSignWriteObservation",
+            "UNCHANGED_CLIENT_JAR"
+          ],
+          "stdout_artifact": "null-lines.stdout",
+          "stderr_artifact": null,
+          "stderr_disclosure": "Raw SHA-256/length retained; private helper-directory URI is not published"
+        },
+        {
+          "mode": "default",
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 24729,
+          "stderr_bytes": 414,
+          "stdout_sha256": "9d34b8ab299312b0fd015f5640738d9f5b69ccdbe2b3caab6da4d622d6693167",
+          "stderr_sha256": "b3e1cab8c67e44a471a206e1d457598741290b3b1749d492be1aa2ffa3458c3e",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576,
+          "command_roles": [
+            "SELECTED_JAVA",
+            "-Xmx128m",
+            "-XX:-UsePerfData",
+            "-cp",
+            "AUTHORED_CLASSES;UNCHANGED_CLIENT_JAR",
+            "NullSignWriteObservation",
+            "UNCHANGED_CLIENT_JAR"
+          ],
+          "stdout_artifact": "null-lines.stdout",
+          "stderr_artifact": null,
+          "stderr_disclosure": "Raw SHA-256/length retained; private helper-directory URI is not published"
+        }
+      ],
+      "stderr_warning_lines_with_private_uri_replaced": [
+        "WARNING: A terminally deprecated method in java.lang.System has been called",
+        "WARNING: System::setSecurityManager has been called by NullSignWriteObservation (file:/AUTHORED_CLASSES/)",
+        "WARNING: Please consider reporting this to the maintainers of NullSignWriteObservation",
+        "WARNING: System::setSecurityManager will be removed in a future release"
+      ]
+    }
+  ],
+  "redactions": [
+    "Actual process commands replace private local paths with argument roles",
+    "Raw stdout remains byte-for-byte; both raw stderr hashes and lengths remain, with URI-redacted warning text",
+    "Original archive, JDK binaries, generated helper classes and private host paths are not distributed"
+  ]
+}

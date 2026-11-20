@@ -1,0 +1,130 @@
+# Player ally alerts
+
+Both Player combat routes use the client `gs.a(Lls;Z)V` body. Outgoing attack
+calls it at GS93 with `true` after a living target survives damage. Incoming
+Living damage calls it at GS144 with `false`, before the damage statistic and
+the shared health operation. Null and non-Living incoming attackers skip that
+call. The caller's source site remains separate from the helper's own site
+and deepest reached child.
+
+The helper first excludes Creeper and Ghast, the Player's own tame Wolf, and a
+Player whose canonical `F()` returns false. These paths return before World,
+bounds or nearby-entity work. Otherwise it captures the current World at 65,
+creates the actual pooled unit bounds at 100, expands by 16/4/16 at 112 and calls
+the real Class-filtered Wolf query at 115. A null World therefore fails after
+the two bounds operations, preserving that completed source prefix.
+
+The fresh result List retains source order and duplicate occurrences. Each
+Wolf must be tame, have no current target and belong to this Player. Attack
+mode then reads the sitting flag and skips a sitting Wolf. Damage mode skips
+that getter. Both modes call the actual unsit setter before assigning the
+owning target field. Earlier Wolf changes survive a later getter or target
+failure; no rollback is performed.
+
+Watcher records retain the declared serialization type independently of their
+actual payload kind. A null boxed Byte reaches null unboxing; an Integer used
+as a Byte reaches ClassCastException even if the record still declares type 0.
+The runtime uses typed inline payload storage with an explicit tag. It does
+not allocate Java box objects or treat an arbitrary pointer as a payload.
+
+## Native ownership
+
+`mc_player_ally_alert_begin` publishes an inspectable invocation owner for a
+reached source failure, including a null receiver. Native admission failures
+leave the fresh output null. The owner retains each reached Player, target,
+World, bounds, query List and diagnostic receipt occurrence. Its error keeps
+the first source outcome; cleanup has its own status and operation.
+
+Incoming damage stores the failed invocation directly on the Player, including
+when no diagnostic output is requested. Another damage, death or Player tick
+refuses while that child is pending. World terminal checks also refuse it.
+Cleanup retires only native ownership: it never reruns a query, watcher store
+or target assignment. A refused cleanup leaves the invocation available for
+retry. Successful cleanup clears the Player backedge before the final Entity
+holds can be released, and clears borrowed diagnostic views immediately.
+
+The [shared damage execution entry](damage-execution.md) now enters this same
+GS144 body from the owned Arrow741 route. Its explicit descriptor supplies the
+actual defining runtime and one shared Math context; mutable Player World does
+not select that namespace. The enclosing damage frame adopts only the invocation
+created by its actual call and exposes the canonical query result for capture and
+draining. An unrelated pending invocation remains with its original owner.
+
+The damage error retains a compact first-outcome view and borrows the detailed
+helper error while its owner lives. Error retirement handles a child already
+consumed through another cleanup sink. A current native BUSY or cleanup refusal
+does not inherit the retained child's earlier source exception classification.
+Loader and callback classification require the current status and operation to
+match the reached diagnostic cause.
+
+Retirement validates the full multiplicity of held List occurrences before
+releasing any of them. Small Lists keep the allocation-free scan. Larger Lists
+count pointer identities in optional scratch storage capped at 1 MiB; a workspace
+extent or allocation refusal falls back to the same scan. The workspace adds
+no new cleanup failure and does not change World allocation budgets. Source
+List order, duplicate occurrences and target/Player aliases remain intact.
+
+## Recorded Native close
+
+The owned call records the actual World65 token, original
+initial-pop failed operand and proved local-call drain at the existing close
+site. Native-only close uses that retained call's recorded token. While it is
+open, unrelated current scopes and explicit pending children refuse. The failed
+operand is never inferred from raw status or completion. Positive same-generation consumption
+prevents a repeated pop even after non-OK or later slot reuse. Source entry and
+return, raw status, Native failure and Math remain independent.
+
+The enclosing owner must finish that exact close before checked ally retirement
+can clear its matching Player slot and release retained actors, bounds and List.
+Neither step replays the query, watcher writes or target assignment, retires the
+shared execution/Math, or clears an outer effect-cleanup guard. The helper is
+void; Native cleanup does not supply a GS hurt Boolean.
+
+The earlier [four direct controls](living-damage.md#recorded-native-close)
+included real query success and an actual early return. Windows x64 MSVC Release
+and Linux Clang 18 Debug ASan/UBSan with leak detection each passed all four
+modes and 175 checks. The complete eighteen-test selection passed on each
+host. These earlier results qualify the selected Native ownership paths, with
+their historical scope unchanged. Retained GS144 now composes with owned damage
+and the Player drop/death entries described in the shared contract. Canonical
+ally initial-pop/capture callback faults and consumed-nonOK retain their separate
+limits; unqualified query failures remain unresolved.
+
+## Evidence and remaining scope
+
+The [source map](../reference/player-ally-alert.md) and
+[original packet](../../tests/reference/entity/player_ally_alert/README.md)
+describe the finite inputs and comparison. The native incoming-Skeleton
+regression uses the genuine World, full application, session and statistics
+writer. Its first run stopped at the missing GS144 body with health 20; the
+implemented route reaches health 16 and records damage 4. Separate controls
+exercise null diagnostic output, pending ownership, refused cleanup, retry and
+a copied error view after cleanup through another sink.
+
+Four original VMs each complete 40 prepared calls: 19 normal returns, 17 null
+exceptions and four class-cast exceptions. Windows and sanitized Linux each
+match 57,580 shared scalar values. Another 111 original exception-message and
+stack-frame fields remain unpaired. Constructor entropy is independent;
+each native call's own stream consumption and sound arithmetic are checked
+separately. The [retirement measurements](../performance/player-ally-retire.md)
+retain their separate CPU-only source and product scope.
+
+The [Monster melee parent](monster-melee.md) now invokes actual target hurt at
+`GZ.a(Entity,float):61` after the cooldown store and fresh damage read. Its
+protected-body comparison includes normal and failed Player damage. A separate
+loaded encounter must still qualify the natural AI and World caller chain.
+
+The overlay's entered Byte getter uses a compact diagnostic. Its successful
+path writes only the selected scalar output; failure materializes the full
+effect record from that same completed read. Eleven watcher controls and the
+separate hidden hand-rendering profiles cover this diagnostic adapter without
+replaying a getter or adding a large stack record.
+
+The current Arrow hurt route supplies the evaluated nullable Living shooter to
+the shared damage body. The [GS35 wake join](player-damage-wake.md) covers Bed
+occupancy and recursive orphan-head removal. Other neighbor hooks, the Bed foot
+drop and arbitrary cold/foreign graphs remain open. These components do not
+establish loaded hostile encounters,
+unrestricted combat, original audiovisual output or sustained FPS.
+Ghast construction has its [separate scope](ghast.md); Ghast flight and attacks
+remain unfinished.

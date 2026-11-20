@@ -1,0 +1,16 @@
+{
+  "scope": "Frozen pre-correction capture2 files; helper erroneously invoked nw.b(FFF)V normal setter. Not translated scene geometry.",
+  "files_sha256": {
+    "capture.py": "9cd3333af873540b48909aabbd3d4a5c55484f46e3d441f35ea689fa6a2cbf56",
+    "LeverSceneObservation.java": "ee876587635b4464f3b1b10fe4bf08b2f821f40de3a546f9773aa6fecd2acbb9",
+    "packet.py": "73b11da6b5d51055963d5490503f259d47a82c300482c74fcac91d0b71983448",
+    "provenance.json": "9e0cd683834dfce26cc986a6b3afa16446187a98edaa8c204037aaaa16011a33",
+    "README.md": "0532caeb632cf9df4f5c1d74cf7832f70b4bfc016c8a76f88796bdf5f7efd00f",
+    "run_native.py": "f7054f78f575e0395c447cfbc8d88e98f19c09cf0a0f86e1d4c00eade670f3d4",
+    "scene-input-origin.json": "ed03140754f9067dd143347e2eb8bc90b62325a2648f1a9c8c620e09978b1855",
+    "scene-input.bin": "8565bc42d6ed6b4fdb28b73a9c4ff2c0c8b3fb844fe0f1e84d8c4aa5df8b5131",
+    "selected.txt": "d2919207b89896c79e05057e6a95e812ef0400b6c73e7e6343045f23ef1e2dde",
+    "source-pins.json": "0a908dfe39e759d76cbe0ef2b09ded6f6be63997900f551937629b358f008a0c",
+    "test_packet.py": "1d1222ff165b8f6986ad9e1fc1138aa450a0cab08903cb9b70a966d20beade60"
+  }
+}

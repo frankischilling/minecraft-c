@@ -1,0 +1,1300 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "scope": "Windows x64 MSVC Release fixed-work public World-query CPU microbenchmark.",
+  "limits": [
+    "These are finite cached queries of the authored Chunk at 0,0. They do not measure frames, GPU work, loading speed, unrestricted gameplay or original-game parity.",
+    "The baseline already contains the earlier owned-hit frame split and static chunk-cache diagnostic initializer. It is not the published branch before all performance work.",
+    "Older variants are identified by retained object bytes. The selected current source fingerprints apply to the owned-scope variant and common benchmark harness.",
+    "The mutation scenario enters one constructed native World call and one real private cache-mutation scope. It does not execute arbitrary source callbacks.",
+    "No test discards simulation, lowers graphics settings or uses timing thresholds to determine success. There are no rendering settings in this CPU workload."
+  ],
+  "host": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel",
+    "processor_name": "Intel(R) Core(TM) i9-10900F CPU @ 2.80GHz",
+    "physical_cores": 10,
+    "logical_processors": 20,
+    "processor_name_evidence": "Native Win32_Processor census in the same session after timing."
+  },
+  "compiler": {
+    "family": "MSVC",
+    "msc_full_ver": 195136260,
+    "language": "C17",
+    "configuration": "Release",
+    "pointer_bits": 64,
+    "ndebug": true,
+    "common_project_compile_flags": [
+      "/DWIN32",
+      "/D_WINDOWS",
+      "/O2",
+      "/Ob2",
+      "/DNDEBUG",
+      "-std:c17",
+      "-MD",
+      "-experimental:c11atomics",
+      "/W4",
+      "/WX",
+      "/fp:strict",
+      "/FS"
+    ],
+    "common_link_flags": [
+      "/machine:x64",
+      "/INCREMENTAL:NO",
+      "/subsystem:console",
+      "/DELAYLOAD:shell32.dll"
+    ]
+  },
+  "workload": {
+    "operations": [
+      "block",
+      "metadata",
+      "saved-light",
+      "owned-get"
+    ],
+    "public_functions": [
+      "mc_world_runtime_block_get",
+      "mc_world_runtime_metadata_get",
+      "mc_world_runtime_saved_light",
+      "mc_world_runtime_get_detailed"
+    ],
+    "calls_per_sample": 65536,
+    "samples_per_operation_per_process": 7,
+    "fresh_processes_per_candidate_per_scenario": 3,
+    "operation_sample_order": "Operations follow the listed order; each operation runs samples 0 through 6. All samples are retained.",
+    "candidate_process_order": [
+      [
+        "baseline",
+        "failure-only",
+        "owned-scope"
+      ],
+      [
+        "owned-scope",
+        "failure-only",
+        "baseline"
+      ],
+      [
+        "baseline",
+        "failure-only",
+        "owned-scope"
+      ]
+    ],
+    "coordinate_pattern": "For i modulo 256: x=i&15, z=(i>>4)&15, y=8+(17*i)%104. The direct owned-get reads Chunk 0,0 with a NULL diagnostic output.",
+    "authored_arrays": {
+      "Blocks": "839b7e2d8abbb4f1c1ba678b41a3bc8054afd8c0fc675cb67cdf90f1d2afb60b",
+      "Data": "362a01b2c25178b0dfa2533c9724ccb2a16ccfa20a33cd9317807919242f0752",
+      "SkyLight": "98776154a5b6234ace79d7c2dc3052100e18692a5c65ef0ee95e4d6697a38bdd",
+      "BlockLight": "e0f32ada0eccb433d9caf1d41ee4d514d1e5a9bd63976a5c9b98264a9c3b5b2e"
+    },
+    "timing": "QueryPerformanceCounter brackets each fixed sample; no per-call timing, assertion, allocation, capture or disk work is added by the harness.",
+    "outside_timing_checks": [
+      "Every query output matches directly inspected authored Chunk data; per-sample checksums agree across candidates.",
+      "The selected Chunk state, Blocks, inline metadata/skylight/block-light/heightmap and minimum height retain identical bytes.",
+      "World fields, World Random, shared Random uniquifier/Math holder and Math Gaussian fields, diagnostics, call holds and leases remain unchanged.",
+      "Cache descriptor and full entry/insertion backing, pending descriptor/backing and complete current pending traversal retain identical bytes/order.",
+      "Owned-cache admission remains enabled with zero raw exports. Indexed reads add exactly one hit each; mutation reads add exactly one generic get each without indexed hits. No timed rebuild occurs.",
+      "Actual source-owner cleanup succeeds; authored disk files remain unchanged except the ordinary constructor-created session lock."
+    ]
+  },
+  "provenance": {
+    "source_fingerprint_scope": "Project src/include C/header/fragments plus benchmark and selected fixture helpers; executable hashes are listed per candidate.",
+    "canonical_manifest_encoding": "SHA256 of UTF-8 json.dumps(path_to_sha256, sort_keys=True, separators=(comma,colon), ensure_ascii=True); repository-relative forward-slash paths.",
+    "all_authored_input_manifest": {
+      "files": 1440,
+      "sha256": "e0345c09259206dee5fcef6d985d9c42f1e917f33825db82dd4a221a248a6fb1"
+    },
+    "all_bound_inputs_per_scenario": 1443,
+    "selected_current_source_sha256": {
+      "tests/benchmarks/world_queries.c": "a238a949710209d206df648c6a3da53a27b8c92d18eba09cf11db8ab9d5f2812",
+      "tests/tools/world/benchmark_queries.py": "b0f3afb5e2a0893151a26f95d5fe175fd93e72beb76bf35b11c38552af74646d",
+      "tests/world/runtime/saving/mob_nbt_source_support.inc": "3fb528eb245d4373515ce7142b74a1f88f181eb6503819ff77c84cfa81bf87ce",
+      "tests/world/runtime/tile_entities/test_tile_entities.c": "55ae023dce901cab8a5cb805f878383060e57a7b22b5f9fe1df91aae1548afe6",
+      "tests/tools/world/test_owned_cache.py": "5d3c5989f39a0a0bc6d76e939bb1b2116df752d9aff3d70e23d91f908810b7eb",
+      "tests/tools/world/test_source_saving.py": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9",
+      "include/mc/world/chunk/data.h": "837c683716ef46818a002237aec2441dc186946e0191e009da094619bf5280c8",
+      "include/mc/world/runtime/acquisition_error.h": "ae2437bb22228022bf1f3589941214b62500c23ca9f2b6ff3a2f62b4f88c3bf4",
+      "src/world/runtime/runtime.c": "d8e90afa22b2df8cfef71af85912d90526419cbb41d0ea502dacf251dc35a1f8",
+      "src/world/runtime/blocks.c": "58eae18be5c60b82dd200d49e5a0f09ff16200db154be0d1c989b6ac6c79c299",
+      "src/world/runtime/queries.c": "a5f19f19b6b176cc3c17bc018dfd9557109963b56b4c70ccf518b11b1801fa68",
+      "src/world/runtime/propagation.c": "6941cdc2294068086946b335701d716c9c4b0e543e46769da795a559900cdded",
+      "src/world/runtime/chunk_provider.c": "625aa9ad7a3d18f5525614062425a4bfdabd508f67df5288225d63381808c2fc",
+      "src/world/runtime/chunk_provider_owned.inc": "7335a82407e7ad4eb516fbb3a88de5e5c415ffd618998a94e75620955b3bc61d",
+      "src/world/runtime/runtime_internal.h": "20255320186c2fdfc2fdf3ca5d14c712b37966c5cc221db9e236ce9497aab12b"
+    },
+    "common_dependency_library_manifest": {
+      "libraries": 29,
+      "sha256": "bac23f75cedfc38d628390f9085eadc4c50a1b053abdb9b2859d54315ce4c783"
+    },
+    "common_simulation_without_five_query_objects_sha256": "f317efe74112ee7c4f3a53c3ef45a481be0942888f7346879456c53d437c1d0f",
+    "variant_assembly": "Remove the five named query objects from one final current simulation archive, then add each retained variant of those same five objects. All remaining simulation members and every dependency archive stay identical. Current Player mining and Inventory use matching current signatures."
+  },
+  "candidates": {
+    "baseline": {
+      "executable_sha256": "6e99fea6f8362b1b6caebd5cbfad71f98dbefd8203e0e7d6bf68ab851df30993",
+      "input_simulation_archive_sha256": "5a8aaddd43d0bf41e4a16da63b56dbd40bc4009b5e30bd252b5b0c682fe055cb",
+      "assembled_simulation_archive_sha256": "4b6080a4910f21c02a6ff06156eb77906d56da1033ab20c5522e5adf3d8a1f99",
+      "substituted_object_sha256": {
+        "src/world/runtime/runtime.c.obj": "24c3e36575a95ea22b0b477a412f50616940bcf765bf2705bce148fd49794edb",
+        "src/world/runtime/blocks.c.obj": "971898e21b7a81a0efdf4f18fc9eb767f0809f59bf8882689ddf7ac6b4e611c4",
+        "src/world/runtime/queries.c.obj": "d38ca5cf970f5ae62d21c02417e741d98aa433ad888123eb076737dd2c487b56",
+        "src/world/runtime/propagation.c.obj": "d31e5660b23c250c663b5d7d6067272adbca141760ee92092b7836b3e7a2e900",
+        "src/world/runtime/chunk_provider.c.obj": "0e4261619697c1dbc3d4d166b782391d2096b6a5917c6ebf1046af3736d9e231"
+      }
+    },
+    "failure-only": {
+      "executable_sha256": "5cfcd7a46e6831ea043a58103451a90001960c5424668e7678b9e9808bd779b4",
+      "input_simulation_archive_sha256": "b803a2a6eed326f8d03ac7a6051de927d4fb40b8333b75da5683b9f8896b23b5",
+      "assembled_simulation_archive_sha256": "f9272b715bbd5621427e8479e444d4efb6f982e431ce795a34ec923739f90317",
+      "substituted_object_sha256": {
+        "src/world/runtime/runtime.c.obj": "074491ac46aec99c6f4bb3a592273d25dc57dc6ef96326e7915257f4439109de",
+        "src/world/runtime/blocks.c.obj": "eb31a54a204d9402e31a05b730120c55f0d12fda667e5e95913826b4a73c2c49",
+        "src/world/runtime/queries.c.obj": "2955efbc2a1a93b81ef7d14c52955c65b9a7fb7e147c177628feed22fb28d51b",
+        "src/world/runtime/propagation.c.obj": "4e3b72704800aa960eea919e5faf908dc4f77c50dbdf5e22ffc1aab4c4288ae4",
+        "src/world/runtime/chunk_provider.c.obj": "b7634b04619ec0725b86ab0b47d2509fef64931cbae90ba8660bec21de9a4898"
+      }
+    },
+    "owned-scope": {
+      "executable_sha256": "09ac64de9c120b241c26cb1d7c7bde69207209da6a6ee199eb17020992a60727",
+      "input_simulation_archive_sha256": "c2154f23f660fd4280a3198e50f49a842cf1e5a2871a28074b87d5a8cc159665",
+      "assembled_simulation_archive_sha256": "f3af940bc17d1d153eb6ed186c44d2dad8ce484ad0283509db2b4350173a362e",
+      "substituted_object_sha256": {
+        "src/world/runtime/runtime.c.obj": "bcb12e57bf597c5d0c6a501b664d6255bdff7d44abd797701067bcde7b426b92",
+        "src/world/runtime/blocks.c.obj": "eb31a54a204d9402e31a05b730120c55f0d12fda667e5e95913826b4a73c2c49",
+        "src/world/runtime/queries.c.obj": "95fae6c9dbd7af70e995fe9f5b08805f9f6e4f01e4b35b39c029453043a267b6",
+        "src/world/runtime/propagation.c.obj": "cb58592147c361989d30ee7ac35afd258b7f092feb9b3cadfde4a65ea8780ec3",
+        "src/world/runtime/chunk_provider.c.obj": "2ed574226fe93633edaa93223b8da221b527574af647504048e2df43f80af571"
+      }
+    }
+  },
+  "candidate_meanings": {
+    "baseline": "Before private failure-only diagnostics and owned live lookup within a mutation scope.",
+    "failure-only": "Private failure-only diagnostics for proven query/block/propagation callers.",
+    "owned-scope": "Final query diagnostics plus bounded live owned-map lookup within a mutation scope."
+  },
+  "raw_sample_encoding": "Each profile stores seven QPC tick deltas per operation. Array index is native sample 0 through 6. The scenario frequency and per-operation checksum apply to every listed sample; the shared workload gives calls per sample. No samples are omitted.",
+  "scenarios": [
+    {
+      "scope": "indexed",
+      "loaded_chunks": 1,
+      "chunk_layout": "One Chunk at 0,0.",
+      "frequency_hz": 10000000,
+      "checksum_by_operation": {
+        "block": "11991286746030198147",
+        "metadata": "11945448102596685699",
+        "saved-light": "15955390561654774659",
+        "owned-get": "2590206651377845123"
+      },
+      "authored_disk_input_files": {
+        "level.dat": {
+          "bytes": 177,
+          "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+        },
+        "region/r.0.0.mcr": {
+          "bytes": 12288,
+          "sha256": "f5d36de49efbd5a098ff502ba6ae8a07ba378cee33a2a526c008e82797ca1c68"
+        }
+      },
+      "source_and_executables_unchanged": true,
+      "profiles_in_execution_order": [
+        {
+          "candidate": "baseline",
+          "round": 0,
+          "ticks": {
+            "block": [
+              140356,
+              139933,
+              141351,
+              141782,
+              143186,
+              141178,
+              141901
+            ],
+            "metadata": [
+              144439,
+              143608,
+              142951,
+              143497,
+              142288,
+              142629,
+              142246
+            ],
+            "saved-light": [
+              188096,
+              190015,
+              198477,
+              194070,
+              195034,
+              197804,
+              197669
+            ],
+            "owned-get": [
+              13767,
+              12029,
+              12558,
+              11452,
+              13542,
+              10888,
+              10987
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "failure-only",
+          "round": 0,
+          "ticks": {
+            "block": [
+              20565,
+              19558,
+              20669,
+              18968,
+              19757,
+              19465,
+              18875
+            ],
+            "metadata": [
+              23111,
+              21209,
+              19763,
+              21096,
+              20303,
+              21197,
+              21319
+            ],
+            "saved-light": [
+              59016,
+              58765,
+              59549,
+              59667,
+              57926,
+              59506,
+              57591
+            ],
+            "owned-get": [
+              11278,
+              12543,
+              11531,
+              11525,
+              11285,
+              12018,
+              11609
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "owned-scope",
+          "round": 0,
+          "ticks": {
+            "block": [
+              19079,
+              19271,
+              19179,
+              19048,
+              19096,
+              19039,
+              19019
+            ],
+            "metadata": [
+              19723,
+              19742,
+              19922,
+              19822,
+              19887,
+              19699,
+              19847
+            ],
+            "saved-light": [
+              54550,
+              55058,
+              54841,
+              54588,
+              54775,
+              54630,
+              54446
+            ],
+            "owned-get": [
+              11721,
+              11473,
+              11409,
+              11398,
+              11443,
+              11397,
+              11382
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "owned-scope",
+          "round": 1,
+          "ticks": {
+            "block": [
+              19274,
+              19129,
+              19242,
+              19099,
+              19135,
+              19103,
+              19087
+            ],
+            "metadata": [
+              19770,
+              20156,
+              19746,
+              19818,
+              19728,
+              19750,
+              19658
+            ],
+            "saved-light": [
+              54403,
+              54288,
+              54395,
+              54609,
+              54425,
+              54211,
+              54836
+            ],
+            "owned-get": [
+              11553,
+              11544,
+              11549,
+              11540,
+              11593,
+              11532,
+              11552
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "failure-only",
+          "round": 1,
+          "ticks": {
+            "block": [
+              20576,
+              20273,
+              19781,
+              21213,
+              20067,
+              20474,
+              18972
+            ],
+            "metadata": [
+              21050,
+              19839,
+              21337,
+              19859,
+              19797,
+              19869,
+              20500
+            ],
+            "saved-light": [
+              54311,
+              54669,
+              60632,
+              59392,
+              55316,
+              56782,
+              58232
+            ],
+            "owned-get": [
+              12494,
+              11568,
+              11321,
+              11532,
+              11590,
+              11650,
+              11574
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "baseline",
+          "round": 1,
+          "ticks": {
+            "block": [
+              133964,
+              133568,
+              133316,
+              134498,
+              133175,
+              133590,
+              133634
+            ],
+            "metadata": [
+              134335,
+              134046,
+              134315,
+              133838,
+              133838,
+              135027,
+              134724
+            ],
+            "saved-light": [
+              188471,
+              192512,
+              188621,
+              188364,
+              187932,
+              189701,
+              188445
+            ],
+            "owned-get": [
+              11126,
+              11089,
+              11108,
+              11151,
+              11112,
+              11102,
+              11089
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "baseline",
+          "round": 2,
+          "ticks": {
+            "block": [
+              132870,
+              132725,
+              133241,
+              133139,
+              132911,
+              133113,
+              132229
+            ],
+            "metadata": [
+              134227,
+              133829,
+              139446,
+              140162,
+              137103,
+              135493,
+              137202
+            ],
+            "saved-light": [
+              198175,
+              196936,
+              196167,
+              190180,
+              195226,
+              189708,
+              189820
+            ],
+            "owned-get": [
+              11192,
+              11150,
+              11167,
+              11199,
+              11192,
+              11171,
+              11259
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "failure-only",
+          "round": 2,
+          "ticks": {
+            "block": [
+              19442,
+              19495,
+              19363,
+              19486,
+              19285,
+              19348,
+              19234
+            ],
+            "metadata": [
+              20184,
+              20164,
+              19911,
+              19784,
+              20386,
+              21827,
+              21726
+            ],
+            "saved-light": [
+              55772,
+              58216,
+              55692,
+              56376,
+              59667,
+              57879,
+              56004
+            ],
+            "owned-get": [
+              11046,
+              13600,
+              11997,
+              15421,
+              12066,
+              11121,
+              11182
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "owned-scope",
+          "round": 2,
+          "ticks": {
+            "block": [
+              19309,
+              19175,
+              19221,
+              19317,
+              19000,
+              19114,
+              19047
+            ],
+            "metadata": [
+              19800,
+              19854,
+              19823,
+              19642,
+              19848,
+              19690,
+              19841
+            ],
+            "saved-light": [
+              54293,
+              54266,
+              54422,
+              54753,
+              54230,
+              54484,
+              54773
+            ],
+            "owned-get": [
+              11377,
+              11397,
+              11437,
+              11326,
+              11342,
+              11357,
+              11415
+            ]
+          },
+          "native_checks": 1161,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        }
+      ],
+      "summary_ns_per_call": {
+        "baseline": {
+          "block": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 203.8421630859375,
+            "p95_ns_per_call": 216.52374267578125,
+            "min_ns_per_call": 201.76544189453125,
+            "max_ns_per_call": 218.4844970703125,
+            "checksum": "11991286746030198147"
+          },
+          "metadata": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 209.20257568359375,
+            "p95_ns_per_call": 219.12841796875,
+            "min_ns_per_call": 204.20684814453125,
+            "max_ns_per_call": 220.39642333984375,
+            "checksum": "11945448102596685699"
+          },
+          "saved-light": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 290.191650390625,
+            "p95_ns_per_call": 302.39105224609375,
+            "min_ns_per_call": 286.761474609375,
+            "max_ns_per_call": 302.85186767578125,
+            "checksum": "15955390561654774659"
+          },
+          "owned-get": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 17.03948974609375,
+            "p95_ns_per_call": 20.6634521484375,
+            "min_ns_per_call": 16.61376953125,
+            "max_ns_per_call": 21.00677490234375,
+            "checksum": "2590206651377845123"
+          }
+        },
+        "failure-only": {
+          "block": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 29.74700927734375,
+            "p95_ns_per_call": 31.53839111328125,
+            "min_ns_per_call": 28.80096435546875,
+            "max_ns_per_call": 32.36846923828125,
+            "checksum": "11991286746030198147"
+          },
+          "metadata": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 31.1065673828125,
+            "p95_ns_per_call": 33.30535888671875,
+            "min_ns_per_call": 30.15594482421875,
+            "max_ns_per_call": 35.26458740234375,
+            "checksum": "11945448102596685699"
+          },
+          "saved-light": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 88.3880615234375,
+            "p95_ns_per_call": 91.04461669921875,
+            "min_ns_per_call": 82.87200927734375,
+            "max_ns_per_call": 92.51708984375,
+            "checksum": "15955390561654774659"
+          },
+          "owned-get": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 17.6605224609375,
+            "p95_ns_per_call": 20.751953125,
+            "min_ns_per_call": 16.8548583984375,
+            "max_ns_per_call": 23.53057861328125,
+            "checksum": "2590206651377845123"
+          }
+        },
+        "owned-scope": {
+          "block": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 29.1656494140625,
+            "p95_ns_per_call": 29.46319580078125,
+            "min_ns_per_call": 28.99169921875,
+            "max_ns_per_call": 29.47540283203125,
+            "checksum": "11991286746030198147"
+          },
+          "metadata": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 30.21240234375,
+            "p95_ns_per_call": 30.3985595703125,
+            "min_ns_per_call": 29.9713134765625,
+            "max_ns_per_call": 30.755615234375,
+            "checksum": "11945448102596685699"
+          },
+          "saved-light": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 83.135986328125,
+            "p95_ns_per_call": 83.68072509765625,
+            "min_ns_per_call": 82.71942138671875,
+            "max_ns_per_call": 84.0118408203125,
+            "checksum": "15955390561654774659"
+          },
+          "owned-get": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 17.45147705078125,
+            "p95_ns_per_call": 17.68951416015625,
+            "min_ns_per_call": 17.2821044921875,
+            "max_ns_per_call": 17.88482666015625,
+            "checksum": "2590206651377845123"
+          }
+        }
+      }
+    },
+    {
+      "scope": "mutation",
+      "loaded_chunks": 289,
+      "chunk_layout": "289 Chunks loaded in nested x,z order from -8 through 8; timed reads target 0,0.",
+      "frequency_hz": 10000000,
+      "checksum_by_operation": {
+        "block": "11991286746030198147",
+        "metadata": "11945448102596685699",
+        "saved-light": "15955390561654774659",
+        "owned-get": "2590206651377845123"
+      },
+      "authored_disk_input_files": {
+        "level.dat": {
+          "bytes": 177,
+          "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+        },
+        "region/r.-1.-1.mcr": {
+          "bytes": 270336,
+          "sha256": "f0cc0b657989305e5433986c45a809a1a2c33bc95391f5b573f0f86574f5e839"
+        },
+        "region/r.-1.0.mcr": {
+          "bytes": 303104,
+          "sha256": "430a55f818d06724f010ae631cae1a47c059f1f01c7e89d8226363cca9a8f926"
+        },
+        "region/r.0.-1.mcr": {
+          "bytes": 303104,
+          "sha256": "9f72f91a2ccf072d471217298863a5af39637e41d6145bc30f60f9955bf99743"
+        },
+        "region/r.0.0.mcr": {
+          "bytes": 339968,
+          "sha256": "4ce3699090971dbe96b6ce48885932f6044fd4486651740047d3ab0d6de92570"
+        }
+      },
+      "source_and_executables_unchanged": true,
+      "profiles_in_execution_order": [
+        {
+          "candidate": "baseline",
+          "round": 0,
+          "ticks": {
+            "block": [
+              1026622,
+              1015259,
+              1016272,
+              1016459,
+              1014696,
+              1010541,
+              1025252
+            ],
+            "metadata": [
+              1056988,
+              1025990,
+              1080456,
+              1054802,
+              1042409,
+              1049219,
+              1020855
+            ],
+            "saved-light": [
+              1084027,
+              1087609,
+              1088130,
+              1081217,
+              1079674,
+              1103193,
+              1107171
+            ],
+            "owned-get": [
+              875583,
+              858841,
+              854906,
+              863735,
+              865466,
+              858280,
+              855595
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "failure-only",
+          "round": 0,
+          "ticks": {
+            "block": [
+              861708,
+              869225,
+              865859,
+              859811,
+              857030,
+              847921,
+              866895
+            ],
+            "metadata": [
+              863275,
+              857415,
+              873250,
+              852217,
+              858674,
+              851346,
+              889090
+            ],
+            "saved-light": [
+              967377,
+              959940,
+              967864,
+              963549,
+              970132,
+              986482,
+              966671
+            ],
+            "owned-get": [
+              865325,
+              838977,
+              840454,
+              842997,
+              856146,
+              870467,
+              858345
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "owned-scope",
+          "round": 0,
+          "ticks": {
+            "block": [
+              53390,
+              53489,
+              53594,
+              53313,
+              53884,
+              53557,
+              53378
+            ],
+            "metadata": [
+              54498,
+              54259,
+              53931,
+              54058,
+              54305,
+              53996,
+              54269
+            ],
+            "saved-light": [
+              127742,
+              127420,
+              128927,
+              128758,
+              128346,
+              130177,
+              129366
+            ],
+            "owned-get": [
+              46563,
+              46261,
+              46388,
+              46366,
+              46420,
+              46566,
+              46349
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "owned-scope",
+          "round": 1,
+          "ticks": {
+            "block": [
+              53593,
+              53601,
+              53633,
+              53981,
+              53606,
+              53669,
+              53327
+            ],
+            "metadata": [
+              53953,
+              53919,
+              54183,
+              53789,
+              53998,
+              54005,
+              54118
+            ],
+            "saved-light": [
+              131944,
+              140916,
+              134393,
+              134740,
+              136026,
+              131113,
+              131312
+            ],
+            "owned-get": [
+              46275,
+              48826,
+              46042,
+              46660,
+              45795,
+              45796,
+              45237
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "failure-only",
+          "round": 1,
+          "ticks": {
+            "block": [
+              857883,
+              854279,
+              865030,
+              863437,
+              865906,
+              850735,
+              855926
+            ],
+            "metadata": [
+              849373,
+              849926,
+              844178,
+              834012,
+              847454,
+              864877,
+              1089642
+            ],
+            "saved-light": [
+              1336887,
+              1311554,
+              1317510,
+              1107806,
+              1021903,
+              1007753,
+              983498
+            ],
+            "owned-get": [
+              965158,
+              935915,
+              953343,
+              912349,
+              928044,
+              915588,
+              874973
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "baseline",
+          "round": 1,
+          "ticks": {
+            "block": [
+              998302,
+              1038826,
+              1078350,
+              1040409,
+              1087914,
+              1017009,
+              1025715
+            ],
+            "metadata": [
+              1018921,
+              1005314,
+              1000924,
+              1003763,
+              989927,
+              982625,
+              987213
+            ],
+            "saved-light": [
+              1099111,
+              1107802,
+              1110715,
+              1095001,
+              1090438,
+              1083267,
+              1117388
+            ],
+            "owned-get": [
+              839900,
+              837713,
+              843920,
+              849502,
+              878032,
+              876322,
+              865990
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "baseline",
+          "round": 2,
+          "ticks": {
+            "block": [
+              1000697,
+              975847,
+              1002158,
+              974895,
+              971488,
+              979054,
+              974451
+            ],
+            "metadata": [
+              977805,
+              1002257,
+              982967,
+              981320,
+              988686,
+              991533,
+              976509
+            ],
+            "saved-light": [
+              1071103,
+              1073908,
+              1083977,
+              1062594,
+              1101496,
+              1150778,
+              1076869
+            ],
+            "owned-get": [
+              835724,
+              842497,
+              851068,
+              836934,
+              838658,
+              837867,
+              845396
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "failure-only",
+          "round": 2,
+          "ticks": {
+            "block": [
+              854478,
+              863894,
+              849518,
+              848927,
+              850951,
+              931747,
+              975982
+            ],
+            "metadata": [
+              882064,
+              859579,
+              853236,
+              877629,
+              853892,
+              879138,
+              947728
+            ],
+            "saved-light": [
+              976249,
+              976861,
+              980730,
+              997343,
+              977175,
+              977218,
+              976531
+            ],
+            "owned-get": [
+              823755,
+              822803,
+              823457,
+              833729,
+              823047,
+              822714,
+              818263
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        },
+        {
+          "candidate": "owned-scope",
+          "round": 2,
+          "ticks": {
+            "block": [
+              53228,
+              53446,
+              53277,
+              53268,
+              53154,
+              52309,
+              52167
+            ],
+            "metadata": [
+              55580,
+              52440,
+              53350,
+              54370,
+              52913,
+              54292,
+              53933
+            ],
+            "saved-light": [
+              126332,
+              127024,
+              127360,
+              125854,
+              125408,
+              125940,
+              126157
+            ],
+            "owned-get": [
+              46221,
+              45240,
+              45720,
+              46921,
+              49275,
+              47258,
+              50047
+            ]
+          },
+          "native_checks": 1741,
+          "cleanup": true,
+          "authored_input_files_unchanged": true,
+          "declared_native_invariants_passed": true
+        }
+      ],
+      "summary_ns_per_call": {
+        "baseline": {
+          "block": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 1549.1622924804688,
+            "p95_ns_per_call": 1645.4315185546875,
+            "min_ns_per_call": 1482.373046875,
+            "max_ns_per_call": 1660.0250244140625,
+            "checksum": "11991286746030198147"
+          },
+          "metadata": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 1529.3228149414062,
+            "p95_ns_per_call": 1612.835693359375,
+            "min_ns_per_call": 1490.0344848632812,
+            "max_ns_per_call": 1648.64501953125,
+            "checksum": "11945448102596685699"
+          },
+          "saved-light": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 1660.3546142578125,
+            "p95_ns_per_call": 1704.998779296875,
+            "min_ns_per_call": 1621.3897705078125,
+            "max_ns_per_call": 1755.9478759765625,
+            "checksum": "15955390561654774659"
+          },
+          "owned-get": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 1298.626708984375,
+            "p95_ns_per_call": 1337.1612548828125,
+            "min_ns_per_call": 1275.213623046875,
+            "max_ns_per_call": 1339.7705078125,
+            "checksum": "2590206651377845123"
+          }
+        },
+        "failure-only": {
+          "block": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 1311.9674682617188,
+            "p95_ns_per_call": 1421.7330932617188,
+            "min_ns_per_call": 1293.8247680664062,
+            "max_ns_per_call": 1489.2303466796875,
+            "checksum": "11991286746030198147"
+          },
+          "metadata": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 1310.2325439453125,
+            "p95_ns_per_call": 1446.1181640625,
+            "min_ns_per_call": 1272.601318359375,
+            "max_ns_per_call": 1662.6617431640625,
+            "checksum": "11945448102596685699"
+          },
+          "saved-light": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 1491.1163330078125,
+            "p95_ns_per_call": 2010.3607177734375,
+            "min_ns_per_call": 1464.752197265625,
+            "max_ns_per_call": 2039.9276733398438,
+            "checksum": "15955390561654774659"
+          },
+          "owned-get": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 1306.3751220703125,
+            "p95_ns_per_call": 1454.6859741210938,
+            "min_ns_per_call": 1248.5702514648438,
+            "max_ns_per_call": 1472.7142333984375,
+            "checksum": "2590206651377845123"
+          }
+        },
+        "owned-scope": {
+          "block": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 81.5521240234375,
+            "p95_ns_per_call": 82.220458984375,
+            "min_ns_per_call": 79.60052490234375,
+            "max_ns_per_call": 82.36846923828125,
+            "checksum": "11991286746030198147"
+          },
+          "metadata": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 82.40509033203125,
+            "p95_ns_per_call": 83.1573486328125,
+            "min_ns_per_call": 80.01708984375,
+            "max_ns_per_call": 84.808349609375,
+            "checksum": "11945448102596685699"
+          },
+          "saved-light": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 196.4691162109375,
+            "p95_ns_per_call": 207.5592041015625,
+            "min_ns_per_call": 191.357421875,
+            "max_ns_per_call": 215.020751953125,
+            "checksum": "15955390561654774659"
+          },
+          "owned-get": {
+            "samples": 21,
+            "calls_per_sample": 65536,
+            "median_ns_per_call": 70.7489013671875,
+            "p95_ns_per_call": 75.18768310546875,
+            "min_ns_per_call": 69.02618408203125,
+            "max_ns_per_call": 76.36566162109375,
+            "checksum": "2590206651377845123"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "format": 1,
+  "cohorts": {
+    "flat": {
+      "tag": "REDSTONE",
+      "profiles": 56,
+      "files_sha256": {
+        "capture_reference.py": "5e7210fb602631ae04545769b77092a48b8b399f3f54c681d18d684b7f695707",
+        "declared-inputs.json": "058e76295916f19f7682518a74757eedc1d3e0569b281c4608fe4204b14e031b",
+        "events.jsonl": "01555765864c86df894579318b94dca0fb10fe0bb466eb7e3054860ddbfe9e3a",
+        "generate_profiles.py": "c8c0236655e3b30585c57a0ecd21eabfcd088b61bf684ed2d12a3e98afacc1f0",
+        "live-code.tsv": "0ad5134de8be225bb5232fff931444b8d465f912faa7483b05dd3e66afc81cb9",
+        "original.stdout": "75ae4f2a18c7dbbcb154fd23638e5fc7b1d220d4d8f21e9fd6dd41f44f2028b2",
+        "profiles.txt": "ef99b0ef3677ed1bad1c6c32348ea3efb869f419dee2f7e1f9e869dc91f8365a",
+        "provenance.json": "4310a2a0e739b51ce383c5d787d2033c9d599295b6e80292c86721fafd28d3b3",
+        "RedstoneJdi.java": "3c08362f82a70c94c8bdde04a2d8c52436c4481f0e590815fa11271d0313edf2",
+        "RedstoneObservation.java": "2a7d458c63b9994c6a042cb66b5892429db918bb0710b9edad49cf6f982bff8c",
+        "selected.txt": "f1043e9b3693d5410595b38bb015cae81f33d374902d35ddd68c24540e2730a7",
+        "source-pins.json": "301d6df5f527af8f8bfedf3df6a382b003e71de031e1c7c636648f56b61ae309"
+      }
+    },
+    "vertical": {
+      "tag": "VERTICAL",
+      "profiles": 20,
+      "files_sha256": {
+        "capture_reference.py": "8410313965b450de260253b25ea200030ba02ffa060f4ae53021faf32bb89eae",
+        "declared-inputs.json": "bedb46d1e3e4f052e18157cfa95f054afcd4380da0256565a338cde8faa90968",
+        "events.jsonl": "719d9db790bcfbc29f3b8957a89a8daa8c5686beeb93af7fd6dbe80485080999",
+        "generate_profiles.py": "b81e62925a993123e395ca8613fe482ec7f868c290f631c20b9c203076e7a1ba",
+        "live-code.tsv": "26ecced8451e4ad63ae1d86ff50b26c31ab94de395ea1d39acc80d760b29e1b8",
+        "original.stdout": "9362d5dac60dc211d2ef45152c4937e9e18dcce5232d194ce02e3d1de88f1356",
+        "profiles.txt": "409715eeecf1d140ae2d75053dd17e41dc9d208bb7d4823353447e710639a4d4",
+        "provenance.json": "3735dde3f9b5dc3e140104a21ca0c0f51efd3d2fbe60193737f49a3e2af3d02a",
+        "RedstoneVerticalJdi.java": "554ae09f05fdd2af93286103e3d767801b2bcc6a4009176e7ac1758aea3f7da1",
+        "RedstoneVerticalObservation.java": "702b1c6dd8affbd920628e1bf1952aeea6a1cfd0d47243b0c34e82de8856a931",
+        "selected.txt": "5bd20d7ed2059a66b528649e53e9ad5a15704efdaa48cdf9d42361ee3280a07d",
+        "source-pins.json": "3327c43090d8fe6edf79d91ac35fa1af06a7fe1fd37b84ef76c93cdf7552fb4a"
+      }
+    },
+    "capability": {
+      "tag": "CAPABILITY",
+      "profiles": 10,
+      "files_sha256": {
+        "capture_reference.py": "c87357a3b1cb73f3bedc5b788cc4875d73fd6756e28332cb3cef5e5e8e751da3",
+        "declared-inputs.json": "d42659372496a580402198468c4f8316b9d5a9648f9220a3c652cddd6d614113",
+        "events.jsonl": "407ec08fb4e01d61e7bdbf4497881979c3ef7b4535f7878f70d16c757d1fa9be",
+        "generate_profiles.py": "1d1027cb07bed05fdbe3e2cb613e2da002331ea2cb53fab250f6d4ceecfec281",
+        "live-code.tsv": "0eda2819a626fa2aa37e17788275f0ecb27bf735922275398b434ad7777bd751",
+        "original.stdout": "70eb94a2db40bf168e5b249a7b285378f964fd6ec018623227badc718f2e68ba",
+        "profiles.txt": "d6f771bc2fec07f71676ab4d9a1eb687c350c51e933de50cec4aa65b543690d5",
+        "provenance.json": "88fa217f47d84c03ecf846c41e42e794e16c29e7a24ecb7c573779fdd7cc86b7",
+        "RedstoneCapabilityJdi.java": "41e232650aee84c10d787d20047a2b2dac3cec4d57f840360c61bc04738c278f",
+        "RedstoneCapabilityObservation.java": "7daadf5499f9e7dda5ed3339ead1e8a865b509bd0f259f67408b78aa43b72577",
+        "selected.txt": "a413989692037fe9e336f9ec30c1b5c36a40508b0246d15de0f8ce928dfd836f",
+        "source-pins.json": "1f8f49a12c20ea28bcc3bf59c52121dc0ad866ac5ede928df0b3f96ec5076136"
+      }
+    },
+    "signed": {
+      "tag": "SIGNED",
+      "profiles": 8,
+      "files_sha256": {
+        "capture_reference.py": "69f58c221c6be87ad07fa060b075e1e1d1fc5bb6fda003e4ec02a70ab52acaad",
+        "declared-inputs.json": "f871fb21a6a5f558104e0da95ce4c9797fb778a89eb725d62aa8317014eda240",
+        "events.jsonl": "1afb9957c7d5bc47a737c5198f83f1d79114a24b7fbde9aec2d76cedd9e2cd86",
+        "generate_profiles.py": "8978aaa1a1c71213a3204b84efbabd8183818683508fb6f9b2354c2adb0b4503",
+        "live-code.tsv": "c32c3b3d6483df5a7558e34c0a388e9a140ca3a3715132413619e1f8540b4df2",
+        "original.stdout": "79d9e6c3e59e7dcea34c0249f8e63af4af7a0c8d5a321f77b45fbe9650682161",
+        "owner-contract.json": "32ce50d69c1d225052d118e8b133e04409c10388bc3968d325e2e97a9baa5443",
+        "owners.tsv": "5df0dfb571f5c7842ed13db0551e0536b0e6cf885301d9687921b88d1f565e22",
+        "profiles.txt": "f17065673c93fc19d79f2acc8479878b4ddecf551a3bb7119871a5cef6d4eee6",
+        "provenance.json": "6a758deec63a481537439d3ed62094ba020aabc8a59678be7fe8a2cbab692634",
+        "RedstoneSignedJdi.java": "2cb216333d31661dbdc9ccfeaabc28ccf0999be730f0d22c7aec7b56a263862b",
+        "RedstoneSignedObservation.java": "1c7f46f6de1e5c456b690ff5e2a4d7eb9051ec7bc7dc2e9b86f244f5b965c430",
+        "selected.txt": "5044ed4963dc178039ea6802bb1317af799ab49cb3caf4759a2d8217924cdf3d",
+        "source-pins.json": "0d144bc1ce687964dce18f7a8b1466647ae6b6c96b27de1c94f42f4a5179c6f6",
+        "world_inputs.py": "c0601747a6388ab71ad78730e78a5e1e92de61065dc9572eee7ddab4087153b9"
+      }
+    },
+    "nullable": {
+      "tag": "NULLABLE",
+      "profiles": 6,
+      "files_sha256": {
+        "capture_reference.py": "c64f70b04427b6ffae80320c8a4cbec98b4759a14897da4c400689844b4d4430",
+        "declared-inputs.json": "4c1727d6528bf763c78277ea304441c69e90e53eed5b8bce3ff0a4a336f329fa",
+        "events.jsonl": "595dc4e760c94376f9d4e31204e59e338040053bda33caa0583726949b906a9a",
+        "generate_profiles.py": "bffaff6e81f57d5b45454429c0cb0adeeed600b83eda4a65403717908600a55a",
+        "live-code.tsv": "b342b29931e9dba6b70688fd19aafe330b60ab093489913df37da7bcdc0e2b2b",
+        "original.stdout": "dd7f7eb9b8444c871a7fd61d28b2f914fcb9740e9a302a20bb0c898e9f4b6d69",
+        "profiles.txt": "f8b41d25a1cfe4206df194ad80e90b0f883769cf49658c50e122654f0d6e6aa1",
+        "provenance.json": "25719f1553088098afbdac7f3f2dee778c8ef3d51835856d9d86a47d9d7c9400",
+        "RedstoneNullableJdi.java": "e57ccf9507c0782161a3acd2a02c2ad14a736bc4fe9d36380174715f9d1999f8",
+        "RedstoneNullableObservation.java": "5d3503c9bf4e2f34c9e2873b5e6f40240044b2d107756e25803a15374222ecb7",
+        "selected.txt": "1ba6b0f4b0f0c08e697e3d1bbd278a9d658b1128b3d95368cd06223489986fbf",
+        "source-pins.json": "1f8f49a12c20ea28bcc3bf59c52121dc0ad866ac5ede928df0b3f96ec5076136"
+      }
+    }
+  }
+}

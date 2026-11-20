@@ -1,7 +1,6 @@
 #include "mc/world/storage/status.h"
 
-const char *mc_world_storage_status_string(mc_world_storage_status status)
-{
+const char *mc_world_storage_status_string(mc_world_storage_status status) {
     switch (status) {
         case MC_WORLD_STORAGE_OK:
             return "ok";

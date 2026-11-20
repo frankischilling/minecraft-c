@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "context": "real LWJGL Display.create; no Pbuffer fallback",
+  "physical-size": [
+    854,
+    480
+  ],
+  "scaled-size": [
+    427,
+    240
+  ],
+  "world-seed": 23,
+  "world-construction": "genuine FD(WY,name,dimension0,seed), unchanged cache/World fields",
+  "player-construction": "genuine DC(App,World,Session,0), unchanged constructor fields and actual IX/AA; not inserted into World Entity list by helper",
+  "player-name": "PlayerPreviewCaught",
+  "held": null,
+  "armor": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "manager": "actual TH.a singleton constructor; genuine RA(App) startup owner; actual TH.a(World) setter; e/h/k/p remain null before cold UE; separate fresh warm process invokes actual TH.frame before two warm calls",
+  "partial": 0.375,
+  "mouse": [
+    [
+      -30,
+      -40
+    ],
+    [
+      -60,
+      -70
+    ],
+    [
+      -90,
+      -100
+    ],
+    [
+      -120,
+      -130
+    ]
+  ],
+  "gl-projection": {
+    "viewport": [
+      0,
+      0,
+      854,
+      480
+    ],
+    "ortho": [
+      0,
+      427,
+      240,
+      0,
+      1000,
+      3000
+    ],
+    "modelview-translate": [
+      0,
+      0,
+      -2000
+    ]
+  },
+  "pre-draw-nw-clears": 0,
+  "random-rebinding": false,
+  "invocation-field-repairs": false,
+  "input-attachment": {
+    "caller": "net/minecraft/client/Minecraft.a(Lfd;Ljava/lang/String;Lgs;)V",
+    "capture-player-pc": 191,
+    "allocation-class": "lr",
+    "allocation-pc": 194,
+    "capture-settings-pc": 199,
+    "constructor": "lr.<init>(Lkv;)V",
+    "constructor-pc": 202,
+    "publish-field": "dc.a:Luo;",
+    "publication-pc": 205,
+    "pre-call-input": "actual new LR with actual App.z, published on actual App.h; untouched ten constructor key cells; no constant sneaking substitute",
+    "scope": "authored matching constructor/attachment protocol only; the whole Minecraft load caller is not claimed"
+  },
+  "profiles": [
+    "cold0",
+    "cold1",
+    "warm0",
+    "warm1"
+  ],
+  "expected-cold-source-path": "actual BW.a(String,String)11 throws to GV743; actual Exception.printStackTrace747; suffix750/766; DS cleanup; UE restore and caller returns",
+  "expected-warm-source-path": "actual TH.frame owner publication, then successful preview/model path without caught exception",
+  "stderr": "unchanged original System.err; no replacement PrintStream/Throwable/trace rewriting",
+  "JDI": "read-only original exception/frame/field/method return observation; no target invocation or field store",
+  "world-binding": {
+    "source-method": "th.a(Lfd;)V",
+    "pre-call": "genuine actual World setter invoked once; g becomes actual World while e/h/k/p remain constructor-null, no TH.frame",
+    "source-PCs": {
+      "putfield-g": 2,
+      "return": 5
+    }
+  },
+  "cold-escape-policy": "later uncaught source failures propagate through authored finally observations without field/GL repair; no forced cold return or extra cold calls after fatal escape; warm contrast uses fresh process",
+  "historical-failed-cohort": {
+    "path": ".local\\player-preview-caught-prepared-1",
+    "status": "FAIL",
+    "classification": "observer/helper scope gate misclassified probe reflection-search NoSuchFieldExceptions as warm game exceptions",
+    "actual-cold-source-exit": 1,
+    "actual-warm-source-exit": 0,
+    "source-cold-outcome": "caught/printed BW Engine NPE, then uncaught SN distance NPE from cameraNULL; sourceUE does not return",
+    "source-warm-outcome": "two ordinary/JDI warm UE returns after actualTH.frame",
+    "helper-fix": "read-only field helper enumerates declared fields instead of throwing/catching NoSuchFieldException while searching inherited fields; no game class/field/entropy repair",
+    "capture-sha256": "82f0f8d24bb59d8b9df628bcfd90e96aa003045da7f7eb59d6bdc30f2c4eaf03",
+    "reused": false
+  }
+}

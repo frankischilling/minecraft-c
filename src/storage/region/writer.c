@@ -1,6 +1,7 @@
 #include "mc/storage/region/writer.h"
 
 #include "mc/storage/region/region.h"
+#include "region_internal.h"
 
 #include <limits.h>
 #include <stdbool.h>
@@ -18,14 +19,12 @@ struct mc_region_writer {
     uint32_t growth;
 };
 
-mc_region_writer_limits mc_region_writer_default_limits(void)
-{
+mc_region_writer_limits mc_region_writer_default_limits(void) {
     const mc_region_writer_limits limits = {64u * 1024u * 1024u, 128u * 1024u * 1024u};
     return limits;
 }
 
-const char *mc_region_writer_status_string(mc_region_writer_status status)
-{
+const char *mc_region_writer_status_string(mc_region_writer_status status) {
     switch (status) {
         case MC_REGION_WRITER_OK:
             return "ok";
@@ -45,22 +44,19 @@ const char *mc_region_writer_status_string(mc_region_writer_status status)
     return "unknown region writer status";
 }
 
-static uint32_t writer_read_u32(const uint8_t *input)
-{
+static uint32_t writer_read_u32(const uint8_t *input) {
     return (uint32_t)input[0] << 24u | (uint32_t)input[1] << 16u | (uint32_t)input[2] << 8u |
            input[3];
 }
 
-static void writer_write_u32(uint8_t *output, uint32_t value)
-{
+static void writer_write_u32(uint8_t *output, uint32_t value) {
     output[0] = (uint8_t)(value >> 24u);
     output[1] = (uint8_t)(value >> 16u);
     output[2] = (uint8_t)(value >> 8u);
     output[3] = (uint8_t)value;
 }
 
-static bool writer_add_size(size_t left, size_t right, size_t *result)
-{
+static bool writer_add_size(size_t left, size_t right, size_t *result) {
     if (right > SIZE_MAX - left) {
         return false;
     }
@@ -68,16 +64,14 @@ static bool writer_add_size(size_t left, size_t right, size_t *result)
     return true;
 }
 
-static bool writer_allocation_size(size_t capacity, size_t *result)
-{
+static bool writer_allocation_size(size_t capacity, size_t *result) {
     size_t bytes;
     return writer_add_size(sizeof(mc_region_writer), capacity, &bytes) &&
            writer_add_size(bytes, capacity / MC_REGION_SECTOR_BYTES, result);
 }
 
 static mc_region_writer_status writer_get_limits(const mc_region_writer_limits *requested,
-                                                 mc_region_writer_limits *limits)
-{
+                                                 mc_region_writer_limits *limits) {
     *limits = requested == NULL ? mc_region_writer_default_limits() : *requested;
     if (limits->max_image_bytes > MC_REGION_WRITER_MAX_IMAGE_BYTES) {
         return MC_REGION_WRITER_INVALID_ARGUMENT;
@@ -85,41 +79,51 @@ static mc_region_writer_status writer_get_limits(const mc_region_writer_limits *
     return MC_REGION_WRITER_OK;
 }
 
-static bool writer_safe_image(const uint8_t *input, size_t length)
-{
+static bool writer_safe_image(const uint8_t *input, size_t length) {
     if (length < MC_REGION_HEADER_BYTES || length % MC_REGION_SECTOR_BYTES != 0) {
         return false;
     }
-    size_t sectors = length / MC_REGION_SECTOR_BYTES;
+    const size_t sectors = length / MC_REGION_SECTOR_BYTES;
+    uint32_t locations[MC_REGION_ENTRY_COUNT];
+    uint16_t indices[MC_REGION_ENTRY_COUNT];
+    size_t count = 0;
+    uint32_t previous_end = 2;
+    bool separated = true;
     for (size_t i = 0; i < MC_REGION_ENTRY_COUNT; ++i) {
-        uint32_t location = writer_read_u32(input + 4u * i);
+        const uint32_t location = writer_read_u32(input + 4u * i);
         if (location == 0) {
             continue;
         }
-        size_t start = location >> 8u;
-        size_t count = location & UINT32_C(255);
-        if (start < 2 || count == 0 || start > sectors || count > sectors - start) {
+        const uint32_t start = location >> 8u;
+        const uint32_t extent = location & UINT32_C(255);
+        if (start < 2 || extent == 0 || start > sectors || extent > sectors - start) {
             return false;
         }
-        size_t end = start + count;
-        for (size_t j = 0; j < i; ++j) {
-            uint32_t previous = writer_read_u32(input + 4u * j);
-            if (previous == 0) {
-                continue;
-            }
-            size_t previous_start = previous >> 8u;
-            size_t previous_end = previous_start + (previous & UINT32_C(255));
-            if (start < previous_end && previous_start < end) {
-                return false;
-            }
+        indices[count] = (uint16_t)count;
+        locations[count++] = location;
+        separated = separated && start >= previous_end;
+        previous_end = start + extent;
+    }
+    if (separated) {
+        return true;
+    }
+
+    uint16_t sorted[MC_REGION_ENTRY_COUNT];
+    mc_region_sort_ranges(locations, indices, sorted, count);
+    previous_end = 2;
+    for (size_t i = 0; i < count; ++i) {
+        const uint32_t location = locations[sorted[i]];
+        const uint32_t start = location >> 8u;
+        if (start < previous_end) {
+            return false;
         }
+        previous_end = start + (location & UINT32_C(255));
     }
     return true;
 }
 
 static mc_region_writer_status writer_allocate(const mc_region_writer_limits *limits, size_t length,
-                                               mc_region_writer **out)
-{
+                                               mc_region_writer **out) {
     size_t bytes;
     if (length > limits->max_image_bytes || !writer_allocation_size(length, &bytes) ||
         bytes > limits->max_allocation_bytes) {
@@ -151,8 +155,7 @@ static mc_region_writer_status writer_allocate(const mc_region_writer_limits *li
 }
 
 mc_region_writer_status mc_region_writer_create(const mc_region_writer_limits *requested,
-                                                mc_region_writer **out)
-{
+                                                mc_region_writer **out) {
     if (out == NULL) {
         return MC_REGION_WRITER_INVALID_ARGUMENT;
     }
@@ -175,8 +178,7 @@ mc_region_writer_status mc_region_writer_create(const mc_region_writer_limits *r
 
 mc_region_writer_status mc_region_writer_import(const uint8_t *input, size_t length,
                                                 const mc_region_writer_limits *requested,
-                                                mc_region_writer **out)
-{
+                                                mc_region_writer **out) {
     if (out == NULL || (input == NULL && length != 0)) {
         return MC_REGION_WRITER_INVALID_ARGUMENT;
     }
@@ -213,8 +215,7 @@ mc_region_writer_status mc_region_writer_import(const uint8_t *input, size_t len
 /* The old extent is considered free during planning, without changing any
  * owned state. A short tail never combines with appended sectors. */
 static size_t writer_find_run(const mc_region_writer *writer, size_t old_start, size_t old_count,
-                              size_t required)
-{
+                              size_t required) {
     size_t sectors = writer->length / MC_REGION_SECTOR_BYTES;
     size_t run = 0;
     for (size_t i = 2; i < sectors; ++i) {
@@ -231,8 +232,7 @@ static size_t writer_find_run(const mc_region_writer *writer, size_t old_start, 
     return sectors;
 }
 
-static bool writer_growth_fits(const mc_region_writer *writer, size_t capacity)
-{
+static bool writer_growth_fits(const mc_region_writer *writer, size_t capacity) {
     size_t current_bytes;
     size_t peak_bytes;
     return writer_allocation_size(writer->capacity, &current_bytes) &&
@@ -245,8 +245,7 @@ static bool writer_growth_fits(const mc_region_writer *writer, size_t capacity)
  * but falls back to the exact required size when the peak budget demands it. */
 static mc_region_writer_status writer_reserve(const mc_region_writer *writer, size_t length,
                                               uint8_t **image, uint8_t **free_sectors,
-                                              size_t *capacity)
-{
+                                              size_t *capacity) {
     *image = writer->image;
     *free_sectors = writer->free_sectors;
     *capacity = writer->capacity;
@@ -282,8 +281,7 @@ static mc_region_writer_status writer_reserve(const mc_region_writer *writer, si
     return MC_REGION_WRITER_OK;
 }
 
-static void writer_payload(uint8_t *image, size_t start, const uint8_t *payload, size_t length)
-{
+static void writer_payload(uint8_t *image, size_t start, const uint8_t *payload, size_t length) {
     uint8_t *record = image + start * MC_REGION_SECTOR_BYTES;
     writer_write_u32(record, (uint32_t)length + UINT32_C(1));
     record[4] = 2;
@@ -294,8 +292,7 @@ static void writer_payload(uint8_t *image, size_t start, const uint8_t *payload,
 
 mc_region_writer_status mc_region_writer_write_zlib(mc_region_writer *writer, int32_t x, int32_t z,
                                                     const uint8_t *payload, size_t length,
-                                                    uint32_t timestamp)
-{
+                                                    uint32_t timestamp) {
     if (writer == NULL || (payload == NULL && length != 0)) {
         return MC_REGION_WRITER_INVALID_ARGUMENT;
     }
@@ -360,15 +357,13 @@ mc_region_writer_status mc_region_writer_write_zlib(mc_region_writer *writer, in
     return MC_REGION_WRITER_OK;
 }
 
-mc_region_writer_bytes mc_region_writer_get_bytes(const mc_region_writer *writer)
-{
+mc_region_writer_bytes mc_region_writer_get_bytes(const mc_region_writer *writer) {
     const mc_region_writer_bytes bytes = {writer == NULL ? NULL : writer->image,
                                           writer == NULL ? 0 : writer->length};
     return bytes;
 }
 
-uint32_t mc_region_writer_consume_growth(mc_region_writer *writer)
-{
+uint32_t mc_region_writer_consume_growth(mc_region_writer *writer) {
     if (writer == NULL) {
         return 0;
     }
@@ -377,8 +372,7 @@ uint32_t mc_region_writer_consume_growth(mc_region_writer *writer)
     return growth;
 }
 
-void mc_region_writer_free(mc_region_writer *writer)
-{
+void mc_region_writer_free(mc_region_writer *writer) {
     if (writer != NULL) {
         free(writer->image);
         free(writer->free_sectors);

@@ -1,0 +1,2 @@
+scene-input-origin.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+LeverSceneObservation.java -text whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eol

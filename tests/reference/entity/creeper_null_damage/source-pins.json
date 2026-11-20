@@ -1,0 +1,1345 @@
+{
+  "schema": 1,
+  "scope": "STATIC ONLY: offline original class/Code inventory and resolved references; no executed original damage or runtime observations.",
+  "runtime_observation": false,
+  "executed_original_damage_calls": 0,
+  "jar_bytes": 1465375,
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "gb": {
+      "class_bytes": 2555,
+      "class_sha256": "ed05890aa9881dcc52c1d47963e4e69995b265a3db9a07fdd0af2291db4241f7",
+      "superclass": "gz",
+      "method_count": 16,
+      "method_inventory_sha256": "9411c24d4c4d89a7869c0ecd378558a470c5721bdb09d3cb4b769697359ba403",
+      "method_inventory": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lfd;)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lnu;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnu;)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsn;F)V",
+          "access": 4
+        },
+        {
+          "name": "w_",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "j_",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 4
+        },
+        {
+          "name": "i",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsn;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;F)V",
+          "access": 4
+        },
+        {
+          "name": "s",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "a_",
+          "descriptor": "(F)F",
+          "access": 1
+        },
+        {
+          "name": "j",
+          "descriptor": "()I",
+          "access": 4
+        },
+        {
+          "name": "v",
+          "descriptor": "()I",
+          "access": 2
+        },
+        {
+          "name": "e",
+          "descriptor": "(I)V",
+          "access": 2
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lc;)V",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lfd;)V",
+          "access": 1,
+          "code_bytes": 12,
+          "code_sha256": "b4203167a4c398b7b92408feade8e64c273cf267b06cf1b771ff65ac35da8156",
+          "code_attribute_sha256": "7f362beb41bd65355bd8a802fdb8e1c7308b457db20c5a0cfa764e2250129f5c",
+          "max_stack": 2,
+          "max_locals": 2
+        },
+        {
+          "name": "j_",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 4,
+          "code_bytes": 3,
+          "code_sha256": "c4da0d8a6165d94d26b71d7644c3b49d7730372d252a19f9d8139a8ced18571e",
+          "code_attribute_sha256": "fd142fb3ca2744d6ca944d7e4f5edbb80bb61159777c88f92fc99236f40e09ba",
+          "max_stack": 1,
+          "max_locals": 1
+        },
+        {
+          "name": "i",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 4,
+          "code_bytes": 3,
+          "code_sha256": "052c0cc682531c45dad7a7a30c50e0f45c3e9f24bdc88321774346b530ed8c0e",
+          "code_attribute_sha256": "a3062d1f7af3de049bf33fbdc04491590df1e513f654c709766c1ce283dd2b6c",
+          "max_stack": 1,
+          "max_locals": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsn;)V",
+          "access": 1,
+          "code_bytes": 34,
+          "code_sha256": "2a127d350a5263a9b2a532d39be7638c1b364e5a973beb2d272bf0591bb7997f",
+          "code_attribute_sha256": "e717c2924d4a79975a14db33cd421275e8290b871670b24e57f9b7cc4aff0408",
+          "max_stack": 4,
+          "max_locals": 2
+        }
+      ]
+    },
+    "gz": {
+      "class_bytes": 1743,
+      "class_sha256": "1754401116a87cd6237ccf135a4703affee9087d44a856fcd66f099801795088",
+      "superclass": "ii",
+      "method_count": 10,
+      "method_inventory_sha256": "f64c6c501c62744e2a084cfca24d156d8b76b8dab83ce74e060565d55978d89b",
+      "method_inventory": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lfd;)V",
+          "access": 1
+        },
+        {
+          "name": "o",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "w_",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "g_",
+          "descriptor": "()Lsn;",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;I)Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;F)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(III)F",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lnu;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnu;)V",
+          "access": 1
+        },
+        {
+          "name": "d",
+          "descriptor": "()Z",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "(Lsn;I)Z",
+          "access": 1,
+          "code_bytes": 41,
+          "code_sha256": "3a564dbff0d8aafe6a9adcb734753a4b334a763954343aba45255c4114e8c7fb",
+          "code_attribute_sha256": "03a57e5819db79386df78830dd6b83f10fe9d091faa0a6cba1eccc92700ce1f5",
+          "max_stack": 3,
+          "max_locals": 3
+        },
+        {
+          "name": "w_",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 29,
+          "code_sha256": "1d6a38715d5b5b876d6b15fda7efd506a9752d98c27c166fe3799a1f42996ba9",
+          "code_attribute_sha256": "7b8b1a28d6fecfd13ad4c189ba4ac3fe468d04e7008463534ca0b69cebc79077",
+          "max_stack": 1,
+          "max_locals": 1
+        }
+      ]
+    },
+    "ii": {
+      "class_bytes": 3048,
+      "class_sha256": "ab344d121ef7f2adfb4e7625020bb924d8a7f80a8eebe61d37909916f51b7e7a",
+      "superclass": "ls",
+      "method_count": 13,
+      "method_inventory_sha256": "770b98a84ef40eda67e8beb111072cd2802bd5b305fa0bc74af9cdf340f1777e",
+      "method_inventory": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lfd;)V",
+          "access": 1
+        },
+        {
+          "name": "e_",
+          "descriptor": "()Z",
+          "access": 4
+        },
+        {
+          "name": "f_",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "E",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;F)V",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsn;F)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(III)F",
+          "access": 4
+        },
+        {
+          "name": "g_",
+          "descriptor": "()Lsn;",
+          "access": 4
+        },
+        {
+          "name": "d",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "F",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Ldh;)V",
+          "access": 1
+        },
+        {
+          "name": "G",
+          "descriptor": "()Lsn;",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lsn;)V",
+          "access": 1
+        }
+      ],
+      "selected_methods": []
+    },
+    "ls": {
+      "class_bytes": 13411,
+      "class_sha256": "b70fbb1499cd1b37ef27dd5dec7637c7338439ef03fe13012dca93fb2326d078",
+      "superclass": "sn",
+      "method_count": 58,
+      "method_inventory_sha256": "f801cfbd655d97c789ce52de99d7e65510164731cb2bfa71a9525940ac8d82cb",
+      "method_inventory": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lfd;)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "e",
+          "descriptor": "(Lsn;)Z",
+          "access": 1
+        },
+        {
+          "name": "q_",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "h_",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "i_",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "w",
+          "descriptor": "()F",
+          "access": 1
+        },
+        {
+          "name": "e",
+          "descriptor": "()I",
+          "access": 1
+        },
+        {
+          "name": "T",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "U",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "V",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "s_",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(DDDFFI)V",
+          "access": 1
+        },
+        {
+          "name": "w_",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(FF)V",
+          "access": 4
+        },
+        {
+          "name": "c",
+          "descriptor": "(I)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;I)Z",
+          "access": 1
+        },
+        {
+          "name": "h",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(I)V",
+          "access": 4
+        },
+        {
+          "name": "k",
+          "descriptor": "()F",
+          "access": 4
+        },
+        {
+          "name": "g",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 4
+        },
+        {
+          "name": "j_",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 4
+        },
+        {
+          "name": "i",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;IDD)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsn;)V",
+          "access": 1
+        },
+        {
+          "name": "q",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "j",
+          "descriptor": "()I",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(F)V",
+          "access": 4
+        },
+        {
+          "name": "a_",
+          "descriptor": "(FF)V",
+          "access": 1
+        },
+        {
+          "name": "p",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lnu;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnu;)V",
+          "access": 1
+        },
+        {
+          "name": "W",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "d_",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "o",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "y",
+          "descriptor": "()Z",
+          "access": 4
+        },
+        {
+          "name": "R",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "u",
+          "descriptor": "()Z",
+          "access": 4
+        },
+        {
+          "name": "X",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "f_",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "x",
+          "descriptor": "()I",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;FF)V",
+          "access": 1
+        },
+        {
+          "name": "Y",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "Z",
+          "descriptor": "()Lsn;",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(FFF)F",
+          "access": 2
+        },
+        {
+          "name": "aa",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "d",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "ab",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "d",
+          "descriptor": "(F)F",
+          "access": 1
+        },
+        {
+          "name": "e",
+          "descriptor": "(F)Lbt;",
+          "access": 1
+        },
+        {
+          "name": "ac",
+          "descriptor": "()Lbt;",
+          "access": 1
+        },
+        {
+          "name": "f",
+          "descriptor": "(F)Lbt;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(DF)Lvf;",
+          "access": 1
+        },
+        {
+          "name": "l",
+          "descriptor": "()I",
+          "access": 1
+        },
+        {
+          "name": "r_",
+          "descriptor": "()Liz;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(B)V",
+          "access": 1
+        },
+        {
+          "name": "N",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(Liz;)I",
+          "access": 1
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "a",
+          "descriptor": "(Lsn;I)Z",
+          "access": 1,
+          "code_bytes": 364,
+          "code_sha256": "623ac147768dd3c8fb85bb6e6fcbd647c2a482a6f23e2a4a448408161036f930",
+          "code_attribute_sha256": "cbad34fdb7fe398371c4ce8c1fddc64b90159f093395ba7da56af5f319883519",
+          "max_stack": 7,
+          "max_locals": 8
+        },
+        {
+          "name": "b",
+          "descriptor": "(I)V",
+          "access": 4,
+          "code_bytes": 11,
+          "code_sha256": "480a3c004425a22b6d79b97ef4baff48c0fb1aef3f24bfba96c69bd346e9994b",
+          "code_attribute_sha256": "e6495a7539cc28b586b6d6764e5bbeae11a9901ea72a1c2fdbcb68e7c2984768",
+          "max_stack": 3,
+          "max_locals": 2
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsn;)V",
+          "access": 1,
+          "code_bytes": 58,
+          "code_sha256": "82535634da0d4e66aa09f3ab01a11d5d7c5670eedbaf38b756b53bbfb1820df3",
+          "code_attribute_sha256": "6e65bdd47264a959ec83544613546cfdaed5da259638a29aef5b2b8fcab7fa98",
+          "max_stack": 3,
+          "max_locals": 2
+        },
+        {
+          "name": "k",
+          "descriptor": "()F",
+          "access": 4,
+          "code_bytes": 2,
+          "code_sha256": "d9cd8c1ff77fbad798dbd032706c992ad89384e8a40d95ca0bfc1185834392df",
+          "code_attribute_sha256": "e2d9ab73018128aa637b2d07dcc887f8097782d6ea4ad793e16c37dda7d685ed",
+          "max_stack": 1,
+          "max_locals": 1
+        },
+        {
+          "name": "U",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 531,
+          "code_sha256": "9f6d821d312ab6d75f1537028f2cc5fe51c2a94496114d246a11769a2234b35f",
+          "code_attribute_sha256": "e0635eec07ff45fc3c9e745c85f72c020d1b480c55a0629283df8ac1a638e9c8",
+          "max_stack": 14,
+          "max_locals": 8
+        },
+        {
+          "name": "w_",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 529,
+          "code_sha256": "520929f96421adcf10a1c4aaaf3c87997799711f82df025d87c1fd9ed50e45fd",
+          "code_attribute_sha256": "01a46c3a92310c744efb8890b82f262d0f93fec799e5d75c91c53ad39244a335",
+          "max_stack": 6,
+          "max_locals": 12
+        }
+      ]
+    },
+    "sn": {
+      "class_bytes": 17172,
+      "class_sha256": "b53107a5bdd5ff92637582aaed4fd49366443a11cba96cef0a6ad719e197b7be",
+      "superclass": "java/lang/Object",
+      "method_count": 87,
+      "method_inventory_sha256": "deecde8f432b2001198d0f3cde1e42182c8e7293306207d469612e8761f416c5",
+      "method_inventory": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lfd;)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1028
+        },
+        {
+          "name": "ad",
+          "descriptor": "()Lud;",
+          "access": 1
+        },
+        {
+          "name": "equals",
+          "descriptor": "(Ljava/lang/Object;)Z",
+          "access": 1
+        },
+        {
+          "name": "hashCode",
+          "descriptor": "()I",
+          "access": 1
+        },
+        {
+          "name": "t_",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "K",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(FF)V",
+          "access": 4
+        },
+        {
+          "name": "c",
+          "descriptor": "(FF)V",
+          "access": 4
+        },
+        {
+          "name": "e",
+          "descriptor": "(DDD)V",
+          "access": 1
+        },
+        {
+          "name": "d",
+          "descriptor": "(FF)V",
+          "access": 1
+        },
+        {
+          "name": "w_",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "U",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "ae",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "ab",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "f",
+          "descriptor": "(DDD)Z",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(DDD)V",
+          "access": 1
+        },
+        {
+          "name": "n",
+          "descriptor": "()Z",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(DZ)V",
+          "access": 4
+        },
+        {
+          "name": "f",
+          "descriptor": "()Leq;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(I)V",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(F)V",
+          "access": 4
+        },
+        {
+          "name": "af",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "ag",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "k_",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lln;)Z",
+          "access": 1
+        },
+        {
+          "name": "w",
+          "descriptor": "()F",
+          "access": 1
+        },
+        {
+          "name": "ah",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(FFF)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(F)F",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lfd;)V",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(DDDFF)V",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(DDDFF)V",
+          "access": 1
+        },
+        {
+          "name": "f",
+          "descriptor": "(Lsn;)F",
+          "access": 1
+        },
+        {
+          "name": "g",
+          "descriptor": "(DDD)D",
+          "access": 1
+        },
+        {
+          "name": "h",
+          "descriptor": "(DDD)D",
+          "access": 1
+        },
+        {
+          "name": "g",
+          "descriptor": "(Lsn;)D",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lgs;)V",
+          "access": 1
+        },
+        {
+          "name": "h",
+          "descriptor": "(Lsn;)V",
+          "access": 1
+        },
+        {
+          "name": "d",
+          "descriptor": "(DDD)V",
+          "access": 1
+        },
+        {
+          "name": "ai",
+          "descriptor": "()V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;I)Z",
+          "access": 1
+        },
+        {
+          "name": "h_",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "i_",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lsn;I)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lbt;)Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(D)Z",
+          "access": 1
+        },
+        {
+          "name": "q_",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(Lnu;)Z",
+          "access": 1
+        },
+        {
+          "name": "d",
+          "descriptor": "(Lnu;)V",
+          "access": 1
+        },
+        {
+          "name": "e",
+          "descriptor": "(Lnu;)V",
+          "access": 1
+        },
+        {
+          "name": "aj",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 20
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lnu;)V",
+          "access": 1028
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lnu;)V",
+          "access": 1028
+        },
+        {
+          "name": "a",
+          "descriptor": "([D)Lsp;",
+          "access": 132
+        },
+        {
+          "name": "a",
+          "descriptor": "([F)Lsp;",
+          "access": 132
+        },
+        {
+          "name": "x_",
+          "descriptor": "()F",
+          "access": 1
+        },
+        {
+          "name": "b",
+          "descriptor": "(II)Lhl;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIF)Lhl;",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Liz;F)Lhl;",
+          "access": 1
+        },
+        {
+          "name": "W",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "L",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lgs;)Z",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsn;)Leq;",
+          "access": 1
+        },
+        {
+          "name": "s_",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "l_",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "I",
+          "descriptor": "()D",
+          "access": 1
+        },
+        {
+          "name": "m",
+          "descriptor": "()D",
+          "access": 1
+        },
+        {
+          "name": "i",
+          "descriptor": "(Lsn;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(DDDFFI)V",
+          "access": 1
+        },
+        {
+          "name": "m_",
+          "descriptor": "()F",
+          "access": 1
+        },
+        {
+          "name": "ac",
+          "descriptor": "()Lbt;",
+          "access": 1
+        },
+        {
+          "name": "S",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(DDD)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(B)V",
+          "access": 1
+        },
+        {
+          "name": "h",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "u_",
+          "descriptor": "()V",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(III)V",
+          "access": 1
+        },
+        {
+          "name": "ak",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "al",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "t",
+          "descriptor": "()Z",
+          "access": 1
+        },
+        {
+          "name": "d",
+          "descriptor": "(I)Z",
+          "access": 4
+        },
+        {
+          "name": "b",
+          "descriptor": "(IZ)V",
+          "access": 4
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lc;)V",
+          "access": 1
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lls;)V",
+          "access": 1
+        },
+        {
+          "name": "c",
+          "descriptor": "(DDD)Z",
+          "access": 4
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8
+        }
+      ],
+      "selected_methods": [
+        {
+          "name": "U",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 591,
+          "code_sha256": "27d2f9bdb1a48fbe3e54bb69e0d61e51d97fbeafa2e614b34b4a980f16b1cfca",
+          "code_attribute_sha256": "aaa87b4855854d7c9d0d96d31139d3fbc418dcd2a2b18a4adaba3c75f83fac83",
+          "max_stack": 14,
+          "max_locals": 6
+        }
+      ]
+    }
+  },
+  "hierarchy": [
+    "gb",
+    "gz",
+    "ii",
+    "ls",
+    "sn"
+  ],
+  "resolved_declarations": {
+    "gb.a(Lsn;I)Z": "gz",
+    "ii.a(Lsn;I)Z": "ls",
+    "gb.j_()Ljava/lang/String;": "gb",
+    "gb.i()Ljava/lang/String;": "gb",
+    "gb.k()F": "ls",
+    "gb.b(Lsn;)V": "gb",
+    "gz.b(Lsn;)V": "ls"
+  },
+  "selected_references": {
+    "gz.a(Lsn;I)Z:3": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "ii",
+        "name": "a",
+        "descriptor": "(Lsn;I)Z"
+      }
+    },
+    "sn.U()V:501": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "sn",
+        "name": "a",
+        "descriptor": "(Lsn;I)Z"
+      }
+    },
+    "ls.U()V:9": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "sn",
+        "name": "U",
+        "descriptor": "()V"
+      }
+    },
+    "ls.U()V:66": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ls",
+        "name": "a",
+        "descriptor": "(Lsn;I)Z"
+      }
+    },
+    "ls.a(Lsn;I)Z:284": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ls",
+        "name": "i",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "ls.a(Lsn;I)Z:288": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ls",
+        "name": "k",
+        "descriptor": "()F"
+      }
+    },
+    "ls.a(Lsn;I)Z:311": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fd",
+        "name": "a",
+        "descriptor": "(Lsn;Ljava/lang/String;FF)V"
+      }
+    },
+    "ls.a(Lsn;I)Z:316": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ls",
+        "name": "b",
+        "descriptor": "(Lsn;)V"
+      }
+    },
+    "ls.a(Lsn;I)Z:332": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ls",
+        "name": "j_",
+        "descriptor": "()Ljava/lang/String;"
+      }
+    },
+    "ls.a(Lsn;I)Z:336": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "ls",
+        "name": "k",
+        "descriptor": "()F"
+      }
+    },
+    "ls.a(Lsn;I)Z:359": {
+      "operation": "invokevirtual",
+      "reference": {
+        "kind": "method",
+        "class": "fd",
+        "name": "a",
+        "descriptor": "(Lsn;Ljava/lang/String;FF)V"
+      }
+    },
+    "gb.j_()Ljava/lang/String;:0": {
+      "operation": "ldc",
+      "reference": {
+        "kind": "String",
+        "text": "mob.creeper",
+        "utf8_hex": "6d6f622e63726565706572"
+      }
+    },
+    "gb.i()Ljava/lang/String;:0": {
+      "operation": "ldc",
+      "reference": {
+        "kind": "String",
+        "text": "mob.creeperdeath",
+        "utf8_hex": "6d6f622e637265657065726465617468"
+      }
+    },
+    "gb.b(Lsn;)V:2": {
+      "operation": "invokespecial",
+      "reference": {
+        "kind": "method",
+        "class": "gz",
+        "name": "b",
+        "descriptor": "(Lsn;)V"
+      }
+    },
+    "gb.b(Lsn;)V:6": {
+      "operation": "instanceof",
+      "reference": {
+        "kind": "class",
+        "name": "fr"
+      }
+    }
+  },
+  "selected_instruction_windows": {
+    "gb.j_()Ljava/lang/String;": [
+      {
+        "pc": 0,
+        "opcode": 18,
+        "operand_hex": "07"
+      },
+      {
+        "pc": 2,
+        "opcode": 176,
+        "operand_hex": ""
+      }
+    ],
+    "gb.i()Ljava/lang/String;": [
+      {
+        "pc": 0,
+        "opcode": 18,
+        "operand_hex": "08"
+      },
+      {
+        "pc": 2,
+        "opcode": 176,
+        "operand_hex": ""
+      }
+    ],
+    "gb.b(Lsn;)V": [
+      {
+        "pc": 0,
+        "opcode": 42,
+        "operand_hex": ""
+      },
+      {
+        "pc": 1,
+        "opcode": 43,
+        "operand_hex": ""
+      },
+      {
+        "pc": 2,
+        "opcode": 183,
+        "operand_hex": "002f"
+      }
+    ],
+    "ls.U()V": [
+      {
+        "pc": 63,
+        "opcode": 42,
+        "operand_hex": ""
+      },
+      {
+        "pc": 64,
+        "opcode": 1,
+        "operand_hex": ""
+      },
+      {
+        "pc": 65,
+        "opcode": 4,
+        "operand_hex": ""
+      },
+      {
+        "pc": 66,
+        "opcode": 182,
+        "operand_hex": "00fa"
+      },
+      {
+        "pc": 69,
+        "opcode": 87,
+        "operand_hex": ""
+      }
+    ],
+    "ls.k()F": [
+      {
+        "pc": 0,
+        "opcode": 12,
+        "operand_hex": ""
+      },
+      {
+        "pc": 1,
+        "opcode": 174,
+        "operand_hex": ""
+      }
+    ]
+  }
+}

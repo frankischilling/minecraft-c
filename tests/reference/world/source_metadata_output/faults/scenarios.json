@@ -1,0 +1,17 @@
+{
+  "scope": "Authored genuine ByteArrayOutputStream-backed OutputStream faults through unchanged original as.a(nu,OutputStream), not an observed OS/FOS fault",
+  "cases": [
+    {"phase": 0, "case": "complete", "root": "small", "fault": "none"},
+    {"phase": 1, "case": "header-write", "root": "small", "fault": "write call1 commits then throws IOException"},
+    {"phase": 2, "case": "serialization-write", "root": "large", "fault": "write call2 commits then throws IOException"},
+    {"phase": 3, "case": "normal-close", "root": "small", "fault": "close call1 consumes effect then throws IOException"},
+    {"phase": 4, "case": "write-and-finally-close", "root": "large", "fault": "write call2 and close call1 both effect-first IOException"},
+    {"phase": 5, "case": "normal-finish-write", "root": "small", "fault": "write call2 commits then throws IOException during normal finish"},
+    {"phase": 6, "case": "null-stream", "root": "small", "fault": "actual null underlying OutputStream operand"},
+    {"phase": 7, "case": "flush", "root": "small", "fault": "flush call1 throws IOException, returning child close"},
+    {"phase": 8, "case": "flush-and-close", "root": "small", "fault": "flush call1 and close call1 IOException; JDK child-close failure suppresses flush"}
+  ],
+  "small_root": {"type": 10, "name": "", "Value": {"type": 3, "value": -1234567}},
+  "large_root": {"Value": {"type": 3, "value": -1234567}, "Array": {"type": 7, "length": 131072, "generator": "xorshift32 state12345678 hex, Java int shifts13/17unsigned/5, low byte after each transition"}},
+  "source_expectations": "Constructor9 failure reaches no DOS/finally; serialization exception runs close30, failing close replaces write without as suppression; normal close22 failure has no close30; JDK Filter.close may suppress flush independently"
+}

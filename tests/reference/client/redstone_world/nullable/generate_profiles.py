@@ -1,0 +1,81 @@
+"""Author/check six frozen nullable seams; invokes no original or native target."""
+import argparse
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+
+
+def products():
+    # trailing tuple: override, NULL cache, NULL Block, Stone material seam.
+    cases = [("null-cache", (-1, 1, 0, 0)),
+             ("null-block", (-1, 0, 1, 0)),
+             ("null-block-override-zero", (0, 0, 1, 0)),
+             ("both-null", (-1, 1, 1, 0)),
+             ("west-stone-null-material", (-1, 0, 0, 1)),
+             ("overhead-stone-null-material", (-1, 0, 0, 2))]
+    rows = [(name, [0, 55, 7, 0, -2147483648, 0, *seam, 0, 0, 0])
+            for name, seam in cases]
+    profiles = "".join(name + " " + " ".join(map(str, values)) + "\n" for name, values in rows)
+    declaration = {
+        "schema": 1,
+        "status": "AUTHORED_NOT_COMPILED_OR_CAPTURED",
+        "scope": "Six direct CV.g nullable seams in one separate fresh World/NW cohort; earlier56/20/10/8 ordered cohorts remain separate",
+        "profiles": 6,
+        "integer_fields": ["mode_direct_g_must_zero", "registered_setup_block_id_must_55",
+                           "center_metadata_must_7", "light_must_dark_zero",
+                           "preserve_emission_must_INT_MIN", "bm_delta_must_zero",
+                           "texture_override", "null_cache_0_or_1", "null_block_0_or_1",
+                           "stone_material_mode_0_unchanged_1_west_2_overhead",
+                           "reserved_10_must_zero", "reserved_11_must_zero", "reserved_12_must_zero"],
+        "case_order": [name for name, _ in cases],
+        "coordinates": {"center": [8, 64, 8], "support": [8, 63, 8],
+                        "west": [7, 64, 8], "overhead": [8, 65, 8]},
+        "world_seed": 23,
+        "sky_subtraction": 3,
+        "canonical_chunks": [[0, 0], [0, 1], [1, 0], [1, 1]],
+        "preparation": "Before every call clear Blocks/Data/SkyLight/BlockLight in all4 canonical Chunks; HeightMap/other fields remain intact. Set center Dust55 metadata7 and Stone1 below. Material mode1 adds West Stone1; mode2 adds overhead Stone1. All other cells remain air.",
+        "nullable_argument_semantics": "Each case constructs real CV with the declared real/null cache and passes real/null registered SM55 argument to untouched g. The genuine registered setup receiver remains available for actual before/after bounds/bm/emission audits, even when argument is null. Output bounds describe that registered setup receiver, not a fictitious null object's fields.",
+        "nullable_material_semantics": "For mode1/2 only, read actual registered Stone1 instance bA, author that instance field null through ordinary reflection, invoke unchanged original g and audit effects, then restore the same actual reference in finally. No UU.m replacement/table element store, static-final mutation or callback is introduced. The below-center Stone is the same singleton; its material is also null during that declared call. All six cases observe genuine control flow without guessed failure PC/count.",
+        "input_receipt_fields": ["tag", "index", "registered_setup_class", "registered_setup_id",
+                                 "original_bm", "bm_delta", "entered_bm", "original_emission",
+                                 "entered_emission", "center_metadata", "light", "null_cache",
+                                 "null_block", "stone_material_mode", "override", "stone_material_null_at_entry"],
+        "bounds": "Preserve actual SM55 constructor bounds and bm; no bound setter",
+        "mutable_inputs": ["Declared canonical Chunk payload/light bytes", "CV cache argument and override",
+                           "g Block argument", "registered Stone1 instance bA null for two calls, restored in finally",
+                           "World sky subtraction f=3", "LM.a=false query flag before invocation"],
+        "untouched": ["original JAR/classes/method bodies", "all Random/Math streams",
+                      "Source clocks/phases/input", "all static references and static-final table contents",
+                      "registered Block bounds/bm", "NW constructor backing/references and cumulative batch",
+                      "World queues"],
+        "nw": "One real begin/translation(-.25,.5,-.75), actual2097152-word backing; own-prior audit of every non-emitted word, no draw/reset/backing replacement",
+        "remaining_frozen_plan_cases": {},
+        "remaining_total": 0,
+        "ordinary_target_timeout_seconds": 90,
+        "jdi_internal_timeout_seconds": 150,
+        "jdi_outer_subprocess_timeout_seconds": 180,
+        "jdi_event_limit": 20000,
+        "jdi_journal_byte_limit": 16777216,
+        "expected_source_values": "NONE: exceptions, reached prefixes, query omissions, colors and packed words are actual observations",
+    }
+    return {"profiles.txt": profiles, "declared-inputs.json": json.dumps(declaration, indent=2) + "\n"}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    for name, content in products().items():
+        wire = content.encode("ascii")
+        path = HERE / name
+        if args.check:
+            if path.read_bytes() != wire:
+                raise AssertionError("authored input mismatch: " + name)
+        else:
+            path.write_bytes(wire)
+    print("PASS: six authored nullable rows; no original/native execution")
+
+
+if __name__ == "__main__":
+    main()

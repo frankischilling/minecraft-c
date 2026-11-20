@@ -18,16 +18,14 @@
 
 static char request[32768];
 
-static void print_hex(const uint8_t *bytes, size_t length)
-{
+static void print_hex(const uint8_t *bytes, size_t length) {
     putchar('"');
     for (size_t i = 0; i < length; ++i)
         printf("%02x", (unsigned int)bytes[i]);
     putchar('"');
 }
 
-static int coordinate(const char *text, int32_t *out)
-{
+static int coordinate(const char *text, int32_t *out) {
     char *end = NULL;
     errno = 0;
     long value = strtol(text, &end, 10);
@@ -37,8 +35,7 @@ static int coordinate(const char *text, int32_t *out)
     return 1;
 }
 
-static int load_file(const char *path, uint8_t **bytes, size_t *length)
-{
+static int load_file(const char *path, uint8_t **bytes, size_t *length) {
     FILE *file = NULL;
 #ifdef _WIN32
     int path_units = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, NULL, 0);
@@ -91,8 +88,7 @@ static int load_file(const char *path, uint8_t **bytes, size_t *length)
     return 1;
 }
 
-static int handle_request(char *line)
-{
+static int handle_request(char *line) {
     char *x_text = strchr(line, '\t');
     if (x_text == NULL)
         return 0;
@@ -258,8 +254,7 @@ static int handle_request(char *line)
     return 1;
 }
 
-int main(void)
-{
+int main(void) {
     while (fgets(request, (int)sizeof(request), stdin) != NULL) {
         size_t length = strlen(request);
         if (length != 0 && request[length - 1u] == '\n')

@@ -1,0 +1,352 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "producer_hashes": {
+    "TorchParticleObservation.java": "1b44dedf9f01f8e484c510da1627d2c7ba1462981cffc4c670efa6b8803dcb04",
+    "TorchParticleJdi.java": "4c72cb920b1ae77bf5ad4b8d1156ce7d94279cea5fef528659e410aaf430f4e5",
+    "profiles.tsv": "918afff21b350729175e794b1475f2e1cf5f85f1ca9cbb175045c7d5ddf621ca",
+    "declared-inputs.json": "a0e1a28ddcc7b9416dd13ac80f381beb836eb0fcfd6f900c9797cde2b288c6a0",
+    "capture_reference.py": "fdc5756a39c067e138d974b76ece1b2db04f6badbe5021691efe2c29fad2575d",
+    "audit.py": "b58c418cebbce59bb3d70bde46e4e5ecc642a244b21e21a2897496b22ae89d76",
+    "compare.py": "f682e4dd6e9eb488edc448659d824052094a26116e21dcd8f80a582235533605"
+  },
+  "qualified_inputs_sha256": {
+    "jdk:java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk:javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk:modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk:jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "archive:b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "archive:lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "archive:lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "archive:jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "archive:jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "producer:TorchParticleObservation.java": "1b44dedf9f01f8e484c510da1627d2c7ba1462981cffc4c670efa6b8803dcb04",
+    "producer:TorchParticleJdi.java": "4c72cb920b1ae77bf5ad4b8d1156ce7d94279cea5fef528659e410aaf430f4e5",
+    "producer:profiles.tsv": "918afff21b350729175e794b1475f2e1cf5f85f1ca9cbb175045c7d5ddf621ca",
+    "producer:declared-inputs.json": "a0e1a28ddcc7b9416dd13ac80f381beb836eb0fcfd6f900c9797cde2b288c6a0",
+    "producer:capture_reference.py": "fdc5756a39c067e138d974b76ece1b2db04f6badbe5021691efe2c29fad2575d",
+    "producer:audit.py": "b58c418cebbce59bb3d70bde46e4e5ecc642a244b21e21a2897496b22ae89d76",
+    "producer:compare.py": "f682e4dd6e9eb488edc448659d824052094a26116e21dcd8f80a582235533605",
+    "shared:ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "shared:capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "shared:classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "all_source_and_product_hashes_before_after_equal": true,
+  "helper_classes_sha256": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "TorchParticleJdi$Drain.class": "ba31182057e5fff477c3d396e948ce8ffa70342676ac5468dcf2fa6ab86171e8",
+    "TorchParticleJdi.class": "33b99a7220d9727f3b1795115c71d7807d4de4be972e17d6c1ee3ad21ecf6441",
+    "TorchParticleObservation$1.class": "a8d13b423d9c5dd6e380f3fae9d8fb243bddbbd07b8e64a6a4e02a138f6122ae",
+    "TorchParticleObservation.class": "0a01ae745869856366d9b42bceda281a9b766a3520b79b8a73da6ea4d0dfd855"
+  },
+  "vms": 3,
+  "ordinary_receipts": [
+    {
+      "exit": 0,
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_bytes": 89991,
+      "stderr_bytes": 400,
+      "stdout_sha256": "db06423f7e9a4e554d6755443abbed27b51a1185c2c57b4c265b89ff2df2580d",
+      "stderr_sha256": "0c61f8bd2bb7e24c6542394220020aca21e9e299b666048816f22a8dc0bcb66b"
+    },
+    {
+      "exit": 0,
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_bytes": 89990,
+      "stderr_bytes": 400,
+      "stdout_sha256": "28af461cb272bf2332caeccfb4f576e253bf7529036898826f2709b3039a8945",
+      "stderr_sha256": "0c61f8bd2bb7e24c6542394220020aca21e9e299b666048816f22a8dc0bcb66b"
+    }
+  ],
+  "debugger_controller_receipt": {
+    "exit": 0,
+    "timeout_seconds": 340,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "ordinary_entropy": [
+    {
+      "constructors": 37,
+      "shared_double_returns": 242,
+      "private_float_returns_inferred": 250,
+      "private_initial": "reverse pinned Float count; separate JDI directly reads first state",
+      "warm_shared_initial": "reverse pinned double count; other36 read before/after directly",
+      "entropy_rebinding_or_supplied_samples": false
+    },
+    {
+      "constructors": 37,
+      "shared_double_returns": 242,
+      "private_float_returns_inferred": 250,
+      "private_initial": "reverse pinned Float count; separate JDI directly reads first state",
+      "warm_shared_initial": "reverse pinned double count; other36 read before/after directly",
+      "entropy_rebinding_or_supplied_samples": false
+    }
+  ],
+  "debugger_entropy": {
+    "constructors": 37,
+    "shared_double_returns": 242,
+    "private_float_returns": 250,
+    "live_constructor_method_observations": 126,
+    "target_state_writes": 0,
+    "debugger_game_invocations": 0,
+    "entropy_rebinding_or_supplied_samples": false
+  },
+  "debugger_trace": {
+    "events": 1173,
+    "live_code_methods": 24,
+    "component_calls": {
+      "movement": 11,
+      "components": 30,
+      "vertices": 32,
+      "brightness_queries": 18
+    },
+    "failures": [
+      {
+        "profile": 11,
+        "at": "xn.w_()V@60",
+        "exception": "java.lang.ArithmeticException",
+        "frames": [
+          "xn.w_()V@60",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@1191"
+        ]
+      },
+      {
+        "profile": 31,
+        "at": "sn.a(F)F@118",
+        "exception": "java.lang.NullPointerException",
+        "frames": [
+          "sn.a(F)F@118",
+          "xw.a(Lnw;FFFFFF)V@123",
+          "xn.a(Lnw;FFFFFF)V@61",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@763"
+        ]
+      },
+      {
+        "profile": 32,
+        "at": "xw.a(Lnw;FFFFFF)V@150",
+        "exception": "java.lang.NullPointerException",
+        "frames": [
+          "xw.a(Lnw;FFFFFF)V@150",
+          "xn.a(Lnw;FFFFFF)V@61",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@763"
+        ]
+      },
+      {
+        "profile": 33,
+        "at": "sn.a(F)F@118",
+        "exception": "java.lang.NullPointerException",
+        "frames": [
+          "sn.a(F)F@118",
+          "qu.a(F)F@32",
+          "xw.a(Lnw;FFFFFF)V@123",
+          "qu.a(Lnw;FFFFFF)V@46",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@763"
+        ]
+      },
+      {
+        "profile": 34,
+        "at": "xw.a(Lnw;FFFFFF)V@150",
+        "exception": "java.lang.NullPointerException",
+        "frames": [
+          "xw.a(Lnw;FFFFFF)V@150",
+          "qu.a(Lnw;FFFFFF)V@46",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@763"
+        ]
+      },
+      {
+        "profile": 35,
+        "at": "sn.a(F)F@118",
+        "exception": "java.lang.NullPointerException",
+        "frames": [
+          "sn.a(F)F@118",
+          "qu.a(F)F@32",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@1217"
+        ]
+      }
+    ],
+    "caught_platform_verification_exceptions": [
+      {
+        "seq": 324,
+        "profile": 18,
+        "event": "exception",
+        "at": "sun.security.util.DisabledAlgorithmConstraints$DenyAfterConstraint.permits(Lsun/security/util/ConstraintsParameters;)V@114",
+        "exception": "java.security.cert.CertPathValidatorException",
+        "catch": "sun.security.pkcs.SignerInfo.verifyAlgorithms([Lsun/security/pkcs/SignerInfo;Lsun/security/util/JarConstraintsParameters;Ljava/lang/String;)Ljava/util/Set;@169",
+        "frames": [
+          "sun.security.util.DisabledAlgorithmConstraints$DenyAfterConstraint.permits(Lsun/security/util/ConstraintsParameters;)V@114",
+          "sun.security.util.DisabledAlgorithmConstraints$Constraints.permits(Ljava/lang/String;Lsun/security/util/ConstraintsParameters;Z)V@232",
+          "sun.security.util.DisabledAlgorithmConstraints.permits(Ljava/lang/String;Lsun/security/util/ConstraintsParameters;Z)V@129",
+          "sun.security.util.DisabledAlgorithmConstraints.permits(Ljava/lang/String;Ljava/security/AlgorithmParameters;Lsun/security/util/ConstraintsParameters;Z)V@5",
+          "sun.security.pkcs.SignerInfo.verifyAlgorithms([Lsun/security/pkcs/SignerInfo;Lsun/security/util/JarConstraintsParameters;Ljava/lang/String;)Ljava/util/Set;@147",
+          "sun.security.util.SignatureFileVerifier.processImpl(Ljava/util/Hashtable;Ljava/util/List;Ljava/lang/String;)V@161",
+          "sun.security.util.SignatureFileVerifier.process(Ljava/util/Hashtable;Ljava/util/List;Ljava/lang/String;)V@12",
+          "java.util.jar.JarVerifier.processEntry(Lsun/security/util/ManifestEntryVerifier;)V@397",
+          "java.util.jar.JarVerifier.update(I[BIILsun/security/util/ManifestEntryVerifier;)V@39",
+          "java.util.jar.JarFile.initializeVerifier()V@164",
+          "java.util.jar.JarFile.getInputStream(Ljava/util/zip/ZipEntry;)Ljava/io/InputStream;@25",
+          "sun.net.www.protocol.jar.JarURLConnection.getInputStream()Ljava/io/InputStream;@87",
+          "java.net.URL.openStream()Ljava/io/InputStream;@4",
+          "java.lang.ClassLoader.getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;@16",
+          "java.lang.Class.getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;@123",
+          "nh.<init>()V@23",
+          "nh.<clinit>()V@4",
+          "do.<clinit>()V@0",
+          "jl.<clinit>()V@59",
+          "gm.<clinit>()V@2664",
+          "uu.<clinit>()V@3398",
+          "fd.a(IIIZ)I@43",
+          "fd.n(III)I@5",
+          "fd.c(III)F@11",
+          "sn.a(F)F@133",
+          "xw.a(Lnw;FFFFFF)V@123",
+          "xn.a(Lnw;FFFFFF)V@61",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@763"
+        ]
+      },
+      {
+        "seq": 325,
+        "profile": 18,
+        "event": "exception",
+        "at": "sun.security.pkcs.SignerInfo.verifyAlgorithms([Lsun/security/pkcs/SignerInfo;Lsun/security/util/JarConstraintsParameters;Ljava/lang/String;)Ljava/util/Set;@180",
+        "exception": "java.security.SignatureException",
+        "catch": "sun.security.util.SignatureFileVerifier.process(Ljava/util/Hashtable;Ljava/util/List;Ljava/lang/String;)V@23",
+        "frames": [
+          "sun.security.pkcs.SignerInfo.verifyAlgorithms([Lsun/security/pkcs/SignerInfo;Lsun/security/util/JarConstraintsParameters;Ljava/lang/String;)Ljava/util/Set;@180",
+          "sun.security.util.SignatureFileVerifier.processImpl(Ljava/util/Hashtable;Ljava/util/List;Ljava/lang/String;)V@161",
+          "sun.security.util.SignatureFileVerifier.process(Ljava/util/Hashtable;Ljava/util/List;Ljava/lang/String;)V@12",
+          "java.util.jar.JarVerifier.processEntry(Lsun/security/util/ManifestEntryVerifier;)V@397",
+          "java.util.jar.JarVerifier.update(I[BIILsun/security/util/ManifestEntryVerifier;)V@39",
+          "java.util.jar.JarFile.initializeVerifier()V@164",
+          "java.util.jar.JarFile.getInputStream(Ljava/util/zip/ZipEntry;)Ljava/io/InputStream;@25",
+          "sun.net.www.protocol.jar.JarURLConnection.getInputStream()Ljava/io/InputStream;@87",
+          "java.net.URL.openStream()Ljava/io/InputStream;@4",
+          "java.lang.ClassLoader.getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;@16",
+          "java.lang.Class.getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;@123",
+          "nh.<init>()V@23",
+          "nh.<clinit>()V@4",
+          "do.<clinit>()V@0",
+          "jl.<clinit>()V@59",
+          "gm.<clinit>()V@2664",
+          "uu.<clinit>()V@3398",
+          "fd.a(IIIZ)I@43",
+          "fd.n(III)I@5",
+          "fd.c(III)F@11",
+          "sn.a(F)F@133",
+          "xw.a(Lnw;FFFFFF)V@123",
+          "xn.a(Lnw;FFFFFF)V@61",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@763"
+        ]
+      },
+      {
+        "seq": 326,
+        "profile": 18,
+        "event": "exception",
+        "at": "sun.security.util.SignatureFileVerifier.process(Ljava/util/Hashtable;Ljava/util/List;Ljava/lang/String;)V@32",
+        "exception": "java.security.SignatureException",
+        "catch": "java.util.jar.JarVerifier.processEntry(Lsun/security/util/ManifestEntryVerifier;)V@403",
+        "frames": [
+          "sun.security.util.SignatureFileVerifier.process(Ljava/util/Hashtable;Ljava/util/List;Ljava/lang/String;)V@32",
+          "java.util.jar.JarVerifier.processEntry(Lsun/security/util/ManifestEntryVerifier;)V@397",
+          "java.util.jar.JarVerifier.update(I[BIILsun/security/util/ManifestEntryVerifier;)V@39",
+          "java.util.jar.JarFile.initializeVerifier()V@164",
+          "java.util.jar.JarFile.getInputStream(Ljava/util/zip/ZipEntry;)Ljava/io/InputStream;@25",
+          "sun.net.www.protocol.jar.JarURLConnection.getInputStream()Ljava/io/InputStream;@87",
+          "java.net.URL.openStream()Ljava/io/InputStream;@4",
+          "java.lang.ClassLoader.getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;@16",
+          "java.lang.Class.getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;@123",
+          "nh.<init>()V@23",
+          "nh.<clinit>()V@4",
+          "do.<clinit>()V@0",
+          "jl.<clinit>()V@59",
+          "gm.<clinit>()V@2664",
+          "uu.<clinit>()V@3398",
+          "fd.a(IIIZ)I@43",
+          "fd.n(III)I@5",
+          "fd.c(III)F@11",
+          "sn.a(F)F@133",
+          "xw.a(Lnw;FFFFFF)V@123",
+          "xn.a(Lnw;FFFFFF)V@61",
+          "TorchParticleObservation.main([Ljava/lang/String;)V@763"
+        ]
+      }
+    ],
+    "tick_scope": "declared no-clip; actual SN mover and EQ bounds offsets observed",
+    "target_writes": 0,
+    "debugger_game_invocations": 0
+  },
+  "elapsed_seconds": 118.88020619982854,
+  "debugger_elapsed_seconds": 114.99960139999166,
+  "own_prior_unchanged_words_per_vm": 25165440,
+  "compile_receipt": {
+    "exit": 0,
+    "timeout_seconds": 60,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "transport": "Selected JSON records parsed from actual CRLF journals and emitted as explicit LF JSON data; raw transport hashes are separately retained. No raw game classes/assets/JDK files are published.",
+  "retained_attempts": [
+    {
+      "attempt": 1,
+      "status": "FAIL",
+      "reason": "Probe second NW.begin reached actual Already tesselating exception; replaced with independent genuine NW constructors."
+    },
+    {
+      "attempt": 2,
+      "status": "FAIL",
+      "reason": "All three targets completed and rows/entropy agreed; initial trace validator rejected three caught platform JAR-verification exceptions. Raw exceptions retained, then exact platform class/catch scope added before fresh attempt3."
+    },
+    {
+      "attempt": 3,
+      "status": "PASS",
+      "elapsed_seconds": 118.88020619982854
+    }
+  ],
+  "artifact_hashes": {
+    "capture.json": "c4ed951e10a689582ed9c314becd7f0566e737d2b39f7b64f237b629a0739de2",
+    "compile.capture.json": "bfb747a89514daa47c8b16c938ebf7b83547b06be1bce9dc44a94c130e612f8a",
+    "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "frozen-inputs.json": "3939b5163e1f3193be89c11d4361de765298c42219a31f029e771ccb2650d935",
+    "debugger/constructors.jsonl": "c93c1c3ad79f2291b92d890136e0f196e308b6d77d27d32d1c6f1bc67d1b3e10",
+    "debugger/controller.capture.json": "3ba55006827535fa4a37eea45d5b84f018b49c6bbefba4d7fea560d5f5dd76d3",
+    "debugger/controller.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "debugger/controller.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "debugger/events.jsonl": "c65878e2a5ac42a66a55bea4d06e499ffd93b29851886e852466f5a2fb9d16e6",
+    "debugger/live-code.jsonl": "336fd36a0ecff753ecea7dfb48614501d4bff152ce1fd1db5e08e3b0e597d56e",
+    "debugger/target.stderr": "0c61f8bd2bb7e24c6542394220020aca21e9e299b666048816f22a8dc0bcb66b",
+    "debugger/target.stdout": "e61d38021f4723b397073c890637ab682a56c1ac6040c58ade2bc2650f436753",
+    "ordinary-0/original.capture.json": "124caffbc0db1511456164aac0867806c2b7f9d86f443dd1cb3bf7e81537e19a",
+    "ordinary-0/original.stderr": "0c61f8bd2bb7e24c6542394220020aca21e9e299b666048816f22a8dc0bcb66b",
+    "ordinary-0/original.stdout": "db06423f7e9a4e554d6755443abbed27b51a1185c2c57b4c265b89ff2df2580d",
+    "ordinary-1/original.capture.json": "d394a4cfeb40b99894f1b1a6a8824e36062109246b07eaf0b8097e5ef00bfafd",
+    "ordinary-1/original.stderr": "0c61f8bd2bb7e24c6542394220020aca21e9e299b666048816f22a8dc0bcb66b",
+    "ordinary-1/original.stdout": "28af461cb272bf2332caeccfb4f576e253bf7529036898826f2709b3039a8945"
+  },
+  "scope": "Finite genuine constructors, declared no-clip component ticks and CPU NW sprites/World brightness only. No collision, GL, pixels, statistical entropy distribution or whole-game parity claim.",
+  "component_semantic_sha256_per_vm": [
+    "97fb73fb7b75fc685c5f353333d3e1f91aa49a2d5bcc7551bccff4859084bdad",
+    "97fb73fb7b75fc685c5f353333d3e1f91aa49a2d5bcc7551bccff4859084bdad",
+    "97fb73fb7b75fc685c5f353333d3e1f91aa49a2d5bcc7551bccff4859084bdad"
+  ]
+}

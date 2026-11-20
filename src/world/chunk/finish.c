@@ -4,8 +4,7 @@
 
 bool mc_chunk_finish_normal(mc_chunk_state *chunk, mc_world_lighting *world, const int32_t *opacity,
                             size_t opacity_length, mc_chunk_finish_trace *trace,
-                            size_t *queue_aborts)
-{
+                            size_t *queue_aborts) {
     if (chunk == NULL || chunk->blank || chunk->data == NULL || chunk->data->blocks == NULL ||
         chunk->data->blocks_capacity < MC_CHUNK_BLOCKS || opacity == NULL ||
         opacity_length < 256u || !mc_world_lighting_validate(world) ||

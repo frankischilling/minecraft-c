@@ -1,0 +1,707 @@
+{
+  "schema": 1,
+  "scope": "Finite Windows Piston component comparisons and serial monitor2 ordinary SDK captures; successful and failed scopes remain separate.",
+  "records": [
+    {
+      "role": "direct_gl_component",
+      "status": "PASS",
+      "artifact_label": "piston-draw-geometry-final-v2/piston-direct-u51esxj8",
+      "scope": "27 authored direct HY inputs compared with the finite original draw cohort; separate native lighting-null fault control.",
+      "checks": 2054,
+      "cases": 27,
+      "active_batches": 24,
+      "submitted_vertices": 1560,
+      "device": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "3.3.0 NVIDIA 581.42",
+        "hidden": true,
+        "monitor": 2,
+        "display_id": 2
+      },
+      "native_fault_control": {
+        "status": "PASS",
+        "separate_from_original_geometry_cases": true,
+        "scope": "Authored native fault receipt; separate from 27 original geometry comparisons",
+        "observation": {
+          "lighting_null_buffer": {
+            "scope": "authored-native-fault",
+            "source_returned": false,
+            "hy_pc": 360,
+            "u_pc": 74,
+            "float_clear_pc": 3,
+            "exception_class": "java/lang/NullPointerException",
+            "tessellator_drawn": true,
+            "vertices": 60,
+            "completed_display_calls": 5,
+            "pooled_vectors": 2,
+            "cleanup_source_unchanged": true,
+            "retired": true,
+            "retire_idempotent": true,
+            "u_buffer_remains_null": true
+          }
+        },
+        "provenance": {
+          "receipt": {
+            "bytes": 836677,
+            "sha256": "7f8ff92d97456c3b0e7683cfa870e0c6693e2ad4a1aba1080f94ba547b43bc97"
+          },
+          "native_json": {
+            "bytes": 266629,
+            "sha256": "f6a5b9af5683b0dbe58b1a85781f1c80a8c8a46eb55afffaf88679cdc972fb0d"
+          },
+          "comparison_validator": "tests/tools/client/test_piston_geometry.py"
+        },
+        "qualification": "Actual native null lighting-buffer fault after reached HY360/U74/FloatBuffer.clear3; checked retirement preserves the failed Source prefix. No original fault-equivalence claim."
+      },
+      "source_set": {
+        "selected_inputs": 2054,
+        "canonical_relative_map_sha256": "f49b13b1ea02d0a674bdb2ad7b0c8f81af8b051e37488ce724642c73dc9dce32",
+        "selection": "Captured src/include/cmake/test/public packet selector; executable and adjacent DLLs have separate preserved-product proof.",
+        "unchanged_during_capture": true,
+        "products": []
+      },
+      "native_products": {
+        "products": [
+          {
+            "role": "executable",
+            "name": "mc_test_piston_draw_geometry.exe",
+            "sha256": "b1787a710ed6bb76dc07f8b829fec75e8f3bca6fdc7f888110fb4eec8e3480a4",
+            "bytes": 6804480
+          },
+          {
+            "role": "adjacent_native_libraries",
+            "name": "OpenAL32.dll",
+            "sha256": "19defbcda72c472bf078719f444665f887e8bf9206c5ec59d61320d5a8a2146d",
+            "bytes": 1603072
+          }
+        ],
+        "candidate_inputs_are_link_proof": false,
+        "scope": "Before/copy/preserved/after hashes and retained product bytes; no entered-code or complete link closure claim."
+      },
+      "imported_assets": {
+        "files": 413,
+        "canonical_relative_map_sha256": "9a0b0a13185469fd6bd065a5acf6692ef3b0d706d0bdcc35e34378aa97a07b0b",
+        "unchanged_during_capture": true
+      },
+      "receipt": {
+        "bytes": 836677,
+        "sha256": "7f8ff92d97456c3b0e7683cfa870e0c6693e2ad4a1aba1080f94ba547b43bc97"
+      },
+      "native_json": {
+        "bytes": 266629,
+        "sha256": "f6a5b9af5683b0dbe58b1a85781f1c80a8c8a46eb55afffaf88679cdc972fb0d"
+      },
+      "stdout_file": {
+        "bytes": 102,
+        "sha256": "5b9c5c2be353367b68a9aaa92aeba326377d197049e8d07a5a6a834fb385a978"
+      },
+      "stderr_file": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "transport": "Raw bounded process-pipe byte files.",
+      "limitations": [
+        "No ordinary gameplay input, World/HUD frame, original pixels, general GL driver parity or FPS result from this component cohort."
+      ]
+    },
+    {
+      "role": "activation_reference_component",
+      "status": "PASS",
+      "artifact_label": "piston-reference-native-final-v2/piston-reference-ww083etx",
+      "scope": "Six actual native saved-input Worlds independently replay direct Lever activation and FD.g; finite original interpreter/default projection compared with explicit exclusions.",
+      "checks": 162,
+      "cases": 6,
+      "phase_snapshots": 48,
+      "callbacks": 94,
+      "sound_callbacks": 15,
+      "raw_planes_independently_hashed": 315,
+      "map_encounter_order": {
+        "differences": 0,
+        "observations": 63,
+        "retained_orders_canonical_sha256": "1ced39815872f41f9b1073f6d46c886ef70ad5615ea854711e4285d8ce2958c4",
+        "both_raw_orders_retained": true,
+        "keyed_coordinates_and_complete_tile_identities_equal": true,
+        "general_iteration_parity_qualified": false
+      },
+      "raw_entropy": {
+        "retained_privately": true,
+        "exported": false,
+        "equality_and_draw_count_claims": false,
+        "piston_pitch_equality_qualified": false
+      },
+      "source_set": {
+        "selected_inputs": 1692,
+        "canonical_relative_map_sha256": "7efd89bd869bb9044401551dcb4bd1e530b592ebff75ba6c2c94862cafd89b39",
+        "selection": "Replay runner selected native executable, Source, headers, fixture/helpers and public packet during capture.",
+        "unchanged_during_capture": true,
+        "products": [
+          {
+            "role": "product:mc_test_piston_reference.exe",
+            "sha256": "48b5628cfdae7e805f362941dd33e7ff7d5a49d3d92d1a01c57539f249f7dbe6",
+            "bytes": 3247104
+          }
+        ]
+      },
+      "product_capture_scope": "Executable digest is in the unchanged selected-input map; this cohort does not retain a copied executable.",
+      "receipt": {
+        "bytes": 762914,
+        "sha256": "91ad1cde8afe12a8994bf2bb633a5152b269f62cd16843a8ff84fbc7c2c4245c"
+      },
+      "native_json": {
+        "bytes": 10532066,
+        "sha256": "29fe68c44872edd5c857dc68504049c3c8f3f98ce013b5cfdd4c38b1dd1b9e16"
+      },
+      "original_publication": {
+        "bytes": 1966,
+        "sha256": "9884d48547dc272fca9fd8423608ece74046009b6e8150285a966c2f22cce05a"
+      },
+      "stdout_file": {
+        "bytes": 446,
+        "sha256": "6eee658b12b17ee126baf4850babf7f5e8a4972771bccc1f6219f5075f73554e"
+      },
+      "stderr_file": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "transport": "Raw bounded process-pipe byte files.",
+      "comparison_exclusions": [
+        "Chunk Map encounter-order equality; keyed coordinates and complete Tile identities are compared",
+        "World Random state equality and Random draw-count claims",
+        "Piston sound-pitch equality; actual bits are retained and checked for finite Source range",
+        "full World ticks, original save/roundtrip, rendering and native failure-policy equivalence"
+      ]
+    },
+    {
+      "role": "ordinary_sdk_profile",
+      "status": "PASS",
+      "artifact_label": "piston-sdk-empty-final-v2/piston-sdk-354u8ofo",
+      "profile": "empty-front",
+      "native_exit": 0,
+      "physical_monitor_work": [
+        -1920,
+        0,
+        1920,
+        1040
+      ],
+      "source_set": {
+        "selected_inputs": 2374,
+        "canonical_relative_map_sha256": "89f8735d35d7f0888c16e5d247d9320abe5ec79be5b69da70095879da0288625",
+        "selection": "SDK runner selected native executable, adjacent DLLs, src/include/CMake and client fixture/helpers; not the full build dependency closure.",
+        "unchanged_during_capture": true,
+        "products": [
+          {
+            "role": "dependency:OpenAL32.dll",
+            "sha256": "19defbcda72c472bf078719f444665f887e8bf9206c5ec59d61320d5a8a2146d"
+          },
+          {
+            "role": "product:mc_test_piston_sdk.exe",
+            "sha256": "5c7c24769f08ab73fe68f371e7b572431df0292af36faa570bcbda3d3d162a2b"
+          }
+        ]
+      },
+      "native_products": {
+        "products": [
+          {
+            "role": "executable",
+            "name": "mc_test_piston_sdk.exe",
+            "sha256": "5c7c24769f08ab73fe68f371e7b572431df0292af36faa570bcbda3d3d162a2b",
+            "bytes": 10036736
+          },
+          {
+            "role": "adjacent_native_libraries",
+            "name": "OpenAL32.dll",
+            "sha256": "19defbcda72c472bf078719f444665f887e8bf9206c5ec59d61320d5a8a2146d",
+            "bytes": 1603072
+          }
+        ],
+        "candidate_inputs_are_link_proof": false,
+        "scope": "Before/copy/preserved/after hashes and retained product bytes; no entered-code or complete link closure claim."
+      },
+      "imported_assets_unchanged_during_capture": true,
+      "asset_continuity_scope": "SDK runner recorded its actual before/after comparison as true; unlike the direct GL cohort, its receipt does not retain a full asset inventory map.",
+      "receipt": {
+        "bytes": 701770,
+        "sha256": "0e967bd8d3d338c4d7a6471e6e5c8b11db501f996566b8d952e69857e22adb95"
+      },
+      "execution_receipt": {
+        "bytes": 5763,
+        "sha256": "24a26fd1caef26c812aad46b11923f5c594e1a156b5b437cf7537d62c556d279"
+      },
+      "stdout_file": {
+        "bytes": 3536,
+        "sha256": "ce3fafdddf0ba5f3bbfeebe228106694f96d91f7fe45352094987fae75f115c3"
+      },
+      "stderr_file": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "transport": "Retained SDK text-mode files after newline conversion; not original raw OS-pipe byte files.",
+      "scope": "Real stable saved Lever/base, SDK on/off taps, actual Timer-selected World/HUD transient HY draws, settlement and ordinary native save/reselection.",
+      "checks": 951,
+      "native": {
+        "checks": 951,
+        "draws": [
+          {
+            "phase": "extend",
+            "draws": [
+              {
+                "index": 0,
+                "carried": 34,
+                "metadata": 3,
+                "progress_bits": "3f2b851e",
+                "current_bits": "3f800000",
+                "previous_bits": "3f000000",
+                "vertices": 60,
+                "tiles": 1
+              }
+            ]
+          },
+          {
+            "phase": "retract",
+            "draws": [
+              {
+                "index": 1,
+                "carried": 33,
+                "metadata": 3,
+                "progress_bits": "3d8f5c28",
+                "current_bits": "3f000000",
+                "previous_bits": "00000000",
+                "vertices": 96,
+                "tiles": 1
+              },
+              {
+                "index": 2,
+                "carried": 33,
+                "metadata": 3,
+                "progress_bits": "3ebd70a4",
+                "current_bits": "3f000000",
+                "previous_bits": "00000000",
+                "vertices": 96,
+                "tiles": 1
+              },
+              {
+                "index": 3,
+                "carried": 33,
+                "metadata": 3,
+                "progress_bits": "3f0a3d71",
+                "current_bits": "3f800000",
+                "previous_bits": "3f000000",
+                "vertices": 96,
+                "tiles": 1
+              },
+              {
+                "index": 4,
+                "carried": 33,
+                "metadata": 3,
+                "progress_bits": "3f547ae2",
+                "current_bits": "3f800000",
+                "previous_bits": "3f000000",
+                "vertices": 96,
+                "tiles": 1
+              }
+            ]
+          }
+        ],
+        "world_ticks": [
+          7,
+          11
+        ],
+        "window_ids": [
+          3,
+          4
+        ],
+        "save": {
+          "frame": 0,
+          "time": 11,
+          "size_before": 3145728,
+          "first": 1794857541343,
+          "last": 1794857541359,
+          "snapshot": [
+            12,
+            1840276
+          ]
+        }
+      },
+      "observed_returned_world_hud_transient_draws": 5,
+      "observed_transient_vertices": 444,
+      "images": {
+        "piston-before.png": {
+          "bytes": 160303,
+          "sha256": "39fbf7d004db6cb9b0c0dc22bd149e03faa42edcef141f392874278e48572121",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "piston-extended.png": {
+          "bytes": 224979,
+          "sha256": "791e687956a30849483637ca56dfe76fb249d25f8c4aa44436818a8adb6d2c3d",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "piston-retracted.png": {
+          "bytes": 260051,
+          "sha256": "c62dafdc59abc66747704afa389f8aa68939bb006bcbcb481bce293e27009dea",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "piston-title.png": {
+          "bytes": 32556,
+          "sha256": "1c8a6a5e79b98d63cc736328bc4b2c145619bb4b019663994a4b29c8ba65563d",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "piston-reloaded.png": {
+          "bytes": 191004,
+          "sha256": "0e60339fa2e87013c2381a322b832128df0d51b41b1a1f527b17a06e661838e6",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "held-dirt.png": {
+          "bytes": 191004,
+          "sha256": "0e60339fa2e87013c2381a322b832128df0d51b41b1a1f527b17a06e661838e6",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        }
+      },
+      "saved_selected_chunk_and_player": {
+        "cells": [
+          [
+            3,
+            65,
+            2,
+            69,
+            4
+          ],
+          [
+            4,
+            65,
+            2,
+            33,
+            3
+          ],
+          [
+            4,
+            65,
+            3,
+            0,
+            0
+          ],
+          [
+            4,
+            65,
+            4,
+            0,
+            0
+          ]
+        ],
+        "player_inventory": [
+          [
+            0,
+            3,
+            1,
+            0
+          ]
+        ],
+        "time": 11,
+        "scope": "Independent selected saved Chunk and Player; actual reload witnessed separately."
+      },
+      "actual_windows_absent_from_success_footer": true,
+      "actual_frame_close_observed": true,
+      "save_clock_revalidation": "Recorded start plus declared 600-second timeout upper bound; receipt protocol was also admitted during capture.",
+      "image_scope": "Fresh independently CRC/framing-checked image files; visual inspection is a separate record, no original pixel equality."
+    },
+    {
+      "role": "failed_sdk_profile",
+      "status": "FAIL",
+      "artifact_label": "piston-sdk-stone-final-v1/piston-sdk-mwkybizr",
+      "profile": "pushed-stone",
+      "native_exit": 1,
+      "physical_monitor_work": [
+        -1920,
+        0,
+        1920,
+        1040
+      ],
+      "source_set": {
+        "selected_inputs": 2374,
+        "canonical_relative_map_sha256": "89f8735d35d7f0888c16e5d247d9320abe5ec79be5b69da70095879da0288625",
+        "selection": "SDK runner selected native executable, adjacent DLLs, src/include/CMake and client fixture/helpers; not the full build dependency closure.",
+        "unchanged_during_capture": true,
+        "products": [
+          {
+            "role": "dependency:OpenAL32.dll",
+            "sha256": "19defbcda72c472bf078719f444665f887e8bf9206c5ec59d61320d5a8a2146d"
+          },
+          {
+            "role": "product:mc_test_piston_sdk.exe",
+            "sha256": "5c7c24769f08ab73fe68f371e7b572431df0292af36faa570bcbda3d3d162a2b"
+          }
+        ]
+      },
+      "native_products": {
+        "products": [
+          {
+            "role": "executable",
+            "name": "mc_test_piston_sdk.exe",
+            "sha256": "5c7c24769f08ab73fe68f371e7b572431df0292af36faa570bcbda3d3d162a2b",
+            "bytes": 10036736
+          },
+          {
+            "role": "adjacent_native_libraries",
+            "name": "OpenAL32.dll",
+            "sha256": "19defbcda72c472bf078719f444665f887e8bf9206c5ec59d61320d5a8a2146d",
+            "bytes": 1603072
+          }
+        ],
+        "candidate_inputs_are_link_proof": false,
+        "scope": "Before/copy/preserved/after hashes and retained product bytes; no entered-code or complete link closure claim."
+      },
+      "imported_assets_unchanged_during_capture": true,
+      "asset_continuity_scope": "SDK runner recorded its actual before/after comparison as true; unlike the direct GL cohort, its receipt does not retain a full asset inventory map.",
+      "receipt": {
+        "bytes": 698419,
+        "sha256": "71452dbdc3e4f9c87868f4e9c71c8b443ddb3fe44aa20bb049b7f1e223663fd2"
+      },
+      "execution_receipt": {
+        "bytes": 5622,
+        "sha256": "093c17de8a3e515bd17a7a39fd6eb232c9061fa2569322a28341e52a72eff792"
+      },
+      "stdout_file": {
+        "bytes": 787,
+        "sha256": "113757680cb394fcb1a73d04767114d80a7d20b090b0a531f4b4ec4a6cdf8a17"
+      },
+      "stderr_file": {
+        "bytes": 778,
+        "sha256": "106501a4d0157b7c2d0fa2bb61a7f327681ef86b602085ef04d316d1cd31234a"
+      },
+      "transport": "Retained SDK text-mode files after newline conversion; not original raw OS-pipe byte files.",
+      "scope": "Failed ordinary pushed-Stone SDK input; real created UK pair reaches the separate DK multi-Tile publication frontier before a returned HY frame.",
+      "qualified": false,
+      "frontier": {
+        "runtime_class": "n",
+        "runtime_method": "a",
+        "runtime_pc": 442,
+        "static_reached_dk_dependency_pc": 584,
+        "operation": "DK multiple new Tiles require actual JVM identity-hash Set iteration"
+      },
+      "prefix": {
+        "actual_world_ticks": 6,
+        "moving_tiles": [
+          {
+            "index": 0,
+            "xyz": [
+              4,
+              65,
+              4
+            ],
+            "carried": 1,
+            "metadata": 0,
+            "facing": 3,
+            "extending": true,
+            "render_head": false,
+            "current_bits": "3f800000",
+            "previous_bits": "3f000000"
+          },
+          {
+            "index": 1,
+            "xyz": [
+              4,
+              65,
+              3
+            ],
+            "carried": 34,
+            "metadata": 3,
+            "facing": 3,
+            "extending": true,
+            "render_head": false,
+            "current_bits": "3f800000",
+            "previous_bits": "3f000000"
+          }
+        ]
+      },
+      "actual_frame_close_observed": true,
+      "successful_window_cleanup_footer": false,
+      "limitations": [
+        "Exit1 and Frame-close record are retained. A successful HY/World/HUD draw and successful cleanup footer are not qualified by this failed profile."
+      ]
+    }
+  ],
+  "visual_inspection": {
+    "recorded_in_this_projection": true,
+    "reviewer_role": "root",
+    "scope": "Inspected all six fresh native captures: textured saved Piston and Lever, extended and retracted states, held Dirt and health HUD, title, and returned reloaded World. This is a finite native visual check, not original pixel equivalence.",
+    "image_count": 6,
+    "receipt": {
+      "bytes": 1168,
+      "sha256": "d32ad8456493b973f11d969d3a785a39925b58c4800de40fafffe31f5bc55216"
+    }
+  },
+  "failed_attempt_history": [
+    {
+      "artifact_label": "piston-draw-geometry-native-v1/piston-direct-vo_tig0v",
+      "status": "FAIL",
+      "qualified": false,
+      "receipt": {
+        "bytes": 123516,
+        "sha256": "7c5663dafaa0d15082d74afac949d586a81f96627c84cd21c147740ab0ade6a6"
+      },
+      "scope": "Compare actual native HY draws with the finite original direct-draw cohort.",
+      "streams": {
+        "stdout.bin": {
+          "bytes": 30,
+          "sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f"
+        },
+        "stderr.bin": {
+          "bytes": 918,
+          "sha256": "4cd473d709c79d7f860f088e6092c605ddcd39cc40bb4cbb1f5ef85df60b429e"
+        }
+      },
+      "category": "direct_fixture_startup_failure"
+    },
+    {
+      "artifact_label": "piston-draw-geometry-native-v2/piston-direct-my8qurz4",
+      "status": "FAIL",
+      "qualified": false,
+      "receipt": {
+        "bytes": 122852,
+        "sha256": "52d173bee55d0c5adf11426831143c0eaf754594a61fe16318f3c9ec82840f8f"
+      },
+      "scope": "Compare actual native HY draws with the finite original direct-draw cohort.",
+      "streams": {
+        "stdout.bin": {
+          "bytes": 30,
+          "sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f"
+        },
+        "stderr.bin": {
+          "bytes": 250,
+          "sha256": "65eb9ccd623c3c565486f8f3aa9e0934324490d70e89f8c9f72748797e061a0f"
+        }
+      },
+      "category": "native_draw_retirement_check_failure"
+    },
+    {
+      "artifact_label": "piston-reference-native-v1/piston-reference-9hp6qleh",
+      "status": "FAIL",
+      "qualified": false,
+      "receipt": {
+        "bytes": 664113,
+        "sha256": "8af557f1d5c3e3cd5829a197657afa7c44921dd7d7edf6c7d8d390ba15e94ef5"
+      },
+      "streams": {
+        "native.stdout": {
+          "bytes": 446,
+          "sha256": "6eee658b12b17ee126baf4850babf7f5e8a4972771bccc1f6219f5075f73554e"
+        },
+        "native.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "category": "reference_comparison_rejected_minimum_height"
+    },
+    {
+      "artifact_label": "piston-sdk-empty-v1/piston-sdk-_j0tct2p",
+      "status": "FAIL",
+      "qualified": false,
+      "receipt": {
+        "bytes": 698069,
+        "sha256": "229cbf015c12018fddc857c13b189858666d38fcbdb02e76a73c7fac9247b8ee"
+      },
+      "profile": "empty-front",
+      "scope": "Authored settled Lever/Piston Blocks, genuine SDK input and actual Timer/World/HUD frames. No authored moving Tile/progress, live Source/clock/RNG repair, original pixel equality, FPS or sustained-play claim.",
+      "streams": {
+        "stdout.txt": {
+          "bytes": 465,
+          "sha256": "b99796e1098a781d25473508f56cc88b6344e3f36693285ff5592eedeb8066b9"
+        },
+        "stderr.txt": {
+          "bytes": 888,
+          "sha256": "95bc017acf69085a40ad8d60c5914fb7a4248f43bf3d51e6e17f2c935a9e8ea9"
+        }
+      },
+      "category": "retained_failed_attempt; see private raw protocol"
+    },
+    {
+      "artifact_label": "piston-sdk-empty-v2/piston-sdk-ug7_7wcf",
+      "status": "FAIL",
+      "qualified": false,
+      "receipt": {
+        "bytes": 700875,
+        "sha256": "52a67fb6ffb0f2294a1b0b82402e81cee2a99639f6b264058f3d51ba257d3350"
+      },
+      "profile": "empty-front",
+      "scope": "Authored settled Lever/Piston Blocks, genuine SDK input and actual Timer/World/HUD frames. No authored moving Tile/progress, live Source/clock/RNG repair, original pixel equality, FPS or sustained-play claim.",
+      "streams": {
+        "stdout.txt": {
+          "bytes": 4328,
+          "sha256": "9c4cab058bd09c049272c37d4edbd3404a28187e31b7d274decf8711c5bd5f10"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "category": "reader_image_inventory_rejection_after_native_process"
+    },
+    {
+      "artifact_label": "piston-sdk-stone-v1/piston-sdk-mak42yxe",
+      "status": "FAIL",
+      "qualified": false,
+      "receipt": {
+        "bytes": 698070,
+        "sha256": "062ad2ef18a868ade70a7e471006a88f3db70a490db150d554245a2c8d037a90"
+      },
+      "profile": "pushed-stone",
+      "scope": "Authored settled Lever/Piston Blocks, genuine SDK input and actual Timer/World/HUD frames. No authored moving Tile/progress, live Source/clock/RNG repair, original pixel equality, FPS or sustained-play claim.",
+      "streams": {
+        "stdout.txt": {
+          "bytes": 427,
+          "sha256": "f612c4ad857347427b1146c329b5ab59eb991dcd872ef57e6ebea3f8a184e637"
+        },
+        "stderr.txt": {
+          "bytes": 921,
+          "sha256": "e671d39c5027699d3b9c30a53dc86efc5d469c81b4eb71a190440bdf6c7f8f6b"
+        }
+      },
+      "category": "fixture_held_stack_contract_before_piston_activation"
+    },
+    {
+      "artifact_label": "piston-sdk-stone-v2/piston-sdk-yxvkj_m9",
+      "status": "FAIL",
+      "qualified": false,
+      "receipt": {
+        "bytes": 698419,
+        "sha256": "95bebf6f5a2da58daf40468700f5f68c335c70751afe3275ef8f6793af3f0179"
+      },
+      "profile": "pushed-stone",
+      "scope": "Authored settled Lever/Piston Blocks, genuine SDK input and actual Timer/World/HUD frames. No authored moving Tile/progress, live Source/clock/RNG repair, original pixel equality, FPS or sustained-play claim.",
+      "streams": {
+        "stdout.txt": {
+          "bytes": 787,
+          "sha256": "113757680cb394fcb1a73d04767114d80a7d20b090b0a531f4b4ec4a6cdf8a17"
+        },
+        "stderr.txt": {
+          "bytes": 778,
+          "sha256": "60906c737c3598de57cd2b98aa760f8ce696107956f2f354c2940093df3a87de"
+        }
+      },
+      "category": "retained_failed_attempt; see private raw protocol"
+    }
+  ],
+  "limitations": [
+    "Component original-reference comparisons have finite inputs and declared exclusions; they do not establish whole-game or general parity.",
+    "SDK Worlds contain prelaunch stable Blocks/Player inputs. Moving UK Tiles/progress arise from real input and Timer/World.g; no live Source/clock/Random repair is qualified.",
+    "Direct component draw inputs are separately authored and do not qualify ordinary gameplay activation by themselves.",
+    "Chunk Map keyed coordinates and complete Tile identities are compared; general Map encounter-order equality is explicitly excluded and both raw orders remain retained.",
+    "Raw World Random states and Piston pitch remain private independent observations; no captured entropy was passed to native execution and no RNG draw-count claim is made.",
+    "Actual native save/reselection is independent native evidence, not original save compatibility or original roundtrip qualification.",
+    "No original GL pixel equality, full dependency/entered-code proof, FPS result or sustained-play claim.",
+    "During-capture before/after maps are audited as historical receipts. Later current Source/build-file changes do not rewrite those captures."
+  ]
+}

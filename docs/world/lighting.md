@@ -1,5 +1,9 @@
 # Light-region queue
 
+The [concrete World runtime operations](runtime-lighting.md) use the actual C
+list, shared A counter and current provider. The caller-owned projection below
+retains its separate bounded-buffer and preflight contract.
+
 `mc/world/lighting/queue.h` provides caller-owned light-region bounds and ordered
 queue storage. It belongs to `mc_world` and uses the shared Java arithmetic
 helpers. It initializes no display, audio, files, networking or Java runtime.

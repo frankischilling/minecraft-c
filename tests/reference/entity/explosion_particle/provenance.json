@@ -1,0 +1,150 @@
+{
+  "schema": 1,
+  "scope": "Seven declared post-constructor no-clip GY ticks and six genuine XW CPU sprite draws over full-brightness original Chunk; actual constructor entropy remains independent.",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_capture": {
+    "status": "PASS",
+    "tick_rows": 7,
+    "draw_rows": 6,
+    "draw_words_per_row": 48,
+    "source_vertices_per_draw": 4,
+    "packed_vertices_per_draw": 6,
+    "ordinary_entropy": {
+      "constructors": 13,
+      "shared_double_returns": 104,
+      "private_float_returns_inferred": 104,
+      "private_initial_state": "inferred by reversing eight pinned Float advances; independently observed in JDI",
+      "constructor_or_shared_entropy_rebound": false
+    },
+    "read_only_jdi": {
+      "constructors": 14,
+      "warm_constructors": 1,
+      "shared_double_returns": 112,
+      "private_float_returns": 112,
+      "live_constructor_code_pins": 14,
+      "target_state_writes": 0,
+      "game_invocations_from_debugger": 0,
+      "constructor_or_shared_entropy_rebound": false
+    },
+    "network_attempts": 0,
+    "native_library_loads": 0,
+    "file_writes_in_target": 0,
+    "game_class_substitutions": false,
+    "uninitialized_game_allocations": false,
+    "inputs_unchanged": true,
+    "helper_classes_unchanged": true,
+    "helper_classes_sha256": {
+      "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+      "ExplosionJdi$Drain.class": "a7cc7471d67d7a7f0e312bd15b25bb0ba3c938f1022b01e11c6ff329e66d3881",
+      "ExplosionJdi.class": "752a56ed11cb1dd4e8b5d60a5b105cd10d7b1cd44e5836d1b07e38761d6ae628",
+      "ExplosionObservation$1.class": "8d312559bc2738a576b2e9c2214b1f3ffaeff3c4307404e125008e5c4149abf2",
+      "ExplosionObservation.class": "c5bc53643bff5a0605ebec450aa272ad83cb7d8d10a1ded592f97445ad186e84"
+    },
+    "artifacts_sha256": {
+      "capture.json": "f9588d2e4ddb52d1ff0b7ff677d7467c37b676b7bc1c284f0170e26c74fa484d",
+      "original.stdout": "ef4e4b3522aeb20af470053ca1094be7a903d861353cb6c48330a206c22953e9",
+      "original.stderr": "37f39c943e1d5581d511a05c4915bea410c58c79488599a6eec9a597acec63d3",
+      "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "debugger_artifacts_sha256": {
+      "constructors.ndjson": "765511e89fc21079b8eb6af4230d0fa77c0433b8e3c68b7381cc7c8e96de39d7",
+      "controller.capture.json": "cbccd748844bd04b595efc8f5fcac357a61b3718c2c96e3e30f79a54986419a2",
+      "controller.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "controller.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target.stderr": "37f39c943e1d5581d511a05c4915bea410c58c79488599a6eec9a597acec63d3",
+      "target.stdout": "8c2ae3538d81f6d4283dc453607b490928182ed9de6ec210f0308757a0ccb464"
+    }
+  },
+  "source_files": {
+    "ExplosionObservation.java": {
+      "bytes": 7993,
+      "sha256": "ee47d47b7e6001bca13c15343978d79e7c914d1419268418871c81cac5ee2f1b"
+    },
+    "ExplosionJdi.java": {
+      "bytes": 9464,
+      "sha256": "4dd4011fe5f5c686d05b1cd861c4ad2f5867609f22f745b25373ad5c12a02dc3"
+    },
+    "capture_reference.py": {
+      "bytes": 7194,
+      "sha256": "288a92793aacfa7a6d5106125c600788778e7f46d06ba7221dd0bf37fa22ca69"
+    },
+    "audit.py": {
+      "bytes": 4931,
+      "sha256": "f99c67ff0741f95414797ae3d850bcdc63ce04c13a2dc2562612748d6066c95e"
+    },
+    "compare.py": {
+      "bytes": 3612,
+      "sha256": "d728558b68690c6dace9eb924bd71266250a7319d8f32e276dfcbd4bb67eaa59"
+    },
+    "test_packet.py": {
+      "bytes": 5488,
+      "sha256": "106f661f86eaf0ed63a6f6a55d4c1c0972cf301b3945d250cbe08f16ad6e6e94"
+    },
+    "README.md": {
+      "bytes": 3592,
+      "sha256": "ba336cfd706fdc1ab64d9484bca52973d3296e3611a7c0033cc8a2806b20b7bf"
+    },
+    "finite.json": {
+      "bytes": 11512,
+      "sha256": "d79fbb47c60b328aa59b502165453be1badee4bc82b5805dbd7cabfa5ff31d6f"
+    },
+    "constructor-evidence.json": {
+      "bytes": 44490,
+      "sha256": "70639bc55e60c0948cda52ab28e74f41db3f8c023f199cff2ec5eb5dad0cbfe3"
+    },
+    "source-pins.json": {
+      "bytes": 6618,
+      "sha256": "c62439e45c418f3d1d10b958dc2068e48d56612ff69212909ac3e9c9f28932fd"
+    },
+    "../mob_tick/ConstructorJson.java": {
+      "bytes": 1571,
+      "sha256": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3"
+    },
+    "../../client/controller/capture.py": {
+      "bytes": 8065,
+      "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+    },
+    "../../client/controller/classfile.py": {
+      "bytes": 2578,
+      "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+    }
+  },
+  "native_validation": {
+    "windows": {
+      "status": "PASS_SELECTED",
+      "constructor_tick_collision_dn_checks": 193,
+      "exact_original_tick_rows": 7,
+      "sprite_checks": 115,
+      "exact_original_sprite_rows": 6,
+      "words_per_sprite": 48,
+      "packet_controls": 8,
+      "focused_seconds": 0.23
+    },
+    "linux_clang18_asan_ubsan": {
+      "status": "PASS_SELECTED",
+      "exact_original_tick_rows": 7,
+      "exact_original_sprite_rows": 6,
+      "regressions": 6,
+      "seconds": 0.63
+    },
+    "windows_sdk": {
+      "status": "PASS_SELECTED",
+      "checks": 1230,
+      "death_age": 21,
+      "distinct_actual_gy_particles": 20,
+      "ordinary_world_removal": true,
+      "post_death_source_autosaves": 1,
+      "independent_disk_audit": true,
+      "input_receipt_sha256": "568ab1d03f05210953e37c38fcc4e29b3e6728bc59440efc646608d0ace94054"
+    },
+    "scope": "Finite selected native component and SDK scopes; the complete current-source platform/public/hosted qualification remains separate."
+  },
+  "limits": [
+    "Seven declared no-clip tick scenes do not establish normal World collision behavior.",
+    "Six declared full-brightness CPU sprite scenes compare all actual NW words; no GL context, driver or pixel correspondence.",
+    "Constructor entropy is audited independently in each original process and each native control; constructor fields are not forced equal across independent streams.",
+    "The selected constructor field and stream scope is not a complete Entity constructor-graph equality proof.",
+    "Whole graphical lifecycle and extended play require separate current-source evidence."
+  ]
+}

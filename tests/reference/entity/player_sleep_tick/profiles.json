@@ -1,0 +1,470 @@
+[
+  {
+    "name": "intact-night-timer99",
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "intact-day-direction0",
+    "values": [
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "local-null-v-prefix",
+    "values": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      1,
+      99,
+      1
+    ]
+  },
+  {
+    "name": "local-null-world-prefix",
+    "values": [
+      3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      99,
+      2
+    ]
+  },
+  {
+    "name": "local-null-world-and-v-priority",
+    "values": [
+      4,
+      0,
+      0,
+      0,
+      0,
+      1,
+      99,
+      3
+    ]
+  },
+  {
+    "name": "remote-null-v-bypasses-am",
+    "values": [
+      5,
+      0,
+      0,
+      0,
+      1,
+      1,
+      99,
+      1
+    ]
+  },
+  {
+    "name": "remote-intact-bypasses-am",
+    "values": [
+      6,
+      0,
+      0,
+      0,
+      1,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "awake109-null-world-bypass",
+    "values": [
+      7,
+      0,
+      0,
+      0,
+      0,
+      0,
+      109,
+      2
+    ]
+  },
+  {
+    "name": "awake-intmax-wrap",
+    "values": [
+      8,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2147483647,
+      0
+    ]
+  },
+  {
+    "name": "awake-zero",
+    "values": [
+      9,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "awake-negative",
+    "values": [
+      10,
+      0,
+      0,
+      0,
+      0,
+      0,
+      -1,
+      0
+    ]
+  },
+  {
+    "name": "intact-day-direction1",
+    "values": [
+      11,
+      1,
+      1,
+      0,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "intact-day-direction2",
+    "values": [
+      12,
+      2,
+      1,
+      0,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "intact-day-direction3",
+    "values": [
+      13,
+      3,
+      1,
+      0,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "absent-night-direction0",
+    "values": [
+      14,
+      0,
+      0,
+      1,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "absent-night-direction1",
+    "values": [
+      15,
+      1,
+      0,
+      1,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "absent-night-direction2",
+    "values": [
+      16,
+      2,
+      0,
+      1,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "absent-night-direction3",
+    "values": [
+      17,
+      3,
+      0,
+      1,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "absent-day-direction0",
+    "values": [
+      18,
+      0,
+      1,
+      1,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "absent-day-direction1",
+    "values": [
+      19,
+      1,
+      1,
+      1,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "absent-day-direction2",
+    "values": [
+      20,
+      2,
+      1,
+      1,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "absent-day-direction3",
+    "values": [
+      21,
+      3,
+      1,
+      1,
+      0,
+      1,
+      99,
+      0
+    ]
+  },
+  {
+    "name": "intact-night-timer100",
+    "values": [
+      22,
+      0,
+      0,
+      0,
+      0,
+      1,
+      100,
+      0
+    ]
+  },
+  {
+    "name": "intact-night-timer101",
+    "values": [
+      23,
+      0,
+      0,
+      0,
+      0,
+      1,
+      101,
+      0
+    ]
+  },
+  {
+    "name": "intact-night-timer2147483647",
+    "values": [
+      24,
+      0,
+      0,
+      0,
+      0,
+      1,
+      2147483647,
+      0
+    ]
+  },
+  {
+    "name": "intact-day-timer100",
+    "values": [
+      25,
+      0,
+      1,
+      0,
+      0,
+      1,
+      100,
+      0
+    ]
+  },
+  {
+    "name": "intact-day-timer101",
+    "values": [
+      26,
+      0,
+      1,
+      0,
+      0,
+      1,
+      101,
+      0
+    ]
+  },
+  {
+    "name": "intact-day-timer2147483647",
+    "values": [
+      27,
+      0,
+      1,
+      0,
+      0,
+      1,
+      2147483647,
+      0
+    ]
+  },
+  {
+    "name": "absent-night-timer100",
+    "values": [
+      28,
+      0,
+      0,
+      1,
+      0,
+      1,
+      100,
+      0
+    ]
+  },
+  {
+    "name": "absent-night-timer101",
+    "values": [
+      29,
+      0,
+      0,
+      1,
+      0,
+      1,
+      101,
+      0
+    ]
+  },
+  {
+    "name": "absent-night-timer2147483647",
+    "values": [
+      30,
+      0,
+      0,
+      1,
+      0,
+      1,
+      2147483647,
+      0
+    ]
+  },
+  {
+    "name": "awake108-to109",
+    "values": [
+      31,
+      0,
+      0,
+      0,
+      0,
+      0,
+      108,
+      0
+    ]
+  },
+  {
+    "name": "intact-night-timer0",
+    "values": [
+      32,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "intact-night-timer-negative",
+    "values": [
+      33,
+      0,
+      0,
+      0,
+      0,
+      1,
+      -1,
+      0
+    ]
+  },
+  {
+    "name": "day-child-null-bounds-prefix",
+    "values": [
+      34,
+      0,
+      1,
+      0,
+      0,
+      1,
+      99,
+      4
+    ]
+  },
+  {
+    "name": "awake109-to0",
+    "values": [
+      35,
+      0,
+      0,
+      0,
+      0,
+      0,
+      109,
+      0
+    ]
+  }
+]

@@ -1,0 +1,762 @@
+[
+  {
+    "name": "sleep-null-bounds-prefix",
+    "values": [
+      0,
+      0,
+      0,
+      0,
+      4
+    ]
+  },
+  {
+    "name": "sleep-alone-0",
+    "values": [
+      1,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "sleep-alone-1",
+    "values": [
+      2,
+      0,
+      1,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "sleep-alone-2",
+    "values": [
+      3,
+      0,
+      2,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "sleep-alone-3",
+    "values": [
+      4,
+      0,
+      3,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "sleep-mixed-awake-0",
+    "values": [
+      5,
+      0,
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "name": "sleep-mixed-awake-1",
+    "values": [
+      6,
+      0,
+      1,
+      0,
+      1
+    ]
+  },
+  {
+    "name": "sleep-mixed-awake-2",
+    "values": [
+      7,
+      0,
+      2,
+      0,
+      1
+    ]
+  },
+  {
+    "name": "sleep-mixed-awake-3",
+    "values": [
+      8,
+      0,
+      3,
+      0,
+      1
+    ]
+  },
+  {
+    "name": "sleep-remote-0",
+    "values": [
+      9,
+      0,
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "name": "sleep-remote-1",
+    "values": [
+      10,
+      0,
+      1,
+      0,
+      2
+    ]
+  },
+  {
+    "name": "sleep-remote-2",
+    "values": [
+      11,
+      0,
+      2,
+      0,
+      2
+    ]
+  },
+  {
+    "name": "sleep-remote-3",
+    "values": [
+      12,
+      0,
+      3,
+      0,
+      2
+    ]
+  },
+  {
+    "name": "sleep-present-air-metadata-0",
+    "values": [
+      13,
+      0,
+      0,
+      0,
+      3
+    ]
+  },
+  {
+    "name": "sleep-present-air-metadata-1",
+    "values": [
+      14,
+      0,
+      1,
+      0,
+      3
+    ]
+  },
+  {
+    "name": "sleep-present-air-metadata-2",
+    "values": [
+      15,
+      0,
+      2,
+      0,
+      3
+    ]
+  },
+  {
+    "name": "sleep-present-air-metadata-3",
+    "values": [
+      16,
+      0,
+      3,
+      0,
+      3
+    ]
+  },
+  {
+    "name": "wake-bed-0-flags-0",
+    "values": [
+      17,
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-0-flags-1",
+    "values": [
+      18,
+      1,
+      0,
+      1,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-0-flags-2",
+    "values": [
+      19,
+      1,
+      0,
+      2,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-0-flags-3",
+    "values": [
+      20,
+      1,
+      0,
+      3,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-0-flags-4",
+    "values": [
+      21,
+      1,
+      0,
+      4,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-0-flags-5",
+    "values": [
+      22,
+      1,
+      0,
+      5,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-0-flags-6",
+    "values": [
+      23,
+      1,
+      0,
+      6,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-0-flags-7",
+    "values": [
+      24,
+      1,
+      0,
+      7,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-1-flags-0",
+    "values": [
+      25,
+      1,
+      1,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-1-flags-1",
+    "values": [
+      26,
+      1,
+      1,
+      1,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-1-flags-2",
+    "values": [
+      27,
+      1,
+      1,
+      2,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-1-flags-3",
+    "values": [
+      28,
+      1,
+      1,
+      3,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-1-flags-4",
+    "values": [
+      29,
+      1,
+      1,
+      4,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-1-flags-5",
+    "values": [
+      30,
+      1,
+      1,
+      5,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-1-flags-6",
+    "values": [
+      31,
+      1,
+      1,
+      6,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-1-flags-7",
+    "values": [
+      32,
+      1,
+      1,
+      7,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-2-flags-0",
+    "values": [
+      33,
+      1,
+      2,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-2-flags-1",
+    "values": [
+      34,
+      1,
+      2,
+      1,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-2-flags-2",
+    "values": [
+      35,
+      1,
+      2,
+      2,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-2-flags-3",
+    "values": [
+      36,
+      1,
+      2,
+      3,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-2-flags-4",
+    "values": [
+      37,
+      1,
+      2,
+      4,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-2-flags-5",
+    "values": [
+      38,
+      1,
+      2,
+      5,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-2-flags-6",
+    "values": [
+      39,
+      1,
+      2,
+      6,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-2-flags-7",
+    "values": [
+      40,
+      1,
+      2,
+      7,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-3-flags-0",
+    "values": [
+      41,
+      1,
+      3,
+      0,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-3-flags-1",
+    "values": [
+      42,
+      1,
+      3,
+      1,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-3-flags-2",
+    "values": [
+      43,
+      1,
+      3,
+      2,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-3-flags-3",
+    "values": [
+      44,
+      1,
+      3,
+      3,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-3-flags-4",
+    "values": [
+      45,
+      1,
+      3,
+      4,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-3-flags-5",
+    "values": [
+      46,
+      1,
+      3,
+      5,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-3-flags-6",
+    "values": [
+      47,
+      1,
+      3,
+      6,
+      0
+    ]
+  },
+  {
+    "name": "wake-bed-3-flags-7",
+    "values": [
+      48,
+      1,
+      3,
+      7,
+      0
+    ]
+  },
+  {
+    "name": "wake-absent-bed-flags-0",
+    "values": [
+      49,
+      1,
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "name": "wake-absent-bed-flags-1",
+    "values": [
+      50,
+      1,
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "name": "wake-absent-bed-flags-2",
+    "values": [
+      51,
+      1,
+      0,
+      2,
+      1
+    ]
+  },
+  {
+    "name": "wake-absent-bed-flags-3",
+    "values": [
+      52,
+      1,
+      0,
+      3,
+      1
+    ]
+  },
+  {
+    "name": "wake-absent-bed-flags-4",
+    "values": [
+      53,
+      1,
+      0,
+      4,
+      1
+    ]
+  },
+  {
+    "name": "wake-absent-bed-flags-5",
+    "values": [
+      54,
+      1,
+      0,
+      5,
+      1
+    ]
+  },
+  {
+    "name": "wake-absent-bed-flags-6",
+    "values": [
+      55,
+      1,
+      0,
+      6,
+      1
+    ]
+  },
+  {
+    "name": "wake-absent-bed-flags-7",
+    "values": [
+      56,
+      1,
+      0,
+      7,
+      1
+    ]
+  },
+  {
+    "name": "wake-null-v-flags-0",
+    "values": [
+      57,
+      1,
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "name": "wake-null-v-flags-1",
+    "values": [
+      58,
+      1,
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "name": "wake-null-v-flags-2",
+    "values": [
+      59,
+      1,
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "name": "wake-null-v-flags-3",
+    "values": [
+      60,
+      1,
+      0,
+      3,
+      2
+    ]
+  },
+  {
+    "name": "wake-null-v-flags-4",
+    "values": [
+      61,
+      1,
+      0,
+      4,
+      2
+    ]
+  },
+  {
+    "name": "wake-null-v-flags-5",
+    "values": [
+      62,
+      1,
+      0,
+      5,
+      2
+    ]
+  },
+  {
+    "name": "wake-null-v-flags-6",
+    "values": [
+      63,
+      1,
+      0,
+      6,
+      2
+    ]
+  },
+  {
+    "name": "wake-null-v-flags-7",
+    "values": [
+      64,
+      1,
+      0,
+      7,
+      2
+    ]
+  },
+  {
+    "name": "wake-blocked-exit-0",
+    "values": [
+      65,
+      1,
+      0,
+      1,
+      3
+    ]
+  },
+  {
+    "name": "wake-blocked-exit-1",
+    "values": [
+      66,
+      1,
+      1,
+      1,
+      3
+    ]
+  },
+  {
+    "name": "wake-blocked-exit-2",
+    "values": [
+      67,
+      1,
+      2,
+      1,
+      3
+    ]
+  },
+  {
+    "name": "wake-blocked-exit-3",
+    "values": [
+      68,
+      1,
+      3,
+      1,
+      3
+    ]
+  },
+  {
+    "name": "wake-remote-0",
+    "values": [
+      69,
+      1,
+      0,
+      3,
+      4
+    ]
+  },
+  {
+    "name": "wake-remote-1",
+    "values": [
+      70,
+      1,
+      1,
+      3,
+      4
+    ]
+  },
+  {
+    "name": "wake-remote-2",
+    "values": [
+      71,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  {
+    "name": "wake-remote-3",
+    "values": [
+      72,
+      1,
+      3,
+      3,
+      4
+    ]
+  },
+  {
+    "name": "wake-null-world-nonnull-v-prefix",
+    "values": [
+      73,
+      1,
+      0,
+      3,
+      5
+    ]
+  },
+  {
+    "name": "wake-null-world-null-v-prefix",
+    "values": [
+      74,
+      1,
+      0,
+      5,
+      6
+    ]
+  },
+  {
+    "name": "wake-null-bounds-after-clear-prefix",
+    "values": [
+      75,
+      1,
+      0,
+      3,
+      7
+    ]
+  }
+]

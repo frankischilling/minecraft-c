@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "ordinary_fresh_vms": 2,
+  "original_game_class_replacements": 0,
+  "inputs_before": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "tools/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tools/placement-static-verify.py": "7fa89bbad2c83e682c1e372a7f9c2e7438c4ac9bd5aa2803f714ce31f8bb626b",
+    "inputs/placement-static-pins.json": "15733359e5b1c2009edeb47ed96a9980c20767a572e0b3a0be27a028c60273e4",
+    "tools/world-inputs.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "tools/region-inputs.py": "d79b65d5740cd1e2846e4398a517604f20bb5b02696f052126ecf1c64eaad854",
+    "authored/PlantPlacementObservation.java": "cfdec415341284916872d08cdcc6c4a2c0962bef21b6ca4bfa7928d45da08dcf",
+    "authored/profiles.tsv": "046d8ea3fde9a644c1ef2ba01f71c33ca0f3f71fc8345da8b84004011fffba0b",
+    "authored/declared-inputs.json": "7875a9bb5930dc66c8ec8ac3890e4760bb7f6d2289ecbdcf774b735f6d1f0763",
+    "authored/capture_reference.py": "c7e5e584ece292fc2d90911235801a2dc4e8c066dc7234baf4b09b4607417b07",
+    "authored/source-pins.json": "9f6e3ddcf6a6a51b8e406a20faed5045b05d5736745a3fcfe6d0dd885c5d1f2a"
+  },
+  "inputs_after": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "tools/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tools/placement-static-verify.py": "7fa89bbad2c83e682c1e372a7f9c2e7438c4ac9bd5aa2803f714ce31f8bb626b",
+    "inputs/placement-static-pins.json": "15733359e5b1c2009edeb47ed96a9980c20767a572e0b3a0be27a028c60273e4",
+    "tools/world-inputs.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "tools/region-inputs.py": "d79b65d5740cd1e2846e4398a517604f20bb5b02696f052126ecf1c64eaad854",
+    "authored/PlantPlacementObservation.java": "cfdec415341284916872d08cdcc6c4a2c0962bef21b6ca4bfa7928d45da08dcf",
+    "authored/profiles.tsv": "046d8ea3fde9a644c1ef2ba01f71c33ca0f3f71fc8345da8b84004011fffba0b",
+    "authored/declared-inputs.json": "7875a9bb5930dc66c8ec8ac3890e4760bb7f6d2289ecbdcf774b735f6d1f0763",
+    "authored/capture_reference.py": "c7e5e584ece292fc2d90911235801a2dc4e8c066dc7234baf4b09b4607417b07",
+    "authored/source-pins.json": "9f6e3ddcf6a6a51b8e406a20faed5045b05d5736745a3fcfe6d0dd885c5d1f2a"
+  },
+  "inputs_unchanged": true,
+  "helpers_before": {
+    "PlantPlacementObservation$1.class": "3539e687381212b8c8d83c68ddae8c5d3ea79df28190e3dd165d025ea1007c27",
+    "PlantPlacementObservation$Snapshot.class": "1b97eaafcef70c5e5dad5916b26e840658b0789cf0f409cc10c7c28028fcfe70",
+    "PlantPlacementObservation.class": "2ef71a8b0440f9a4afefcb7637ed5fa41e6f2a157a30dc22cc39f3699adb5b1f"
+  },
+  "helpers_after": {
+    "PlantPlacementObservation$1.class": "3539e687381212b8c8d83c68ddae8c5d3ea79df28190e3dd165d025ea1007c27",
+    "PlantPlacementObservation$Snapshot.class": "1b97eaafcef70c5e5dad5916b26e840658b0789cf0f409cc10c7c28028fcfe70",
+    "PlantPlacementObservation.class": "2ef71a8b0440f9a4afefcb7637ed5fa41e6f2a157a30dc22cc39f3699adb5b1f"
+  },
+  "helpers_unchanged": true,
+  "compile": {
+    "returncode": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_raw_private_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runs": [
+    {
+      "returncode": 0,
+      "stdout_sha256": "c616dfe23456813a11b3bf311d9af7c9b39a518e1b6830508647f10543970164",
+      "stderr_raw_private_sha256": "5879dfb354848e1bee4e04c9c82b398961f571a7efc08ae0042757ea8f7fe7b3"
+    },
+    {
+      "returncode": 0,
+      "stdout_sha256": "c616dfe23456813a11b3bf311d9af7c9b39a518e1b6830508647f10543970164",
+      "stderr_raw_private_sha256": "5879dfb354848e1bee4e04c9c82b398961f571a7efc08ae0042757ea8f7fe7b3"
+    }
+  ],
+  "world_inputs_before": [
+    {
+      "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+      "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+      "session.lock": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    },
+    {
+      "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+      "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+      "session.lock": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+    }
+  ],
+  "world_files_after": [
+    {
+      "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+      "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+      "session.lock": "69a4560341282086519669ce8b2389afdb838a776094938ef03f3fa2e2a56485"
+    },
+    {
+      "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+      "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+      "session.lock": "276983c9e2511fdd799fe97c4186cf97356e57c2129ecbaf3aaf092061c515b4"
+    }
+  ],
+  "world_inputs_except_source_session_lock_unchanged": true,
+  "ordinary_vm_flags": [
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow",
+    "--add-opens",
+    "java.base/java.util=ALL-UNNAMED"
+  ],
+  "removed_environment_names": [],
+  "raw_outputs_identical": true,
+  "supporting_effect_guard": [
+    "PLANT_GUARD\tnetwork=0\tnative=0\texecs=0\tdenied-writes=0\tworld-writes=3\tworld-fields-unchanged=1\tchunk-fields-unchanged=1\trng-unchanged=1\tregistry-unchanged=1\tcanonical-chunks=4\tremote=0"
+  ],
+  "original_stdout_sha256": "783a1a4de33b4bc75fb83bfe78a742b787a0ce56bfa49882e915d6114d93b5da",
+  "projection": "Portable artifact identities replace absolute paths. ordinary-*.stdout are exact raw captured bytes. original.stdout selects CLASS/PLANT/COMPLETE ASCII lines with LF. Private raw stderr hashes preserve its exact identity without private helper paths. World session.lock source writes are separately retained, not called unchanged inputs.",
+  "private_freeze_sha256": "1de43cbd8237a863b88cfc1a2b90d997b67af129eeb028d1cd2aa7a049b4885f",
+  "private_helper_freeze_sha256": "cb89aa5bd68517e2db1a15af1ffff3c7c3981860662fe750f5125b813e434de9"
+}

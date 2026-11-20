@@ -68,16 +68,16 @@ def descriptor(value, count, context):
     return raw_hex(value["values"], count, context)
 
 
-def helpers():
-    path = ROOT / "scripts/reference/generation/compare_normal.py"
+def helpers(*, compile_source=compile):
+    path = ROOT / "scripts/reference/generation/compare_overworld.py"
     require(Path(__file__).resolve() == (ROOT / "scripts/reference/cache/compare_acquire.py").resolve(),
             "canonical executing source identity")
     data = path.read_bytes()
     require(len(data) <= 2 * 1024 * 1024, "generation helper source bound")
     module = types.ModuleType("_acquire_normal")
     module.__file__ = str(path)
-    exec(compile(data, str(path), "exec"), module.__dict__)
-    common, old, finish, executed = module.helpers()
+    exec(compile_source(data, str(path), "exec"), module.__dict__)
+    common, old, finish, executed = module.helpers(compile_source=compile_source)
     executed.append({"path": str(path), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
     return common, old, finish, module, executed
 
@@ -219,7 +219,8 @@ def world_projection(snapshot, ids, finish):
     for row in queue:
         require(type(row) is list and len(row) == 7 and type(row[0]) is int and row[0] in (0, 1), "queued kind/bounds")
         for coordinate in row[1:]:
-            integer(coordinate, -(1 << 31), (1 << 31) - 1, "queued bound")
+            if type(coordinate) is not int or not -(1 << 31) <= coordinate < (1 << 31):
+                raise Failure("queued bound: integer bounds")
     integer(world["enqueue_depth"], -(1 << 31), (1 << 31) - 1, "shared enqueue depth")
     return {"map": sorted([[entry["key"], ids[entry["value"]]] for entry in mappings]),
             "insertions": [ids[entry["value"]] for entry in insertions], "pending": sorted(pending),
