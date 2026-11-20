@@ -1309,6 +1309,10 @@
       "bytes": 4540,
       "sha256": "161364bb3c034fa7f5f06900e613ef5092c5fa444cb6669155a63223ac86e68e"
     },
+    "src/core/java/random_internal.h": {
+      "bytes": 1320,
+      "sha256": "5e1a41368085a9a7978ffe40df5bd16bd61fd0d599760a4e905b4727917dd64f"
+    },
     "src/core/java/random_profile_internal.h": {
       "bytes": 9998,
       "sha256": "06edb05d5d019dbfaf9239acd582b122b067aad86ab368abed1edce994772a03"
@@ -3202,8 +3206,8 @@
       "sha256": "9d6b50605df8db62bce182c085fdeb5141afac3038ef8dcecb7623caca759138"
     },
     "src/world/runtime/world_tick.c": {
-      "bytes": 65420,
-      "sha256": "d222d4de07c04577ce467c851e27a2101c1762ee65702dfee4f6038b2a46b44c"
+      "bytes": 65472,
+      "sha256": "1db570ec85e36417174734247099472a586591999c1814087da49482642ab63b"
     },
     "src/world/runtime/world_tick_scheduled.c": {
       "bytes": 10965,

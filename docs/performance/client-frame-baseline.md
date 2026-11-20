@@ -619,3 +619,64 @@ run.
 
 The trial was dropped. It improved the Stone median and produced slower
 frame p99 in two of the three qualified pairs.
+
+### Cost within spawning
+
+The same authored Far scene ran another 200-tick Windows Release capture
+with timers around individual spawning calls. Frames used the same fixed
+pose and 30-second warmup. Frame interval p99 was 5.931 ms with the ordinary
+observer and 6.033 ms with the additional timers. Each measurement includes
+timer overhead, and several timed calls are nested.
+
+| Spawning work per tick | Median calls | p50 | p99 |
+| --- | ---: | ---: | ---: |
+| Complete spawning phase | 1 | 1.889 ms | 2.182 ms |
+| Biome lookup | 867 | 0.384 ms | 0.463 ms |
+| Weighted selection | 867 | 0.085 ms | 0.119 ms |
+| Bounded draws and coordinate updates | 3,462 groups | 0.172 ms | 0.204 ms |
+| Position predicates | 3,462 | 0.599 ms | 0.718 ms |
+| Solid-support reads | 4,443 | 0.695 ms | 0.818 ms |
+| Material reads | 483.5 | 0.053 ms | 0.066 ms |
+
+### Constant-bound random draws
+
+The public bounded Random function and the World spawning caller use the same
+private implementation. The compiler can specialize it for the caller's
+constant bounds. The rejection loop, state transitions, and Gaussian cache
+handling follow the same code.
+
+Eight alternating MSVC Release pairs measured 112 samples per variant in a
+mixed constant-bound loop. Each sample made nine million draws. The sum of
+the outputs, final generator state, and Gaussian cache matched. Median time
+fell from 2.748 to 1.389 ns per draw, and p95 fell from 2.882 to 1.490 ns.
+
+A separate trial inlined the ready Registry check for solid-support reads.
+Eight fixed-work pairs held the same resident Chunk, checked returned values,
+and verified diagnostics, owner holds and Random state. The median moved
+from 54.495 to 54.062 ns per read and p95 from 55.952 to 55.899 ns. The
+Registry trial was dropped after this small result.
+
+Four settled Far pairs initially measured both changes together. All eight
+runs advanced 200 ticks. Median tick batch time on tick-bearing frames moved
+from 3.580 to 3.554 ms. Median frame interval p99 moved from 5.797 to
+5.734 ms and improved in two pairs. Median FPS moved from 518.30 to 516.11.
+
+Two further pairs isolated the Random change in the normal Release client.
+All four runs used the same fixed Far scene after a 30-second warmup and
+advanced 200 World ticks each.
+
+| Median of per-run statistics | Before | After |
+| --- | ---: | ---: |
+| FPS | 511.59 | 519.69 |
+| Frame interval p95 | 2.672 ms | 2.575 ms |
+| Frame interval p99 | 5.833 ms | 5.754 ms |
+| Longest frame interval | 8.509 ms | 8.609 ms |
+| Tick batch p50 on tick-bearing frames | 3.588 ms | 3.620 ms |
+
+FPS and frame interval p99 improved in both pairs. The longest interval and
+tick batch medians rose slightly. A separate instrumented pair used the
+same observer source and frozen dependency libraries. Both runs advanced
+200 ticks. Median time for the six draws and coordinate updates fell from
+49.58 to 43.53 ns per group, including the timers. There were 3,462 and
+3,486 groups per tick at the median, before and after. The comparisons
+cover one settled scene.

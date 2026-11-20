@@ -1,6 +1,7 @@
 #include "mc/world/runtime/world_tick.h"
 
 #include "../../block/registry/registry_internal.h"
+#include "../../core/java/random_internal.h"
 #include "../../entity/entity_internal.h"
 #include "../../entity/player/player_internal.h"
 #include "../info/tick_source_internal.h"
@@ -601,7 +602,7 @@ static bool spawn_draw(mc_world_tick_call *c, int32_t bound, unsigned int pc,
     if (random == NULL)
         return spawn_error(c, pc, "World spawn null Random receiver", false,
                            "java/lang/NullPointerException");
-    if (!mc_java_random_next_bounded(random, bound, out))
+    if (!mc_java_random_next_bounded_inline(random, bound, out))
         return spawn_error(c, pc, "World spawn Random nonpositive bound", false,
                            "java/lang/IllegalArgumentException");
     ++c->state.spawn_random_calls;

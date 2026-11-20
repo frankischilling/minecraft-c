@@ -1,5 +1,7 @@
 #include "mc/core/java/java.h"
 
+#include "../../../src/core/java/random_internal.h"
+
 #include <inttypes.h>
 #include <limits.h>
 #include <math.h>
@@ -197,6 +199,17 @@ static int test_random(void) {
     CHECK(mc_java_random_next_i64(&a) == -INT64_C(7261648964369397258));
     CHECK(float_bits(mc_java_random_next_float(&a)) == UINT32_C(0x3e9e3be0));
     CHECK(double_bits(mc_java_random_next_double(&a)) == UINT64_C(0x3fe19d2e10efa128));
+
+    /* This seed makes the first 31-bit sample fail the bound-six rejection check. */
+    mc_java_random_seed(&a, INT64_C(266262712077508));
+    a.next_next_gaussian = -0.0;
+    a.have_next_next_gaussian = true;
+    CHECK(mc_java_random_next_bounded_inline(&a, 6, &out) && out == 4 &&
+          a.state == UINT64_C(0x844c664c000b));
+    CHECK(mc_java_random_next_bounded_inline(&a, 1, &out) && out == 0 &&
+          a.state == UINT64_C(0x2ec06a89e6ba));
+    CHECK(a.have_next_next_gaussian &&
+          double_bits(a.next_next_gaussian) == UINT64_C(0x8000000000000000));
     return 0;
 }
 

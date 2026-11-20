@@ -1,6 +1,7 @@
 #include "mc/core/java/java.h"
 
 #include "mc/core/math/strict.h"
+#include "random_internal.h"
 
 #include <float.h>
 #include <limits.h>
@@ -180,50 +181,23 @@ int64_t mc_java_float_to_i64(float value) {
     return mc_java_double_to_i64((double)value);
 }
 
-#define RANDOM_MULTIPLIER UINT64_C(0x5deece66d)
-#define RANDOM_MASK UINT64_C(0xffffffffffff)
-
 void mc_java_random_seed(mc_java_random *random, int64_t seed) {
-    random->state = ((uint64_t)seed ^ RANDOM_MULTIPLIER) & RANDOM_MASK;
+    random->state = ((uint64_t)seed ^ MC_JAVA_RANDOM_MULTIPLIER) & MC_JAVA_RANDOM_MASK;
     random->next_next_gaussian = 0.0;
     random->have_next_next_gaussian = false;
 }
 
 void mc_java_random_reseed(mc_java_random *random, int64_t seed) {
-    random->state = ((uint64_t)seed ^ RANDOM_MULTIPLIER) & RANDOM_MASK;
+    random->state = ((uint64_t)seed ^ MC_JAVA_RANDOM_MULTIPLIER) & MC_JAVA_RANDOM_MASK;
     random->have_next_next_gaussian = false;
 }
 
-static uint32_t random_next_bits(mc_java_random *random, unsigned int bits) {
-    random->state = (random->state * RANDOM_MULTIPLIER + 11u) & RANDOM_MASK;
-    return (uint32_t)(random->state >> (48u - bits));
-}
-
 int32_t mc_java_random_next_i32(mc_java_random *random) {
-    return i32_from_bits(random_next_bits(random, 32));
+    return i32_from_bits(mc_java_random_next_bits(random, 32));
 }
 
 bool mc_java_random_next_bounded(mc_java_random *random, int32_t bound, int32_t *out) {
-    uint32_t bits;
-    uint32_t value;
-    if (bound <= 0 || out == NULL) {
-        return false;
-    }
-    bits = random_next_bits(random, 31);
-    if (((uint32_t)bound & ((uint32_t)bound - 1u)) == 0) {
-        *out = (int32_t)(((uint64_t)(uint32_t)bound * bits) >> 31);
-        return true;
-    }
-    for (;;) {
-        value = bits % (uint32_t)bound;
-        /* This is the sign test of Java's wrapping int expression
-         * bits - value + (bound - 1), not an unbounded integer comparison. */
-        if (bits - value + ((uint32_t)bound - 1u) <= INT32_MAX) {
-            *out = (int32_t)value;
-            return true;
-        }
-        bits = random_next_bits(random, 31);
-    }
+    return mc_java_random_next_bounded_inline(random, bound, out);
 }
 
 int64_t mc_java_random_next_i64(mc_java_random *random) {
@@ -234,12 +208,12 @@ int64_t mc_java_random_next_i64(mc_java_random *random) {
 }
 
 float mc_java_random_next_float(mc_java_random *random) {
-    return (float)random_next_bits(random, 24) * 0x1p-24f;
+    return (float)mc_java_random_next_bits(random, 24) * 0x1p-24f;
 }
 
 double mc_java_random_next_double(mc_java_random *random) {
-    uint64_t high = random_next_bits(random, 26);
-    uint64_t low = random_next_bits(random, 27);
+    uint64_t high = mc_java_random_next_bits(random, 26);
+    uint64_t low = mc_java_random_next_bits(random, 27);
     return (double)((high << 27) + low) * 0x1p-53;
 }
 
