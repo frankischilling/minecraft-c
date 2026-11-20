@@ -57,7 +57,8 @@ static voidpf z_allocate(voidpf context, uInt items, uInt size) {
         return NULL;
     }
     const size_t bytes = sizeof(compressed_allocation) + count * width;
-    compressed_allocation *p = calloc(1, bytes);
+    /* zlib initializes this workspace, as with its desktop default allocator. */
+    compressed_allocation *p = malloc(bytes);
     if (p == NULL) {
         o->z_allocation_failed = true;
         return NULL;

@@ -4526,8 +4526,8 @@
       "sha256": "dc0381643ec91969ccfe2fcbc7bf1f9d8f5fd90d8a8ea9da3f0d746155c209f5"
     },
     "src/world/cache/lifecycle.c": {
-      "bytes": 13572,
-      "sha256": "80450fec0292689478ba8b21c6041d278284deb0eb89016dc0a7d042a1fa1563"
+      "bytes": 13979,
+      "sha256": "e79a85ed33e76c28a20057e4a76e1d3fdcad9712aad70a161093f30ea30af6fe"
     },
     "src/world/chunk/data.c": {
       "bytes": 2574,
@@ -6431,7 +6431,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938355,
-      "sha256": "f8be9b6e6bc174e3aade0662fefb55dac6e9de8916509edcf6e056b9589461de"
+      "sha256": "cf1a1d6aee2a09ebcbb6118a422d68cb2344abb743d6b722d16c52e511f663ef"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6495,7 +6495,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068615,
-      "sha256": "c2fe5ebf5dff71218832a3c50e9ea7c8ec880dc0c795c42fc2fda423ac12ac2f"
+      "sha256": "1f8698824386a0e8b725dfde75ea7ad37e4ecd02c23329401fb087fc7c7e5e8f"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6627,7 +6627,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 935180,
-      "sha256": "205dfabde8a3f9d04caebeffba6cbdcfdb0a47ddabd8c2d9601b02949e21912d"
+      "sha256": "fd9281de86a5eeeebd2259cc0c6d87b438312eac6904ad80324c9f52a6d72d33"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -8966,8 +8966,8 @@
       "sha256": "1658ee2c3d6e77a4159a5792274a076e085fb08529d5ca295f5a1b21014c11e4"
     },
     "tests/world/cache/test_lifecycle.c": {
-      "bytes": 27288,
-      "sha256": "280828601871e1676f30e657fbb58f55708630f9edf5d24ff54d74d31cc722ec"
+      "bytes": 27951,
+      "sha256": "6c58080658c394417511637858b1f80d3de26df262ab26dc71e80822fb6aea8f"
     },
     "tests/world/cache/test_pending.c": {
       "bytes": 27177,
@@ -14778,8 +14778,8 @@
       "sha256": "03d92655d493c428cf3070239d730dbe44508342fa08b5e1762faa7a078075ff"
     },
     "src/world/storage/compressed_output.c": {
-      "bytes": 28256,
-      "sha256": "1747887bbd5ae85a94dbf5a143b6fea5b63e663d54e1d93a915a38b776ae0c94"
+      "bytes": 28335,
+      "sha256": "d160aa9c123a7c421df7d2198b80d8596eba833873d37a9e495f9be977a06143"
     },
     "src/world/storage/source_metadata_output.inc": {
       "bytes": 15622,
@@ -14818,8 +14818,8 @@
       "sha256": "fff860d4b22abcecc7cf999062059fb42c5e5f53beecf3023724cdc01d45da55"
     },
     "src/world/storage/source_region_output.inc": {
-      "bytes": 38670,
-      "sha256": "a6c4aa72aa1c16bbb286bf867c8a39f6a05873f703eefded5233a9fd46d2b401"
+      "bytes": 38749,
+      "sha256": "11801ebd6d9dbdd42fb3e2b0cd2c70f10a84130cba2724e80474cf11d9a1d34c"
     },
     "cmake/tests/source_region_output.cmake": {
       "bytes": 1985,

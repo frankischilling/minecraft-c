@@ -5422,8 +5422,8 @@
       "sha256": "03d92655d493c428cf3070239d730dbe44508342fa08b5e1762faa7a078075ff"
     },
     "src/world/storage/compressed_output.c": {
-      "bytes": 28256,
-      "sha256": "1747887bbd5ae85a94dbf5a143b6fea5b63e663d54e1d93a915a38b776ae0c94"
+      "bytes": 28335,
+      "sha256": "d160aa9c123a7c421df7d2198b80d8596eba833873d37a9e495f9be977a06143"
     },
     "src/world/storage/source_metadata_output.inc": {
       "bytes": 15622,
@@ -5462,8 +5462,8 @@
       "sha256": "fff860d4b22abcecc7cf999062059fb42c5e5f53beecf3023724cdc01d45da55"
     },
     "src/world/storage/source_region_output.inc": {
-      "bytes": 38670,
-      "sha256": "a6c4aa72aa1c16bbb286bf867c8a39f6a05873f703eefded5233a9fd46d2b401"
+      "bytes": 38749,
+      "sha256": "11801ebd6d9dbdd42fb3e2b0cd2c70f10a84130cba2724e80474cf11d9a1d34c"
     },
     "cmake/tests/source_region_output.cmake": {
       "bytes": 1985,

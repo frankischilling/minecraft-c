@@ -448,6 +448,53 @@ went from 4.004 to 3.890 ms. Median FPS went from 393.25 to 391.56, and
 the median longest frame rose from 10.175 to 10.582 ms. The frame comparisons
 cover one settled scene.
 
+## World save validation and compression
+
+The World save checks the live descriptor and cache after each callback.
+The next operation can use that result until it calls another callback.
+Direct chunk-save callers still validate at entry. The metadata and region
+compressors allocate their bounded zlib workspace without first clearing
+it. zlib initializes its workspace, as it does with its desktop allocator.
+[zlib stream allocation](https://zlib.net/manual.html)
+
+Eight alternating MSVC Release pairs measured each fixed workload with the
+same workload object and separate runtime libraries. The clean-cache case
+ran all metadata callbacks with no disk I/O and checked all cache entries
+and chunk save timestamps. The region cases wrote a 32-byte byte-array
+payload through the complete region output path for 1,024 fresh-slot
+commits or 3,000 same-slot rewrites.
+
+| Workload | Median before | Median after |
+| --- | ---: | ---: |
+| World save with 784 clean Chunks | 30.30 µs | 14.46 µs |
+| World save with 1,369 clean Chunks | 75.60 µs | 35.25 µs |
+| Rewrite one resident region slot | 46.04 µs | 26.27 µs |
+| Write fresh slots in a region | 89.25 µs | 52.62 µs |
+
+All pairs improved. Region write counts, bytes written, and final file
+bytes outside the timestamp table matched. The table contains actual
+wall-clock timestamps. The fixed work measures save infrastructure for
+clean caches and short payloads on one machine.
+
+Two instrumented Far pairs used the same observer and scheduler objects,
+authored scene, and fixed camera. Each 30-second interval followed a
+30-second warmup and captured 600 ticks and 15 autosaves. The observer
+matched each save span to its frame using the returned tick counts.
+
+| Median of per-run statistics | Before | After |
+| --- | ---: | ---: |
+| Autosave p50 | 2.161 ms | 2.141 ms |
+| Autosave p95 | 2.644 ms | 2.633 ms |
+| Save-bearing frame p50 | 7.848 ms | 7.879 ms |
+| Longest save-bearing frame | 8.496 ms | 8.710 ms |
+| Frame interval p99 | 5.729 ms | 5.742 ms |
+| FPS | 518.25 | 523.07 |
+
+Median save spans fell in both pairs. The longest save-bearing frame grew
+in both pairs, and overall frame p99 improved in one. The 19.818 ms frame
+in the first baseline run occurred between autosaves. These intervals cover
+one stationary scene with a settled cache.
+
 ### Region header reads and writes
 
 The live save handler reads each region's two 4 KiB header tables in blocks.

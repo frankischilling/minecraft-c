@@ -197,10 +197,11 @@ static mc_chunk_callback_result session(void *owner, const mc_world_save_context
 
 static mc_chunk_callback_result metadata(void *owner, const mc_world_save_context *context) {
     (void)owner;
-    (void)context;
     record('d', NULL, 0);
     if (f.mutation == 5)
         f.time = 1100;
+    else if (f.mutation == 10)
+        context->chunks->cache->count = context->chunks->cache->capacity + 1;
     return f.metadata_result;
 }
 
@@ -599,6 +600,17 @@ static int world_saves(void) {
     f.progress_result = MC_CHUNK_CALLBACK_FATAL;
     CHECK(mc_world_lifecycle_save(&context, false) == MC_CHUNK_LIFECYCLE_CALLBACK_FAILED);
     CHECK(f.event_count == 1 && f.events[0].kind == 'L' && f.chunks[0].dirty && balanced() == 0);
+    CHECK(setup(1) == 0);
+    f.mutation = 10;
+    CHECK(mc_world_lifecycle_save(&context, false) == MC_CHUNK_LIFECYCLE_STATE_ERROR);
+    CHECK(f.event_count == 3 && f.events[2].kind == 'd' && f.chunks[0].dirty && balanced() == 0);
+    CHECK(setup(1) == 0);
+    f.metadata_result = (mc_chunk_callback_result)99;
+    completed = false;
+    CHECK(mc_world_lifecycle_save_client(&context, 0, &completed) ==
+              MC_CHUNK_LIFECYCLE_STATE_ERROR &&
+          !completed);
+    CHECK(f.event_count == 2 && f.events[1].kind == 'd' && f.chunks[0].dirty && balanced() == 0);
     context.save_auxiliary = NULL;
     CHECK(!mc_world_save_validate(&context));
     CHECK(mc_world_lifecycle_save(&context, true) == MC_CHUNK_LIFECYCLE_INVALID_ARGUMENT);

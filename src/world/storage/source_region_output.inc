@@ -52,7 +52,8 @@ static voidpf ro_z_allocate(voidpf context, uInt items, uInt width) {
         return NULL;
     }
     const size_t bytes = sizeof(ro_allocation) + (size_t)items * width;
-    ro_allocation *p = calloc(1, bytes);
+    /* zlib initializes this workspace, as with its desktop default allocator. */
+    ro_allocation *p = malloc(bytes);
     if (p == NULL) {
         o->z_allocation_failed = true;
         return NULL;
