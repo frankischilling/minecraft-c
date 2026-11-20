@@ -1,8 +1,12 @@
 /* White-box native-policy controls using the exact production Display body.
  * Compile this TU once with its real SDL/dependency closure. Every replaced
  * callback forwards to the actual GL function before changing MXCSR; no fake
- * Display, successful GL acknowledgment or original-GL equality is supplied.
- * Source-only authored test: NOT compiled or executed in this package. */
+ * Display, successful GL acknowledgment or original-GL equality is supplied. */
+/* Preserve exception effects across the test's MXCSR writes and samples. */
+#if defined(__clang__) && !defined(_MSC_VER)
+#pragma clang fp exceptions(strict)
+#endif
+
 #include "../../../src/client/display/display.c"
 
 #include <SDL3/SDL_main.h>

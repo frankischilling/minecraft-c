@@ -877,3 +877,52 @@ already taken in each frame. Replaying the earlier 16.213 ms interval
 at frame 8223 places 16.051 ms after the tick block and before the
 pre-HUD timestamp. That span includes the early SDK display update and
 World drawing. The HUD and display-active span took 0.139 ms.
+
+### Display-owned cloud cache trial
+
+The runtime trial reserved about 575 KiB per Display on the first
+eligible use. It kept packed and converted vertices from the first
+cloud pass. A second-pass draw reused the conversion when the packed
+bytes, layout, profile and context matched and MXCSR precision was
+already sticky. Both passes still issued their usual uploads and draws.
+Ordinary Tessellator draws and automatic flushes used the ordinary
+conversion path.
+
+Four alternating Windows Release pairs used the settled Far fixture at
+854×480. The same observer and frozen dependencies linked against
+three replacement objects for Display, Tessellator and cloud rendering.
+All eight ten-second intervals matched the starting scene and camera,
+advanced 200 World ticks, and reported zero Chunk updates.
+
+| Median of per-run results | Before | Trial |
+| --- | ---: | ---: |
+| FPS | 526.70 | 522.57 |
+| Frame interval p95 | 2.516 ms | 2.602 ms |
+| Frame interval p99 | 5.688 ms | 5.665 ms |
+| Host frame p99 without a tick | 2.557 ms | 2.633 ms |
+
+FPS fell in three of four pairs. Frame interval p95 and host frame p99
+without a tick rose in every pair. Overall frame interval p99 improved
+in two pairs.
+
+Two SDK movement pairs matched 200 World ticks, 42.91 blocks of
+movement, and the saved Player state. Median FPS fell from 77.03 to
+76.36. Median interval p99 moved from 15.317 to 15.294 ms. FPS fell in
+both pairs. The runtime trial was reverted.
+
+All 12 focused Windows Release tests passed on the trial and again
+after restoring the baseline. A native upload control checked equal
+vertex bytes and FP flags across all 64 starting sticky-flag
+combinations. It also exercised altered bytes, a stale context
+generation, unsupported FP controls from a real driver callback and
+an upload error on a cache hit.
+
+Under WSL with Clang ASan and UBSan, seven selected device tests
+passed. Four lighting comparisons lacked a capture for the installed
+Mesa driver. The optimized FP test stopped at the same normal-array
+control on the original and trial builds. Recompiling the trial test
+translation unit at -O0 passed all 387 FP checks.
+
+The FP test now preserves exception effects across MXCSR writes
+and samples under Clang. The restored runtime passed the optimized
+FP test and seven other native checks with ASan and UBSan.
