@@ -327,6 +327,20 @@ results. Median air time fell from 2.051 to 2.001 ms, while median stone time
 rose from 1.839 to 1.940 ms. Air p95 rose from 2.674 to 2.712 ms and stone p95
 fell from 2.604 to 2.538 ms.
 
+#### Inlining the raw read trial
+
+A Windows Release trial inlined the shared raw read into its wrappers so
+each caller could specialize its success diagnostic handling. Eight
+alternating pairs shared the workload and replaced only the Chunk tick
+object. All 15 controls and all timed sample work matched.
+
+| Workload | Before median | Trial median | Before p95 | Trial p95 |
+| --- | ---: | ---: | ---: | ---: |
+| Air with ambient cooldown | 1.880 ms | 1.944 ms | 2.121 ms | 2.436 ms |
+| Stone with ambient checks | 1.868 ms | 1.853 ms | 2.146 ms | 2.427 ms |
+
+The trial was reverted after p95 rose in both workloads.
+
 ### Random tick coordinates and packed Chunk keys
 
 Each random sample advances the live World coordinate generator using 32-bit

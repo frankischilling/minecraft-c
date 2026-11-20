@@ -4738,8 +4738,8 @@
       "sha256": "e2bbab095276ddbc4886394f117407001861e843b6970d80822d69debd8c5eb6"
     },
     "src/world/runtime/random_display.c": {
-      "bytes": 18639,
-      "sha256": "750da8fd7d36dc51821fcd0e8e4ed0a3b8bf4e983b95d4be702172d1b1fde814"
+      "bytes": 18889,
+      "sha256": "d7757feb091cf6756a49e7156be6c274bfa0105c70756cbe3396bba33d309847"
     },
     "src/world/runtime/step_internal.h": {
       "bytes": 1542,
@@ -4758,8 +4758,8 @@
       "sha256": "a4bcd911841b11c94a62eb4e82837643f914296ed2cdce8bcef77896c318cf7e"
     },
     "tests/world/runtime/test_random_display.c": {
-      "bytes": 36419,
-      "sha256": "3c0387c2299d639ddee43ddb5515d93e9c962b56e4eaeece1e792c5310969292"
+      "bytes": 36926,
+      "sha256": "9660e55452ac4704de62d0a66e89f3465d55977c66e0458292ef863bd28deb26"
     },
     "cmake/mob_tick.cmake": {
       "bytes": 9999,

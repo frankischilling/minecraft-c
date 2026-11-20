@@ -115,3 +115,53 @@ These are fixed-work CPU comparisons. They establish no whole-frame, GPU,
 gameplay-FPS or unrestricted-play result, and add no unchanged-original
 observations. Use `--mode controls --rounds 1` for the native controls without
 collecting timings.
+
+## Random draws and Block selection
+
+The sampler uses the shared bounded Random implementation with the bound 16
+visible to the compiler. It records the reached operation at each coordinate
+draw and reloads the current World Random receiver after callbacks. Child
+diagnostics start empty after the local Random constructor and are populated
+when a sample reports a failure.
+
+For positive Block IDs, the sampler reads the live Registry array directly
+when the Registry is ready and idle. The existing two operations handle cold
+and refused reads and report their reached failure sites.
+
+Eight alternating Windows Release pairs used one benchmark observer and a
+common library tail. Each pair replaced only the sampler object. All
+114 native control profiles matched the equal-input results and ordered
+events. The 168 timed samples per build and workload each ran 1,000 samples
+and 6,000 World Random draws. The trajectories matched.
+
+| Workload | Before median | After median | Before p95 | After p95 |
+| --- | ---: | ---: | ---: | ---: |
+| Air | 0.1217 ms | 0.0960 ms | 0.1300 ms | 0.1012 ms |
+| Stone | 0.1755 ms | 0.1172 ms | 0.1868 ms | 0.1301 ms |
+
+All eight paired medians improved for each workload. The sampler callback
+control also checks that the active error reports the current source
+position and has empty child fields.
+
+Four alternating native Far pairs at 854×480 used the same observer,
+authored assets, save and fixed camera. After a 30-second warmup, each
+ten-second interval matched 200 World ticks, 200,000 display samples
+and 1.2 million World Random draws. Every observed FPS string reported
+zero Chunk updates.
+
+| Median of per-run results | Before | After |
+| --- | ---: | ---: |
+| FPS | 526.88 | 527.04 |
+| Frame interval p99 | 5.650 ms | 5.741 ms |
+| Host frame p99 on frames that ran a tick | 8.136 ms | 7.894 ms |
+| Longest frame interval | 8.584 ms | 8.455 ms |
+
+FPS rose in three pairs. Overall frame p99 rose in three, while host
+frame p99 on tick-bearing frames fell in all four. The longest observed
+interval across all runs was 11.47 ms on the candidate.
+
+One instrumented pair timed the sampler body inside the ordinary client
+with the same fixture and warmup. Each run captured all 200 calls. Median
+sampler time fell from 0.1178 to 0.0734 ms, and p95 fell from 0.1260 to
+0.0770 ms. These spans include the timers and start after call allocation
+and World admission.

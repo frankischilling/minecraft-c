@@ -2,6 +2,7 @@
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
+#include "../../core/java/random_internal.h"
 #include "block_random_display_internal.h"
 #include "construction_internal.h"
 #include "mc/world/storage/source_chunk_loader.h"
@@ -37,12 +38,6 @@ static mc_world_storage_status rejected(mc_world_random_display_error *error,
 
 static void at(mc_world_random_display_call *c, unsigned int pc) {
     c->state.source_pc = c->error.bytecode = pc;
-    c->error.child = MC_WORLD_RANDOM_DISPLAY_NONE;
-    c->error.child_class = c->error.child_method = c->error.child_descriptor = NULL;
-    c->error.child_bytecode = 0;
-    c->error.acquisition = NULL;
-    c->error.registry = NULL;
-    c->error.block = NULL;
 }
 
 static bool fail(mc_world_random_display_call *c, mc_world_storage_status status,
@@ -256,7 +251,7 @@ static bool draw(mc_world_random_display_call *c, unsigned int pc, int32_t index
     mc_java_random *random = c->state.world->fields.r;
     if (random == NULL)
         return source_null(c, "World random display null World Random receiver");
-    if (!mc_java_random_next_bounded(random, 16, &c->state.draws[index]))
+    if (!mc_java_random_next_bounded_inline(random, 16, &c->state.draws[index]))
         return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World display Random bound", false,
                     "java/lang/IllegalArgumentException");
     ++c->state.world_random_calls;
@@ -294,6 +289,8 @@ static bool body(mc_world_random_display_call *c) {
                     "World display local default Random constructor", true, NULL);
     c->state.local_random_constructed = true;
     c->state.local_random_initial = c->random;
+    /* During sampling, only terminal failures publish child diagnostics. */
+    c->error.child = MC_WORLD_RANDOM_DISPLAY_NONE;
     at(c, 14);
     for (c->state.sample = 0; c->state.sample < 1000; ++c->state.sample) {
         ++c->state.samples_started;
@@ -312,15 +309,20 @@ static bool body(mc_world_random_display_call *c) {
             return acquisition_fail(c, cause);
         c->state.block_read = true;
         if (c->state.block_id > 0) {
-            mc_registry_block_m_view array;
             at(c, 110);
-            if (mc_registry_block_m_get(c->state.world->classes->registry, &array, &c->registry) !=
-                MC_REGISTRY_OK)
-                return registry_fail(c);
-            at(c, 115);
-            if (mc_registry_block_m_at(&array, c->state.block_id, &c->state.selected_block,
-                                       &c->registry) != MC_REGISTRY_OK)
-                return registry_fail(c);
+            mc_registry_classes *registry = c->state.world->classes->registry;
+            if (!mc_registry_block_m_read_ready(registry, c->state.block_id,
+                                                &c->state.selected_block)) {
+                mc_registry_block_m_view array;
+                if (mc_registry_block_m_get_failure(registry, &array, &c->registry) !=
+                    MC_REGISTRY_OK)
+                    return registry_fail(c);
+                at(c, 115);
+                if (mc_registry_block_m_at_failure(&array, c->state.block_id,
+                                                   &c->state.selected_block,
+                                                   &c->registry) != MC_REGISTRY_OK)
+                    return registry_fail(c);
+            }
             c->state.block_selected = true;
             at(c, 125);
             ++c->state.display_calls_started;

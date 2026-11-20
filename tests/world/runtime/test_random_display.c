@@ -238,6 +238,13 @@ static bool callback_guards(display_fixture *f, mc_world_runtime *w) {
                 MC_WORLD_STORAGE_BUSY ||
             !f->sampler)
             return false;
+        if (state.error == NULL || state.error->status != MC_WORLD_STORAGE_OK ||
+            state.error->bytecode != state.source_pc ||
+            state.error->child != MC_WORLD_RANDOM_DISPLAY_NONE || state.error->child_bytecode ||
+            state.error->child_class != NULL || state.error->child_method != NULL ||
+            state.error->child_descriptor != NULL || state.error->acquisition != NULL ||
+            state.error->registry != NULL || state.error->block != NULL)
+            return false;
         if (!f->local_identity)
             f->local_identity = state.source_random;
         if (f->local_identity != state.source_random)
