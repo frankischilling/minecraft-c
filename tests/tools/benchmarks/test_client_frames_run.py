@@ -313,6 +313,23 @@ class FrameObservations(unittest.TestCase):
         self.assertAlmostEqual(result['frame_interval']['mean_ms'],
                                1000 / result['measured_fps'])
 
+    def test_peak_intervals_use_their_own_frame_clock_samples(self):
+        wire = receipt().replace('8,1101,1200,4000010,5000010,8000010,',
+                                 '8,1185,1200,4000010,5000010,9000010,')
+        result = FRAMES.summarize(wire, include_frame_cadence=True)
+        overall = result['slowest_frame_interval']
+        self.assertEqual((overall['frame'], overall['interval_ms'], overall['host_ms'],
+                          overall['returned_ticks']), (7, 101, 100, 1))
+        zero_tick = result['slowest_zero_tick_frame_interval']
+        self.assertEqual(zero_tick, {
+            'frame': 8, 'interval_ms': 100, 'host_ms': 15, 'between_frames_ms': 85,
+            'returned_ticks': 0, 'source_tick_batch_ms': 1, 'source_pre_HUD_prefix_ms': 2,
+            'source_HUD_and_active_check_ms': 2,
+        })
+        legacy = FRAMES.summarize(receipt(1), include_frame_cadence=True)
+        self.assertNotIn('source_pre_HUD_prefix_ms', legacy['slowest_zero_tick_frame_interval'])
+        self.assertNotIn('slowest_frame_interval', FRAMES.summarize(wire))
+
     def test_existing_clock_split_and_legacy_rows(self):
         result = FRAMES.summarize(receipt())
         self.assertTrue(result['valid_focused_Tiny_interval'])

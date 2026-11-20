@@ -6435,7 +6435,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938512,
-      "sha256": "cdab335d092d8b6498e14e242fb7bbe9cc5b35280292642dab79172b4502be42"
+      "sha256": "7ee0730836951cdc21597d698d11178b51a862659426a5fbf8921db8717b26b7"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6499,7 +6499,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068772,
-      "sha256": "1b573d50bb7f83567a2b75ad034e57ec24fa852af7245127cd7cc9bb42a2fdb8"
+      "sha256": "fb5bdcbcec96d4656e71fcb9f13c1d3e568224a1e5cf6bfa2b03df1de33a1851"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6631,7 +6631,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 935337,
-      "sha256": "bfba383a64fcf13f873d82f15f57827bfef737f4e76aca7670c1fe4686092afc"
+      "sha256": "bf666feeca0267835ab4597b1cb0ddc4e8a706d2f44c41d68af4ea36ab4ddccf"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -18330,8 +18330,8 @@
       "sha256": "89f07324e2ec1f0222000df3e3c7680a8d541571fe3db001bd2f0ea3bd0ea069"
     },
     "tests/tools/benchmarks/test_client_frames_run.py": {
-      "bytes": 30504,
-      "sha256": "d2cfced4b172cc17f0588e53a69e6afbfd205325cda7656495be00cdd7b1a498"
+      "bytes": 31581,
+      "sha256": "4f3fc17f95bfa21d6a1da16aeeabc2a53e625dec05981b05a393f6f3ece8b1be"
     },
     "cmake/client_ladder_world.cmake": {
       "bytes": 1473,
@@ -19102,8 +19102,8 @@
       "sha256": "2deede75d129ce119ef4dd49d67a895e1967a1d6599a71005fc39cb94e5f1ece"
     },
     "scripts/benchmarks/client_frames_run.py": {
-      "bytes": 27094,
-      "sha256": "cd3503434a0579be6d7c1536f3ade4cc8ae2f0d6d8274430149ddfe0a5135fbb"
+      "bytes": 28077,
+      "sha256": "c954688a7aa3309e54b5a6bc24ddd77c62c08e65316e84628d1a1f9cf27791e4"
     },
     "src/item/use/metadata_internal.h": {
       "bytes": 1939,

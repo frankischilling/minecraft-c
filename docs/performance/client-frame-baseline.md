@@ -780,3 +780,100 @@ through Save and Quit. Median FPS moved from 76.58 to 76.25, and median
 frame interval p99 rose from 15.660 to 15.859 ms. Median maximum host
 frame time fell from 18.52 to 17.55 ms. One pair improved FPS and frame
 interval p99.
+
+## Render timing on settled frames without a World tick
+
+The Windows Release observer ran the authored scene at 854×480 and Far
+distance after a 30-second warmup. The 30-second capture advanced 600
+World ticks and reported zero Chunk updates. Of its 15,509 frames, 14,909
+ran neither a main tick nor a World tick. Each of those frames took the
+fancy cloud path and submitted 6,432 cloud vertices in 72 draws.
+
+| Host phase | Median | p99 |
+| --- | ---: | ---: |
+| World draw | 1.413 ms | 1.941 ms |
+| Clouds, within World draw | 0.595 ms | 0.768 ms |
+| Cloud draw calls, within clouds | 0.361 ms | 0.472 ms |
+| First-person hand, within World draw | 0.236 ms | 0.346 ms |
+| Opaque terrain, within World draw | 0.210 ms | 0.376 ms |
+| HUD | 0.132 ms | 0.204 ms |
+| Display swap | 0.116 ms | 0.693 ms |
+
+Median swap time rose to 0.874 ms in the slowest 1% of these frames by
+frame interval. The longest interval was 4.195 ms. That frame spent
+3.693 ms in World draw, including 1.127 ms in clouds and 1.010 ms in
+opaque terrain. Its swap took 0.177 ms.
+
+A ten-second capture with additional timers recorded 4,848 frames
+without a tick at the same cloud draw and vertex counts. The timings
+below are elapsed time on the client thread, including time spent
+inside driver calls.
+
+| Cloud draw work | Median per frame | p99 per frame |
+| --- | ---: | ---: |
+| Buffer bindings and upload path | 0.118 ms | 0.166 ms |
+| Native draw call | 0.109 ms | 0.150 ms |
+| Vertex allocation and conversion | 0.033 ms | 0.054 ms |
+| Display context checks through source entry | 0.028 ms | 0.046 ms |
+| Uniforms and provoking vertex setup | 0.027 ms | 0.046 ms |
+| Texture binding and sampling checks | 0.017 ms | 0.033 ms |
+
+Each timed build passed a ten-second comparison against an uninstrumented
+build. The starting assets and save, camera and 200 World ticks per run
+matched, and all captures reported zero Chunk updates. The original
+observer pair recorded 519.24 and 508.36 FPS. The pair with extra timers
+recorded 515.16 and 504.72 FPS. These single pairs give an indication
+of timing overhead and run-to-run variation. The longest intervals
+without a tick in the two uninstrumented runs were 6.063 and 7.752 ms.
+The timed captures covered shorter intervals.
+
+An isolated conversion trial reused the previous vertex's conversion
+when adjacent packed color or normal bytes matched. Eight alternating
+Windows Release pairs per workload matched every output hash and final
+MXCSR flags. The repeated NVIDIA workload went from 2.643 to 2.612 ns
+per vertex. The varied NVIDIA workload rose from 2.620 to 3.557 ns and
+was slower in every pair. The trial was reverted.
+
+### Streaming uploads and cloud pass reuse
+
+Two alternating Windows Release rounds used the settled Far fixture at
+854×480. All six ten-second intervals matched the starting assets, save
+and camera, returned 200 World ticks, and reported zero Chunk updates.
+The variants changed only the native Display object.
+
+| Upload path | Median FPS | Median interval p99 |
+| --- | ---: | ---: |
+| Current buffer updates | 529.01 | 5.587 ms |
+| Replace storage on each immediate upload | 487.87 | 5.945 ms |
+| Append uploads into storage for at least 8,192 vertices | 493.44 | 6.156 ms |
+
+Both upload variants reduced FPS and raised interval p99 in both run
+orders. A compiler ran during the first append measurement. The reverse
+order finished at 506.44 FPS and 5.839 ms p99 for append, compared with
+529.28 FPS and 5.561 ms p99 for the current path. The append trial used
+the first vertex index to select the uploaded range and replaced
+storage on wrap. OpenGL 3.3 specifies these buffer and draw operations
+in sections 2.8.3 and 2.9.2.
+[OpenGL 3.3 core specification](https://registry.khronos.org/OpenGL/specs/gl/glspec33.core.pdf)
+
+An observer compared corresponding draws from the two fancy cloud
+passes. The converted vertices, array flags and draw mode were equal
+for all 5,940 pairs across 165 sampled frames. The observer reported no
+lit draws in those samples.
+
+A separate instrumented trial kept the exact packed bytes and converted
+vertices for one cloud pass in fixed scratch storage. It reused them in
+the second pass when the bytes, layout and context matched and the
+MXCSR precision flag was already set. All 365,688 second-pass lookups
+hit across two alternating pairs. Median cloud conversion fell from
+32.25 to 26.90 µs per frame without a tick. Median FPS across the two
+runs moved from 498.52 to 507.88. These builds included phase timers and
+used a fixed scene. Cache lifetime, callback and fallback coverage are
+still required before integrating the trial.
+
+The benchmark report now includes the longest overall interval and the
+longest interval without a tick, with phase spans from the clock samples
+already taken in each frame. Replaying the earlier 16.213 ms interval
+at frame 8223 places 16.051 ms after the tick block and before the
+pre-HUD timestamp. That span includes the early SDK display update and
+World drawing. The HUD and display-active span took 0.139 ms.

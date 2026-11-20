@@ -319,8 +319,26 @@ def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_
             intervals.append((row[2] - previous) * 1000 / hz)
             gaps.append((row[1] - previous) * 1000 / hz)
             previous = row[2]
+
+        def slowest_frame(indices):
+            index = max(indices, key=intervals.__getitem__, default=None)
+            if index is None:
+                return None
+            row = raw[index]
+            peak = {'frame': row[0], 'interval_ms': intervals[index], 'host_ms': total[index],
+                    'between_frames_ms': gaps[index], 'returned_ticks': row[7]}
+            if row[8] & 3 == 3:
+                peak['source_tick_batch_ms'] = source_clock_span(row[4], row[3])
+            if row_version == 2 and row[8] & 6 == 6 and row[17] == row[18] == 1:
+                peak['source_pre_HUD_prefix_ms'] = source_clock_span(row[16], row[4])
+                peak['source_HUD_and_active_check_ms'] = source_clock_span(row[5], row[16])
+            return peak
+
         summary['frame_interval'] = distribution(intervals)
         summary['between_frames'] = distribution(gaps)
+        summary['slowest_frame_interval'] = slowest_frame(range(len(raw)))
+        summary['slowest_zero_tick_frame_interval'] = slowest_frame(
+            i for i, row in enumerate(raw) if row[6] == row[7] == 0)
         summary['frame_intervals_over_16_667_ms'] = sum(x > 1000 / 60 for x in intervals)
         summary['frame_intervals_over_33_333_ms'] = sum(x > 1000 / 30 for x in intervals)
     return summary
