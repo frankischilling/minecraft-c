@@ -560,3 +560,62 @@ Fourteen alternating Windows Python 3.14 pairs replayed the eight Far
 captures above, totaling 39,031 frame rows. Median parsing time fell from
 390.95 to 304.15 ms. Each pair was faster, and both parsers reproduced every
 retained summary exactly. This measures report processing after capture.
+
+## World scheduler costs in the settled Far scene
+
+A Windows MSVC Release observer timed the existing World scheduler and its
+children with QPC. The timed calls wrote samples to memory and the observer
+emitted them after the capture. The baseline and instrumented builds shared
+the authored 854×480 scene on `DISPLAY2` and advanced 200 World ticks each
+after a 30-second warmup. Frame interval p99 moved from 6.723 to 6.806 ms
+with the timers enabled. The table includes timer overhead. The spawn
+candidate collection is part of spawning and the rows do not add up to the
+scheduler's percentiles.
+
+| World tick phase | p50 | p99 |
+| --- | ---: | ---: |
+| Scheduler | 3.177 ms | 5.262 ms |
+| Spawning | 1.556 ms | 1.841 ms |
+| Spawn candidate collection | 0.046 ms | 0.063 ms |
+| Random block ticks | 1.539 ms | 2.088 ms |
+| Scheduled block ticks | 0.002 ms | 0.003 ms |
+| Provider tick | 0.053 ms | 0.120 ms |
+| Save | 0.000 ms | 2.155 ms |
+
+Spawning and random block ticks contributed similar median time. Spawn
+candidate collection accounted for little of the spawning time. This capture
+covers settled play with one stationary Player and one save cadence.
+
+### Random tick Chunk capture reuse trial
+
+The trial stored one reusable Chunk capture in each World random-tick call.
+It still released the Chunk and its views at the end of each successful visit
+and retained a failed capture until the owning call retired. Windows Release
+and Linux Clang ASan/UBSan passed the focused Chunk, random block and World
+scheduler tests. One initial Windows scheduler run failed while writing a
+fixture region. Three repeats at the original path passed.
+
+Eight alternating Windows Release pairs per workload measured 112 samples
+per build. Each sample visited 361 Chunks and made 28,880 random block
+samples. Both builds passed the work and state checks.
+
+| Fixed workload | Median before / trial | p95 before / trial |
+| --- | ---: | ---: |
+| Air, ambient countdown active (`air_qhigh`) | 1.722 / 1.746 ms | 2.162 / 2.176 ms |
+| Stone, ambient countdown zero (`stone_q0`) | 1.913 / 1.741 ms | 2.451 / 2.498 ms |
+
+Four Far pairs used the same observer, assets and support objects. Only
+`mc_simulation.lib` differed among the linked libraries. In the third pair,
+the baseline window owned native foreground but the client was paused for all
+3,525 frames and World time did not advance. That run invalidated the cohort.
+The other pairs each qualified independently and advanced 200 World ticks per
+run.
+
+| Pair | Before / trial FPS | Before / trial frame interval p99 |
+| --- | ---: | ---: |
+| 1 | 480.74 / 486.68 | 6.712 / 6.666 ms |
+| 2 | 478.02 / 480.76 | 6.296 / 6.468 ms |
+| 4 | 487.12 / 468.80 | 6.077 / 6.929 ms |
+
+The trial was dropped. It improved the Stone median and produced slower
+frame p99 in two of the three qualified pairs.
