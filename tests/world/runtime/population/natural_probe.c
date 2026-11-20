@@ -190,6 +190,26 @@ static bool emit(natural_json *json, const char *format, ...) {
     return true;
 }
 
+static bool emit_hex(natural_json *json, const uint8_t *bytes, size_t length) {
+    static const char digits[] = "0123456789abcdef";
+    if (length > NATURAL_JSON_LIMIT / 2u) {
+        json->failed = true;
+        return false;
+    }
+    const size_t encoded = 2u * length;
+    if (!reserve(json, encoded))
+        return false;
+    char *text = json->bytes + json->length;
+    for (size_t i = 0; i < length; ++i) {
+        const uint8_t byte = bytes[i];
+        text[2u * i] = digits[byte >> 4u];
+        text[2u * i + 1u] = digits[byte & 15u];
+    }
+    text[encoded] = '\0';
+    json->length += encoded;
+    return true;
+}
+
 static bool string(natural_json *json, const char *value) {
     if (value == NULL)
         return emit(json, "null");
@@ -390,12 +410,8 @@ static bool track_chunks(natural_probe *probe) {
 }
 
 static bool byte_array(natural_json *json, const uint8_t *bytes, size_t length) {
-    if (bytes == NULL || !emit(json, "{\"length\":%zu,\"values\":\"", length))
-        return false;
-    for (size_t i = 0; i < length; ++i)
-        if (!emit(json, "%02x", (unsigned int)bytes[i]))
-            return false;
-    return emit(json, "\"}");
+    return bytes != NULL && emit(json, "{\"length\":%zu,\"values\":\"", length) &&
+           emit_hex(json, bytes, length) && emit(json, "\"}");
 }
 
 static bool chunk_data(natural_probe *probe, mc_chunk_state *state) {
@@ -1133,11 +1149,8 @@ static bool disk_inventory(natural_probe *probe) {
                  string(&probe->json, entry->stamp.directory ? "directory" : "file");
         if (ok && !entry->stamp.directory) {
             probe->persistence->retained_disk_bytes += bytes.length;
-            ok = emit(&probe->json, ",\"bytes\":%zu,\"hex\":\"", bytes.length);
-            for (size_t j = 0; ok && j < bytes.length; ++j)
-                ok = emit(&probe->json, "%02x", (unsigned int)bytes.data[j]);
-            if (ok)
-                ok = emit(&probe->json, "\"");
+            ok = emit(&probe->json, ",\"bytes\":%zu,\"hex\":\"", bytes.length) &&
+                 emit_hex(&probe->json, bytes.data, bytes.length) && emit(&probe->json, "\"");
         }
         if (ok)
             ok = emit(&probe->json, "}");

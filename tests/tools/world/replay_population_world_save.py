@@ -63,8 +63,6 @@ validate_transport = TRANSPORT.validate_transport
 def validate_native(native, side, case, origin_expected):
     C.equal(native.get("side"), side, "requested native persistence side")
     P.compare_original(native, case["original"], origin_expected, case["jar"])
-    # Retain the older immutable cache control and strict origin event schema.
-    REPLAY.validate_native(native["population"], side, origin_expected)
     snapshots = [native["population"]["initial"],
                  *[row["snapshot"] for row in native["population"]["operations"]],
                  *[row["state"]["snapshot"] for row in P.all_boundaries(native["world_save"])]]

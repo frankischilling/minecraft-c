@@ -10,8 +10,8 @@
       "sha256": "c0719ef06076577f5399a709546bfabb17f46f57278fddca0a17b39a4a3da92d"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 18771,
-      "sha256": "5bf83697bcc4f559b9e33c70662d4d723b155509c04e14e9e0511a5e4111634d"
+      "bytes": 18837,
+      "sha256": "e698261aabbb4e85670a795bf973ff0f001255547a57b7624831a10ecedd4221"
     },
     ".gitignore": {
       "bytes": 282,
@@ -6491,7 +6491,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068463,
-      "sha256": "eeff93ba33ca0ae7866138cf8b98fde99c3abf2994baa53b9760df68a11b183e"
+      "sha256": "1a53e3c49ed9e53d1f0393fa54a8989d1b71097ed14a4dcf8e1a4cca94561327"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -8806,16 +8806,16 @@
       "sha256": "f0415532d76ee9a9bb2c8a44de8154235939d3af1905c7e5aaf2e4fb03f4ac62"
     },
     "tests/tools/world/replay_population_named_data.py": {
-      "bytes": 9777,
-      "sha256": "fd7d6b70949190514f11228cf6f7142acd796e13204e021a1394ebd2e5fecee6"
+      "bytes": 9626,
+      "sha256": "4785c3edbeb626af06142e93e7dc871e84703367627d22f98a009593cbbd9874"
     },
     "tests/tools/world/replay_population_persistence.py": {
       "bytes": 11494,
       "sha256": "d317365b57e7bafbf5b4d66a22a2662ba0e6118b7f49d940ab70b35d95335f65"
     },
     "tests/tools/world/replay_population_world_save.py": {
-      "bytes": 9301,
-      "sha256": "3211fff8b08d2de3d3db2ada554af119840bedcdef3d239020fcb67fa8c6bc78"
+      "bytes": 9150,
+      "sha256": "b1c4cfa2a5cf4a27cc27716588dfc454d5116ebf4b025eb79e2e4f7db23ea78e"
     },
     "tests/tools/world/run_redstone.py": {
       "bytes": 858,
@@ -9166,8 +9166,8 @@
       "sha256": "e36ae75eb488fc5b2922552be8a9a63888b1dc8542db6f426dfae5856e87bb97"
     },
     "tests/world/runtime/population/natural_probe.c": {
-      "bytes": 93660,
-      "sha256": "c8e1154e870783f588fcea28ac8bb15406eead701e95a86b1a74f10c742e9149"
+      "bytes": 94071,
+      "sha256": "0bd91016a69370f3b693529ed76121ea716e5345825ada8735b5e1f5bbc8efb7"
     },
     "tests/world/runtime/population/ore_clay_contracts.h": {
       "bytes": 35777,
@@ -9374,8 +9374,8 @@
       "sha256": "0de2b8e2e6e7e267d038fcc1e1a7efc5e52f86bbc171338412edc9d79935f7fe"
     },
     "tests/world/storage/chunk_probe.c": {
-      "bytes": 10817,
-      "sha256": "b3b19a2a5cbdd62effa51c7e12b165e70f0eeecffd3d8762f9bcde4b83bad458"
+      "bytes": 11230,
+      "sha256": "4d9dfdfaf85e7f9cfd1680e3eacd2b44e9cfcacc1da35ae03626aa17745ed644"
     },
     "tests/world/storage/java_output_native.c": {
       "bytes": 517,
@@ -19338,8 +19338,8 @@
       "sha256": "6b0e2e1e00a51237e15ca3418791b3e0a591386bb109081dc58c51fd7d63a8ff"
     },
     "docs/performance/ci-storage.md": {
-      "bytes": 2220,
-      "sha256": "fed8a0136059ea0e082e5ff4ce31dcc65a0497becda7a5a7bf6087494d48e0c3"
+      "bytes": 4529,
+      "sha256": "21434cb1668a410539f86602bb7c455e8d072a7427327208ff52017aa305a8e6"
     },
     "cmake/client_torch_placement.cmake": {
       "bytes": 2025,

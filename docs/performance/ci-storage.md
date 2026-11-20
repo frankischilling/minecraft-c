@@ -1,4 +1,4 @@
-# Hosted Linux build performance
+# Hosted build performance
 
 ## SDK cleanup
 
@@ -38,3 +38,47 @@ Median batch time fell from 1,297.84 to 427.95 ms with lld 21.1.8. The five
 executables grew from 122.85 to 124.84 MB in total. This sample measures local
 links for those five targets. Hosted build time also includes compilation,
 downloads and cache handling.
+
+## Linking clean Windows Debug executables
+
+Windows CI links Debug executables with `/INCREMENTAL:NO` and keeps `/debug`
+for PDBs. The job builds in a fresh directory and restores compiler cache
+entries. It has no prior executable or incremental link database to reuse.
+Local Debug builds keep the default linker flags.
+[MSVC incremental linking](https://learn.microsoft.com/en-us/cpp/build/reference/incremental-link-incrementally?view=msvc-170)
+
+Six alternating Windows MSVC 19.51 pairs linked eight test executables from
+the same Debug objects. Each batch wrote fresh outputs and ran up to four
+links concurrently. Median batch time fell from 1.486 to 0.627 seconds. Every
+pair was faster with `/INCREMENTAL:NO`. The eight builds produced PDBs in
+both modes, and the setting eliminated 35.1 MB of incremental link databases
+per batch. The sample measures local clean links. Hosted runtime also depends
+on runner load, compiler cache restoration and test execution.
+
+## Hex output in storage and population tests
+
+The Chunk storage probe encodes 128-byte blocks before writing to stdout.
+The population probe reserves space for each byte array or saved file once,
+checks the JSON size limit, and writes lowercase hex directly into its buffer.
+Both probes still emit two digits per byte. The named-data and full World save
+replays validate the origin snapshot through their comparison functions once
+before checking the additional snapshots.
+
+Three alternating Windows MSVC Debug pairs ran the same six Python test
+commands with up to four workers. Both sets of probes used the same linker
+flags and the same Python checks. All 36 test commands passed.
+
+| Test | Median before | Median after |
+| --- | ---: | ---: |
+| Chunk storage reference | 28.07 s | 19.19 s |
+| Dedicated population replay | 25.68 s | 19.98 s |
+| Named-data replay | 23.33 s | 13.59 s |
+| Full World save replay | 13.42 s | 9.09 s |
+| Save and readback replay | 17.31 s | 9.59 s |
+| Population ring replay | 14.57 s | 9.65 s |
+| Elapsed batch | 37.94 s | 23.23 s |
+
+Each case ran faster in all three pairs. The figures include Python checks,
+native process startup and fixture I/O on this machine. A separate replay
+matched the exit status and both output streams for all 275 Chunk probe
+requests, including the seven malformed input checks.

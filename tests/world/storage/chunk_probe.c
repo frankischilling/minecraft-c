@@ -47,8 +47,18 @@ static bool time_bits(const char *text, int64_t *out) {
 }
 
 static void print_hex(const uint8_t *bytes, size_t length) {
-    for (size_t i = 0; i < length; ++i)
-        printf("%02x", (unsigned int)bytes[i]);
+    static const char digits[] = "0123456789abcdef";
+    char text[256];
+    for (size_t offset = 0; offset < length;) {
+        size_t count = length - offset < sizeof(text) / 2u ? length - offset : sizeof(text) / 2u;
+        for (size_t i = 0; i < count; ++i) {
+            const uint8_t byte = bytes[offset + i];
+            text[2u * i] = digits[byte >> 4u];
+            text[2u * i + 1u] = digits[byte & 15u];
+        }
+        fwrite(text, 1, 2u * count, stdout);
+        offset += count;
+    }
 }
 
 static void array(const char *name, const uint8_t *bytes, size_t length) {

@@ -5066,8 +5066,8 @@
       "sha256": "e36ae75eb488fc5b2922552be8a9a63888b1dc8542db6f426dfae5856e87bb97"
     },
     "tests/world/runtime/population/natural_probe.c": {
-      "bytes": 93660,
-      "sha256": "c8e1154e870783f588fcea28ac8bb15406eead701e95a86b1a74f10c742e9149"
+      "bytes": 94071,
+      "sha256": "0bd91016a69370f3b693529ed76121ea716e5345825ada8735b5e1f5bbc8efb7"
     },
     "tests/world/runtime/population/ore_clay_contracts.h": {
       "bytes": 35777,
@@ -5274,8 +5274,8 @@
       "sha256": "0de2b8e2e6e7e267d038fcc1e1a7efc5e52f86bbc171338412edc9d79935f7fe"
     },
     "tests/world/storage/chunk_probe.c": {
-      "bytes": 10817,
-      "sha256": "b3b19a2a5cbdd62effa51c7e12b165e70f0eeecffd3d8762f9bcde4b83bad458"
+      "bytes": 11230,
+      "sha256": "4d9dfdfaf85e7f9cfd1680e3eacd2b44e9cfcacc1da35ae03626aa17745ed644"
     },
     "tests/world/storage/java_output_native.c": {
       "bytes": 517,
