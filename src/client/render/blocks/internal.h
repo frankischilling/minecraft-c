@@ -14,6 +14,8 @@
 #include "mc/world/runtime/brightness.h"
 #include "mc/world/runtime/tile_entities/tile_entities.h"
 
+#include <xmmintrin.h>
+
 typedef struct client_application client_application;
 
 typedef struct mc_cv_frame {
@@ -108,7 +110,13 @@ bool mc_cv_tile_bound(mc_cv_context *, const void *, int32_t, int32_t, int32_t, 
 
 bool mc_cv_fail(mc_cv_context *, mc_client_render_global_status, const char *, unsigned int,
                 bool native_policy);
-bool mc_cv_fp(mc_cv_context *, unsigned int);
+
+static inline bool mc_cv_fp(mc_cv_context *c, unsigned int pc) {
+    return (_mm_getcsr() & 0xffc0u) == 0x1f80u ||
+           mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP,
+                      "CV reached strict floating-point prerequisite", pc, true);
+}
+
 bool mc_cv_push(mc_cv_context *, const char *method, const char *descriptor);
 bool mc_cv_push_source(mc_cv_context *, const char *class_name, const char *method,
                        const char *descriptor);

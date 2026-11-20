@@ -1100,3 +1100,74 @@ interval. FPS went from 77.97 to 76.58 and from 77.53 to 76.32. Frame interval
 p99 rose from 15.20 to 16.16 ms and from 15.27 to 15.59 ms. Two other pairs
 lost native foreground in one or both runs and the full cohort failed
 qualification. The trial was dropped after both complete pairs slowed.
+
+## Light table sampling and display-list replacement
+
+A light-table trial combined the provider hold, the table lookup and the
+release for minimum brightness. Ordinary brightness still acquired its
+provider before the light reads that can invoke callbacks. Six alternating
+Windows MSVC Release pairs matched the getter results and failure diagnostics.
+Each process timed seven samples of 65,536 calls per getter.
+
+| Getter | Before median | Trial median |
+| --- | ---: | ---: |
+| Minimum brightness | 3.2567 ms | 3.3025 ms |
+| Ordinary brightness | 3.2037 ms | 3.3351 ms |
+
+Untouched getters also ran 1.3% to 2.5% slower in the trial executable.
+The measurements gave insufficient evidence of a gain and the trial was
+reverted. The ChunkCache and Chunk compilation tests passed on both builds.
+
+A separate observer counted successful display-list replacements on the
+authored Far route at 854×480 after a two-second warmup. Each ten-second run
+used SDK keyboard events, advanced 200 World ticks, moved 42.91 blocks and
+saved through the ordinary menu. The starting assets and save, simulation
+counters, and final saved Player position, rotation and World time matched
+the uninstrumented calibration run. That calibration recorded 76.35 FPS
+and a host frame p99 of 15.65 ms.
+
+| Observed during movement | First run | Second run |
+| --- | ---: | ---: |
+| Completed list definitions | 1,952 | 1,950 |
+| Replaced nonempty lists | 624 | 624 |
+| Draws in replaced lists | 624 | 624 |
+| Draws with still-resident vertex buffers | 0 | 0 |
+
+The observer checked that the cache slot held the old draw's payload in
+the current graphics context. No replaced draw met that condition, so the
+planned byte comparison never ran. These counts apply to this route.
+
+## Floating-point checks during Block rendering
+
+Block renderer call sites can inline the MXCSR check. They still read the
+current control bits at each original site and report the same failure at
+the reached program counter.
+
+Eight alternating Windows MSVC Release pairs per lighting mode linked the
+same workload object against the two renderer libraries. Each process
+timed seven samples of 30 section compiles. Vertex payload hashes, command
+and draw counts, Chunk planes, and World bindings matched.
+
+| Section and lighting | Before median | After median | Faster pairs |
+| --- | ---: | ---: | ---: |
+| Filled, ambient occlusion | 4.919 ms | 4.845 ms | 7 of 8 |
+| Surface, ambient occlusion | 0.698 ms | 0.677 ms | 8 of 8 |
+| Filled, flat | 2.100 ms | 2.078 ms | 5 of 8 |
+| Surface, flat | 0.286 ms | 0.284 ms | 5 of 8 |
+
+Two sets of four alternating Windows frame pairs replaced just the
+renderer library in the same linked observer. All 16 ten-second intervals
+used the authored Far route at 854×480 after a two-second warmup. The runs
+matched starting assets and save, movement, 200 World ticks, simulation
+counters and the saved Player state. Frame intervals are measured between
+successive frame returns.
+
+| Median of per-run results | Before FPS | After FPS | Before p99 | After p99 |
+| --- | ---: | ---: | ---: | ---: |
+| First four pairs | 77.12 | 80.14 | 15.39 ms | 15.49 ms |
+| Repeat four pairs | 77.50 | 77.33 | 15.35 ms | 15.26 ms |
+
+Two early candidate runs recorded 83–85 FPS and more Chunk updates than
+their baselines. The repeat stayed near 77 FPS. The fixed-work section
+compiles were faster at the median in both lighting modes. The moving
+captures give mixed results for FPS and p99.

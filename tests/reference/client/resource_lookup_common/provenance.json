@@ -6431,7 +6431,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938355,
-      "sha256": "cf1a1d6aee2a09ebcbb6118a422d68cb2344abb743d6b722d16c52e511f663ef"
+      "sha256": "4815e57de5787e6b70d5807270bc915b226fa799afda071bf788f186c57b2fb5"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6495,7 +6495,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068615,
-      "sha256": "1f8698824386a0e8b725dfde75ea7ad37e4ecd02c23329401fb087fc7c7e5e8f"
+      "sha256": "86f974858eabb26cb3b16da4e3b8fc0d22b1b6ca31347a8e0cf514f4a6cbe9b8"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6627,7 +6627,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 935180,
-      "sha256": "fd9281de86a5eeeebd2259cc0c6d87b438312eac6904ad80324c9f52a6d72d33"
+      "sha256": "8ae1e8bb3963fb611e8f1807f1cf0dd838909806df603692d2206adee4962100"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -11754,8 +11754,8 @@
       "sha256": "3e6e0b238dfe0d0ef272957574056d97be18b5d00060cf2258fff9b55e29fc17"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 25677,
-      "sha256": "60d66a7c2a4ca978dc4667288f373fa5b95fb34802ff665e7451336b957778ef"
+      "bytes": 25403,
+      "sha256": "67190cc934a8d98f4cccb5002ca87f88e899501e71d0fb0b7fcabaa250dfaadc"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14963,
@@ -11782,8 +11782,8 @@
       "sha256": "4eb109dad24b3d7d43e397a91eea5c4f0d6417fb386c0bf84d254e2687187d84"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 13387,
-      "sha256": "e78f137dd18d60b3748d13709b2081f4458973539c6a635611ae0053b50f23fc"
+      "bytes": 13631,
+      "sha256": "e45a16662404007d5acd4089327c80395ba6d3934c981ea8ad3b680cc7ed2da6"
     },
     "src/client/render/blocks/render.c": {
       "bytes": 9206,
@@ -21138,8 +21138,8 @@
       "sha256": "c139f7e3ef971d333fd08805edbdc162a294ac1a17652febd922ee691baf76a3"
     },
     "docs/performance/chunk-rendering.md": {
-      "bytes": 59178,
-      "sha256": "d273b21914bb1b687a706c081ea0358d42bbc9ea42f8fb91e1d5c94609f642e8"
+      "bytes": 62641,
+      "sha256": "b57fbf1a4bac5f2a491aeecc867b6c10e9624529682008c19c6bf4919e22b124"
     },
     "tests/benchmarks/chunk_cache_render_windows.json": {
       "bytes": 2023922,

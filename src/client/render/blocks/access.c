@@ -9,7 +9,6 @@
 #include "mc/block/registry/runtime.h"
 
 #include <string.h>
-#include <xmmintrin.h>
 
 bool mc_cv_fail(mc_cv_context *c, mc_client_render_global_status status, const char *operation,
                 unsigned int pc, bool native) {
@@ -37,12 +36,6 @@ bool mc_cv_push_source(mc_cv_context *c, const char *class_name, const char *met
 
 bool mc_cv_push(mc_cv_context *c, const char *method, const char *descriptor) {
     return mc_cv_push_source(c, "cv", method, descriptor);
-}
-
-bool mc_cv_fp(mc_cv_context *c, unsigned int pc) {
-    return (_mm_getcsr() & 0xffc0u) == 0x1f80u ||
-           mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP,
-                      "CV reached strict floating-point prerequisite", pc, true);
 }
 
 static bool graphics_result(mc_cv_context *c, bool ok, unsigned int pc) {
