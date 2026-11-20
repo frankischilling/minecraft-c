@@ -48,16 +48,21 @@ def fields(line):
 
 
 def percentile(values, q):
-    ordered = sorted(values)
+    return _ordered_percentile(sorted(values), q)
+
+
+def _ordered_percentile(ordered, q):
     return ordered[max(0, math.ceil(q * len(ordered)) - 1)]
 
 
 def distribution(values):
     if not values:
         return None
+    ordered = sorted(values)
     return {'count': len(values), 'mean_ms': sum(values) / len(values),
-            'p50_ms': percentile(values, .50), 'p95_ms': percentile(values, .95),
-            'p99_ms': percentile(values, .99), 'max_ms': max(values)}
+            'p50_ms': _ordered_percentile(ordered, .50),
+            'p95_ms': _ordered_percentile(ordered, .95),
+            'p99_ms': _ordered_percentile(ordered, .99), 'max_ms': max(values)}
 
 
 def source_clock_span(end, start):
@@ -173,14 +178,15 @@ def qualify_cohort(profiles):
 def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_WARMUP_SECONDS,
               *, include_frame_cadence=False):
     """Summarize an observation. Retained reports replay the original summary schema."""
-    result = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_RESULT ')]
-    context = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_CONTEXT ')]
-    finish = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_FINISH ')]
+    lines = stdout.splitlines()
+    result = [fields(s) for s in lines if s.startswith('PERF_RESULT ')]
+    context = [fields(s) for s in lines if s.startswith('PERF_CONTEXT ')]
+    finish = [fields(s) for s in lines if s.startswith('PERF_FINISH ')]
     if len(result) != 1 or len(context) != 1 or len(finish) != 1:
         raise ValueError('Missing unique measurement/context/cleanup receipt')
     result, context, finish = result[0], context[0], finish[0]
     raw = [[int(v) for v in s.split(' ', 1)[1].split(',')]
-           for s in stdout.splitlines() if s.startswith('PERF_ROW ')]
+           for s in lines if s.startswith('PERF_ROW ')]
     row_version = int(result.get('row-version', '1'))
     if row_version not in (1, 2):
         raise ValueError('Unknown frame observation version')
@@ -205,7 +211,7 @@ def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_
     pre_hud = [source_clock_span(r[16], r[4]) for r in split_rows]
     hud_and_active = [source_clock_span(r[5], r[16]) for r in split_rows]
     source_fps = []
-    for line in stdout.splitlines():
+    for line in lines:
         if line.startswith('PERF_SOURCE_FPS '):
             row = fields(line)
             words = row.pop('words')
@@ -213,17 +219,17 @@ def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_
                 raise ValueError('Invalid UTF16 Source FPS words')
             row['source_text'] = ''.join(chr(int(words[i:i+4], 16)) for i in range(0, len(words), 4))
             source_fps.append(row)
-    cache = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_CACHE ')]
+    cache = [fields(s) for s in lines if s.startswith('PERF_CACHE ')]
     stages = ['before-selection', 'first-loaded', 'setup-returned', 'warmup-returned', 'timed-returned']
     if [r.get('stage') for r in cache] != stages or cache[0].get('present') != '0':
         raise ValueError('Missing ordered fresh-process cache receipts')
     if any(r.get('present') != '1' or r.get('owned') != '1' or r.get('raw-exports') != '0' or
            r.get('mutation-depth') != '0' for r in cache[1:]):
         raise ValueError('Setup or interval exported/disabled the ordinary owned cache')
-    poses = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_POSE ')]
+    poses = [fields(s) for s in lines if s.startswith('PERF_POSE ')]
     if [row.get('stage') for row in poses] != ['pre-warmup', 'timed-entry', 'timed-returned']:
         raise ValueError('Missing passive scalar camera receipts')
-    foreground = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_FOREGROUND ')]
+    foreground = [fields(s) for s in lines if s.startswith('PERF_FOREGROUND ')]
     native_foreground_valid = bool(foreground) and all(
         int(row['hwnd']) != 0 and int(row['pid']) == int(row['own-pid']) > 0
         for row in foreground)
@@ -239,7 +245,7 @@ def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_
     full_pose_retained = (all(pose_keys <= set(row) and finite_position(row) for row in poses[1:]) and
                           all(poses[1][key] == poses[2][key] for key in pose_keys))
     ledger = work_ledger(raw, result, row_version,
-                         [fields(s) for s in stdout.splitlines() if s.startswith('PERF_WORK ')])
+                         [fields(s) for s in lines if s.startswith('PERF_WORK ')])
     duration_complete = end - start >= 10 * hz
     warmup_request, warmup_qpc = result.get('warmup-seconds'), result.get('warmup-qpc')
     if warmup_request is None and warmup_qpc is None:
@@ -256,7 +262,7 @@ def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_
              view_distance == expected_view_distance and all(r[12] == 1 for r in raw) and
              all(r[11] == -1 and r[10] == 1 for r in raw) and native_foreground_valid and
              actual_rotation_valid and pose_valid and (row_version == 1 or len(split_rows) == len(raw)))
-    gpu = {key: next((s.split(' ', 1)[1] for s in stdout.splitlines()
+    gpu = {key: next((s.split(' ', 1)[1] for s in lines
                       if s.startswith('PERF_GPU_' + key.upper() + ' ')), None)
            for key in ('vendor', 'renderer', 'version')}
     context_complete = ({'major', 'minor', 'profile', 'swap-zero', 'width', 'height',

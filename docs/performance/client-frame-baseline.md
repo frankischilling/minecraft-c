@@ -513,3 +513,50 @@ The sample covers one stationary scene on one machine.
 A second cohort balanced executable order over four pairs. All eight runs
 kept the timed camera pose, but one baseline run lost native foreground and
 paused World simulation. That cohort has no aggregate FPS comparison.
+
+## World-frame storage reuse trial
+
+The trial kept one retired World-frame allocation per renderer. A later
+call cleared and reused it. A call entered spare storage after child
+retirement and release of its renderer hold. A call with the final renderer
+hold freed both allocations at retirement.
+
+The Windows MSVC Release call occupies 472,344 bytes. Twelve alternating
+native samples at that size ran 5,000 operations each. The median fell from
+11.50 µs for allocation and free to 8.76 µs for clearing preallocated storage.
+Each operation checked and touched the first and last bytes. Clearing reused
+storage was faster in every pair. This isolates the allocation and clear costs.
+
+The trial passed six focused Windows Release tests, four Linux Clang
+ASan/UBSan tests, and the ten-load Windows save and reload profile. The
+World-frame control covered refused retirement, state clearing on reuse,
+and release of the frame's final renderer hold.
+
+Four alternating Windows Release pairs used the same authored Far scene,
+camera, assets and observer. All eight runs advanced 200 World ticks after
+a 30-second warmup. Each run qualified on `DISPLAY2` at 854×480.
+
+| Median of per-run statistics | Before | Trial |
+| --- | ---: | ---: |
+| FPS | 491.43 | 488.12 |
+| Frame interval p95 | 3.183 ms | 3.239 ms |
+| Frame interval p99 | 6.275 ms | 6.738 ms |
+| Longest frame interval | 8.828 ms | 9.917 ms |
+
+Frame interval p99 rose in all four pairs. Every measured frame stayed below
+16.67 ms. The trial was dropped because the full client had longer frame
+times despite less allocation work in the fixed-size benchmark.
+All 394 frames in the slowest 1% of the eight runs processed a tick. The
+median tick batch on tick-bearing frames went from 3.661 to 3.769 ms across
+the paired runs.
+
+## Frame report parsing
+
+The observer splits the captured output into lines once. Each timing
+distribution sorts its samples once and uses that order for p50, p95 and
+p99. Means still sum samples in capture order.
+
+Fourteen alternating Windows Python 3.14 pairs replayed the eight Far
+captures above, totaling 39,031 frame rows. Median parsing time fell from
+390.95 to 304.15 ms. Each pair was faster, and both parsers reproduced every
+retained summary exactly. This measures report processing after capture.

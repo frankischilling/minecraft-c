@@ -9462,8 +9462,8 @@
       "sha256": "2deede75d129ce119ef4dd49d67a895e1967a1d6599a71005fc39cb94e5f1ece"
     },
     "scripts/benchmarks/client_frames_run.py": {
-      "bytes": 27071,
-      "sha256": "84d8b091bce5219e92bfe75b774f71f3465099bb4b4d77cc8987a4cfb05e7c87"
+      "bytes": 27094,
+      "sha256": "cd3503434a0579be6d7c1536f3ade4cc8ae2f0d6d8274430149ddfe0a5135fbb"
     },
     "src/client/runtime/bootstrap_terminal_internal.h": {
       "bytes": 2975,
