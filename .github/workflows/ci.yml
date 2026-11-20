@@ -68,7 +68,7 @@ jobs:
           sudo apt-get update
           sudo apt-get -o "Dir::Cache::archives=$RUNNER_TEMP/mc-apt-archives" \
             -o APT::Keep-Downloaded-Packages=true install -y --no-install-recommends \
-            ccache pkg-config libfontconfig-dev fonts-dejavu-core libasound2-dev libpulse-dev \
+            ccache lld pkg-config libfontconfig-dev fonts-dejavu-core libasound2-dev libpulse-dev \
             libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxfixes-dev \
             libxi-dev libxss-dev libxtst-dev libgl1-mesa-dev libgl1-mesa-dri xvfb xauth
       - name: Restore compiler cache
@@ -95,6 +95,7 @@ jobs:
       - name: Configure and make space for sanitizer executables
         id: configure
         run: |
+          ld.lld --version
           df -h "$GITHUB_WORKSPACE"
           # Recent sanitizer builds consumed up to 44 GiB. Keep headroom for
           # the test working directories before skipping hosted SDK cleanup.
@@ -122,7 +123,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_C_FLAGS_DEBUG=-g1 \
             -DCMAKE_CXX_FLAGS_DEBUG=-g1 \
-            -DCMAKE_EXE_LINKER_FLAGS=-Wl,--compress-debug-sections=zlib \
+            '-DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -Wl,--compress-debug-sections=zlib' \
             -DMC_ENABLE_SANITIZERS=ON \
             -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON \
             -DMC_ENABLE_CLIENT_DISPLAY_TESTS=ON \

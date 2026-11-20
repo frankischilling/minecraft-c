@@ -5458,8 +5458,8 @@
       "sha256": "fff860d4b22abcecc7cf999062059fb42c5e5f53beecf3023724cdc01d45da55"
     },
     "src/world/storage/source_region_output.inc": {
-      "bytes": 38630,
-      "sha256": "65eed65ef88d21289a3a923d53086e694960a2fa1d71a3ac79a5a21ed9bee2df"
+      "bytes": 38670,
+      "sha256": "a6c4aa72aa1c16bbb286bf867c8a39f6a05873f703eefded5233a9fd46d2b401"
     },
     "cmake/tests/source_region_output.cmake": {
       "bytes": 1985,
@@ -5474,8 +5474,8 @@
       "sha256": "eab79b0cb7df2c1c3bb39b7e95d2beee1a596d8414b7b4299d75f3a53779ce5b"
     },
     "tests/world/storage/test_source_region_output.c": {
-      "bytes": 31261,
-      "sha256": "0d02c6d77d0604352809f07fe4e5fcf3647e565290989198d868ad4497305007"
+      "bytes": 31803,
+      "sha256": "f2e46bcfc8500d5d76eafe89246a06965fc90d32f19ac6948758c034f319e7fe"
     },
     "tests/world/storage/region_output_raf_native.c": {
       "bytes": 1449,
@@ -7010,16 +7010,16 @@
       "sha256": "4c91d9bd8b0bac0cc2a4d6f5075bc1173945879289cd2a94a983f87359b3158f"
     },
     "scripts/benchmarks/client_frames.py": {
-      "bytes": 8344,
-      "sha256": "b062dd85b51977c9b99dececdfc5d0bfc4956c744336f97f71685120651f9f26"
+      "bytes": 8437,
+      "sha256": "0b17fa0d864aeb45fc9a4f75680f1ce617a87eb15ad65fc17f6c12053656ced8"
     },
     "scripts/benchmarks/client_frames_build.py": {
       "bytes": 7387,
       "sha256": "2deede75d129ce119ef4dd49d67a895e1967a1d6599a71005fc39cb94e5f1ece"
     },
     "scripts/benchmarks/client_frames_run.py": {
-      "bytes": 26251,
-      "sha256": "0e221b2c564858d072f0884442538fba836dc354f6cb1cd2438fc49cfc3870e9"
+      "bytes": 27071,
+      "sha256": "84d8b091bce5219e92bfe75b774f71f3465099bb4b4d77cc8987a4cfb05e7c87"
     },
     "src/client/runtime/bootstrap_terminal_internal.h": {
       "bytes": 2975,
@@ -7494,8 +7494,8 @@
       "sha256": "89f07324e2ec1f0222000df3e3c7680a8d541571fe3db001bd2f0ea3bd0ea069"
     },
     "tests/tools/benchmarks/test_client_frames_run.py": {
-      "bytes": 29766,
-      "sha256": "bd4181aec08d7e58eb442000a5c577e9cd222ddb34b44dd134440d6a3e58c549"
+      "bytes": 30504,
+      "sha256": "d2cfced4b172cc17f0588e53a69e6afbfd205325cda7656495be00cdd7b1a498"
     },
     "cmake/client_ladder_world.cmake": {
       "bytes": 1473,

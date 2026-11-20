@@ -1076,3 +1076,27 @@ The Chunk compiler, ChunkCache and TileEntity eligibility tests passed on
 Windows MSVC Release and Linux Clang Debug with ASan and UBSan. The new compiler
 control reaches a missing Registry entry on the second Block and compares the
 retained success diagnostic and the failure site.
+
+## Repeated Block field check trial
+
+The trial inlined the Registry's ready, idle and allocation predicate for
+repeated Block field checks. The cold path kept the same initializer and
+diagnostic call.
+
+Six alternating Windows MSVC Release pairs per shading mode shared one workload
+object. Only the renderer library changed. Each process timed seven samples of
+24 compiles for a filled section and a single-layer surface. The two versions
+matched vertex hashes, command and draw counts, Chunk planes and World bindings.
+
+| Workload | Median before / after | Faster pairs |
+| --- | ---: | ---: |
+| Ambient occlusion, filled | 4.9377 / 4.8982 ms | 5 of 6 |
+| Ambient occlusion, surface | 0.6997 / 0.6929 ms | 5 of 6 |
+| Flat lighting, filled | 2.1519 / 2.0854 ms | 4 of 6 |
+| Flat lighting, surface | 0.2880 / 0.2848 ms | 6 of 6 |
+
+Two complete Windows Far-distance pairs advanced 200 World ticks in every
+interval. FPS went from 77.97 to 76.58 and from 77.53 to 76.32. Frame interval
+p99 rose from 15.20 to 16.16 ms and from 15.27 to 15.59 ms. Two other pairs
+lost native foreground in one or both runs and the full cohort failed
+qualification. The trial was dropped after both complete pairs slowed.

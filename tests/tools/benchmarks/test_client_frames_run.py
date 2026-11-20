@@ -301,6 +301,18 @@ class FrameWorkObservations(unittest.TestCase):
 
 
 class FrameObservations(unittest.TestCase):
+    def test_frame_cadence_includes_delays_between_callbacks(self):
+        wire = receipt().replace('8,1101,1200,', '8,1185,1200,')
+        result = FRAMES.summarize(wire, include_frame_cadence=True)
+        self.assertEqual(result['host_frame']['p50_ms'], 15.0)
+        self.assertEqual(result['frame_interval']['p50_ms'], 100.0)
+        self.assertEqual(result['frame_interval']['p99_ms'], 101.0)
+        self.assertEqual(result['between_frames']['max_ms'], 85.0)
+        self.assertEqual(result['frame_intervals_over_16_667_ms'], 2)
+        self.assertEqual(result['frame_intervals_over_33_333_ms'], 2)
+        self.assertAlmostEqual(result['frame_interval']['mean_ms'],
+                               1000 / result['measured_fps'])
+
     def test_existing_clock_split_and_legacy_rows(self):
         result = FRAMES.summarize(receipt())
         self.assertTrue(result['valid_focused_Tiny_interval'])

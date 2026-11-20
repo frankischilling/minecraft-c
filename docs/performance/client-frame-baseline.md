@@ -57,6 +57,13 @@ executables in a comparison.
 python scripts/benchmarks/client_frames.py --executable before=PATH --executable after=PATH --authored-assets --artifacts frame-runs --rounds 4
 ```
 
+The report's `frame_interval` measures time from one returned frame to the
+next. The first interval starts at the measurement boundary. These intervals
+cover the full elapsed time used to compute FPS. Their percentiles and slow
+frame counts include delays between callbacks, which `between_frames` reports
+separately. `host_frame` measures the time spent inside each frame callback.
+Both span host time, including scheduling delays.
+
 Two groups of four alternating Windows Release pairs compared the light
 and collision changes. The baseline relinked `queries.c`, `store.c`,
 `boxes.c` and `entities.c` from `c34a7c23`. Both builds shared the

@@ -373,14 +373,12 @@ static bool ro_raf_error(mc_world_source_region_output_error *e, source_region *
 
 static bool ro_write_int(source_region *q, int32_t value, const char *method, const char *desc,
                          int pc, int parent_pc, mc_world_source_region_output_error *e) {
-    for (unsigned i = 0; i < 4; ++i) {
-        const uint8_t b = (uint8_t)((uint32_t)value >> (24u - 8u * i));
-        mc_java_file_error child;
-        const mc_java_file_status s = mc_java_random_access_write(q->raf, &b, 1, &child);
-        if (s != MC_JAVA_FILE_OK)
-            return ro_raf_error(e, q, s, child, method, desc, pc, parent_pc);
-    }
-    return true;
+    const uint32_t bits = (uint32_t)value;
+    const uint8_t bytes[] = {(uint8_t)(bits >> 24), (uint8_t)(bits >> 16), (uint8_t)(bits >> 8),
+                             (uint8_t)bits};
+    mc_java_file_error child;
+    const mc_java_file_status s = mc_java_random_access_write(q->raf, bytes, sizeof(bytes), &child);
+    return s == MC_JAVA_FILE_OK || ro_raf_error(e, q, s, child, method, desc, pc, parent_pc);
 }
 
 static bool ro_payload(mc_world_source_region_output *o, int parent_pc,

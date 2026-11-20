@@ -136,7 +136,8 @@ def main():
     summary = [{'label': p['label'], 'round': p['round'], 'status': p['observation']['status'],
                 'measurement': p['observation'].get('summary', {}).get('measurement'),
                 'fps': p['observation'].get('summary', {}).get('measured_fps'),
-                'host_frame': p['observation'].get('summary', {}).get('host_frame')}
+                'host_frame': p['observation'].get('summary', {}).get('host_frame'),
+                'frame_interval': p['observation'].get('summary', {}).get('frame_interval')}
                for p in report['profiles']]
     print(json.dumps({'status': report['status'], 'report': str(output / 'run.json'),
                       'matched': report['authored_scene_and_camera_matched'], 'profiles': summary}))

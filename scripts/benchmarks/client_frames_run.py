@@ -170,7 +170,9 @@ def qualify_cohort(profiles):
             'all_intervals_qualified': complete, 'authored_scene_and_camera_matched': matched}
 
 
-def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_WARMUP_SECONDS):
+def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_WARMUP_SECONDS,
+              *, include_frame_cadence=False):
+    """Summarize an observation. Retained reports replay the original summary schema."""
     result = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_RESULT ')]
     context = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_CONTEXT ')]
     finish = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_FINISH ')]
@@ -303,6 +305,18 @@ def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_
             expected_warmup_seconds != DEFAULT_WARMUP_SECONDS):
         summary['requested_warmup_seconds'] = expected_warmup_seconds
         summary['warmup_qualified'] = warmup_complete
+    if include_frame_cadence:
+        # Account for every clock tick in the FPS denominator.
+        intervals, gaps = [], []
+        previous = start
+        for row in raw:
+            intervals.append((row[2] - previous) * 1000 / hz)
+            gaps.append((row[1] - previous) * 1000 / hz)
+            previous = row[2]
+        summary['frame_interval'] = distribution(intervals)
+        summary['between_frames'] = distribution(gaps)
+        summary['frame_intervals_over_16_667_ms'] = sum(x > 1000 / 60 for x in intervals)
+        summary['frame_intervals_over_33_333_ms'] = sum(x > 1000 / 30 for x in intervals)
     return summary
 
 
@@ -409,7 +423,8 @@ def main():
         report['returncode'] = result.returncode
         stdout = result.stdout.decode('utf8', errors='strict')
         report['summary'] = summarize(stdout, expected_view_distance=view_distance,
-                                      expected_warmup_seconds=args.warmup_seconds)
+                                      expected_warmup_seconds=args.warmup_seconds,
+                                      include_frame_cadence=True)
         if report['summary']['context'].get('input-policy') != 'fixed-input':
             raise ValueError('Use an observer built for the fixed-input workload')
         if not report['summary'].get('warmup_qualified', True):

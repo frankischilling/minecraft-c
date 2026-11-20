@@ -228,6 +228,8 @@ static int normal(fixture *f, const char *label, int32_t x, int32_t z, size_t le
     CHECK(mc_world_source_region_output_inspect(out, &after) &&
           after.written == (int32_t)(length + 18) && after.raw_bytes == length + 18 &&
           !after.closed && !after.commit_entered);
+    const uint32_t old_offset = (uint32_t)after.offsets[(size_t)after.x + 32u * (size_t)after.z];
+    const bool updates_offset = old_offset == 0 || (old_offset & 255u) != (uint32_t)required;
     CHECK(mc_java_random_access_inspect(after.random_access, &raf_after) &&
           raf_after.write_calls == raf_before.write_calls &&
           raf_after.seek_calls == raf_before.seek_calls &&
@@ -247,6 +249,11 @@ static int normal(fixture *f, const char *label, int32_t x, int32_t z, size_t le
     snprintf(step, sizeof(step), "%s-closed", label);
     CHECK(emit(f, step, out, first, last, -1, -1) == 0);
     const mc_world_source_region_output_state completed = after;
+    CHECK(mc_java_random_access_inspect(after.random_access, &raf_after) &&
+          raf_after.write_calls - raf_before.write_calls ==
+              (size_t)appended + 4u + updates_offset &&
+          raf_after.bytes_written - raf_before.bytes_written ==
+              (size_t)appended * 4096u + 9u + 4u * updates_offset + after.compressed_length);
     CHECK(mc_java_random_access_inspect(after.random_access, &raf_before));
     CHECK(mc_world_source_region_output_source_close(out, &f->output_error) == MC_WORLD_SOURCE_OK);
     CHECK(mc_world_source_region_output_inspect(out, &after) && after.source_close_calls == 2 &&

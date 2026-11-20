@@ -74,3 +74,25 @@ Original-dependent tests are off by default and require the supplied verified
 client archive and a full JDK17. Lower stream evidence does not establish
 whole-World or gameplay parity. The [Chunk save contract](saving.md) describes
 caller integration and its separate native save/reload tests.
+
+## Batched integer writes
+
+Each four-byte length, sector offset and timestamp uses one file-layer write request.
+The file layer retries short writes, and each field retains its own error
+reporting site. The normal-write control counts native calls and bytes while
+the independent decoder checks the stored headers and payloads.
+
+Twelve alternating Windows MSVC Release pairs on an i9-10900F used the same
+workload object and a 32-byte authored payload. Each run began with one warm
+commit. The allocation case then wrote all 1,024 slots of one region, and the
+rewrite case committed the same slot 3,000 times.
+
+| Workload | Native writes before / after | Median elapsed before / after |
+| --- | ---: | ---: |
+| Allocate slots | 15,355 / 6,142 | 116.12 / 100.89 ms |
+| Rewrite one slot | 30,000 / 12,000 | 180.06 / 138.97 ms |
+
+Call counts fell in every pair. Elapsed time fell in 10 allocation pairs and
+11 rewrite pairs. Transferred bytes matched. After omitting the wall-clock
+timestamp sector, the final files matched byte for byte. These timings cover
+region commits on the local filesystem.
