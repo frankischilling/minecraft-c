@@ -450,8 +450,11 @@ class NamedReferenceGraphs(unittest.TestCase):
         self.assertEqual(A.reference_classes(document), 2)
         self.assertEqual(json.dumps(document, sort_keys=True), before)
         document["rows"][-1]["last"]["ref"] = "r10"
-        with self.assertRaisesRegex(ValueError, "retains its actual class"):
+        with self.assertRaisesRegex(ValueError, "retains its actual class") as rejected:
             A.reference_classes(document)
+        self.assertEqual(str(rejected.exception),
+                         "one actual identity retains its actual class: $: "
+                         "'java.util.ArrayList' != 'java.util.HashMap'")
         document["rows"][-1]["last"]["ref"] = "r11"
         self.assertEqual(A.reference_classes(document), 2)
         self.assertEqual(json.dumps(document, sort_keys=True), before)

@@ -1,5 +1,37 @@
 # Chunk rendering and EW diagnostics
 
+## Block row scan diagnostics trial
+
+The section compiler calls the Block row scan to skip Air and find the next
+nonzero Block. Two trials deferred diagnostic setup to the failure path. The
+second also inlined the scan body in the MSVC build to remove the helper call.
+
+Each trial ran six alternating Windows Release pairs per shading mode, with 26
+compiles per sample and seven measured samples per process. Both builds used
+the same authored 16×16×16 filled section and 16×1×16 surface. Vertex bytes,
+command and draw counts, and World bindings matched in every pair.
+
+| Section and shading | Deferred diagnostics | Inlined scan |
+| --- | ---: | ---: |
+| Filled, ambient occlusion | 5.101 → 5.175 ms | 5.013 → 5.075 ms |
+| Surface, ambient occlusion | 0.714 → 0.715 ms | 0.715 → 0.709 ms |
+| Filled, flat | 2.165 → 2.200 ms | 2.244 → 2.178 ms |
+| Surface, flat | 0.294 → 0.296 ms | 0.293 → 0.291 ms |
+
+The table gives the median of the per-process medians. The inlined scan sped
+up flat compilation but slowed the filled section with ambient occlusion in
+five of six pairs. Both trials were reverted. The deferred-diagnostics Far
+frame cohort failed qualification. One baseline run lost focus at startup,
+and an edit changed a fingerprinted source file during another run.
+
+A separate trial read Block fields directly after the renderer's null check,
+avoiding a redundant accessor call. Across six alternating pairs per shading
+mode, filled ambient-occlusion compilation held at 5.052 ms. Surface
+ambient-occlusion compilation rose from 0.695 to 0.703 ms. The filled and
+surface flat-lighting medians moved from 2.133 to 2.143 ms and from 0.292 to
+0.287 ms, respectively. All output and ownership checks matched. The trial
+was reverted.
+
 ## Tessellator colors and terrain selection
 
 Block-face color writes can use the RenderGlobal scene's existing Tessellator

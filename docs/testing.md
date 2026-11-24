@@ -13,6 +13,12 @@ Three alternating local Windows pairs ran all 24 tests with fresh Python
 processes. Median elapsed time went from 21.04 to 19.60 seconds, with a
 decrease in all three pairs. This timing covers one suite on one machine.
 
+`tools.population_named_data` compares validated class names directly when an
+object identity repeats. A conflict still reports the expected and actual class
+names through the existing comparator. Two alternating Windows pairs ran all
+28 tests in fresh Python 3.14.3 processes. Median wall time fell from 22.77 to
+21.57 seconds, with both pairs faster. All 28 tests also passed under `-O`.
+
 Dedicated replay also compares complete state graphs across no-op boundaries.
 It now copies only the outer dictionaries before removing their `ordinal`
 fields. The comparison still checks every nested value and leaves both inputs

@@ -64,7 +64,8 @@ def reference_classes(document):
                     identity = value["ref"]
                     require(type(identity) is str, "nonnull actual object identity")
                     if identity in owners:
-                        equal(value["class"], owners[identity], "one actual identity retains its actual class")
+                        if value["class"] != owners[identity]:
+                            equal(value["class"], owners[identity], "one actual identity retains its actual class")
                     else:
                         ref(value, value["class"])
                         owners[identity] = value["class"]
