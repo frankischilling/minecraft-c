@@ -826,8 +826,8 @@
       "sha256": "55b4f7ca9d5cd05630a6ff7065f151a334e3617c7bc421209c6e374b589f5542"
     },
     "docs/testing.md": {
-      "bytes": 705659,
-      "sha256": "1052ec9d951aebd7aa4337c789b7d18175a3ebba5d7a44fd4fdd96241e38020f"
+      "bytes": 706050,
+      "sha256": "7b52f383e7989eacca61918333673a3181c479a18fd4730b4db0df950485f98f"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39570,
@@ -2426,8 +2426,8 @@
       "sha256": "f2c9008df6ce283efec264a64aab39409b0d695881448aef7f1b6023ad75d4a7"
     },
     "scripts/reference/world/population/named_data_original.py": {
-      "bytes": 39687,
-      "sha256": "73d18ef51c983288f460dd689d62c1b9f405229233f0a9537789f66344464abd"
+      "bytes": 39754,
+      "sha256": "efd22c4abd71822fd85319cd72bfcee240911535e8ad43d11191c1900bdb50d8"
     },
     "scripts/reference/world/population/persistence_fixtures.py": {
       "bytes": 13626,
@@ -8882,8 +8882,8 @@
       "sha256": "e863d6127937c6d69421a97e82e9ca45e01a1ae0e323d836ec63e1dc9011db87"
     },
     "tests/tools/world/test_population_named_data.py": {
-      "bytes": 33466,
-      "sha256": "dd51295634333d375a70a00ed6938197126a88dac4a85fe8e49a43533fb84a49"
+      "bytes": 33678,
+      "sha256": "0e3d57495f22021fa97b2f93cf621f22363161bfbcc27bc662c1642871bdf4eb"
     },
     "tests/tools/world/test_population_persistence.py": {
       "bytes": 30052,
@@ -21142,8 +21142,8 @@
       "sha256": "c139f7e3ef971d333fd08805edbdc162a294ac1a17652febd922ee691baf76a3"
     },
     "docs/performance/chunk-rendering.md": {
-      "bytes": 65319,
-      "sha256": "63120b6d7b8e1654835b0a4fd7a425a1a40bb422c8e8d6451bfda2bb8dfec8b6"
+      "bytes": 67079,
+      "sha256": "1e57add6d80d7483705f82e6e0e492aa941bb5931a61051a7088913660b933e8"
     },
     "tests/benchmarks/chunk_cache_render_windows.json": {
       "bytes": 2023922,
