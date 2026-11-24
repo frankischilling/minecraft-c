@@ -27,16 +27,15 @@ struct mc_world_regions {
 };
 
 static mc_world_storage_status regions_error(mc_world_storage_error *error,
-                                             mc_world_storage_status status, const char *operation)
-{
+                                             mc_world_storage_status status,
+                                             const char *operation) {
     if (error != NULL)
         *error = (mc_world_storage_error){status, operation, 0};
     return status;
 }
 
 static mc_world_storage_status regions_image_error(mc_world_storage_error *error,
-                                                   mc_region_writer_status status)
-{
+                                                   mc_region_writer_status status) {
     mc_world_storage_status result =
         status == MC_REGION_WRITER_LIMIT || status == MC_REGION_WRITER_RECORD_TOO_LARGE
             ? MC_WORLD_STORAGE_LIMIT
@@ -47,8 +46,7 @@ static mc_world_storage_status regions_image_error(mc_world_storage_error *error
 }
 
 static mc_world_storage_status regions_compression_error(mc_world_storage_error *error,
-                                                         mc_compression_status status)
-{
+                                                         mc_compression_status status) {
     mc_world_storage_status result =
         status == MC_COMPRESSION_LIMIT               ? MC_WORLD_STORAGE_LIMIT
         : status == MC_COMPRESSION_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
@@ -57,8 +55,7 @@ static mc_world_storage_status regions_compression_error(mc_world_storage_error 
     return regions_error(error, result, mc_compression_status_string(status));
 }
 
-mc_world_regions_limits mc_world_regions_default_limits(void)
-{
+mc_world_regions_limits mc_world_regions_default_limits(void) {
     const mc_world_regions_limits limits = {128u * 1024u * 1024u, mc_region_writer_default_limits(),
                                             mc_compression_default_limits()};
     return limits;
@@ -66,8 +63,7 @@ mc_world_regions_limits mc_world_regions_default_limits(void)
 
 mc_world_storage_status mc_world_regions_create(const mc_world_regions_limits *requested,
                                                 mc_world_regions **out,
-                                                mc_world_storage_error *error)
-{
+                                                mc_world_storage_error *error) {
     mc_world_regions_limits limits =
         requested == NULL ? mc_world_regions_default_limits() : *requested;
     if (out == NULL || limits.image.max_image_bytes > MC_REGION_WRITER_MAX_IMAGE_BYTES ||
@@ -84,8 +80,7 @@ mc_world_storage_status mc_world_regions_create(const mc_world_regions_limits *r
     return regions_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-void mc_world_regions_clear(mc_world_regions *regions)
-{
+void mc_world_regions_clear(mc_world_regions *regions) {
     if (regions == NULL)
         return;
     for (size_t i = 0; i < regions->count; ++i) {
@@ -97,8 +92,7 @@ void mc_world_regions_clear(mc_world_regions *regions)
     regions->bytes = sizeof(*regions);
 }
 
-mc_world_regions_usage mc_world_regions_get_usage(const mc_world_regions *regions)
-{
+mc_world_regions_usage mc_world_regions_get_usage(const mc_world_regions *regions) {
     const mc_world_regions_usage usage = {regions == NULL ? 0 : regions->count,
                                           regions == NULL ? 0 : regions->bytes};
     return usage;
@@ -106,8 +100,7 @@ mc_world_regions_usage mc_world_regions_get_usage(const mc_world_regions *region
 
 static mc_world_storage_status regions_path(const char *root, int32_t x, int32_t z,
                                             char **directory, char **path,
-                                            mc_world_storage_error *error)
-{
+                                            mc_world_storage_error *error) {
     char filename[64];
     int written = snprintf(filename, sizeof(filename), "r.%" PRId32 ".%" PRId32 ".mcr",
                            mc_java_i32_shr(x, 5), mc_java_i32_shr(z, 5));
@@ -130,8 +123,7 @@ static mc_world_storage_status regions_path(const char *root, int32_t x, int32_t
 
 static mc_world_storage_status regions_open(mc_world_regions *regions, const char *root, int32_t x,
                                             int32_t z, regions_entry **out,
-                                            mc_world_storage_error *error)
-{
+                                            mc_world_storage_error *error) {
     char *directory = NULL, *path = NULL;
     mc_world_storage_status status = regions_path(root, x, z, &directory, &path, error);
     if (status != MC_WORLD_STORAGE_OK)
@@ -201,8 +193,7 @@ static mc_world_storage_status regions_open(mc_world_regions *regions, const cha
 
 mc_world_storage_status mc_world_regions_read(mc_world_regions *regions, const char *root,
                                               int32_t x, int32_t z, mc_compression_buffer *out,
-                                              mc_world_storage_error *error)
-{
+                                              mc_world_storage_error *error) {
     if (regions == NULL || root == NULL || out == NULL)
         return regions_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "region read arguments");
     regions_entry *entry;
@@ -234,8 +225,7 @@ mc_world_storage_status mc_world_regions_read(mc_world_regions *regions, const c
 
 static mc_world_storage_status regions_replace(mc_world_regions *regions, const char *path,
                                                const uint8_t *bytes, size_t length,
-                                               mc_world_storage_error *error)
-{
+                                               mc_world_storage_error *error) {
     size_t path_length = strlen(path);
     if (path_length > REGIONS_PATH_BYTES)
         return regions_error(error, MC_WORLD_STORAGE_LIMIT, "region temporary path");
@@ -281,8 +271,7 @@ static mc_world_storage_status regions_replace(mc_world_regions *regions, const 
 mc_world_storage_status mc_world_regions_write(mc_world_regions *regions, const char *root,
                                                int32_t x, int32_t z, const uint8_t *input,
                                                size_t length, uint32_t timestamp, uint32_t *growth,
-                                               mc_world_storage_error *error)
-{
+                                               mc_world_storage_error *error) {
     if (regions == NULL || root == NULL || growth == NULL || (input == NULL && length != 0))
         return regions_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "region write arguments");
     mc_compression_buffer compressed = {0};
@@ -340,8 +329,7 @@ mc_world_storage_status mc_world_regions_write(mc_world_regions *regions, const 
     return status;
 }
 
-void mc_world_regions_free(mc_world_regions *regions)
-{
+void mc_world_regions_free(mc_world_regions *regions) {
     if (regions != NULL) {
         mc_world_regions_clear(regions);
         free(regions);

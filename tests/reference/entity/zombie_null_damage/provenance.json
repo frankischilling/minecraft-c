@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "scope": "Prospective authored Zombie NULL-damage CPU packet. Original execution predates these public paths; no new execution or Native equivalence.",
+  "chronology": {
+    "public_paths_were_capture_start_inputs": false,
+    "binding": "Separate post-capture public rehoming; exact sole transform CRLF to LF (identity for these already-LF inputs).",
+    "capture_artifact_manifest": "Actual eighteen input/five helper pre/post and twenty-four captured outputs; final-current audit is separate post-capture evidence."
+  },
+  "capture_receipt_sha256": "31cfd013b26892644fb69e44612f60ecfe8e1d94c2a00d71c1345c00c2a774ad",
+  "analysis_sha256": "363137b880e6f7605265cdbbc631e4bcef8ee79af9754d2322f976695cbfd98a",
+  "final_audit_sha256": "d05fed3d316508322ef115a7ce67f469fc7e1a22fe09862749609aca4118426d",
+  "input_freeze_sha256": "6a9062ae1b150015200e8fba6d79394e160a3dde849f68b5225ddb1fd0d6efa4",
+  "captured_authored_sha256": {
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "MobTickTarget.java": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+    "ZombieDamageTarget.java": "554e5b0acac8ffcf322aaf1d480606136531604e69ad73f5c767c13fca75c805",
+    "ZombieDamageJdi.java": "cd2956e5c37de5a24a5356c99a36655124ea5f03f96834e8ba94a027c5811f59",
+    "profiles.tsv": "f43534196563b2d28efd11dcead1a8b4046c8c22672a136a4a3d307e0b223624",
+    "preparation.tsv": "706fdd5a59fec4ade55860336e0775005447da964d9c77454fb8b375531eff70",
+    "protocol.md": "33c2a317015e56a3cf9b03915b200de5849d1cdebecdc25cda00830b3fe7499e"
+  },
+  "public_authored_sha256": {
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "MobTickTarget.java": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+    "ZombieDamageTarget.java": "554e5b0acac8ffcf322aaf1d480606136531604e69ad73f5c767c13fca75c805",
+    "ZombieDamageJdi.java": "cd2956e5c37de5a24a5356c99a36655124ea5f03f96834e8ba94a027c5811f59",
+    "profiles.tsv": "f43534196563b2d28efd11dcead1a8b4046c8c22672a136a4a3d307e0b223624",
+    "preparation.tsv": "706fdd5a59fec4ade55860336e0775005447da964d9c77454fb8b375531eff70",
+    "protocol.md": "33c2a317015e56a3cf9b03915b200de5849d1cdebecdc25cda00830b3fe7499e"
+  },
+  "source_code_pins_sha256": "f268285aea364b0e9ac90b16db878a26fb2cc097a8f7d677016751d1e2f8d49f",
+  "helper_code_pins_sha256": "feed227959c9a5fcf2ad25cf111f0ff3b18b0a6e4feccde9c87b33e5d90fa094",
+  "captured_inputs_sha256": {
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\inputs-a\\ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\inputs-a\\MobTickTarget.java": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\inputs-a\\preparation.tsv": "706fdd5a59fec4ade55860336e0775005447da964d9c77454fb8b375531eff70",
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\inputs-a\\profiles.tsv": "f43534196563b2d28efd11dcead1a8b4046c8c22672a136a4a3d307e0b223624",
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\inputs-a\\protocol.md": "33c2a317015e56a3cf9b03915b200de5849d1cdebecdc25cda00830b3fe7499e",
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\inputs-a\\ZombieDamageJdi.java": "cd2956e5c37de5a24a5356c99a36655124ea5f03f96834e8ba94a027c5811f59",
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\inputs-a\\ZombieDamageTarget.java": "554e5b0acac8ffcf322aaf1d480606136531604e69ad73f5c767c13fca75c805",
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\input-freeze-a.json": "6a9062ae1b150015200e8fba6d79394e160a3dde849f68b5225ddb1fd0d6efa4",
+    "C:\\Users\\admin\\minecraft\\.local\\zombie-null-damage-original-20261031a\\capture.py": "d1ba22d9c165c9c541a2084ab095e6bda24d7dd1ae067523ff50980f93f7fc55",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "C:\\Users\\admin\\minecraft\\b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\mob_tick\\ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\mob_tick\\MobTickTarget.java": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\mob_tick\\MobTickJdi.java": "5b6e3647a4c6b7ad8bf1ae279534731fd7f4b32dca2f09954593fcfe53a79fc4"
+  },
+  "compiled_helpers_sha256": {
+    "ConstructorJson.class": "1d49f80ca7097e808a497f3a861381a387f18208f6817852dcbf5eebc343fa5e",
+    "MobTickTarget$Observer.class": "8cbdbad7b6f82b13edf844d4ac96ae018d64dd048b49c9519bfae9ac1c257567",
+    "MobTickTarget.class": "0b588d2cf11921aa83abf9cb6604494eee621a78f010d8c2b384d921aa6b0532",
+    "ZombieDamageJdi.class": "1f54c7945cef6be05e46305e99eccd4f18035e09bf7846507c97b62f36fcc8e9",
+    "ZombieDamageTarget.class": "e2ecfea776407f03451a1e7919dd4191fe5572b1442c345df18f0ef1109c9ee7"
+  },
+  "captured_artifacts": {
+    "authority.json": {
+      "bytes": 1475102,
+      "sha256": "f268285aea364b0e9ac90b16db878a26fb2cc097a8f7d677016751d1e2f8d49f"
+    },
+    "classes/ConstructorJson.class": {
+      "bytes": 2736,
+      "sha256": "1d49f80ca7097e808a497f3a861381a387f18208f6817852dcbf5eebc343fa5e"
+    },
+    "classes/MobTickTarget$Observer.class": {
+      "bytes": 2902,
+      "sha256": "8cbdbad7b6f82b13edf844d4ac96ae018d64dd048b49c9519bfae9ac1c257567"
+    },
+    "classes/MobTickTarget.class": {
+      "bytes": 17805,
+      "sha256": "0b588d2cf11921aa83abf9cb6604494eee621a78f010d8c2b384d921aa6b0532"
+    },
+    "classes/ZombieDamageJdi.class": {
+      "bytes": 25295,
+      "sha256": "1f54c7945cef6be05e46305e99eccd4f18035e09bf7846507c97b62f36fcc8e9"
+    },
+    "classes/ZombieDamageTarget.class": {
+      "bytes": 9427,
+      "sha256": "e2ecfea776407f03451a1e7919dd4191fe5572b1442c345df18f0ef1109c9ee7"
+    },
+    "compile.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "compile.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "debugger/checkpoints.ndjson": {
+      "bytes": 1088341,
+      "sha256": "6a37f9143ec3d0710c1207af64280aca796dea3332024634cb562b5d24b1d077"
+    },
+    "debugger/class-init.log": {
+      "bytes": 435463,
+      "sha256": "637337ba308454981d429bda1727f53d8cc476fe68077a31ad6e61495205c1a3"
+    },
+    "debugger/classes.txt": {
+      "bytes": 4179,
+      "sha256": "4e60069bdb2d6fada8a9a0a101c3fb9ddd5ca66ea7775d4647135c3c22855fbe"
+    },
+    "debugger/controller.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "debugger/controller.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "debugger/target.ndjson": {
+      "bytes": 135905,
+      "sha256": "fbe6410bc17d8c0f835c96dbef2de82c1656e91d346303c7f7a42539a87b5355"
+    },
+    "debugger/target.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "debugger/target.stdout": {
+      "bytes": 92317,
+      "sha256": "20ea5708b231de1c7a09c50be7119f94c5a0602875e2b137c5bd2a7c36b28583"
+    },
+    "helper-Code.json": {
+      "bytes": 19617,
+      "sha256": "feed227959c9a5fcf2ad25cf111f0ff3b18b0a6e4feccde9c87b33e5d90fa094"
+    },
+    "java-version.stderr": {
+      "bytes": 190,
+      "sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622"
+    },
+    "java-version.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "normal/class-init.log": {
+      "bytes": 435190,
+      "sha256": "8d94474bd22ab6f9083927f34589bbd5d98bb3f21ee8b94dbdc22a4b46fee4d6"
+    },
+    "normal/classes.txt": {
+      "bytes": 4179,
+      "sha256": "4e60069bdb2d6fada8a9a0a101c3fb9ddd5ca66ea7775d4647135c3c22855fbe"
+    },
+    "normal/target.ndjson": {
+      "bytes": 135908,
+      "sha256": "62cf190c7ea7fe960db17ce4e24b7da6cd05768ffba35959afba5d14429b1d7f"
+    },
+    "normal/target.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "normal/target.stdout": {
+      "bytes": 92317,
+      "sha256": "20ea5708b231de1c7a09c50be7119f94c5a0602875e2b137c5bd2a7c36b28583"
+    }
+  },
+  "post_capture_artifacts_sha256": {
+    "analysis-a.json": "363137b880e6f7605265cdbbc631e4bcef8ee79af9754d2322f976695cbfd98a",
+    "analyze.py": "03782faadccaf3f586dcf22d766a50fc2a4a50c7ee7438078a14c886aaa2fd24",
+    "attempt-a/authority.json": "f268285aea364b0e9ac90b16db878a26fb2cc097a8f7d677016751d1e2f8d49f",
+    "attempt-a/classes/ConstructorJson.class": "1d49f80ca7097e808a497f3a861381a387f18208f6817852dcbf5eebc343fa5e",
+    "attempt-a/classes/MobTickTarget$Observer.class": "8cbdbad7b6f82b13edf844d4ac96ae018d64dd048b49c9519bfae9ac1c257567",
+    "attempt-a/classes/MobTickTarget.class": "0b588d2cf11921aa83abf9cb6604494eee621a78f010d8c2b384d921aa6b0532",
+    "attempt-a/classes/ZombieDamageJdi.class": "1f54c7945cef6be05e46305e99eccd4f18035e09bf7846507c97b62f36fcc8e9",
+    "attempt-a/classes/ZombieDamageTarget.class": "e2ecfea776407f03451a1e7919dd4191fe5572b1442c345df18f0ef1109c9ee7",
+    "attempt-a/compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt-a/compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt-a/debugger/checkpoints.ndjson": "6a37f9143ec3d0710c1207af64280aca796dea3332024634cb562b5d24b1d077",
+    "attempt-a/debugger/class-init.log": "637337ba308454981d429bda1727f53d8cc476fe68077a31ad6e61495205c1a3",
+    "attempt-a/debugger/classes.txt": "4e60069bdb2d6fada8a9a0a101c3fb9ddd5ca66ea7775d4647135c3c22855fbe",
+    "attempt-a/debugger/controller.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt-a/debugger/controller.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt-a/debugger/target.ndjson": "fbe6410bc17d8c0f835c96dbef2de82c1656e91d346303c7f7a42539a87b5355",
+    "attempt-a/debugger/target.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt-a/debugger/target.stdout": "20ea5708b231de1c7a09c50be7119f94c5a0602875e2b137c5bd2a7c36b28583",
+    "attempt-a/helper-Code.json": "feed227959c9a5fcf2ad25cf111f0ff3b18b0a6e4feccde9c87b33e5d90fa094",
+    "attempt-a/java-version.stderr": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622",
+    "attempt-a/java-version.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt-a/normal/class-init.log": "8d94474bd22ab6f9083927f34589bbd5d98bb3f21ee8b94dbdc22a4b46fee4d6",
+    "attempt-a/normal/classes.txt": "4e60069bdb2d6fada8a9a0a101c3fb9ddd5ca66ea7775d4647135c3c22855fbe",
+    "attempt-a/normal/target.ndjson": "62cf190c7ea7fe960db17ce4e24b7da6cd05768ffba35959afba5d14429b1d7f",
+    "attempt-a/normal/target.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "attempt-a/normal/target.stdout": "20ea5708b231de1c7a09c50be7119f94c5a0602875e2b137c5bd2a7c36b28583",
+    "attempt-a/receipt.json": "31cfd013b26892644fb69e44612f60ecfe8e1d94c2a00d71c1345c00c2a774ad",
+    "capture.py": "d1ba22d9c165c9c541a2084ab095e6bda24d7dd1ae067523ff50980f93f7fc55",
+    "input-freeze-a.json": "6a9062ae1b150015200e8fba6d79394e160a3dde849f68b5225ddb1fd0d6efa4",
+    "inputs-a/ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "inputs-a/MobTickTarget.java": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a",
+    "inputs-a/preparation.tsv": "706fdd5a59fec4ade55860336e0775005447da964d9c77454fb8b375531eff70",
+    "inputs-a/profiles.tsv": "f43534196563b2d28efd11dcead1a8b4046c8c22672a136a4a3d307e0b223624",
+    "inputs-a/protocol.md": "33c2a317015e56a3cf9b03915b200de5849d1cdebecdc25cda00830b3fe7499e",
+    "inputs-a/ZombieDamageJdi.java": "cd2956e5c37de5a24a5356c99a36655124ea5f03f96834e8ba94a027c5811f59",
+    "inputs-a/ZombieDamageTarget.java": "554e5b0acac8ffcf322aaf1d480606136531604e69ad73f5c767c13fca75c805",
+    "preparation.tsv": "706fdd5a59fec4ade55860336e0775005447da964d9c77454fb8b375531eff70",
+    "prepare_inputs.py": "cb157913a6e0afb767bffaa6c12261dbf0111fe64f20c806fce66dae8d867a3c",
+    "profiles.tsv": "f43534196563b2d28efd11dcead1a8b4046c8c22672a136a4a3d307e0b223624",
+    "protocol.md": "33c2a317015e56a3cf9b03915b200de5849d1cdebecdc25cda00830b3fe7499e",
+    "README.md": "4d9a671d307e18b19b5ca1fdaf9cb42afc0c27f06be990f8a1b4e712225a5f6a"
+  }
+}

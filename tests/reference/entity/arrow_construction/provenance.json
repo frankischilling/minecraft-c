@@ -1,0 +1,65 @@
+{
+  "schema": "ARROW_CONSTRUCTION_PROVENANCE_V1",
+  "scope": "40 complete unchanged-original client SL constructor/heading calls in four VMs; typed source state, failure prefixes, independent default entropy and declared seeded heading inputs; no Arrow tick, C3, renderer, NBT, loaded gameplay or performance claim.",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_sources": {
+    "ArrowConstructionObservation.java": "0764a7e53ea16089c875d3ab9125c272cb040bde09c1faec48eb49e88e445fa6",
+    "ArrowConstructionJdi.java": "2e26ed9e42f84be20c1513094465c4a89b1f20de0d667be78575ff7375a7922f",
+    "capture_reference.py": "68e682ead9713b4a3df653fdedac6e7667d4b685fc9922758f9cf0419db63f6f",
+    "profiles.tsv": "0ffbbaeb9344f8ecb78ed3aae23bab6316984da20a10824dbe0cfffb6b66418d",
+    "class-names.txt": "8d53905d1cf72861d7c3461957000092532644f771ca93a3baa7c310cf5fec3f",
+    "source-pins.json": "c1bea7cce170cc07a799fd11dd0288e5c99d4a3c408a8f276796e0d0f538fbb3",
+    "PROTOCOL.md": "48d1552df1d3b7665ede82e0a5acf37ee81b52e31648775b1a397062a57d7992"
+  },
+  "processing_sources": {
+    "observation.py": "ef7ca7cd2fd843f7a14410f8183ece84e2a95677c3053a8e45f29b28c5b38b06",
+    "packet.py": "b86e23a89887f8f6f3367a5ce54024c0bbfabfeb94bbefd464dd29dcdae2f476",
+    "export_reference.py": "8299ced7fcf2e1ca78a317ef21303fd7907b3ff7a01e159261d5c8c882ea7043"
+  },
+  "finite_sha256": "127b3a6286d3b4536dff4ecaf7f8827ad87d1343906adc0195e54f862f4753b2",
+  "capture_sha256": "dfa48cc9864286d7059fd89f4bba47e70a306f40be0fc74cdee5412dbb811771",
+  "runs": [
+    {
+      "kind": "ordinary",
+      "stdout": {
+        "name": "ordinary-0.stdout",
+        "bytes": 229262,
+        "sha256": "a94a7901d5c8057de539b01c0b67be123819800392d246dfda63b18fc7743d14"
+      }
+    },
+    {
+      "kind": "ordinary",
+      "stdout": {
+        "name": "ordinary-1.stdout",
+        "bytes": 229262,
+        "sha256": "989714715b6e9ea6c4d7af7ea95f86a72c48dde4190ef5a70bf5ddf136792c37"
+      }
+    },
+    {
+      "kind": "debugger",
+      "stdout": {
+        "name": "debugger-0/target.stdout",
+        "bytes": 229262,
+        "sha256": "0ce7ed00a47bfc521084594e5de13d499c8ebcbde50ce7858810b6549018a805"
+      },
+      "journal": {
+        "name": "debugger-0/journal.jsonl",
+        "bytes": 468363,
+        "sha256": "f4820ec6139399c73299a72bba4cdc35774f0b97542ae89bcb3b28c195cb3ad2"
+      }
+    },
+    {
+      "kind": "debugger",
+      "stdout": {
+        "name": "debugger-1/target.stdout",
+        "bytes": 229262,
+        "sha256": "d8107d554b4a6075e67f0623f458dcd2ba3cfa4a932568ad4f7d8c141ece609b"
+      },
+      "journal": {
+        "name": "debugger-1/journal.jsonl",
+        "bytes": 468363,
+        "sha256": "0cc63209c935ac6a063a4185479e3168b7579d4faa885664849219916aa8a0ba"
+      }
+    }
+  ]
+}

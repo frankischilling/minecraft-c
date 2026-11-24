@@ -1,0 +1,3930 @@
+{
+  "schema": 1,
+  "kind": "finite native Windows integration observations; no performance benchmark",
+  "observation_date": "2026-11-16",
+  "scope": "55 separate ordinary save-title SDK processes on physical monitor 2: 35 opt-in traced and 20 untraced. The earlier persistent Canvas/native-focus plus absent SDL-owner endpoint did not recur at fixture steps in these runs.",
+  "publication": "Post-execution read-only sanitized projection. Raw captures, commands, native handles/pointers, source pin inventories, saved files and assets remain private. Private controller hashes identify their own executed versions; this projection is not retroactively an executed helper.",
+  "monitor": {
+    "physical_ordinal": 2,
+    "window_extent": [
+      854,
+      480
+    ],
+    "both_peers_contained_at_open_and_after_loop": true
+  },
+  "native_stream_retention": "Outer bounded stdout/stderr are physical raw bytes. The existing inner runner uses subprocess text mode; its retained native stdout/stderr normalize line endings. These distinct files have separate hashes.",
+  "manifest_digest_encoding": "SHA256 of UTF-8 JSON with sorted keys, compact separators and ASCII escapes; underlying private paths are not exported.",
+  "capture_audit": {
+    "outer_timeout_seconds": 330,
+    "outer_stdout_limit_bytes": 4194304,
+    "outer_stderr_limit_bytes": 1048576,
+    "native_requested_timeout_seconds": 240,
+    "all_outer_pipes_complete_without_timeout_overflow_or_reader_errors": true,
+    "all_successful_outer_stderr_empty": true,
+    "all_retained_native_stderr_text_empty": true,
+    "trace_limit_bytes": 16777216,
+    "trace_ring_records": 4096
+  },
+  "native_sources_and_control_sources": {
+    "tests/client/startup/test_world_selection_loop.c": {
+      "repository_path": "tests/client/startup/test_world_selection_loop.c",
+      "sha256": "ef028354bdc1d1a6e2d7de777b8675b7fc4abb0386ffa269b1fcaef5dc47c861"
+    },
+    "tests/client/startup/focus_trace.inc": {
+      "repository_path": "tests/client/startup/focus_trace.inc",
+      "sha256": "87d8cf25126ef36456327552c88c65edcbd4bf1eddd63d13d8dcfe8d332d5423"
+    },
+    "tests/tools/client/test_world_selection_loop.py": {
+      "repository_path": "tests/tools/client/test_world_selection_loop.py",
+      "sha256": "c04a33996bfb1f5c73047c992005794097a4eb502f93166c6dee833998a6e958"
+    },
+    "tests/tools/client/native_product_capture.py": {
+      "repository_path": "tests/tools/client/native_product_capture.py",
+      "sha256": "842a3116ef92607c779c4c64bfe6f78575a7ccfe8f67d5a514932ed5f8427ead"
+    },
+    "tests/tools/client/test_bed_sleep.py": {
+      "repository_path": "tests/tools/client/test_bed_sleep.py",
+      "sha256": "9a9a5fd39313842b08ef38fd52566ed1f670cc6cfac0e5f990af5fe74fa4a720"
+    },
+    "tests/tools/world/test_source_saving.py": {
+      "repository_path": "tests/tools/world/test_source_saving.py",
+      "sha256": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
+    },
+    "tests/reference/client/controller/capture.py": {
+      "repository_path": "tests/reference/client/controller/capture.py",
+      "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+    },
+    "cmake/sdl_native_fixes.cmake": {
+      "repository_path": "cmake/sdl_native_fixes.cmake",
+      "sha256": "d67491001b18db234d494642697e370fa645ab9dd0a623a6c0987821b01077a8"
+    },
+    "cmake/tests/client_world_selection_loop.cmake": {
+      "repository_path": "cmake/tests/client_world_selection_loop.cmake",
+      "sha256": "409bdb31a33b02c26b4b01a1fa2125c0c2aaf9a22afc682f8480a435eed422b9"
+    },
+    "src/client/window/frame.c": {
+      "repository_path": "src/client/window/frame.c",
+      "sha256": "061fceffe35d13af96b9a51e00ff2dc9c209c4f70743bec9fd131630b985c79b"
+    },
+    "src/client/window/frame_platform.c": {
+      "repository_path": "src/client/window/frame_platform.c",
+      "sha256": "48540421bf031fb1cf7dd840f8b16012f53cd3a89234de578248e4c51a8b1280"
+    },
+    "src/client/display/events.c": {
+      "repository_path": "src/client/display/events.c",
+      "sha256": "ee2ae45491488c62cc507d7f8be51a0d4e9f60fe3befca0ef02a6b00aebde080"
+    },
+    "src/client/display/sdk_update.c": {
+      "repository_path": "src/client/display/sdk_update.c",
+      "sha256": "21314f67b2e2ea238c98dc388245138e9f6c5b2b74f4fe904d59d2b3ba1e310d"
+    }
+  },
+  "private_controller_sources": {
+    "traced_success_sha256": "284867127744cd929441078d2bc310e562b71b8c07c6767a90c572b32b4e5b2a",
+    "untraced_control_sha256": "5a6b444b36dd1b6f1fb377ebf18a2054132cfdfd4187d6609f72e19002ea9285",
+    "excluded_initial_parser_sha256": "74a55db951e0263b5f5a99a06092c2ed76212159c41575a3c4b58d66af866a51",
+    "note": "The two successful controller versions and excluded earlier reader version are distinct execution-time source identities."
+  },
+  "build_lineage": {
+    "scope": "Artifact provenance only; no entered-code claim. Generated corrected Windows TU, dynapi stub and REAL getter remain distinct.",
+    "evidence_receipt": {
+      "bytes": 527076,
+      "sha256": "1c101cf2992295aecf61e9a59bcf5ba942b4f6205b1fe6492e40094f31c80f39"
+    },
+    "build_receipt": {
+      "bytes": 6386,
+      "sha256": "e270f2af9eb0ce59c7934c29e5b61674f6c8a8db4459fd705e38786e9952f3fc"
+    },
+    "build_stdout": {
+      "bytes": 208239,
+      "sha256": "7fc79cfba191bd2aadc9d9dadc441046aa801b9e2a6bcc5f679326d222376529"
+    },
+    "build_stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "actual_build_exit": 0,
+    "source_before_after_unchanged": true,
+    "checks_passed": 40,
+    "route": "linker map plus exact archive search",
+    "map_matches_pe_timestamp_and_image_base": true,
+    "archive_members_equal_actual_objects": true,
+    "normal_release_flags_preserved": true,
+    "verbose_loaded_lines_observed": false,
+    "source_and_products": [
+      {
+        "role": "sdl-build:SDL3-static.vcxproj",
+        "bytes": 978674,
+        "sha256": "ba1a87ab30c8330fe4cb21320f0fff2320cba7064a24c0ffc2919cb46455bf04"
+      },
+      {
+        "role": "fixture-build:mc_test_world_selection_loop.vcxproj",
+        "bytes": 149927,
+        "sha256": "8ee02c3bb9694d9d263c1447fb76c75be0662504066e1543d1b92e8b6253537c"
+      },
+      {
+        "role": "generated-sdl:SDL_windowsevents.c",
+        "bytes": 116266,
+        "sha256": "d57482864db7c08e3717fed0f23d078dc1fedb1c9f9832443a81c40840e9fbcb"
+      },
+      {
+        "role": "pristine-sdl:SDL_keyboard.c",
+        "bytes": 29190,
+        "sha256": "4086cf93f5b4019e90b674450d889b585ea8bbd9b596716288034770b45af0dd"
+      },
+      {
+        "role": "pristine-sdl:SDL_dynapi.c",
+        "bytes": 35072,
+        "sha256": "da79192249a4a246fc06eae2c800a9edc1f2c22f0f0aa377cc12e946811441e2"
+      },
+      {
+        "role": "pristine-sdl:SDL_dynapi.h",
+        "bytes": 3471,
+        "sha256": "fb36fb0560027d83410c3762fc6e437ef7aeac9bbf08082f80f6363456aca09d"
+      },
+      {
+        "role": "pristine-sdl:SDL_dynapi.sym",
+        "bytes": 32997,
+        "sha256": "440011497ae5eac97bfa463c9fcc9fc9ccb2e4f0fd571cc8597fbcb4276068d1"
+      },
+      {
+        "role": "pristine-sdl:SDL_dynapi_overrides.h",
+        "bytes": 70718,
+        "sha256": "44b0b141add7f100da743856a56434cbdf2b5f71e762d4ab7252c38b52f7832b"
+      },
+      {
+        "role": "pristine-sdl:SDL_dynapi_procs.h",
+        "bytes": 113007,
+        "sha256": "365cca5f0da871d9d88446383cd64c1e070daf408e38e14325d6b9db128bb69e"
+      },
+      {
+        "role": "pristine-sdl:SDL_dynapi_unsupported.h",
+        "bytes": 1307,
+        "sha256": "ea203bd19c8dee2e085c904fcbbec130573b303a6fc3b83ba22a5394fecc15f3"
+      },
+      {
+        "role": "pristine-sdl:SDL_windowsevents.c",
+        "bytes": 112600,
+        "sha256": "e18c859aec38e658f0c44a986c4ff19a5eb0ca82b6c274013ee18d5f5d602b7e"
+      },
+      {
+        "role": "fixture-build:SDL3-3.4.18.tar.gz",
+        "bytes": 15651004,
+        "sha256": "9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3"
+      },
+      {
+        "role": "sdl-build:SDL_build_config.h",
+        "bytes": 18171,
+        "sha256": "69b9f05baf062bd181659620fcf97ec3579692e23ef8adaa6cbc913f999e5034"
+      },
+      {
+        "role": "sdl-build:cmake_pch.h",
+        "bytes": 148,
+        "sha256": "fb76f4081a288063f4e0934ed79ab6627259a102fd0f56c04b761e0a962ceb9a"
+      },
+      {
+        "role": "sdl-build:cmake_pch.c.pch",
+        "bytes": 11075584,
+        "sha256": "c7e61f5e8ed1ac32ba1ce637a292e9bfdcef8c8ed79220b127cd38f83481794f"
+      },
+      {
+        "role": "fixture-build:test_world_selection_loop.obj",
+        "bytes": 807028,
+        "sha256": "7199466b4a50166a72cc7b7a329c95b8438b34f97bc74475b7c3076e357262d6"
+      },
+      {
+        "role": "sdl-build:SDL3-static.lib",
+        "bytes": 11496580,
+        "sha256": "6b8df45a9e2ffcd844c1670ffc1f4da85e8b75cb2f3dae3a6c5c7fab1df24c6c"
+      },
+      {
+        "role": "fixture-build:mc_test_world_selection_loop.exe",
+        "bytes": 10235904,
+        "sha256": "cd0873caca2486300ab2ec3073df964865e0324c2bc8ac20fe97ce568bdf8fda"
+      },
+      {
+        "role": "sdl-build:SDL_windowsevents.obj",
+        "bytes": 63167,
+        "sha256": "3cc46897b7a0f73cc55494068cdf480afbf9c2bf69d54db79492f5a972ac6cf7"
+      },
+      {
+        "role": "sdl-build:SDL_keyboard.obj",
+        "bytes": 58489,
+        "sha256": "a6f47ca0b0627a6d248225415ccd130c6c7345cd5ac8d5cae456175b59575b48"
+      },
+      {
+        "role": "sdl-build:SDL_dynapi.obj",
+        "bytes": 979287,
+        "sha256": "49c0365502d579a15d306da4031545deb55b2e6df34bff7f30cd3aecb2a1fdbf"
+      },
+      {
+        "role": "sdl-build:CL.command.1.tlog",
+        "bytes": 795682,
+        "sha256": "39f0c2e65f6924079adfac4a58b34df862c062054c4cc0aac2d77cec6082b09f"
+      },
+      {
+        "role": "sdl-build:Cl.items.tlog",
+        "bytes": 54618,
+        "sha256": "e6f3d984f503f54efbddd2a6e14eb9a2f89c20fff6d16c35d38cc0c7f2dd6dd0"
+      },
+      {
+        "role": "sdl-build:CL.read.1.tlog",
+        "bytes": 1472886,
+        "sha256": "f5945e075179c614312e05944c4b94141ccfce390f998115eac63f7e834ffd28"
+      },
+      {
+        "role": "sdl-build:CL.write.1.tlog",
+        "bytes": 110114,
+        "sha256": "35fc84a69958abb700e593412a956516c321b98b18e56783550bb79164e0df8a"
+      },
+      {
+        "role": "sdl-build:Lib.command.1.tlog",
+        "bytes": 82004,
+        "sha256": "820ab73699711a37f2803a1c3160927df1ce6fcb2153fc239d14d0ddf55df41f"
+      },
+      {
+        "role": "sdl-build:Lib-link.read.1.tlog",
+        "bytes": 116610,
+        "sha256": "5e3199a02579297e5d81044ec022108f699961a055fc090db72a3ec42a1392e8"
+      },
+      {
+        "role": "sdl-build:Lib-link.write.1.tlog",
+        "bytes": 58150,
+        "sha256": "5538f337fa505c389b12d15b666bec94d5546cf35c090845076b5932ada98f98"
+      },
+      {
+        "role": "fixture-build:CL.command.1.tlog",
+        "bytes": 12884,
+        "sha256": "49f1e08fe9110e77b0e56dd59a6da29ccc4fde67765fdfd607880fac3d96ee61"
+      },
+      {
+        "role": "fixture-build:CL.read.1.tlog",
+        "bytes": 202920,
+        "sha256": "a532e86bb064491c2ae75ae0abde052a45120051bd4766fbdbbad56fdbab07e5"
+      },
+      {
+        "role": "fixture-build:CL.write.1.tlog",
+        "bytes": 4954,
+        "sha256": "1bf3bf852000151f2fbfa838eb81adb9348e29d1fad04eec78719cddf89b3ea7"
+      },
+      {
+        "role": "fixture-build:link.command.1.tlog",
+        "bytes": 10104,
+        "sha256": "56ef93b2ca7ce28e96abf382e6fedf1cfa9b4f272a2e120a53cbd4ab7fea45fd"
+      },
+      {
+        "role": "fixture-build:link.read.1.tlog",
+        "bytes": 22278,
+        "sha256": "c0f126196a9a2695549b26feac625f068bff492d9f9040904b2841d5d1f44ead"
+      },
+      {
+        "role": "fixture-build:link.write.1.tlog",
+        "bytes": 1534,
+        "sha256": "6cd76757fbcee0362cf77d88b408131ff807dad98fffbe2d2b3beadd965f45dd"
+      },
+      {
+        "role": "fixture-build:lib.exe",
+        "bytes": 23384,
+        "sha256": "d8dae02a50c7571c6c0ea5cd7a853830aaca8fad13f8f4be147828d51dd4adec"
+      },
+      {
+        "role": "fixture-build:link.exe",
+        "bytes": 3701088,
+        "sha256": "a8c42e25c91ca2453e1110540ac08f0fc12d7539454a11b9af8baeecb469837d"
+      },
+      {
+        "role": "fixture-build:cl.exe",
+        "bytes": 893288,
+        "sha256": "b0a1818ebae6da7f18230a84e76ce839212584ac4c2ab55b97a0d5268085da57"
+      },
+      {
+        "role": "fixture-build:world-selection.map",
+        "bytes": 7813632,
+        "sha256": "2fcef276184105e6fe20692bc296a373f1b2bf7f281f5f20d5fbf779e3f61da7"
+      }
+    ],
+    "member_hashes": [
+      {
+        "member": "SDL_windowsevents.obj",
+        "bytes": 63167,
+        "sha256": "3cc46897b7a0f73cc55494068cdf480afbf9c2bf69d54db79492f5a972ac6cf7"
+      },
+      {
+        "member": "SDL_keyboard.obj",
+        "bytes": 58489,
+        "sha256": "a6f47ca0b0627a6d248225415ccd130c6c7345cd5ac8d5cae456175b59575b48"
+      },
+      {
+        "member": "SDL_dynapi.obj",
+        "bytes": 979287,
+        "sha256": "49c0365502d579a15d306da4031545deb55b2e6df34bff7f30cd3aecb2a1fdbf"
+      }
+    ]
+  },
+  "totals": {
+    "traced": 35,
+    "trace_records": 10852,
+    "active_samples": 814,
+    "active_false_samples": 0,
+    "changed_payload_pairs": 420,
+    "cycles": 55,
+    "native_checks": 62870,
+    "untraced": 20,
+    "hook_boundary_native_canvas_sdl_null": 70,
+    "host_sample_nulls": 0,
+    "completed_step_candidates": 0,
+    "active_null_samples": 0,
+    "overwritten": 0,
+    "reentrant_dropped": 0,
+    "unmatched_post": 0
+  },
+  "hook_boundary_observation": "70 native-Canvas/foreground-Frame plus SDL-NULL samples: 35 wndproc-after WM_KILLFOCUS(8), 35 wndproc-before WM_SETFOCUS(7), exactly two per trace. All host samples, including before-step samples, have non-NULL SDL owners. This demonstrates observed handoff boundaries, not a persistent mismatch or its cause.",
+  "cohorts": [
+    {
+      "role": "traced-initial",
+      "cycles": 5,
+      "observer_enabled": true,
+      "retained_report": {
+        "bytes": 819042,
+        "sha256": "4ac60db5b9b64c57b0f45c3b7ef3a7c6d3110c1e005ebf2a8c3adac360226800"
+      },
+      "selected_input_count": 2388,
+      "asset_count": 413,
+      "input_manifest_sha256": "80a7b6f3468c2ae3156595b5741e43477dc4b64c519941ca5432749dffa4763d",
+      "asset_manifest_sha256": "47ea19fc513a1b20cbe044e76498ecfea33cb2e9298f98d5108049b045486fcd",
+      "inputs_and_assets_unchanged": true,
+      "private_controller_source_sha256": "284867127744cd929441078d2bc310e562b71b8c07c6767a90c572b32b4e5b2a",
+      "runs": [
+        {
+          "index": 1,
+          "native_checks": 1136,
+          "outer_capture_receipt": {
+            "bytes": 1065,
+            "sha256": "8a0695060f3822ff1408340b076451087c487d6374111293b523af0d09989326"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "c721cae8eb2e6b5fe96f2e1de134d3cdaffb4e0bd77e60dba5e6e7f8f93a0955"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6137,
+            "sha256": "0a8254542c70ed1f1aa38e7bc9c10e6e31aa9b3ba5133bb766f60e77416115f1"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "f0ef70e6ab1fc6053ec6035502f5d90e4afc053324921deac3e7aa3b4d49fdd5"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7774,
+            "sha256": "52ec9b39ff44902dffb406beef1860dedcc95d181a0981be6b894153408d4eb9"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 173943,
+              "sha256": "68e5e618a631fee14edeb35514bebbd87699e9f6a2a93d3b2804496c2c1b9b42"
+            },
+            "records": 292,
+            "focus_steps": 21,
+            "active_samples": 21,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 2,
+          "native_checks": 1127,
+          "outer_capture_receipt": {
+            "bytes": 1065,
+            "sha256": "514bddfdc9a2bc2be8a340d258523c1a9f01c1e60ef90de93ab9f279a357f062"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "9d3b2295fcd8c05f62371d2b170bed3975b2f9d8f4b9d97691705809c17fecea"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6137,
+            "sha256": "7d3d5ae1079f4fb4e1125fe47102d4d447c7eeb399b3cb92e8118dfe0efc7db5"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "6c8e3fa536c1816d8d5bba264b9adbefcf5468b3af886064548361f9d8d39f67"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7807,
+            "sha256": "5517bf0b5ad837b307deafbc572f706550d1b834d5ebc86073de16145a963912"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 173650,
+              "sha256": "cb2fe07ff6ada80c4a04e0ef676c6eeeabbf309b0f9db312cb5a8b8d3aa586bc"
+            },
+            "records": 292,
+            "focus_steps": 21,
+            "active_samples": 21,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 3,
+          "native_checks": 1160,
+          "outer_capture_receipt": {
+            "bytes": 1065,
+            "sha256": "52254b8c4bd86187c8b7429234a80e0ce013d3a2aff9d4ef4c4394ff882c6ca2"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "37ed4ebf0c5856c158f17da99a88cd57f061b91e39af5530dd4096c4044aca9d"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6137,
+            "sha256": "4c356050318198de87c921023354cac1ef885bfeea65130b7fc8122547d2388d"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "d1ef8754b0c9fd3b2fd5d1a7a3bf0142ce56666036219e2b728a1cda46e90c8e"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7769,
+            "sha256": "c386dd8deefa81865e17bb6b7eac8469af8540708b6ca69d092f1a460b9a76c2"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 193759,
+              "sha256": "6bb6f4e46eba0d46655051a4d51c2bc24c915a2abf3fa785618aa16885fae2b0"
+            },
+            "records": 324,
+            "focus_steps": 25,
+            "active_samples": 25,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 4,
+          "native_checks": 1151,
+          "outer_capture_receipt": {
+            "bytes": 1065,
+            "sha256": "704294cd93908361ba41f74fa639c8d2cf7ef309920fed96dd1c465142fa45a5"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "cc8a6ca01aa56b395dce9131c1ac11687343f0d714bd7c7fb14f7c905f51b5d6"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6137,
+            "sha256": "9b35fd3d10e6e05966301a5aecefb2df56a1b6996924d2f27500a8d25fa16153"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "9932345b710d567d51ef21aaadadd8e2018342be9922a8a6a9ec1ad4d5be5ba4"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7739,
+            "sha256": "8d88c7273bd20f035deff0aecf3e8bce6a291a5275ec9db7cd086e34cd0492a3"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 193759,
+              "sha256": "8358e0e55c1f5f0c4b46e664b39c86b2bc789239bcb82abafce9d8d6d015de92"
+            },
+            "records": 324,
+            "focus_steps": 25,
+            "active_samples": 25,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 5,
+          "native_checks": 1163,
+          "outer_capture_receipt": {
+            "bytes": 1065,
+            "sha256": "aa8008c5419be0f422dd570814bbb943a2ba81916b4a897fca83f46913d11ea7"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "c5fd96d0c55a38f4e55818bb9fb2b63004ecfcc605ccad44d953be9d7cbc7c04"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6137,
+            "sha256": "3c909609f6cf08c1b7fac630e912f974c2c503440ded41180569361275a0d17b"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "73232079e07074e8e6d06e33e197ba9409cf1d8e75e9987f94164195327c9270"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 8021,
+            "sha256": "cc720d0ffebe2b6a321867327d2fc4e32f5a6da407efb0ffb951d616c642635c"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 198713,
+              "sha256": "a0028c840df6152fb2ee1c653e4fe54465c50228ca316ac6844afd2180104e8e"
+            },
+            "records": 332,
+            "focus_steps": 26,
+            "active_samples": 26,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        }
+      ]
+    },
+    {
+      "role": "traced-extended",
+      "cycles": 30,
+      "observer_enabled": true,
+      "retained_report": {
+        "bytes": 960025,
+        "sha256": "2904885edb0534eb95c46fb5539783723aaa7021ad29857689d47b860f141ca5"
+      },
+      "selected_input_count": 2388,
+      "asset_count": 413,
+      "input_manifest_sha256": "80a7b6f3468c2ae3156595b5741e43477dc4b64c519941ca5432749dffa4763d",
+      "asset_manifest_sha256": "47ea19fc513a1b20cbe044e76498ecfea33cb2e9298f98d5108049b045486fcd",
+      "inputs_and_assets_unchanged": true,
+      "private_controller_source_sha256": "284867127744cd929441078d2bc310e562b71b8c07c6767a90c572b32b4e5b2a",
+      "runs": [
+        {
+          "index": 1,
+          "native_checks": 1157,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "d99668ff626c80b7023465ea83673b3f93846e6fb5a6eb93bb171a7fcebfd619"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "97e173697784d7e8fe03ef16869999890c55d37a5c2537d40c30c948f13d2a23"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "2dacab7eb7170fadcde094c9b59f47fa2c64701d8aca67ce75ba88296a30d6c7"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "9bb24425d54658517e286fbfb025c0f7aa5ab31a5e73a87f2b0bd177b4fd5c4b"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7919,
+            "sha256": "7419dc00aa4d63960d02dce8ca53e54154085d6a988b3fbe680cf80713c03bcc"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 188801,
+              "sha256": "ee386f0aac246afb5f717d3877e5e095767f0284bcd4933e228d8adf14bfed3c"
+            },
+            "records": 316,
+            "focus_steps": 24,
+            "active_samples": 24,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 2,
+          "native_checks": 1139,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "f316e14f918fd1f662405ef34997609399c87e7c04f412937a5ebeff5286d7d7"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "ac797f4d9c31a584514f23c112e3f26771b27524ac2dd5e4600f85f4f5360730"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "66f14cd61ce27eec1e2e8ae0871bf69658b67556ae44946c46072738ffb9e1ff"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "661b9fccede2603e12a105bd8eb0925db1c2e31a2d6c7b2db36d351a415fcd11"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7599,
+            "sha256": "1b5c281936b0b5ab5e8d10b0f9c0c72e7669d5827f8e810ba66cbdeacd782895"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178845,
+              "sha256": "638753f65af4d853ccff33da7b6a7a25fc972bc8017d7c4630eb3d400aee0898"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 3,
+          "native_checks": 1151,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "8f6952c5601d816ecf0929cbef6ee581764dc301a008dbbbac68b6e5f3859dd4"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "536aa99e3b468310591ed654b53ea6fdb6d6b81e945a786538857b066974d326"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "6ea8303c76b61f9c7dcf5c6b13925f1988538143ff220e4d141e9524e6e1586a"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "eef2c68ffd0705072713a64427e3caaf63a241fb934b1557d7ca1cc2772238a3"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7598,
+            "sha256": "170e7a5a8eb14ff127f1d4296a5b6cfca53e7daba5a6a8ca355c42ff6aae25cd"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 183851,
+              "sha256": "b05d3e8d753c51fa53d64bc19dd54dba45a964e07116291fd8d0c087546dadf0"
+            },
+            "records": 308,
+            "focus_steps": 23,
+            "active_samples": 23,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 4,
+          "native_checks": 1148,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "510690e7d52a66a1e7a70e6cd94c4d32e443f6978b7512ecf0a40a66eecd8621"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "5c59cb355a62607eb0e6328ce2a14ee68db91d47741855623a2cbd8e9e45047a"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "71e186d504d674f28ea1a4127109a35c55116dd7cd8af2160ac77e745a4fddde"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "a93142087fa8d7aa8444c09892ef4c1c3889f76c60db189f892c4482e7f0b59d"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7636,
+            "sha256": "da48c8dc7eff841a11f6d64c6be20d821a186df7ae0bc060ed48ba25c90ad7bf"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178897,
+              "sha256": "9bc4d2e76e300d57c114ca4b872c13703ffd4a6c0f38edd63944e2fa523e5f7c"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 5,
+          "native_checks": 1154,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "7405263e2410894c78768fb8022ae9f64fcd2a00caa357fd348a2b1f47ac304a"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "9e40e886ab470d68355d01373ef4f26b1e8ae03f951c2f8d145b5267ca0a9fb7"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "14cb6f8f8920eb8ed258a617baadf75ad9d6d3d241593b264b9504db28c6f49f"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "8b796fb3142e9dee365e7713a11c8588c633ce5083b81a999da0a41c523c4e1e"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7560,
+            "sha256": "e1418207321e428f5dbe3c716ca995084cde85fbfb2c6b8da60cb6c8c72b5a66"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 192672,
+              "sha256": "44b895645436647d5cc033e50fc7952d9649db27829d4c101ea2105e5c2a0ccf"
+            },
+            "records": 324,
+            "focus_steps": 25,
+            "active_samples": 25,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 6,
+          "native_checks": 1142,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "5527a2cd31cfdea9e825a381b987deed2862dcb16ef3cae8bcc49a3db63c516b"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "117fc5b1a28b667c371067e752a2e478e7d9a78199601741922b763c17b866d0"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "f7a8e869dfbba8025bf19c9e4b95a60b104f29e959f9dca2331c17c9508c8e41"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "dd99115199da4488962641904f5ebed35d667e00dec5b6899f42e34d22dac30d"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7813,
+            "sha256": "f9736ee0e52fb20a9bb00a6412aa3525505119b35348156dd8034f6a69a93842"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 188801,
+              "sha256": "978daa1b4337520ce4371b6293e1f26c8d54a8b5782559d6cdb32bfd1de1bce3"
+            },
+            "records": 316,
+            "focus_steps": 24,
+            "active_samples": 24,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 7,
+          "native_checks": 1127,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "2b8c53c6ffa94ae391dda8fb9c2461bf210a0576d02d0274b95945f5390944c7"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "6e82cc22aef7b291baa983ffa636a267393c20946422386400a01a9a68619bb9"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "c294db85ffcbddabdc18eea06164ece95cd979a94c474e6f3e467f406e368fdb"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "f1de2b9434f7b3fc60516bdb74989f319b680e9b3ea37040d2b961f49061da54"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7636,
+            "sha256": "ea6eff910b62a6a4e8abe83643a5855921d4c338964e91749f04997358a4b159"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 173935,
+              "sha256": "374be6730967d9dc9613c49d8624e43735a01694ab1925b1c2c0f60e91d2f175"
+            },
+            "records": 292,
+            "focus_steps": 21,
+            "active_samples": 21,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 8,
+          "native_checks": 1154,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "d18d6d99c800b5a5e22f2cc6663886b34cb7b579142370e2f86c5eff388d7a7d"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "b133a26fae58d89b817ff532a5d9d561a221a80624f0da73d7d030eaf1b1184d"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "711986483c311f5faf2952a1d54bf3cce76848f720b1047ffd29282b98841ef6"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "00ea2805406be855f99dd0c6ff3d9283b3bcb0bb55ff63ac31a8f85f7714b0d4"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7805,
+            "sha256": "6cf639e686a0b4dbea5e7bc99e25fe70df17ad165f396bfd661280b8318337ac"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 193759,
+              "sha256": "036305deb04d73392f26e721e8a73a04fb419170e265ae03adbcc6648b14c9bc"
+            },
+            "records": 324,
+            "focus_steps": 25,
+            "active_samples": 25,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 9,
+          "native_checks": 1136,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "a341cd950324eace7065017e049c1330f3f815f35f9dccf0b1ec3205aa0d19b7"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "20f483943e1bef98999f928d150f356bd4b2f5a6c5d7c49ab33504c697d6befc"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "33e73841215d9c246fc2018bc27ed6b4a47dfc92e0fd9c717d6b8c2cc403b26a"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "d1230fc1f3de9222a412057b2574851e06e6ef2137c832c8687fb65bf32805e5"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7452,
+            "sha256": "7793265839b14d53281627736f406f80061df97c0d72546a7f91fb93e541c966"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178885,
+              "sha256": "6282237bd5fbf549f8c2488d7732eea6220cdb5b5d99c80fdff2b660954fab8b"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 10,
+          "native_checks": 1139,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "0b9b5cdf643e2293416c755bae175ec85a0dd586c075a0d5d5bd7fa7c87e40f2"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "12cca186bb9e25a473b6067d31042d47fcb3d860476d5dd2fb5e57d32c6eaa64"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "d9c29c2c1f279dc6c1a5bc273f5e93e5fcdcedad0fef9d285aa244ca935034a0"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "26c51a22fdbb7f00e69d8d565a29789d4469d2dfd531cd9aa1411f6406df0002"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7631,
+            "sha256": "5dc6dc342ee1ce9a3e19a3ce980b31c2ef3f39d11164d441a7d270c9db4c8302"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 188805,
+              "sha256": "899c911e37dbf713bab29d365278e7ff8c9a77cfceb4f3c0ac3c259aa24521fe"
+            },
+            "records": 316,
+            "focus_steps": 24,
+            "active_samples": 24,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 11,
+          "native_checks": 1121,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "2bbd3f281fc96ad33ad39afe448cd60ab7fb0a8afefdafb53a1f2fa083001a6a"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "0c7346d5a33be5f07d6b4670578c802a4819ac40311b72475b7fcdaddc029a80"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "a0f92957cefdf38183d223df46c75f8869c027c55613393fec7fa3ecb928fcd1"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "8824507ceacc91b75d01af7a17b22ff9321b0c7ee28f4e57974677b1ecde4317"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7595,
+            "sha256": "9ddad4020a8396bae7eb9d7742acb97267475c825bcee66218bf0026ae0c9a0f"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 193751,
+              "sha256": "d43e7b22a86e4ce4ee14c50c5e0030ba78613d533c7a902e5b1682b067747b09"
+            },
+            "records": 324,
+            "focus_steps": 25,
+            "active_samples": 25,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 12,
+          "native_checks": 1145,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "59522f796d27192d27c1988f8f4e90e6361910d71062aa7d54f75f5f66c87bb5"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "787dba9f560ff18fe28ed6455382e08a7e1a3b827361e55a9b79528f9ed60fce"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "c1d859c18704850fcecb8d2752e2db0eb2428475484c837ec067c2a450d1c717"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "60f7a2de894310e660ee50f3fce78271c03667a03affa12bd81ba244aa5eb990"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7877,
+            "sha256": "f72aa7204968b25fbe4fd05bb8675e09700402b7497edd8992a20adbdb05ca72"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 173925,
+              "sha256": "04677a514e156d9bd227d650745eaa86fecb3047bc45f41cc9cc5624a0113353"
+            },
+            "records": 292,
+            "focus_steps": 21,
+            "active_samples": 21,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 13,
+          "native_checks": 1139,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "749274a30997ef4fe873ec99bac73546bd6301fa978b87ac203a42df6b6707c6"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "4fadadc2a2fc39d41e8a58f345f101850297667ffb5add7336283b532574ce37"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "b5ea4ec9d6e149d4ede29f65fe30335795f230d9a7fe9974893c71d622933994"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "ff0d56e984cffdca9692338387672857716763f3848e811feb318348726058b2"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7634,
+            "sha256": "e223f0f3acace42440adbef21c373eef4ac0a22b81c6dfbeb7907e624a358202"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178893,
+              "sha256": "1c897171187f28a49b3180ee9c2d4abb3acd5afa87edd3ced816d680059f82e1"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 14,
+          "native_checks": 1124,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "bcf5f8552bb89fc7e54ff8a796ec0f64ab144cb15be2fc5db4e501abb9859d51"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "c3ab1f151ec78c65376737e99a53f03b6369a5aa93a1b374d463bee6cd128b17"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "e583a2635815437e61a97708aace4ec9cd01acbc426678780a8ea7eabae0406b"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "334a6fc412cf22a456fc6d9560aec5b8dc38ec0d9d09bb5c36ddc4a7bd96feec"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7799,
+            "sha256": "ff0917b1f756a9181be3ca97f02e6e15758bf563a9b1d17181a36e4c171733ba"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 197490,
+              "sha256": "cbad129c5948b71f20e980d498dd6aa38336a3aea3aa724b7e9c77d20c9d63c1"
+            },
+            "records": 332,
+            "focus_steps": 26,
+            "active_samples": 26,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 15,
+          "native_checks": 1124,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "93f2caa0a79e2dd0ccfc5563092ed63e11d29bf0e7c0553d96132cec3a69e1dd"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "ce9cd9bfedffb8e00458124bf7da746f127f387862cebcd0ec2f84faf0039624"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "8ec418ace3ae31be2d258b55b526edf593bd0f73333abba173ac77b903fea9ef"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "0cfa17ef99d811a94d3c6cd67f2ebde866d44beabee6a11eb3dedc75230db255"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7740,
+            "sha256": "81f0ceec3c214123fcef43a326f891f999b882e87fa084e982a6ffa5ad137da5"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 173943,
+              "sha256": "b6803ee33626869793a661efbcdc5c7124541ee1a9a4a93270648a13723e3200"
+            },
+            "records": 292,
+            "focus_steps": 21,
+            "active_samples": 21,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 16,
+          "native_checks": 1157,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "b99c86c428a3a003ab3e609ed552e0a8a3a5999f9e4e73720c09356813137e19"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "2fcca341425f3e3d966c4661d9a84fd3557ef2be53ea672478f50fd4fc9bef0e"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "df815a4ea185fb8a154e6697185765a1ea5ef98655c7406b7672b8dcd7471e3a"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "d9a4dba41ae3c61d7b8c085becf42f1b96dd5b9bc748abd9894f427e2c231e1f"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7742,
+            "sha256": "8c747326e17e1927025bd8a556038dff43e438ebe09c2b844a056d6cec927db8"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 193747,
+              "sha256": "a6f8dc99ac5ede01e672a7aa169822981661d130b73c118ef46123065e7e18cb"
+            },
+            "records": 324,
+            "focus_steps": 25,
+            "active_samples": 25,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 17,
+          "native_checks": 1139,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "4d79d5443430a8117abd08e5a06d261d209078f09bfbd377ea278adbd8e810ff"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "6d49dd9ea18c12e4f753fe2b8202056e7a18311bdc4a2a81bd0198c669fe31d7"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "2c8a55b51518ff41e7a955f85086600589d5471380cc13a5f4ae3bb8094f4021"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "4b2015d92eb75a086cf34f83b09c06ebc5760762964ac7d6ee015b8960ec4735"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 8088,
+            "sha256": "dfe274030e748538440787fc54182a0f7965faed5e96c71c7feb402a5f53466f"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 168989,
+              "sha256": "339719b3068dfad90db0a686cec6f3d9713b40b074aff8fd268d2977cc33591a"
+            },
+            "records": 284,
+            "focus_steps": 20,
+            "active_samples": 20,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 18,
+          "native_checks": 1139,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "1ad4ba35357c7840b3032a16cfbf55edfa62fff360c438303e3ddc4d2ad368d0"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "879c3854bc3c55bbfe9cdbea9ccc6613c1749afb1b899dfcc850f6e5097a1598"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "2ea97a41027d36dfcc6e61449c9c4f2dfb43dc995ba7531d714328ad39890e31"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "ed4f371ad5cb0f789860df161fb30ffd73c5595838861529d0a47be4939482f9"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7495,
+            "sha256": "285932e7797b2524395366844341f98dfc85841205e5a9734b2e704882ceac5a"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 193751,
+              "sha256": "b874d2fca09429000f73e1d367a653aec8c46e066264464c7ce1e7b26ecd5700"
+            },
+            "records": 324,
+            "focus_steps": 25,
+            "active_samples": 25,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 19,
+          "native_checks": 1151,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "76f658ffceed05a656fe05668a5c7e25037f44c01c931b53b5fcb2ae3b153ee6"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "0670a2143f86d6430a21a8ce519524e1852c0e8f52003a09fa433655bdd83f81"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "6066125e58cdfddad25829798650f88c00fa80135fc78e29f5c9182603d417a9"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "697596442ed78fefbe7b22b95f075f5e1029dd8833e59b91de8096d4c1396ea0"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7773,
+            "sha256": "f22f29afc9a6634e254acc53929432b29d86c8f4c7fdbd044f9966261fa44308"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 198695,
+              "sha256": "65bc1a425cbf6eeaaa38d3db527b7b4098ae69be3e180fac400f4b34578e400d"
+            },
+            "records": 332,
+            "focus_steps": 26,
+            "active_samples": 26,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 20,
+          "native_checks": 1160,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "793842e7f69ba80b0ef19cac696615ab583ee2d36d39704e55291372f430eba8"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "39849c31f52a12b4fffc2d894ce2414f621ae2fd76c4db9e811c96a72dc75018"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "28de8e9a0bbdf5aaba7dc92936e6e693392c1a8f56a937d25ee8bb876afbdbdc"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "f5d4846a88829c390d90665320cc507d79f0f504ee7b2002131a11b94660ec6b"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7953,
+            "sha256": "941860a74e196f66c4ac88f3e3b67c1ed92524468d415770042ed57179e2ef66"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178893,
+              "sha256": "281d68124a55c380de3088dd7b8b1735d65493db8700b063010b30b475caef7b"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 21,
+          "native_checks": 1130,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "712b11a51e960d9d2d274e621e7afc740bce27df40e0706de6c8770cb5ae0fe6"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "5e087b421558bc0edb0278d69adfdcdbfae2bbe5b29b4a64e0946d21011dff1b"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "7bb1acc19a7b8f8a0a457df2b46a12df44997a29e78ec71d25d27f6c02908d8e"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "762c1fe0dd84fa25946e9ac9c33f8c836c6f8970a9d15aa0cb2c206d675490e8"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7496,
+            "sha256": "b33c7b7ce5eca89d4f93f937014b61fcb1a65ca0b28dea5999f5b1e9e456460d"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178889,
+              "sha256": "c722d43aba6a5bb81103b9c7c82d2e5be7f07303cd3df58c008429cdc4617a33"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 22,
+          "native_checks": 1154,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "0ef15653be3881f0ed8317bf6506c483c58b2d255f4fc5fb4209d70f3aed41d5"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "6b9681800b09c3bf965890bc1ea025e22ecbb6a15ae8b8aeb894dc5f31e5a3ca"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "37fec4d774662d3a11435819249620187cb2733e410c7ea391d70ca0007d12e6"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "3ef24cd9555c7331ce5c407e3b2a5669fd593ef6c1e46a07a899cfff5ff0cf80"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 8062,
+            "sha256": "348af2e241dd06310b0f2a6c4931aaff99388fa09b9c5c3414946f48b89667dc"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 188805,
+              "sha256": "582b35bc3cd4521c462eecac4da9b41ecb2d4161a82a48d5ec5daaeba0bbed10"
+            },
+            "records": 316,
+            "focus_steps": 24,
+            "active_samples": 24,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 23,
+          "native_checks": 1109,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "d1eb5f243b49295f06631940c86ba0567e0d1ffa99a95de2558f7333ecab57bd"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "398599208dac747b1bd005fe726eb7643350f252171769eaa1f338514c726c25"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "3525e76ca5ab42f827173d40fa79b4361b64a54a5f74abd23013a6975eb9644e"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "a5da1a30376d45cd86d53967d2c2ee80cd7b21d8a51d5049af60f6ab3d454dff"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7669,
+            "sha256": "03469cba3f1d6d0ae7f03f04bf896524cd37d2109cb844921fe18f04364c2197"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178897,
+              "sha256": "854f41378575009c9f202cfb865b95c33a549965b827afdae15064b0fa3bbba4"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 24,
+          "native_checks": 1154,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "6b6b9427962f4c96ae978951d300d7c7c32bbcd65a20b00de555d6b98e556167"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "9f326c826acea00e318654c14c9d05a55c2bb340d3edc41e7ed3beb5d33c7a70"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "b1f1ba412d980f09c29406fe11e39c1c148c4e9e9ee3b1709ffb073631aa6615"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "f2c7120071fd4495484fb88b5533769159a097d992d5b92a963f2c2a6c2d7642"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7455,
+            "sha256": "83f01158076eed978295e626195c85bdb0c119e2293422a365333fb29566f58c"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 188384,
+              "sha256": "c3fa8856fc91675dba1f8b84146d1a6dc8ca0d1c856212c10a5d11765f10a56b"
+            },
+            "records": 316,
+            "focus_steps": 24,
+            "active_samples": 24,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 25,
+          "native_checks": 1145,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "fcfdf0a84aad6fac44db3c3d74c022c496fa28e0888e652ba08377e55f06560d"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "dd7ff6a945903d4b17e09274ce07c77cc8625acfe62ad0c4bb2046842ca123d7"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "d11069df3796ce7d7ee34ea16047f353457b43854221e7d40feffe73bf033002"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "cd521f0c9d1d09a25a0d407071963e306104965aca241fbbdefac8459cce4961"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7917,
+            "sha256": "91db1ebd8af1a33713cd05de472f39cec0c3333d551d7c4a2a9a2224139c250c"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 193755,
+              "sha256": "a7ffba10076f7fac7bee47ce7955a7362931347ad64262677a9cd83f4234d996"
+            },
+            "records": 324,
+            "focus_steps": 25,
+            "active_samples": 25,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 26,
+          "native_checks": 1124,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "c380c983b8ce9340d698dcef2ae564d718d8b6c35ac479a511001360fa661a86"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "92689c008a0914b4b72a6cb48d79c08b44f39776ade008004c87d933f2a44680"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "b4a479eb4d7112af4920918f465dd208fb549a07bc71270447d5f0f661e8b7d8"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "ee502ebf022f8235000faf167717cf1823758099d95e512ada813866459e4473"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7703,
+            "sha256": "77a4180bccc3cd7505a3b0a458206ad0be79b771c74d8c2104cafbe82229fbf6"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178889,
+              "sha256": "b88d2420a9af2785d68d91c2da197ae2bcd68a37489107ebd3e0a194ef204417"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 27,
+          "native_checks": 1109,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "8bdb3bd1ff39162db0dc0ccacea52ed53186f6f3cf30d0e7926034f4a3cacaa7"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "a9116e99ef9680a74706aad807bfe0b9f056b42171652763c4e2475fd1595ea8"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "9575cfeede00667d6fc134bc79a2273d06c8bdc8722221de01d6fae1af099361"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "344ae793dd1d6400d7217aace119ceaa4f8430fdb996f6cb8aa2488fede57d1f"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7701,
+            "sha256": "17ccbc0265c50ccf9f4641e8486adefe9517cd063de6af280d9e02eab3d03f19"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 188761,
+              "sha256": "31440ad64ca49ece24a9ef2c3b8f0f4e7b881b2524d889b15997365df22bf017"
+            },
+            "records": 316,
+            "focus_steps": 24,
+            "active_samples": 24,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 28,
+          "native_checks": 1127,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "c5ee47d4966d1310441b9040da469750c7a87651208298ceeb8e92d8e088c31a"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "d5bb3c173af6915f6deaf06d20f6bbcb265d3f8310bddf8210f287f2955f0cfd"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "3cf8fd74cdc362b6c86e6705cb45ff5fa7a0686252112fcbcc7c74d52424c679"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "742a543210e934184e063434a76d45763a699da9695c78eb99374414133c53e5"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7738,
+            "sha256": "49c91decd33434228eae3630347ebd72026d5cabae7b4553330ebf67fc6beaae"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 178588,
+              "sha256": "af480b17420b80ef6a00f6c9054e74a22f9e4a1bf963472e13df4e3592147add"
+            },
+            "records": 300,
+            "focus_steps": 22,
+            "active_samples": 22,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 29,
+          "native_checks": 1136,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "30ce157ff6c68dcc2876f04aa5783babc86bddb9795ec7357fbb1535b5d23ff4"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "a6dad32b876e6afe7367af276c418c81fb20a3178911a1ad176d3a6ee7fede26"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "fb8c7005fd14fa053346ae34085f82f718ec5e72f1707eaead0fd7245e62bcc2"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "ec030d637de8a564567af954316482c791fb19eb1cb58e4d21a28404487f9655"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7666,
+            "sha256": "27d3ab4cf254f0a479cdf8a17d65e22fd9e7657fd41358eb460f9a74b15bb085"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 168971,
+              "sha256": "a9e9b5149da872fafa4054292560d32340523ba544f69b01b4ba6d4f096c75c5"
+            },
+            "records": 284,
+            "focus_steps": 20,
+            "active_samples": 20,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 30,
+          "native_checks": 1166,
+          "outer_capture_receipt": {
+            "bytes": 1067,
+            "sha256": "3bb96d5995ee5cbb5eef1e23f018db7f0acd0cec69a3fc51be1622964e5317df"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "f688476e7dd3607e4b46bc033c52a7208de42aaff803aeb31b1bd2314a43acb7"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6139,
+            "sha256": "98391db114662e555263b0202be3e25384e5fed6618a8cac192037c3f256234e"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "3ffb25a322b30870691b431f2440a0df0605e1e3c8584566b7fa4909b51df49a"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7491,
+            "sha256": "500966c0348bee4d9157e9efd84ae49f6d47d17c2bbf1329ca9acb1ae71b8e41"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": {
+            "raw": {
+              "bytes": 198709,
+              "sha256": "32fe1f85db998cebbad59a0d74bddcd4e948761c5f81c3dd945439fa637bd50c"
+            },
+            "records": 332,
+            "focus_steps": 26,
+            "active_samples": 26,
+            "active_false_samples": 0,
+            "completed_step_candidates": 0,
+            "active_null_samples": 0,
+            "maximum_delivery_depth": 7,
+            "changed_payload_pairs_by_message": {
+              "1": 6,
+              "129": 6
+            },
+            "selected_chronology_complete": true,
+            "unhook_before": true,
+            "unhook_after": true,
+            "file_close_requires_complete_native_exit_0": true,
+            "overwritten": 0,
+            "reentrant_dropped": 0,
+            "unmatched_post": 0,
+            "hook_boundary_native_canvas_sdl_null": 2,
+            "host_sample_nulls": 0,
+            "hook_boundary_nulls_by_phase_message": [
+              {
+                "phase": "wndproc-after",
+                "message": 8,
+                "count": 1
+              },
+              {
+                "phase": "wndproc-before",
+                "message": 7,
+                "count": 1
+              }
+            ]
+          },
+          "outer_exit": 0,
+          "native_exit": 0
+        }
+      ]
+    },
+    {
+      "role": "untraced-control",
+      "cycles": 20,
+      "observer_enabled": false,
+      "retained_report": {
+        "bytes": 820172,
+        "sha256": "484dcb6dcf6730f1fd9fdcf49317ccb7070bc2f36b58134a4cf8a1eeb27a1e0c"
+      },
+      "selected_input_count": 2388,
+      "asset_count": 413,
+      "input_manifest_sha256": "f9608baacf8e6f256c444e6666f8213fcf087feb9e4ebb8a74376aee8f36e0b8",
+      "asset_manifest_sha256": "47ea19fc513a1b20cbe044e76498ecfea33cb2e9298f98d5108049b045486fcd",
+      "inputs_and_assets_unchanged": true,
+      "private_controller_source_sha256": "5a6b444b36dd1b6f1fb377ebf18a2054132cfdfd4187d6609f72e19002ea9285",
+      "runs": [
+        {
+          "index": 1,
+          "native_checks": 1157,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "c62d9f5119b6ff3aab61a44af61885e8f749cf70690938ae7cf473cc30073108"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "29253ae8e44a72ae1d77361f6a56feba2b4391cd99a341d3e70dad43cb1138e9"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "7e9dbe0ae8e621ed9dc30d880269b688b625d805f5a3ef36fc96d4dcf7b76da4"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "f9f40a7008dd4f69374d3a0012ad2d746de10ce412ee5e5304c06ab5a71834d2"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7916,
+            "sha256": "35ab4d4f6116b4ba0d285c913fe8f6ec163053a79099e10af41b5ad5818556b6"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 2,
+          "native_checks": 1151,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "0f75236a572c7fefa283ede3b61c7da66321a781e9c432a26fdaceb5f4a7841f"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "1c2d68c61607a10453312a5538f27f74c301eeff8817cefe37f5c25f3c51bf9c"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "0ed42b909daad1a4f80a9a9e8fee0852dda89cfaa3d1b721a18d4278d351baeb"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "5d9e335ba5d458a8f97fe827b84f160826ffd7f04d3817af113ea6f740c9d7f6"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7529,
+            "sha256": "b13ba4b70a8bbe7972dddfce670e06222e31f92de5af40d5b12557da8c8222f9"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 3,
+          "native_checks": 1118,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "87477c0532921adb3011e60456fd7e78caebf24d0eb8d0bdd5fb793acc158d5a"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "e8af2245ec581c6a1a2d248db4bd35e17e67fb38465564527e03edaaed0a786e"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "4a2ec79cc6fd9baba80588c52b8a1a4f05b88d4ed735db203d648eddcdee8dda"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "b38d40767fda389f17527f3eccece94ed5c3ac1b28aea6796792d2219100e95a"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7529,
+            "sha256": "725b6e417f930469298959f631f14d1488862178530eb17e271ce0ee979365bb"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 4,
+          "native_checks": 1145,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "c829cd16bf0e742c3d8237caa79aa1b38bf225b6cbe3e8d83496f6abec304922"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "15569fed5af644423d950c4d2ed92f0779a5a235c079993a5e55c25f4a54cf89"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "01c2b84033f748fa61143fbf07cc0b0a72aabc0e538173ce87e5798ebdee68f9"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "1e3a3f5bb511e28eec4c7954b968bbba871e0a90f9febc900d8395f09e2fdceb"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7666,
+            "sha256": "13fcc7e281532d22f8250949b4c0397921d87ccc5131cd37e4bac03319700447"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 5,
+          "native_checks": 1148,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "349fc32de1ef907f5b76b729478e864508afd30051cce45a62060d744cfb423d"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "1d047335ffc69920c7407141318e19e7dfd5dfc2b1bd3e0ddf6a222cfd42af1e"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "55bb8021419a07f1c9908af321fcea12cb3d9aea2066c323018dc12bba82eb75"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "673fea5cf99a61f0dc53a8eb380d0d62247818512580d81800dd29a7c873899e"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7598,
+            "sha256": "229500aa59da7e2e40c7fe41c2bef9c11766558b9e9c36aca9be8ae3bc54a14a"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 6,
+          "native_checks": 1121,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "96946681a06a06ea6f1967b72725f624122543527cb385fa401f294aa2ad3a9e"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "ccc9bf54f3e321f7b520ebebaec4cf6a8b43f41ac6fff996ee98f4c8904a61e3"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "8bac1e645c129f8510e9917da3c6c05506be408166e4874cb12da50067e044fa"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "61ab37ab019e118c7146d2e5eadf8c4dbb74932455d66f51fa3010971694febb"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7562,
+            "sha256": "66a887faf1fa6e4e25734ce458abaff4ae6ad29152ca8f253ab3858d3e0a630c"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 7,
+          "native_checks": 1163,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "81efec2e3ab3727c172d907f9fa50d37e83ad335dfda0f9921fd4be614e8f243"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1941,
+            "sha256": "e55af3c4ccfafffcd555bb7ef5b381a51a9ec64debf4e594aaa8cdb5d9b2c319"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "8f803cfafc2fe97056ce41dcf35cc36c80b49a19c0d930c6528ddd768a1ddc12"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1684,
+            "sha256": "8f4bb77e75a536754b8470b91cd22c677b8ad43e47b3369c56606ec10f467850"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7881,
+            "sha256": "b63e9e78fc146edc3658b1b4de74c54fb0063e03d2b4a086191d60dbbaf7041d"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 8,
+          "native_checks": 1100,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "34e4c89ce9ef303b53061069a9cbc448eb54147d0d3ab74bacd63e87f93e476d"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "0bc6966e689af9359e80ff247bec9e64fcefb386bc8e2f492385747fae2f7c0f"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "f48a053e9592eb8aaaaf6014c0298c83366b7c9578ec15260f8ecbce059dcadc"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "2b7065b6994a946a0bd5aa3106c25fac405b2765cc1fcf49ef8a7bc25fb11c15"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7743,
+            "sha256": "e42e39f555a37fc26747087e30339a3e354856d85dc2d615d26366b08adb508d"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 9,
+          "native_checks": 1151,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "968ea2e493c8e52003e5789ed71a0f98711c892835f205818b9cf662d63d19ed"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "1bf0a6640b82fcc684fe0b486f95339e00fd033b58a6f73d692d1ab1daafd815"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "b542551cccd0df43d13bf771083fd9258fd5e7a85d4acc24fd94da8970d1de67"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "8fca14ea94cde2d41ead9e39669f73a8c9395d6a343b15aca0687c0e3782dce8"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7737,
+            "sha256": "e8cad4ffccf5a0253c21cf0a59400f02fa3909250420930e027c2ce4386126e7"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 10,
+          "native_checks": 1145,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "f10e99bcb7e8435df0dd83e94f6a70bae4f7deadb203831703eb5e36cf8286a2"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "a2551d08b166dc6ff43bd57dceba9cad43621d010e591c31570b4ce49b1aee36"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "dc8ca5eb43496206a895a47201a2f63caf0f3861f79b6720d1e9514fc0b08755"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "744cce23d74ea27508f30365eabb137d4217bfc48162716a9b141b75a0b6a80c"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7635,
+            "sha256": "9b3d7e278fd438b1342ef02f1a39c234017eeda8f3dd1e975eb2f66c13c98dd6"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 11,
+          "native_checks": 1169,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "320e6fa3a8247d9c231382802a24bf0c939fe98aef1c551123da0674a7547439"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "a90213e968c03cfd60d9ee1481bf3b777650713251ffdefe2b4d80b34b0102fa"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "a7317170f48cfa8bc79c6cc69f0cd0f98a779b1dfe2583a1846ef4c7a8d15481"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "43d22a443fb60cbbf35c8e7ff0458a0e0e53b907e3f05d02e05752b3666d6d1e"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7598,
+            "sha256": "96abc52675c97070d248e688d6b8bb472c16eba7988ea74dea107c588e726fef"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 12,
+          "native_checks": 1148,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "ecae8de1fc88aab28f4333f322ea5bf605fe3928805267d10d782964b1adcd5d"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "679ab6f7c59e470bf7397e57ed42791a81c38f5cf14362da5c48a1396241ce88"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "4e2c5491fb2fb57624ce399233118a49781302140519ed517f4e386051594635"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "20537f9b3d02999ee401199773047952598622a2e5e219fd07d4d318fd7049d0"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7736,
+            "sha256": "16bbc3c8e6f6abaee134b3e18bb7fa6c338e575c51e0f2231152865cf316cc60"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 13,
+          "native_checks": 1148,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "7f65b0d9d3c3ab4fa1f19f5e34c873c796fccd74d7e374cade24e8c765187564"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "ab0c2cfb4865c2e1bfcbf4867eda50a68a700045e9a5954d2637193fbe3750b2"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "0873a8c2eda007e82b6dd6edd8f92dbb7b980418ed7bc72e65747a69964cc096"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "07d41ceade570364baba9ef6c51d223d7d3960396045cab4739d78862d45a4d6"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7807,
+            "sha256": "da35acc4bd7d471133af4b79b316ed801ac14ebc37c237e96d77ee0af9c45276"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 14,
+          "native_checks": 1097,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "04d37096b23cea446c6978896097d01347a50800ea421e8980ecde5929e5d4f6"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "fe26eb8fa4f8f803f0ffc1c5d963593a63fa2b07bd022d3f3a02cbd321bb49cb"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "86bc4bdfd994e183a9f9bbcd62e9a0dc342ba75d469aed1d7f4380a55ed21118"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "303b8783406d04cd50591b1eaac1c52430a460e20a123a9327392d2366153655"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7671,
+            "sha256": "79dbe185a03a37047509314f25dafeef71be9d1eb340945e2f1f86b924948ff8"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 15,
+          "native_checks": 1145,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "5b3c5895ae12737451e064fa4f9f2ac36d1003a12e7685393ca5393b0929ea2c"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "eece5807aa56ef0252c55552cd561160c97743b69598b7c5b3dfcd2f44ff6846"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "d977dbe40f3de6c19d762f1cf27e6f0b107e58b5d9c84fe2cdcfc4d49bc022d3"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "2e8433221df2238246f7eb88f5ea3766144af725effea9c9fd365ca07ee478f5"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7640,
+            "sha256": "52b361e72ee5dd36ec9979173f309fa819855c69d8a82ef4f182d7d45bd95b38"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 16,
+          "native_checks": 1157,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "fa2bf9f29ec7b9bfb8456886999de6a1808c5b65bb2eda14ad61f83103dcf8e0"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "84787c58b95c1982ed9a4ff4e753f72ecc3724681520def2ae7e4d6576cb117b"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "f02f11a8b49967e70f90d2309063b1fcdcd49fe58f5f6d838b5484c905b06305"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "89f152babd3d7038acdd6daafde519a5ee5b76c422206355979dd62a6902fbee"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7596,
+            "sha256": "05a53b5f418798081f77a8c6607c3df613cc2205dd8306622b34517c7e1726d6"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 17,
+          "native_checks": 1148,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "34f83c0c66bff8db4ac22f0e1078bc9f0c46602c1deec983a370bbaf17b07541"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "fd5733f01646938e8165e38503ded950989c5e68f85fe3014f81e337ba526947"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "886b26207d6231de7cd8d3018ba2d25d546660ccd92e2db7316cb5013388271e"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "66eb6cc007a4e9db004bf0835d9b0ef06836e848a159987a113d6c81ea744c7c"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7738,
+            "sha256": "831f29477ef0eb96c3f4ccb247a97a7a966816ca798bd600dbd07b0fac94911d"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 18,
+          "native_checks": 1181,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "08f6e52fdf272896db0b408ebf0a970f899383139148a36577196038e98c371b"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "131ac173bb6296dcf64c44fe74e90e5f833e37d84761eb3aca5fcd4e8b8849e4"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "6ec8818b1e68aa78c3f0297b85d7a01910b68c99ffcbc531dfa91e350f846b94"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "7486a4100ee5d951ec99c805632206f84ae8a8efa70999446d9fc1f58cc9c16f"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7666,
+            "sha256": "81f5ed08beb3f1e1f6cafee493eabb9ec90211fe857a892aa01b9fabf93e09cf"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 19,
+          "native_checks": 1184,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "008c8a5b698d77dfb2aa02f775d6188e1ca55a93777920d8debe05f2ba2f6a0c"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "1a27ac81756394821be3a54798b88422227ad9a75142738654ebe2d0236f0c53"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "832acf5a7c9843bbff734635cadf53c76a1b09598ac072eb969c9750e5d07b46"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "e93663e394f48df9caa3ccb754298bb22a1100aa0d2c9b94bd6c202d6b05c01e"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7780,
+            "sha256": "6c7821f1b0f65451fade7645e775a5fdb80b0998ae206815357f896fc79a77a2"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        },
+        {
+          "index": 20,
+          "native_checks": 1157,
+          "outer_capture_receipt": {
+            "bytes": 1060,
+            "sha256": "54e513534c675bcd28cc866d67e5b77c8aefecd7bd8988a22a23dd6e2d2b5d25"
+          },
+          "outer_stdout_raw": {
+            "bytes": 1939,
+            "sha256": "eff463cc128e02eea55a21be54812d1e966f9870148ffdceaa8cea818e588c97"
+          },
+          "outer_stderr_raw": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "native_execution_receipt": {
+            "bytes": 6132,
+            "sha256": "04489b4446762c38eeb398528b9da444dccb081bb10b20c0816cef70602ade6b"
+          },
+          "native_stdout_retained_text": {
+            "bytes": 1682,
+            "sha256": "e28e5abd5e691cd3cd8a2eb8caa57b6b723188006e7b7bcebfea981609fd94bb"
+          },
+          "native_stderr_retained_text": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "save_decoder_report": {
+            "bytes": 7599,
+            "sha256": "389fd04a19712c6fc6c2b05612478bb826e28ae860be5229c216d8815b43620f"
+          },
+          "monitor2_containment": true,
+          "same_host_and_windows_absent": true,
+          "independent_save_readback": true,
+          "selected_executable_unchanged": true,
+          "trace": null,
+          "outer_exit": 0,
+          "native_exit": 0
+        }
+      ]
+    }
+  ],
+  "refusal_controls": [
+    {
+      "case": "existing-file",
+      "native_exit": 1,
+      "capture_receipt": {
+        "bytes": 815,
+        "sha256": "d7812c22aa0fd7ba48801173e71f01f581da90c667749dd44b92189291022aa2"
+      },
+      "stdout_raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_raw": {
+        "bytes": 80,
+        "sha256": "ffdbd42acdfe7d88499435cac756a1f8b4e9cf11a3a8fec9533771935e975c8f"
+      },
+      "trace_or_marker_raw": {
+        "bytes": 37,
+        "sha256": "556869ba5b5e2e3ef7103eea327d0d98a655867e06ea6ec7a5d44d1e5a2c3a2b"
+      },
+      "observed": {
+        "declared_marker_unchanged": true
+      }
+    },
+    {
+      "case": "dispatch-override",
+      "native_exit": 1,
+      "capture_receipt": {
+        "bytes": 815,
+        "sha256": "d404e1aa265f3aa5c1fcfa0554ff7384f71de7d13f5847d3cc6aa15e21a6bceb"
+      },
+      "stdout_raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_raw": {
+        "bytes": 84,
+        "sha256": "9318e73fe65a812f5e770c2ab07f67b57d3d9e893d4d20c9f5e4e2ebada189e9"
+      },
+      "trace_or_marker_raw": {
+        "bytes": 1173,
+        "sha256": "a314c29651e85e901d97561e89cd5daae6256c9f72757da05f3646f0098c69b3"
+      },
+      "observed": {
+        "dispatch_primed": false,
+        "hooks_installed": 0,
+        "bootstrap_stdout_empty": true
+      }
+    }
+  ],
+  "excluded_initial_parser_attempt": {
+    "successful_cohort_member": false,
+    "native_exit": 0,
+    "native_checks": 1166,
+    "scope": "The private reader rejected differing pre/post WM_CREATE and WM_NCCREATE payload pointers. Corrected pairing uses depth, HWND identity and message; raw payload differences remain retained.",
+    "private_controller_source_sha256": "74a55db951e0263b5f5a99a06092c2ed76212159c41575a3c4b58d66af866a51",
+    "retained_report": {
+      "bytes": 792224,
+      "sha256": "343694d188743cfcd25c492c03308ab7d855cec1780b719e8da29ed247d2e52d"
+    },
+    "outer_capture_receipt": {
+      "bytes": 1066,
+      "sha256": "9335c58605aa959fb140ce60c8179a49bb00fb3c04e1736241a31e2ef402daea"
+    },
+    "native_execution_receipt": {
+      "bytes": 6138,
+      "sha256": "7969c71bd3457467c731aeaa4feeb53022787d1d023924196185da5e846dec07"
+    },
+    "native_stdout_retained_text": {
+      "bytes": 1682,
+      "sha256": "b6fdb0bee7663a85a606346399e2ae3dca5975f1bc702b37dae209139ecb7fd3"
+    },
+    "trace_raw": {
+      "bytes": 193741,
+      "sha256": "298122e9280c3467677e7fd00fc2e881c9464f958697ecf502a915cf24ec1bdd"
+    },
+    "changed_payload_pairs_by_message": {
+      "1": 6,
+      "129": 6
+    }
+  },
+  "historical_mismatch": {
+    "executable_sha256": "31290d48099a46ba2bb6ea86420e7b1000ede9179b681f439419c2d24849f915",
+    "scope": "Earlier native Canvas/foreground plus absent SDL keyboard owner endpoint. Matching execution-time source/SDL link proof is absent; this is not relabelled as a current-binary observation."
+  },
+  "limitations": [
+    "The observer changes timing and primes public SDL dispatch only when opted in. Passing attempts do not establish a cause or fix.",
+    "Zero completed-step candidates and zero active-after NULLs are separate from the 70 observed transient hook-boundary NULLs.",
+    "The 20 untraced controls provide no callback chronology. No timing, statistical equivalence, or FPS result is asserted.",
+    "Build/map/archive checks prove captured artifact lineage, not which instructions executed during a run. No verbose Loaded lines were observed; the retained selection route is map plus exact archive search.",
+    "A trace footer precedes file close; complete native exit 0 is also required as close evidence.",
+    "Normal completion and two startup refusals were exercised. These runs do not qualify every early-CHECK fallback or abrupt-termination path.",
+    "No original AWT parity, Linux focus behavior, sustained interactive play or complete launcher comparison is qualified.",
+    "Raw evidence stays private; this hash-only projection is not a standalone game-input or desktop replay packet. Subsequent source/product changes need their own qualification."
+  ]
+}

@@ -16,6 +16,12 @@ import zlib
 
 
 ROOT = Path(__file__).resolve().parents[3]
+import sys
+sys.path.insert(0, str(ROOT / "tests/support"))
+try:
+    from attributed_project import AttributedProject
+finally:
+    sys.path.pop(0)
 DRIVER = ROOT / "scripts/reference/cache/compare_acquire.py"
 FIXTURE = ROOT / "tests/reference/cache/acquire_fixtures.json"
 SPEC = importlib.util.spec_from_file_location("acquire_reference_subject", DRIVER)
@@ -173,6 +179,19 @@ class AcquisitionProtocolGuards(unittest.TestCase):
             with self.subTest(state=name):
                 self.rejected(mutation)
 
+    def test_queued_bounds_require_signed_32_bit_integers(self):
+        snapshot, _, _ = self.original()
+        snapshot = snapshot["initial"]
+        ids = ACQUIRE.identities({"initial": snapshot})
+        snapshot["world"]["queue"]["entries"] = [
+            {"kind": {"ordinal": 0}, "bounds": [-(1 << 31), (1 << 31) - 1, 0, 0, 0, 0]}]
+        row = snapshot["world"]["queue"]["entries"][0]["bounds"]
+        self.assertEqual(ACQUIRE.world_projection(snapshot, ids, FINISH)["queue"], [[0] + row])
+        for invalid in (True, 1.0, -(1 << 31) - 1, 1 << 31):
+            with self.subTest(value=invalid), self.assertRaisesRegex(ACQUIRE.Failure, "queued bound"):
+                row[0] = invalid
+                ACQUIRE.world_projection(snapshot, ids, FINISH)
+
     def test_context_ids_and_traced_cache_container_ids_bind_actual_objects(self):
         for name in ("world_id", "cache_id", "generator_id"):
             with self.subTest(context=name):
@@ -284,6 +303,7 @@ class AcquisitionExecutionGuards(unittest.TestCase):
         directory = tempfile.TemporaryDirectory(prefix="mc-acquire-execution-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name).resolve()
+        self.project = AttributedProject(ACQUIRE, self.root / "attributed-project", ('tests/reference/chunk/ChunkObservation.java', 'tests/reference/cache/CacheAcquisitionObservation.java', 'tests/reference/cache/CacheAcquisitionController.java', 'tests/world/cache/acquire_probe.c'))
 
     def setup(self):
         paths = {}
@@ -394,6 +414,8 @@ class AcquisitionExecutionGuards(unittest.TestCase):
             if classes is not None:
                 for name in ("ChunkObservation", "CacheAcquisitionObservation", "CacheAcquisitionController"):
                     (classes / (name + ".class")).write_bytes(bytes.fromhex("cafebabe0000003d") + bytes(8))
+            if current == "controller" and mutate == "source":
+                self.project.change_source()
             if current == "controller" and mutate == "input":
                 paths["executable"].write_bytes(b"SYNTHETIC INPUT")
             if current == "controller" and mutate == "class":
@@ -401,7 +423,7 @@ class AcquisitionExecutionGuards(unittest.TestCase):
             return COMMON.ProcessResult(list(map(str, command)), code if current == stage else 0,
                                         0.0, False, None, 0, 0, 0, 0, 0)
 
-        with patch.dict(os.environ, dict.fromkeys(FINISH.JAVA_ENVIRONMENT, "")), \
+        with self.project, patch.dict(os.environ, dict.fromkeys(FINISH.JAVA_ENVIRONMENT, "")), \
                 patch.object(ACQUIRE, "helpers", return_value=(COMMON, OLD, FINISH, NORMAL, EXECUTED if executed is None else executed)), \
                 patch.object(COMMON, "runtime_tools", return_value=tools), patch.object(COMMON, "tool_versions"), \
                 patch.object(COMMON, "file_record", side_effect=record), patch.object(COMMON, "run_live", side_effect=run), \
@@ -451,6 +473,17 @@ class AcquisitionExecutionGuards(unittest.TestCase):
                 status, report, _ = self.fake_run("controller", 77, mutate=mutation)
                 self.assertEqual((status, report["status"]), (1, "fail"))
                 self.assertTrue(any(message in error for error in report["errors"]), report["errors"])
+
+
+    def test_same_length_native_source_change_remains_a_failure(self):
+        status, report, _ = self.fake_run("controller", 77, mutate="source")
+        self.assertEqual((status, report["status"]), (1, "fail"))
+        self.assertTrue(self.project.native_inputs <= set(report["inputs_before"]))
+        self.assertTrue(any("attributed input changed" in error for error in report["errors"]))
+        name = str(self.project.root / "src/guard.c")
+        before, after = report["inputs_before"][name], report["inputs_after"][name]
+        self.assertEqual(before["bytes"], after["bytes"])
+        self.assertNotEqual(before["sha256"], after["sha256"])
 
 
 if __name__ == "__main__":

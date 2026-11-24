@@ -1,232 +1,416 @@
 # Development status
 
-The C runtime now composes chunk acquisition, saving, pending unloads and explicit
-owner retirement. It preserves live callback order, a stable world clock,
-metadata-first accounting and retained identities through reentry. Empty native
-entity/tile collections are supported; nonempty Boat/Sign behavior remains an
-external callback seam.
+Development targets a fully playable single-player client with Java Beta 1.7.3
+behavior on Windows and Linux. Full parity, sustained play and performance
+qualification remain incomplete. The [parity matrix](parity.md) records each qualified scope;
+the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining work.
 
-Exact-source lifecycle qualification passes at
-`46546d8322de52beb6c3a51f30e827c0260d2b30`. Complete Windows v10, GCC v9 and
-Clang v9 suites each passed 92 tests without failures or skips: 1940.77s,
-2969.23s and 2961.75s respectively. Independent source/provenance and lifecycle
-semantic audits, unchanged storage rechecks and all 22 capture roots per platform
-also pass, with Linux ASan/UBSan and stable measured inputs. The controller retains bounded
-JDI mirrors from their first recorded IDs; its separate debugger regression
-passes on Windows JDK17 and Linux JDK21. The helper interval correction
-permits 600 seconds only for observed dedicated101 operations; its separate
-Python regression passes on both native hosts. The preceding v7 and v8 matrices
-remain excluded. Windows v9 is also excluded after a premeasurement original
-setup refusal; its successful rows do not count toward the fresh Windows v10
-suite. See the
-[lifecycle checkpoint](reference/lifecycle.md#exact-source-lifecycle-checkpoint)
-for its evidence ledger and retained failed attempts.
+## Current client work
 
-The persistence foundation passes exact-source acceptance at
-`9ad690d83592f127b9bb39d7233e8eef06fd0029`. All 71 selected local tests pass
-without skips on native MSVC and WSL GCC/Clang, with Linux ASan/UBSan and
-independent platform, provenance and copied-world semantic audits. The complete
-rewrite remains unfinished. See the [storage checkpoint](reference/storage.md#exact-source-storage-checkpoint).
+### Dispenser placement, storage and screens
 
-The preceding integrated main checkpoint `b7b33d4b66e027a6de18d04018cd0ba34dd87f0b`
-combines normal
-generation, synchronous cache acquisition and read-only region inspection.
-Its tree matches final documentation checkpoint
-`d0dde15a095424a2103dd755db546a9be2ab3c30`; implementation acceptance is at
-`28a55b52c001c4c114a11ca7df844fc1f286d328`.
-All 56 selected local tests pass without skips on native MSVC and WSL GCC/Clang,
-with Linux ASan/UBSan and independent acceptance audit. Hosted checks pass 48
-public/numerical tests per compiler and formatting for 89 C/header files.
-Inspect the live worktree before continuing. The complete rewrite remains unfinished.
+[Dispenser gameplay](client/dispensers.md) now includes client placement and
+orientation alongside the nine-slot AZ, SH container and DC/GQ screen. The
+Windows monitor-2 placement scene passes 1,870 checks over 52 frames with one
+placement tap, two opens/closes and save/reselection into distinct World and
+Player owners. Both saved views preserve all 441 authored Blocks/Data planes;
+the new Trap is empty, facing metadata 2, and the supplied count-one Stack is
+consumed. The process returns naturally and both windows close.
 
-The [resulting-main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39091121154)
-pass all four jobs. The initial Clang configuration rejected a dependency
-download with the wrong hash, before compilation. Three fresh local downloads
-matched the unchanged official checksum; the failed job passed on an unchanged
-source retry. The failing response bytes were unavailable, so the precise
-delivery failure is unknown. The published five-page wiki checkpoint is
-`c4ecb344bffae2d5bd293f2678063b6bcc985025`, with all five remote page blobs
-verified against `docs/wiki/`.
+Nine selected Windows CPU tests pass. The four new controls cover 320
+orientation, 178 placed-by, 81 Registry namespace and 77 diagnostic-projection
+checks. Eight core tests also pass on GCC and Clang with ASan, UBSan and leak
+detection. A fresh loaded-inventory scene passes 1,059 checks over 52 frames;
+both hidden cross-owner orders pass 50 and 44 checks. These are finite authored
+scenarios, with no physical-input, original-pixel, sustained-play or FPS claim.
 
-## Persistence foundation checkpoint
+The full MSVC Release build and all 1,404 Windows tests pass in 514.46 seconds,
+retaining all 1,394 preceding names plus ten additions. All 6,690 project files
+and 708 native products stay unchanged through the sweep. The independently
+audited original component has 124 direct XQ rows across two fresh JVM modes;
+it is separate from the native gameplay scenes and does not establish a paired
+whole-program comparison.
 
-The [region image writer](storage/region-writer.md), [level metadata codec](storage/level.md),
-stable stored chunks and [native world storage](world/storage.md) now have
-finite original-to-C-to-original and C-to-original-to-C acceptance. Metadata
-fallback/rotation, session checks, both explicit dimension roots, shared region
-ownership and the actual acquisition loader are covered by original observations,
-paired inputs and separately identified C failure policies.
+The earlier loaded-activation checkpoint passed all 1,394 Windows tests. Its
+historical results and Sign qualification below keep their stated scopes.
+Neighbor callbacks, random slot selection, powered firing, removal drops and dedicated-server
+behavior remain unfinished.
 
-At `9ad690d83592f127b9bb39d7233e8eef06fd0029`, MSVC/GCC/Clang each pass 71
-selected tests without skips: 744.00, 1255.43 and 1256.05 seconds respectively.
-Independent audits bind all 290 tracked files, native tools/executables/build
-inputs and all 36 original manifests. Separate audits check deep new-profile
-provenance and complete supported world-state/control/preservation projections.
-The three original-only fixtures remain unchanged. The
-[hosted code checks](https://github.com/frankischilling/minecraft-c/actions/runs/39104921389)
-pass 59 public/numerical tests per compiler and formatting for 111 C/header files.
+### Sign placement and editing, cf8cb269
 
-The [evidence](reference/storage.md#exact-source-storage-checkpoint) retains
-exact capture/report hashes, clocks, limitations and excluded earlier attempts.
-These results cover seed23, eight storage slots and explicit dimensions 0/-1.
-Opaque transport does not implement entity/player simulation or every subtype
-serializer. Gameplay save/unload scheduling, dimension transitions,
-running-server persistence and crash recovery remain open.
+At `cf8cb269`, ordinary Sign Item use reaches VC placement, the client DC hook
+and the real YC editor. The [loaded-Sign contract](world/signs.md) and
+[placement and editor contract](client/sign-editor.md) cover the four UTF-16
+rows, navigation and 15-code-unit append limit, live preview, Done and native
+lifetime. Placement and editing are implemented for the qualified client path;
+their broader parity limits remain explicit.
 
-## Verified combined checkpoint
+Two separate Windows monitor-2 runs each place two Signs with single SDK taps,
+edit all eight rows, press Done, save through the menu and reselect a distinct
+World and Player. The first passes 1,833 checks across 118 frames; the post-push
+run with unchanged native code and the current wrapper passes 2,013 checks
+across 134 frames. Each retains five fresh images and checks closure of both
+windows. The first capture's independent physical audit belongs to that capture;
+its parser-check count is not a post-push result or a coverage measure. These
+runs are not a timing or FPS comparison.
 
-The coordinator composes retained C generation and finishing with pending
-removal, ordered publication, activation and live population gates. The
-retained-provider corpus has 20 calls, five generations and 5120 ordered query
-pairs. A separate callback corpus adds successful original loads with live
-time stamping and natural population, replaying observed cache/world effects
-while C computes coordinator transitions. It retains 12 calls, 16 external
-callbacks, 394 lifecycle events, 24 inventories and four untouched controls
-per build. Decoding and terrain-feature bodies remain external.
+The direct preview fixture uses five fresh native processes for 25 returned
+draws and four terminal failures. The original caller observations use eighteen
+fresh VMs across healthy, captured-screen-Font failure and manager-Font failure
+cohorts, six per cohort. Finite field, method-site, public GL and active
+Font-buffer observations retain their own scopes. Complete native caller
+payloads and original pixels are not paired. Queued Done calls, retained old
+receivers, dirty failure producers and partial retirement have separate native
+ownership regressions.
 
-Exact-source suite times are 529.51 seconds on MSVC19.51, 1044.42 on WSL GCC13.3
-and 1044.86 on WSL Clang18.1. Each runs 47 public tests, the numerical Java oracle
-and eight original comparisons. Independent audit verifies all 55 callback
-source files against Git objects, unchanged inputs/classes, complete callback
-projections and controls, source attribution for all 24 original manifests,
-168 actual passed CTest rows and exact-head hosted checks. Its report SHA-256 is
-`ef597d13ffa27582e223bd95f692cc890e4ac48f6d4ce61d8f95c77313932b2e`.
-The initial Windows setup-unavailable attempt is preserved and excluded; the
-accepted complete fresh-world retry has zero skips. See
-[callback evidence](reference/cache-callbacks.md#exact-source-platform-checkpoint)
-for all manifests, qualification limits and the unchanged observation cap.
+The complete Windows Release build and all 1,387 configured tests pass in 654
+seconds. They retain every preceding 1,380 name plus exactly seven additions,
+with no skipped or unrun tests. All 695 native products remain unchanged during
+the sweep.
 
-[Hosted checks](https://github.com/frankischilling/minecraft-c/actions/runs/39089309334)
-pass at that exact source. Loading and population callback profiles each pass
-C/client, C/server and client/server independently. The read-only region comparison also reruns
-successfully within these suites, preserving its eight compatible cases and 41
-explicit diagnostic departures.
+[Hosted run 44052551098](https://github.com/frankischilling/minecraft-c/actions/runs/44052551098),
+attempt 1 for `cf8cb269054eb1f908f6381f4ed5db7679a61f8e`, passes all four jobs:
+Windows 1,363/1,363, GCC 1,422/1,422, Clang 1,422/1,422, and formatting of 2,546
+files. Each compiler retains every preceding test name and adds exactly seven,
+with no failed, skipped or unrun tests. These hosted configurations remain
+separate from the complete local Windows suite and local Linux selections.
 
-## Verified normal composition checkpoint
+GCC and Clang client builds and seven selected tests pass; those selections take
+3.63 and 3.21 seconds with ASan, UBSan and leak detection. Component Linux passes
+do not establish ordinary editor gameplay. The local Mesa 26 full-startup path
+still stops before the editor at an explicit unmeasured graphics-attribute
+requirement. Unrestricted play, sustained save drift, networking, original pixel
+equality, gameplay FPS and complete parity remain unqualified.
 
-Source `a08c12056a06261ed01d9f66999459f7ce9543b4` passes all 41 configured
-CTests on native MSVC19.51 and WSL GCC13.3/Clang18.1 without skips. Both Linux
-builds use ASan/UBSan. Each exact-source suite runs 35 public tests, the numerical
-Java oracle and original finishing, queue, chunk, nibble and generation
-comparisons. These counts describe this checkpoint, not later branch additions.
-The normal generator unit passes 99073 constructed contract checks.
+## Earlier checkpoints
 
-The production generation corpus uses seeds 23, 24, 26 and 51, both original
-sides and nine sequential calls per retained generator. All three pairings
-pass independently per build. Each build retains 72 complete generations,
-73728 ordered height-query pairs, 1224 stage events, 144 marker inventories and
-eight complete byte-equal untouched controls. The lossless public fixture also
-replays all eight continuous nine-call inputs on each toolchain.
+These results apply to their recorded source and scenario scopes. Earlier
+statements about unreached Sign callers do not describe the placement/editor
+increment above.
 
-Each generation manifest retains 57 unchanged attributed inputs and eight
-unchanged compiled helper classes. Independent audit verifies all 47 project
-source files against the exact commit, all complete records and world-file
-inventories, actual 41-test logs and zero CTest exits, with no skips or audit
-errors. The audit report SHA-256 is
-`9acbf7d9865b4f9817bf1125d33078895df592d7e0bae5a973f88ff62ec80843`.
-See [generation evidence](reference/generation.md#exact-source-platform-checkpoint)
-for all three capture paths, manifest hashes and finite observation conditions.
+### Loaded Signs, d572d6dc and 26e634d3
 
-[Hosted checks at a08c120](https://github.com/frankischilling/minecraft-c/actions/runs/39079200002)
-pass 36 public/numerical tests per compiler on native Windows MSVC and Linux
-GCC/Clang, plus clang-format18 for 79 C/header files. Hosted checks use no
-private originals. The [API contract](world/generation.md) documents borrowed
-ownership, current materials, finite coordinates and failure preservation.
+[Loaded Signs](world/signs.md) now reach the ordinary World renderer with actual
+TileEntity text, board/pole models, texture lookup, Java text centering and
+state-dependent bounds. Client support and removal hooks preserve drop order,
+lazy Tile lookup and retained failure ownership. Four ordinary null-World
+removal controls also cover a reviewed failure-publication crash.
 
-## Prior finishing integration
+The original/native direct-draw comparison passes 36 finite cases. Both original
+debugger modes supply 140 measurements and 140 draws whose exact UTF-16 argument
+lengths/digests, widths and coordinates match native row receipts. Original
+active Font buffers remain separate evidence; native active GL-list payloads
+and pixel equality have not been compared.
 
-Normal finishing connects local heights/direct sky, packed cached-world
-queries, original light admission, ordered queues and dirty state. Its runtime
-integration is `fa17e3d8885632ca0baecf71bdf9551e47be68eb`; the latest integrated
-finishing evidence checkpoint is `491962cfc0cce03e2572432b4ff3a00b5f2fc905`.
+The shared [whole-String lowercase hex projection](../tests/reference/core/string_lower_hex/README.md)
+admits formatted Unicode in its qualified domain, including the Sign case that
+previously stopped at the ASCII-only dependency. It conservatively refuses
+possible Locale-dependent UTF-16 insertion/removal. A genuine monitor-2
+SourceFont control passes 681 checks, preserving the reached GL/NIO prefix and
+queued glyph through that native refusal and owner retirement. Post-fix GCC
+and Clang selections pass seven and eleven tests in 35.11 and 40.38 seconds
+with ASan, UBSan and leak detection. The complete MSVC Release build and
+formatting of 2,528 files pass. All eight final monitor-2 Sign profiles pass
+7,895 checks with ordinary save/reselection and checked closure. Independent
+readback covers 48 draws and 40 selected saved Chunk/metadata copies; complete
+413-file asset inventories agree across the sweep. Pushed-Stone, Furnace and
+dense-Chest regressions pass 961, 9,710 and 971 checks. Placement and editing
+were outside that checkpoint. Sustained play and gameplay FPS remain
+unqualified.
 
-The original-only six-case capture passes at
-`.local/reference/finish-fixtures/capture-ca34ded514654e0eb6891161b3feaa50/manifest.json`.
-Each case has two consecutive full passes per original side and a fresh
-untouched control. All complete traced/control snapshot files match byte for
-byte. Public replay covers 12 original inputs, 24576 exact height-query records
-and 48 complete local/queue stages.
+At `d572d6dc`, the complete serial MSVC Release sweep passes all 1,380 tests in 1804.48
+seconds. All 1,372 preceding names remain plus exactly eight additions, with
+complete inventory/log/JUnit and Start/completion joins and no skips or unrun
+tests. All 6,601 public files and 689 native products stay unchanged during
+the sweep. The preceding local suite used four workers; these elapsed times
+are not a performance comparison. That checkpoint's validation annotations,
+admission fingerprints and CRLF declarations preserved its tested code/products.
 
-Finishing source `a18615f0d9d90758f0ea95b0218cec97733d2adf` passes all 37
-configured local CTests per compiler without skips, with Linux ASan/UBSan.
-All six finishing cases match in three pairings. The twelve untouched controls
-and 48 marker inventories pass per build. Each manifest retains 54 unchanged
-inputs and six unchanged helper classes; all 44 project source files match the
-exact commit. Constructed finishing tests pass 3259 checks; seven helper guards
-pass. See [finishing evidence](reference/finishing.md) for manifest hashes.
+The first hosted Sign run passes formatting and Windows, while GCC and Clang
+each pass 1,414 of 1,415 tests. Their sole failure is the new SourceFont control:
+it expected a committed color where the measured Mesa profile retains pending
+attributes. The corrected control snapshots and byte-checks both states through
+retirement. Its Windows control passes 681 checks; production code is unchanged.
+At `26e634d3`, [the subsequent hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/44016329965)
+passes all four jobs: Windows 1,356 tests in 598.97 seconds, GCC 1,415 in
+550.24 seconds, Clang 1,415 in 546.52 seconds, and formatting of 2,528 files.
+Every preceding name remains plus exactly eight additions, with no skipped or
+unrun tests. The checked merge tree matches that head. Hosted jobs do not
+publish JUnit XML; their complete test logs provide this hosted census.
 
-Final finishing branch source `7c82b4a861e742e717b6ea8fd9646c5611211dba` passes
-all 33 hosted public/numerical tests per compiler and formatting for 75 C/header
-files in [run39076093215](https://github.com/frankischilling/minecraft-c/actions/runs/39076093215).
-Its integration tree matches the tested tree. The
-[resulting-main checks](https://github.com/frankischilling/minecraft-c/actions/runs/39076208781)
-also pass. Earlier [run39075690802](https://github.com/frankischilling/minecraft-c/actions/runs/39075690802)
-passes the same hosted test and format counts. That finishing implementation
-branch was removed; the normal-generation and cache checkpoints followed it.
+### Fontconfig and Integer copy cursor at b30453b5
 
-The finishing wiki checkpoint was `4e4a9f3853ac8db012bca9aaf179d956e288a686`,
-with remote head and five page blobs verified. Current wiki content is versioned
-under `docs/wiki/`. README remains unchanged.
+At `b30453b5`, the [Fontconfig fix](client/render-engine.md) uses the existing
+owned configuration for default substitution on version 2.17 and newer.
+It removes the local 320-byte shutdown leak without library-wide finalization.
+The real constructor and Mesa 26 SourceFont controls pass 8,372 and 678 checks
+with leak detection enabled. The local and hosted results below qualify
+that checkpoint separately from the later Sign increment.
 
-## Scope and next work
+Integer-set copying now uses a bounded table cursor while preserving complete
+bucket/chain order and allocation history. Six selected native/order/allocator
+tests pass on each of MSVC, GCC and Clang; fresh JDK observed/control traces
+also match on all three compiler profiles. In the fixed Linux CPU cohort,
+dispersed and sparse medians decrease 5.95% and 8.47% versus the preceding
+shared-kernel version. Tree results are mixed, with a 0.35% median increase.
+The [complete measurements](performance/integer-sets.md) retain the rejected
+nested-loop trial and all raw rows. These fixed CPU workloads establish no
+gameplay FPS gain. Integration and hosted results for that checkpoint follow.
 
-The normal entry uses the same world's borrowed biome manager, a separate
-biome output preserving manager `d`, all 13 current material pairs, and finishing
-before unpublished return. Both coordinates stay within `INT32_MIN + 8` through
-`INT32_MAX - 9`. Measurements cover fresh finite headless worlds and complete
-controls; they do not establish concurrent simulation or general scheduling.
+At that `b30453b5` checkpoint, the complete MSVC Release build and all 1,380 Windows tests
+pass. The four-worker sweep takes 571.01 seconds and retains every preceding
+name, with no skips or unrun tests. Complete inventory, Start/completion and
+JUnit joins agree. All 6,602 public files and 689 native products remain
+unchanged through the sweep. Later validation annotations and current admission
+fingerprints preserve its native runtime and test code.
 
-Production observations cover persistent client `fd`/`ok`, base server `dj`/`jb`
-and actual `MinecraftServer` construction with `dp`/`he`. Successful reloads
-use genuine `mx`/`ie` save handlers and `ld`/`hb` loaders in the base-world
-contexts. The dedicated constructor/API corpus covers force gates separately
-from a running server. Pending removal, load/fallback selection, publication,
-ordered insertion, activation and natural population remain distinct effects;
-constructed recursion checks do not establish gameplay reentrancy.
-The C cache now also has a [synchronous acquisition coordinator](world/cache.md).
-The extended suite contains 3945 constructed checks recorded in development;
-its exact-source qualification is recorded above. Independent
-review matches all 231 acquisition instructions across `ok`/`jb`/`he`.
-The combined retained-provider corpus now has three original-only contexts,
-20 operations, five generated chunks, 5120 exact query pairs, 252 lifecycle
-events, 40 inventories and three byte-equal untouched controls. Lossless public
-replay and 28 Java-free guards pass on MSVC/GCC/Clang. A separate four-context
-[callback comparison](reference/cache-callbacks.md) now passes original controls
-and exact-source C comparisons for successful loads and natural population. Its
-public fixture retains 12 calls, 394 lifecycle events and 24 inventories. Its
-expanded exact-source acceptance is recorded above. Earlier source
-`9a50ac67997082c89dbc43cf4274fba1427c1565` passes all 52 selected tests without
-skips on MSVC/GCC/Clang, including seven original comparisons and Linux
-sanitizers. Independent audit verifies all 53 source objects, 63 stable inputs,
-nine helper classes and complete records per build; hosted checks pass 45 tests
-per compiler and formatting for 88 C/header files. See the
-[cache checkpoint](reference/cache.md#exact-source-platform-checkpoint).
-These finite checks
-do not establish a running server or complete cache lifecycle parity.
+[Hosted run 44025423327](https://github.com/frankischilling/minecraft-c/actions/runs/44025423327),
+attempt 1 for `b30453b5`, passes all four jobs: Windows 1,356 tests, GCC and
+Clang 1,415 each, and formatting of 2,528 files. Every preceding name remains,
+with no additions, removals, skips or unrun tests. This is the preceding
+runtime-cost checkpoint, not the later Sign test census.
 
-Successful original reloads return saved arrays unchanged while the loaded
-minimum-height field remains zero. Their callback comparison preserves that
-result without implementing a C disk decoder.
-The [read-only region inspector](reference/region.md) has a guarded development
-comparison covering all 49 queries per original side, with byte-equal controls,
-eight compatible cases and 41 explicit diagnostic departures. Exact source
-`092301ae8282d50a734df9018f791925aa9be99b` passes the original comparison on all
-three platforms; independent audit and hosted 42-test/87-file checks pass.
-See [region evidence](reference/region.md#verified-source-checkpoint).
-No region result follows from a08 alone; its acceptance uses the separately
-recorded exact source.
+### Native object identity at 4a550e57 and 2543f72e
 
-Terrain-feature population bodies, light propagation, other dimensions,
-general tick-driven saving/unloading, gameplay restart/recovery and protocol
-remain open. The synchronous lifecycle above does not complete these systems. See the
-[roadmap](roadmap.md), [testing](testing.md) and [parity matrix](parity.md).
-Earlier integrations remain in [history](history.md). M1 is complete; M2 through
-M5 remain open.
+The Tile Set snapshot declaration now uses the existing scoped MSVC C4200
+guard for standard C17 flexible arrays. This addresses the hosted VS2022 build
+failure while retaining strict diagnostics elsewhere. Local MSVC Debug Tile
+Set controls pass; MSVC/GCC/Clang preprocessing preserves all non-diagnostic
+C output. Hosted validation at `4a550e57` passes all four jobs: Windows 1,348
+tests, GCC and Clang 1,407 tests each, and formatting of 2,515 files. Every
+preceding test remains, with exactly the three identity additions and no skips
+or unrun tests. The checked merge tree matches that source head.
 
-There is no playable C client/server or supported gameplay world-loading
-workflow. Native library writes have only the finite scope recorded above. All four
-multiplayer pairings, native graphical play, controls and presentation/audio
-comparisons remain required. Original offline loopback server startup/save/stop
-passed without a client. Graphical Launcher capture remains unavailable.
-Account authentication is the only approved gameplay exception. No unanswered
-owner question blocks current work.
+The [native identity integration](reference/object-identity.md) removes the
+multiple-new-Tile compilation blocker. Final monitor-2 pushed-Stone, Furnace
+and dense-Chest scenarios pass 964, 9,540 and 1,016 checks through ordinary
+save/reselection and checked shutdown. Lazy Class-hash and collision-order
+controls add 299 checks. Final affected selections pass six Windows, nine GCC
+and twelve Clang tests, with sanitizers and leak detection on Linux.
+At `2543f72e`, the full MSVC Release build and all 1,372 Windows tests pass in 539.74
+seconds. All 1,369 preceding names remain plus exactly three additions, with
+complete inventory/log/JUnit and Start/completion joins and no skips or unrun
+tests. All 6,544 public files and 684 native products stay unchanged during
+the sweep. Formatting checks 2,515 files. Later documentation, LF normalization
+and current admission updates preserve runtime and native C harness bytes.
+The [Integer measurements](performance/integer-sets.md)
+show faster sparse copies and a remaining dispersed-operation cost; they
+establish no gameplay FPS result.
+
+### Piston activation and moving geometry
+
+[Piston activation](world/pistons.md) now reaches real Lever notifications,
+synchronous block events, push/retract bodies and Piston ticks. Nine native
+gameplay cases pass 273 checks. The [moving renderer](client/piston-rendering.md)
+matches all 27 finite original direct-draw cases, including active vertex words
+and declared retained state. A separate late lighting NULL-buffer control
+checks the drawn prefix and native cleanup. The ordinary monitor-2 empty-front
+scene passes 951 checks through extension, retraction, save and reselection.
+The later pushed-Stone scene passes 948 checks after the
+[identity Set join](reference/object-identity.md), including both moving Tiles,
+settled extension/retraction and ordinary save/reselection on monitor 2.
+Its earlier multiple-new-Tile failure remains in the historical capture.
+The approved [native identity startup](adr/0001-native-object-identity-profile.md)
+preserves lazy hashing and collection behavior while allowing concrete hashes
+and traversal order to differ from a JVM launch.
+
+The original/native activation replay matches six scenarios, 48 phases,
+94 ordered callbacks and 315 independently hashed array planes. Piston pitch
+and World Random remain separate unsaved-entropy observations. Both raw Map
+orders are retained; general Map iteration equivalence is excluded.
+
+The final affected sanitizer selection passes nineteen tests on GCC and
+twenty-two on Clang in 85.07 and 90.77 seconds. GCC's local profile has the
+client disabled; Clang also exercises CPU block/draw controls. Both enable
+ASan, UBSan and leak detection. These are selected results, not full local
+Linux sweeps or an FPS measurement. A selective preceding notification object
+fails the unchanged new acquisition-detail assertion after the actual producer
+and getter controls pass.
+
+The complete Windows Release build and all 1,369 CTests pass in 462.59 seconds.
+All 1,352 preceding names remain plus exactly seventeen additions, with unique
+inventory/log/JUnit and Start/completion joins and no skips or unrun tests.
+All 6,528 public files and 682 executables/DLLs stayed unchanged during the
+sweep. Formatting checks 2,503 C/header/fragment files. Current admission
+bindings cover 16,062 entries and 6,385 files, with five live bundles and 232
+source/helper entries. Validation annotations and admission fingerprints were
+updated afterward; runtime and native harness bytes stayed unchanged.
+
+### Expired MobSpawner ticks at c1edfca2
+
+The [MobSpawner tick](world/spawner-tick.md) now completes expired-delay
+construction, population limits, real Pig eligibility and publication, both
+particle methods and four-attempt continuation. MSVC and sanitized GCC/Clang
+each pass 518 Spawner and 277 Living-effect checks. The original packet retains
+twenty direct ticks across two ordinary JVM modes, including their differing
+entropy and success counts. Four serial monitor-2 SDK processes pass countdown,
+two genuine save/reselection runs and post-publication failure cleanup.
+Published Pigs remain distinct from the renderer's cached preview. This does
+not establish full gameplay parity, sustained play or an FPS result.
+
+At `c1edfca2`, the full Windows Release build and all 1,352 tests pass in 448.92 seconds,
+retaining every prior name plus seven additions with no skips or unrun tests.
+The complete log/inventory/JUnit joins agree, and all 6,465 public worktree
+files stayed unchanged during the sweep. GCC and Clang pass the eight-test
+affected selection in 9.11 and 9.07 seconds with sanitizers and leak detection.
+These are selected Linux results. Validation annotations and current admission
+fingerprints were updated afterward; runtime and native harness bytes stayed
+unchanged.
+
+### Loaded MobSpawner preview at af9d031d
+
+The [MobSpawner preview](client/spawner-rendering.md) now reaches actual LL/AG
+and the existing Pig renderer from a loaded Chunk. A Windows monitor-2 capture
+passes 1,236 checks and sixteen full World/HUD frames across ordinary save and
+reselection. One cached Pig is rebound to the new World. The fixture checks its
+absence from the live World Entity list and the selected saved Chunk's empty
+Entity list. The first draw compiles six model parts and later
+draws reuse them. That preview checkpoint did not qualify multi-addition
+HashSet order or Sign drawing. Full original frame equality and
+sustained-play/FPS qualification remain open.
+
+At `af9d031d`, the complete MSVC Release build and all 1,345 configured Windows tests pass in
+472.08 seconds, retaining all 1,341 preceding names with four additions and no
+skips or unrun tests. GCC 15.2 passes 29 selected sanitizer tests in 103.05
+seconds. Clang 21.1.8 passes 20 selected tests in 53.86 seconds and both corrected
+selector/recenter regressions in 1.60 seconds. Both Linux runs enable ASan,
+UBSan and leak detection. Their full local builds exhausted the 31 GB WSL
+filesystem; generated products were cleaned and only the affected targets
+rebuilt. These are selected Linux results, not full local suite passes.
+
+### Focus tracing and Fire reader at bd1a164a
+
+The [opt-in focus trace](testing/native-focus-trace.md) now records current-thread
+native focus delivery with checked hook lifetime and a bound compile/link
+receipt. Thirty-five instrumented and twenty untraced monitor-2 save/title
+cycles pass without reproducing the earlier mismatch; its cause remains
+unresolved. The [Fire reader change](testing/fire-reader-cost.md) reduces measured
+synthetic-reader elapsed time by about 85% on one Windows host while preserving
+the existing tests and validation. It provides no gameplay FPS result.
+
+At `bd1a164a`, the complete Windows Release build and all 1,341 tests pass in 454.53 seconds,
+with every configured name/ID, ordinal and Start/completion join audited and
+all preceding names retained. Four existing Fire reader/packet tests also pass
+under WSL. Final monitor-2 Furnace, Lever and Redstone Torch cycles pass with
+unchanged selected inputs/assets and checked window cleanup.
+
+
+### Retained Furnace lookup at 82a0a89d
+
+[Furnace storage and smelting](client/furnaces.md) use actual TileEntity,
+World, container and screen owners. The [retained lazy addition](world/furnace-lazy-lookup.md)
+now completes client orientation with checked Arrow/Ray ownership, preserving
+source failures and native cleanup refusals separately. At the preceding
+Furnace checkpoint `82a0a89d`, the full Windows Release build and all 1,341
+tests pass in 618.75 seconds, with every configured
+case and all 1,335 preceding Furnace names accounted for. GCC passes 27 selected
+sanitizer tests and Clang passes 28, including the retained server prefix and
+shared lookup/Arrow/Ray regressions. The final monitor-2 Furnace,
+Chest-placement and Workbench cycles pass with unchanged selected inputs/assets
+and completed window cleanup. Earlier hosted results retain their tested revisions.
+
+Copies of the earlier native Furnace save also load through the unchanged
+original client in two fresh VMs. The finite readback recovers the real saved
+Furnace and serialized Player inventory. Original saves/ticks, concrete Player
+construction, unrestricted Worlds and bidirectional round trips remain outside
+that boundary.
+
+### Chest access and placement
+
+Existing [Chest access](client/chests.md) now connects right-click activation,
+single/double inventory views, container transfers, drawing, close and saved
+World reselection. All five authored Windows monitor-2 scenarios pass, including
+90 occupied slots, blocked access and native shutdown with the screen open.
+Twelve selected Windows tests and five GCC sanitizer tests pass. A separate
+111-call original component packet qualifies declared container/screen behavior;
+it does not qualify concrete original Worlds or drawing.
+[Chest placement](world/chest-placement.md) has separate original predicate/query
+observations and native Item/SDK controls. Unrestricted play and sustained frame
+performance remain unfinished.
+
+### Storage paths and native focus
+
+The C region transport now handles long Windows target and temporary names.
+The [storage path record](world/native-storage-paths.md) covers the reproduced
+260-unit temporary-open failure, five Unicode path boundaries, replacement,
+collision ownership and fresh-cache reopen. Four focused storage tests pass on
+MSVC Release and GCC Debug with ASan/UBSan and leak detection. The Source File
+provider now shares that transport and passes long Unicode attribute,
+enumeration, rename and input-stream controls. A separate 400-unit region-output
+scenario exercises actual RAF saves and independent NBT readback. The real
+Windows client also passes authored save/title and ten reload epochs with a
+300-unit game directory on monitor 2, plus short-path controls. The
+[Frame focus listener](client/frame-canvas.md#retained-windows-focus-events)
+now preserves peer focus when dispatching an old Frame gain; a native
+200-cycle regression control passes. A separate native Canvas/SDL keyboard
+focus mismatch remains unresolved. These finite cases do not qualify
+general long-path play, original save round trips or network shares.
+
+### Quiet-setter acquisition
+
+Ordinary World setters now avoid initializing an unused successful acquisition
+diagnostic. The [quiet-setter record](performance/quiet-setter-acquisition.md)
+retains 64 measured processes and all 448 samples: the eight resident AIR no-op
+scenes show 4.635% to 10.086% lower scene-median elapsed time, with three paired
+regressions retained. Ten fresh setter controls and eight normal mutation,
+query and population observations pass. The newly compiled public harness also
+passes its two semantic smokes and 15 reader controls in both Python modes.
+The complete strict MSVC Release build and all 1,270 Windows tests pass in
+525.01 seconds, with no skips and all 6,238 inputs unchanged during validation.
+Three focused Linux tests pass with ASan, UBSan and leak detection in 19.16
+seconds; the changed C unit also passes strict GCC13 compilation. Formatting
+passes all 2,410 C files and fragments. Changed-cell throughput,
+natural-population speedup and gameplay FPS remain unqualified by this result.
+
+### Provider cache scopes
+
+Source-owned [Chunk cache scopes](performance/provider-cache-scopes.md) now use
+bounded positive hints for resident reads during callbacks. Every hint checks
+the live key and current Chunk; misses retain linear lookup and outermost full
+validation. Descriptor exports and callback scope closure follow the actual
+constructed cache owner when the replaceable Source provider field changes.
+
+Sixteen native modes cover map transitions, callback corruption, mutable
+exports and provider rebinding. One compiled test object gives thirteen exact
+old/new positive controls and three genuine old-owner failures; all sixteen
+candidate modes pass. Twelve focused Linux tests pass with ASan, UBSan and leak
+detection. The [test record](testing.md#provider-cache-scopes-and-owner-rebinding)
+keeps the source and ownership limits explicit.
+
+At the preceding cache checkpoint, the complete Windows MSVC Release build
+and all 1,268 tests passed in 460.51
+seconds, with no skips or changes to the 6,232 frozen inputs. Strict GCC checks
+cover four C units; the normal and optimized public runner controls also pass
+on both native Windows and Linux.
+
+Balanced fixed-work measurements reduce the 256-resident lookup loop from
+about 67 to 68 down to 26 to 27 ns per call; the eight-resident results are mixed. Four
+qualified monitor-2 native intervals record FPS medians of 36.85 and 38.00.
+Their work totals differ, and the small cohort establishes a performance
+opportunity rather than unrestricted smooth play. Acquisition-associated
+stalls remain. The [performance record](performance/provider-cache-scopes.md)
+retains every interval, the small-case overhead and the measured clock scope.
+
+The [Flint and Steel checkpoint](history/status-checkpoints.md#flint-and-steel-checkpoint)
+preserves the preceding original/native comparison and broader local suite.
+Its original Item/Fire/Portal construction scope remains separate from delayed
+TNT, Portal travel, sustained play and original audiovisual qualification.
+
+## Next single-player work
+
+- Complete remaining owned neighbor and entity paths reached by ordinary play.
+- Extend natural encounters, inventory interactions, travel, death/respawn and
+  save/reload scenarios beyond the existing prepared cases.
+- Validate extended Windows and Linux play, including Chunk unload/reload,
+  dimension changes, persistence and state drift.
+- Measure frame times, stutters, memory and loading on matched original/native
+  scenarios before adopting performance changes.
+
+Multiplayer interoperability and the dedicated server follow the client work.
+Account authentication is the only approved gameplay exception. A playable
+subset does not complete the original behavior inventory.
+
+Earlier results remain in [development checkpoints](history/status-checkpoints.md),
+[client runtime history](history/client-runtime.md), [population history](history/population.md)
+and [integration history](history.md). Their results apply to their own source
+and scenario scopes.

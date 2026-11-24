@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "scope": "Direct unchanged-original SS.a(I)I over actual registered Block53, Block67 and Wood5 singletons. No GL, CV inventory call or source cycle.",
+  "construction": "Initialize actual UU.m Registry, retaining all96 original registered Block owners; runtime classes SS/SS/UU checked against original JAR code source.",
+  "actual_source_field": "Reflectively read/write declared SS.a:UU. Record actual modifiers2/private and final=false, then assert actual aliases. No game source body or owner is replaced.",
+  "profiles": [
+    {"profile": 0, "outer": 53, "outer_source": 67, "inner": 67, "inner_source": 5, "wood_texture": 4},
+    {"profile": 1, "outer": 53, "outer_source": 67, "inner": 67, "inner_source": 5, "wood_texture": 83},
+    {"profile": 2, "outer": 53, "outer_source": 67, "inner": 67, "inner_source": null, "wood_texture": 83}
+  ],
+  "sides_per_profile": [0,1,2,3,4,5,-1,6,-2147483648,2147483647],
+  "mutation_order": "Before profile0 set actual53.source=67 and67.source=Wood5. Before profile1 set actualWood5.bm=83. Before profile2 set actual67.source=NULL. These authored inputs persist; no post-call repair or restoration.",
+  "observation": "Two fresh guarded ordinary VMs agree exactly; a third fresh guarded VM observed through read-only JDI agrees with both ordinary outputs. Observe actual SS/UU entry identities/arguments/source aliases, two live Code bodies and ten actual nested NPE sites/frames.",
+  "guards": "No RAW allocation, game subclass or source substitution, network connection/listener, target file writes, native links, debugger target mutation, debugger method invocation or cyclic original source chain."
+}

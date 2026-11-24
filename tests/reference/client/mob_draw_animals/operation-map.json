@@ -1,0 +1,120 @@
+{
+  "authority": "Unchanged original selected method/operation pins; authored structural metadata, no replacement bodies.",
+  "methods": [
+    {
+      "class": "me",
+      "name": "a",
+      "descriptor": "(Lwh;IF)Z",
+      "Code_bytes": 23,
+      "Code_sha256": "e31adbada73693a6663aa8413b8ed9aee83058d3423817a395383bfe1be8ceaa",
+      "operations": {
+        "3": "saddle lookup before predicates",
+        "7": "pass0 short circuit",
+        "11": "actual WH.v watcher flag",
+        "22": "return"
+      }
+    },
+    {
+      "class": "me",
+      "name": "a",
+      "descriptor": "(Lls;IF)Z",
+      "Code_bytes": 11,
+      "Code_sha256": "fd712e943eef94dd02923202940d9c8c64a89ebcd24bcb751f1dabfa79e03b7f",
+      "operations": {}
+    },
+    {
+      "class": "hh",
+      "name": "a",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 41,
+      "Code_sha256": "36ed0edb87305e797714edb34615254e3535c28b49586294d133977df5bf35ed",
+      "operations": {
+        "10": "special NN.render; its pose remains virtual",
+        "19": "horn b render",
+        "28": "horn c render",
+        "37": "udder a render"
+      }
+    },
+    {
+      "class": "hh",
+      "name": "b",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 70,
+      "Code_sha256": "402b5ad94e018941cf0fffd46df28b83c33f5e702b68e0285406e6e41d4e3660",
+      "operations": {
+        "10": "special NN.pose once",
+        "24": "b yaw copy",
+        "38": "b pitch copy",
+        "52": "c yaw copy",
+        "66": "c pitch copy"
+      }
+    },
+    {
+      "class": "td",
+      "name": "a",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 86,
+      "Code_sha256": "3035731252fc853aa76a861561923c7da355efa52d7c75c8c6fb04639932222e",
+      "operations": {
+        "19": "PS.a in a/g/h/b/c/d/e/f order",
+        "28": "PS.a in a/g/h/b/c/d/e/f order",
+        "37": "PS.a in a/g/h/b/c/d/e/f order",
+        "46": "PS.a in a/g/h/b/c/d/e/f order",
+        "55": "PS.a in a/g/h/b/c/d/e/f order",
+        "64": "PS.a in a/g/h/b/c/d/e/f order",
+        "73": "PS.a in a/g/h/b/c/d/e/f order",
+        "82": "PS.a in a/g/h/b/c/d/e/f order"
+      }
+    },
+    {
+      "class": "td",
+      "name": "b",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 149,
+      "Code_sha256": "8e9d5f02bcb50ab9a82c42ffc42f8be2f2a5c585fdd51d8644dca8fb5ae0a074",
+      "operations": {
+        "10": "negative head pitch",
+        "98": "first leg cosine",
+        "120": "second leg cosine",
+        "136": "wing e roll from actual animation third argument",
+        "145": "wing f negated roll"
+      }
+    },
+    {
+      "class": "ip",
+      "name": "c",
+      "descriptor": "(Lls;F)F",
+      "Code_bytes": 10,
+      "Code_sha256": "e93b1688eedf21cc58cf6c1057125de74d42a52c0e1121d3ac4608fbab98d378",
+      "operations": {}
+    },
+    {
+      "class": "nn",
+      "name": "a",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 68,
+      "Code_sha256": "43077f51f88cb18856f9f5d68527f55ebca619ea3f51ab79ea8fb75e28dceffe",
+      "operations": {}
+    },
+    {
+      "class": "nn",
+      "name": "b",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 116,
+      "Code_sha256": "e20895c6023c41d3166e4e46b4ad8a78ebade722df6936c8f39b6ced1d7eed26",
+      "operations": {}
+    },
+    {
+      "class": "ip",
+      "name": "a",
+      "descriptor": "(Lww;F)F",
+      "Code_bytes": 45,
+      "Code_sha256": "0305b5f580c9b92372bd64c57e8a5b2b346f5b01189b397f29ceac89f4ae8afc",
+      "operations": {
+        "36": "actual IN sine after genuine Chicken field reads",
+        "40": "plus1",
+        "43": "multiply second interpolant"
+      }
+    }
+  ]
+}

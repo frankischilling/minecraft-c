@@ -1,0 +1,14 @@
+operation	owner	member	type	value
+field	ls	F	F	3e800000
+field	ls	G	F	3c800000
+field	ls	aj	F	3f000000
+field	sn	aU	F	00000000
+field	sn	aV	F	00000000
+field_when_uw	uw	c	I	15
+field_when_ww	ww	i	I	6000
+field_when_xt	xt	l	F	3dcccccd
+invoke_when_uw	uw	e	(I)V	2
+invoke	sn	c	(DDDFF)V	8.5,64.5,8.5,30.0,0.0
+invoke	fd	b	(Lsn;)Z	actual_actor
+invoke	java.util.Random	setSeed	(J)V	profile_own_seed
+invoke	java.util.Random	setSeed	(J)V	profile_world_seed

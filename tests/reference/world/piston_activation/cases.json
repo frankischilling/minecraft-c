@@ -1,0 +1,171 @@
+{
+  "schema": "ORIGINAL_PISTON_ACTIVATION_INPUTS_V1",
+  "scope": "Direct unchanged XR.a(FD,III,NULLPlayer), synchronous original Piston event/factory descendants and declared FD.g Entity/Tile passes; no full World tick/game-loop/save/pixel/native-policy claim.",
+  "cases": [
+    {
+      "index": 0,
+      "folder": "case00",
+      "name": "normal-push",
+      "base": 33,
+      "count": 1,
+      "carried": 1,
+      "blocked": false
+    },
+    {
+      "index": 1,
+      "folder": "case01",
+      "name": "sticky-pull",
+      "base": 29,
+      "count": 1,
+      "carried": 1,
+      "blocked": false
+    },
+    {
+      "index": 2,
+      "folder": "case02",
+      "name": "twelve-push",
+      "base": 33,
+      "count": 12,
+      "carried": 1,
+      "blocked": false
+    },
+    {
+      "index": 3,
+      "folder": "case03",
+      "name": "thirteen-cap",
+      "base": 33,
+      "count": 13,
+      "carried": 1,
+      "blocked": true
+    },
+    {
+      "index": 4,
+      "folder": "case04",
+      "name": "obsidian",
+      "base": 33,
+      "count": 1,
+      "carried": 49,
+      "blocked": true
+    },
+    {
+      "index": 5,
+      "folder": "case05",
+      "name": "bedrock",
+      "base": 33,
+      "count": 1,
+      "carried": 7,
+      "blocked": true
+    }
+  ],
+  "modes": [
+    "interpreter",
+    "default"
+  ],
+  "serialized_metadata": {
+    "LevelName": "Publish",
+    "RandomSeed": 23,
+    "Time": 0,
+    "SpawnX": 0,
+    "SpawnY": 64,
+    "SpawnZ": 0,
+    "LastPlayed": 123,
+    "SizeOnDisk": 0,
+    "version": 19132,
+    "rainTime": 0,
+    "raining": 0,
+    "thunderTime": 0,
+    "thundering": 0
+  },
+  "constructor_inputs": {
+    "name": "Piston",
+    "seed": -99
+  },
+  "chunks": [
+    [
+      0,
+      0
+    ]
+  ],
+  "base_xyz": [
+    8,
+    64,
+    1
+  ],
+  "base_metadata": 3,
+  "lever_xyz": [
+    7,
+    64,
+    1
+  ],
+  "lever_id": 69,
+  "lever_metadata": 4,
+  "support_xyz": [
+    7,
+    64,
+    2
+  ],
+  "support_id": 1,
+  "carried_start_xyz": [
+    8,
+    64,
+    2
+  ],
+  "chunk_inputs": {
+    "LastUpdate": 0,
+    "TerrainPopulated": 1,
+    "SkyLight": 15,
+    "BlockLight": 0,
+    "HeightMap": 64,
+    "ground_y": 63,
+    "ground_id": 1,
+    "height_for_selected_nonair_y64": 65,
+    "other_cells": "air",
+    "Entities": [],
+    "TileEntities": []
+  },
+  "positive_calls": [
+    "activate-on",
+    "FD.g",
+    "FD.g",
+    "FD.g",
+    "activate-off",
+    "FD.g",
+    "FD.g",
+    "FD.g",
+    "quiet-FD.g",
+    "quiet-FD.g"
+  ],
+  "blocked_calls": [
+    "activate-on",
+    "quiet-FD.g",
+    "quiet-FD.g",
+    "quiet-FD.g"
+  ],
+  "extra_original_scope": "Two post-retraction quiet passes and three blocked quiet passes extend the current native fixture sequence; they are original-only observations until independently replayed.",
+  "observer": "Actual World.a(PM) registration of a passive void-callback implementation; record genuine callback arguments/order without exceptions, substitute gameplay leaves or return injection.",
+  "observations": [
+    "all selected block IDs/metadata",
+    "World c/G order and Chunk Tile map entries",
+    "retained original UK identity/fields including invalid retired roots",
+    "JQ suppression flag",
+    "World time/Entity/Player lists",
+    "all actual PM callbacks and sound name/volume/pitch bits",
+    "raw World Random seed/Gaussian cache before/after and sound callbacks"
+  ],
+  "nondeterminism_retained": [
+    "World Random state",
+    "actual Piston sound pitch bits"
+  ],
+  "cross_vm_rule": "Compare full finite structural projection excluding raw World Random state and sound pitch; retain and independently validate all excluded raw values. No RNG consumption count is inferred.",
+  "excluded": [
+    "full World tick",
+    "timer/game loop",
+    "GL/pixels",
+    "original save",
+    "JDI/live Code",
+    "complete internal call/query trace",
+    "native failure/budget equivalence",
+    "Random/clock/Source field repair",
+    "captured RNG injection"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "interpreter": {
+    "guard_warning_count": 4,
+    "caught_exception_count": 2,
+    "exception_class": "java.lang.InstantiationException",
+    "original_source_frame": {
+      "class": "jc",
+      "method": "a",
+      "file": "SourceFile",
+      "line": 62
+    },
+    "observer_source_frame": {
+      "class": "NamedFactoryObservation",
+      "method": "main",
+      "file": "NamedFactoryObservation.java",
+      "line": 107
+    }
+  },
+  "default": {
+    "guard_warning_count": 4,
+    "caught_exception_count": 2,
+    "exception_class": "java.lang.InstantiationException",
+    "original_source_frame": {
+      "class": "jc",
+      "method": "a",
+      "file": "SourceFile",
+      "line": 62
+    },
+    "observer_source_frame": {
+      "class": "NamedFactoryObservation",
+      "method": "main",
+      "file": "NamedFactoryObservation.java",
+      "line": 107
+    }
+  }
+}

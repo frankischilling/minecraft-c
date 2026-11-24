@@ -1,0 +1,52 @@
+{
+  "world_folder": "alpha",
+  "target": [
+    0,
+    64,
+    2
+  ],
+  "source_file_count": 13,
+  "seed": 123,
+  "world_time": 211,
+  "block": 62,
+  "block_metadata": 2,
+  "burn": 1397,
+  "cook": 4,
+  "tile_items": [
+    [
+      0,
+      15,
+      1,
+      0
+    ],
+    [
+      1,
+      263,
+      1,
+      0
+    ]
+  ],
+  "player_items": [
+    [
+      8,
+      265,
+      1,
+      0
+    ]
+  ],
+  "name_source": "Data.LevelName",
+  "operations": [
+    "construct actual FD/MX",
+    "load actual saved Chunk(0,0)",
+    "inspect already factory-created SK in actual Chunk Map",
+    "actual World Tile lookup and identity comparison",
+    "read actual WorldInfo.Player through IX(null).b(SP)",
+    "read selected fields only"
+  ],
+  "prohibited_operations": [
+    "tick",
+    "save",
+    "render",
+    "postconstruction field repair"
+  ]
+}

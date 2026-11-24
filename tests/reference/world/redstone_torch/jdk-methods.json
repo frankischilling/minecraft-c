@@ -1,0 +1,38 @@
+{
+  "classes": {
+    "java/util/Random": [
+      "<init>()V",
+      "<init>(J)V",
+      "next(I)I",
+      "nextFloat()F",
+      "nextDouble()D"
+    ],
+    "java/lang/Math": [
+      "random()D"
+    ],
+    "java/util/ArrayList": [
+      "<init>()V",
+      "add(Ljava/lang/Object;)Z",
+      "remove(I)Ljava/lang/Object;"
+    ],
+    "java/util/HashMap": [
+      "put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
+    ],
+    "java/util/TreeMap": [
+      "put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"
+    ],
+    "jdk/internal/misc/Unsafe": [
+      "shouldBeInitialized(Ljava/lang/Class;)Z",
+      "shouldBeInitialized0(Ljava/lang/Class;)Z"
+    ],
+    "java/lang/Math$RandomNumberGeneratorHolder": [
+      "<clinit>()V"
+    ]
+  },
+  "authority": "actual frozen JDK17.0.17 jmod/module/JVM inputs; read before compile/VM; no JDK replacement",
+  "metadata_observer": {
+    "module": "jdk.unsupported",
+    "class": "sun/misc/Unsafe",
+    "method": "shouldBeInitialized(Ljava/lang/Class;)Z"
+  }
+}

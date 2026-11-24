@@ -83,7 +83,7 @@ def record(path, maximum=None):
     return {"path": str(path), "bytes": after.st_size, "sha256": digest.hexdigest()}
 
 
-def source_module(path, name):
+def source_module(path, name, *, compile_source=compile):
     path = Path(path).resolve(strict=True)
     attributed = record(path, 2 * 1024 * 1024)
     data = path.read_bytes()
@@ -94,7 +94,7 @@ def source_module(path, name):
     old = sys.modules.get(name)
     sys.modules[name] = module
     try:
-        exec(compile(data, str(path), "exec"), module.__dict__)
+        exec(compile_source(data, str(path), "exec"), module.__dict__)
     finally:
         if old is None:
             sys.modules.pop(name, None)
@@ -103,13 +103,15 @@ def source_module(path, name):
     return module, attributed
 
 
-def shared_helper(root):
+def shared_helper(root, *, compile_source=compile):
     directory = root / "scripts/reference/caves"
-    fixture, fixture_record = source_module(directory / "fixtures.py", "_chunk_natural_fixtures")
+    fixture, fixture_record = source_module(directory / "fixtures.py", "_chunk_natural_fixtures",
+                                           compile_source=compile_source)
     old = sys.modules.get("fixtures")
     sys.modules["fixtures"] = fixture
     try:
-        helper, helper_record = source_module(directory / "compare_caves.py", "_chunk_process_helper")
+        helper, helper_record = source_module(directory / "compare_caves.py", "_chunk_process_helper",
+                                              compile_source=compile_source)
     finally:
         if old is None:
             sys.modules.pop("fixtures", None)

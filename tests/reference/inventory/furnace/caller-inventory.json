@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes_scanned": 747,
+  "scope": "Exhaustive original archive constant-pool candidates; inspect original javap for reached invoke sites. No runtime caller claim.",
+  "candidates": [
+    {
+      "class": "bm",
+      "class_sha256": "d505dd025eb851cef95f55c5d0687a925d6deb6bedb29ba41131092c8f74c283",
+      "references": [
+        {
+          "pool_index": 24,
+          "owner": "dw",
+          "name": "a",
+          "descriptor": "()V"
+        }
+      ]
+    },
+    {
+      "class": "dw",
+      "class_sha256": "6fed57e852ed35892c165d37bb0dfe6b8585a3c2aa70b791d9316868e93f0f47",
+      "references": [
+        {
+          "pool_index": 21,
+          "owner": "dw",
+          "name": "a",
+          "descriptor": "()V"
+        }
+      ]
+    }
+  ]
+}

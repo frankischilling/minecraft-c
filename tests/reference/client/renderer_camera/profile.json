@@ -1,0 +1,20 @@
+{
+  "gl_profile": [
+    "GL_VENDOR NVIDIA Corporation",
+    "GL_RENDERER NVIDIA GeForce RTX 3060/PCIe/SSE2",
+    "GL_VERSION 4.6.0 NVIDIA 581.42"
+  ],
+  "original_repeat_bit_identical": true,
+  "camera_rows": 36,
+  "field_rows": 36,
+  "fixture_sha256": "e7bcf78f15d360ecea3de9fb2d731d61ce840f7a6d0764ea3f5c3139073b1ce2",
+  "original_stdout_sha256": [
+    "f3ac0fcd64e6af34e80dfb665c3e3e3a42041adfbb2bc0186d22098c56a49197",
+    "bddf8ffbd01ad721d0cd2e5786a902db85128e8b24311c3ebb446e296a958fd8"
+  ],
+  "matrix_policy": {
+    "absolute_coefficient_limit": 2e-06,
+    "bit_exact_driver_claim": false,
+    "basis": "Existing explicit first-person native float matrix policy; every new case records actual coefficient differences, never an unlabelled driver equality claim."
+  }
+}

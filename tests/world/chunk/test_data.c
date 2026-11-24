@@ -30,8 +30,7 @@ _Static_assert(MC_CHUNK_BLOCKS == 32768u, "normal block count");
 _Static_assert(MC_CHUNK_NIBBLE_BYTES == 16384u, "normal packed array size");
 _Static_assert(MC_CHUNK_HEIGHTMAP_BYTES == 256u, "normal heightmap size");
 
-static int test_initialization(void)
-{
+static int test_initialization(void) {
     memset(&data, 0xa5, sizeof(data));
     for (size_t i = 0; i < sizeof(blocks); ++i) {
         blocks[i] = (uint8_t)(i * 37u + 19u);
@@ -75,23 +74,20 @@ static int test_initialization(void)
     return 0;
 }
 
-static void save_state(void)
-{
+static void save_state(void) {
     memcpy(&saved_data, &data, sizeof(data));
     memcpy(saved_blocks, blocks, sizeof(blocks));
     memcpy(saved_opacity, opacity, sizeof(opacity));
 }
 
-static int check_state_unchanged(void)
-{
+static int check_state_unchanged(void) {
     CHECK(memcmp(&data, &saved_data, sizeof(data)) == 0);
     CHECK(memcmp(blocks, saved_blocks, sizeof(blocks)) == 0);
     CHECK(memcmp(opacity, saved_opacity, sizeof(opacity)) == 0);
     return 0;
 }
 
-static int test_initialization_failures(void)
-{
+static int test_initialization_failures(void) {
     memset(&data, 0xa5, sizeof(data));
     memset(blocks, 0x39, sizeof(blocks));
     save_state();
@@ -107,8 +103,7 @@ static int test_initialization_failures(void)
     return 0;
 }
 
-static int test_rebuild_failures(void)
-{
+static int test_rebuild_failures(void) {
     CHECK(mc_chunk_data_init(&data, blocks, sizeof(blocks)));
     memset(data.metadata, 0x27, sizeof(data.metadata));
     memset(data.skylight, 0xb6, sizeof(data.skylight));
@@ -151,8 +146,7 @@ static int test_rebuild_failures(void)
     return 0;
 }
 
-static int test_opacity_and_preservation(void)
-{
+static int test_opacity_and_preservation(void) {
     memset(blocks, 0, sizeof(blocks));
     blocks[MC_CHUNK_BLOCKS] = 0x7d;
     blocks[MC_CHUNK_BLOCKS + 1u] = 0x94;
@@ -194,8 +188,7 @@ static int test_opacity_and_preservation(void)
     return 0;
 }
 
-static int test_nibble_failures(void)
-{
+static int test_nibble_failures(void) {
     memset(packed, 0xa7, sizeof(packed));
     memcpy(saved_packed, packed, sizeof(packed));
     uint8_t out = 0xc3;
@@ -229,8 +222,7 @@ static int test_nibble_failures(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_initialization() || test_initialization_failures() || test_rebuild_failures() ||
         test_opacity_and_preservation() || test_nibble_failures()) {
         return 1;

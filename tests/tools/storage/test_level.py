@@ -18,6 +18,12 @@ from unittest.mock import patch
 import zlib
 
 ROOT = Path(__file__).resolve().parents[3]
+import sys
+sys.path.insert(0, str(ROOT / "tests/support"))
+try:
+    from attributed_project import AttributedProject
+finally:
+    sys.path.pop(0)
 DIRECTORY = ROOT/'scripts/reference/storage'
 sys.path.insert(0, str(DIRECTORY))
 import compare_level as level
@@ -313,6 +319,7 @@ class LevelExecutionGuards(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve()
         self.common, self.executed = level.helpers()
+        self.project = AttributedProject(level, self.root / "attributed-project", ('tests/reference/storage/LevelObservation.java', 'tests/storage/level/level_probe.c'))
         self.java = self.root/'jdk/bin/java'
         self.java.parent.mkdir(parents=True)
         self.tools = {}
@@ -341,7 +348,7 @@ class LevelExecutionGuards(unittest.TestCase):
 
     def run_main(self, versions, runner=None):
         self.original_record = self.common.file_record
-        with patch.dict(os.environ, {name: '' for name in level.JAVA_ENVIRONMENT}), \
+        with self.project, patch.dict(os.environ, {name: '' for name in level.JAVA_ENVIRONMENT}), \
              patch.object(level, 'helpers', return_value=(self.common, self.executed)), \
              patch.object(self.common, 'runtime_tools', return_value=self.tools), \
              patch.object(self.common, 'file_record', side_effect=self.record), \
@@ -404,7 +411,8 @@ class LevelExecutionGuards(unittest.TestCase):
             for name in ('java', 'javac', 'javap'):
                 args += ['--'+name, str(self.tools[name])]
         stdout, stderr = io.StringIO(), io.StringIO()
-        with patch.dict(os.environ, {name: '' for name in level.JAVA_ENVIRONMENT}), \
+        project = self.project if level.ROOT == ROOT else contextlib.nullcontext()
+        with project, patch.dict(os.environ, {name: '' for name in level.JAVA_ENVIRONMENT}), \
              patch.object(level, 'helpers', return_value=(self.common, self.executed)), \
              patch.object(self.common, 'runtime_tools', side_effect=self.common.Unavailable('missing synthetic JDK') if missing else None, return_value=self.tools), \
              patch.object(self.common, 'file_record', side_effect=self.record), \

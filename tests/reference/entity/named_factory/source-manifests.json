@@ -1,0 +1,220 @@
+{
+  "source_before": {
+    "alpha/level.dat": {
+      "bytes": 405,
+      "sha256": "cecb353b393c68ba2f9f716a3b5bee6ff5f57ea708d6ed6f77a8babd6bc2d5eb"
+    },
+    "alpha/level.dat_old": {
+      "bytes": 405,
+      "sha256": "9b1a821cf75cfb2fc37f5ba407e46c113d01eeca4d16bec1b63cf9d055996d18"
+    },
+    "alpha/preserve-chunk.dat": {
+      "bytes": 34,
+      "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+    },
+    "alpha/region/r.-1.-1.mcr": {
+      "bytes": 475136,
+      "sha256": "e990e185dd6958849dc276f526198279fc315d62e28d3214930c2cbffc1538ee"
+    },
+    "alpha/region/r.-1.0.mcr": {
+      "bytes": 368640,
+      "sha256": "c18288c885c4f0d2190baea06ad92f2eda41ad2c8195f2e2d40f68d248036e57"
+    },
+    "alpha/region/r.0.-1.mcr": {
+      "bytes": 495616,
+      "sha256": "d2e8dc216f834e4fd455b2472a03a9ead0c618b908b85272620260366a1fe9e7"
+    },
+    "alpha/region/r.0.0.mcr": {
+      "bytes": 401408,
+      "sha256": "ede7c23e6fb58983dfff78805a130b879a37911fbd3b9a1249c6157aef03d567"
+    },
+    "alpha/region/r.9.9.mcr": {
+      "bytes": 8192,
+      "sha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+    },
+    "alpha/session.lock": {
+      "bytes": 8,
+      "sha256": "f0458d4e168a8216361aabd1a9f499a0f8790bd1f2b62321d83eb307129cec49"
+    },
+    "bravo/level.dat_old": {
+      "bytes": 131,
+      "sha256": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c"
+    },
+    "bravo/preserve-chunk.dat": {
+      "bytes": 34,
+      "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+    },
+    "older/level.dat": {
+      "bytes": 141,
+      "sha256": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea"
+    },
+    "older/preserve-chunk.dat": {
+      "bytes": 34,
+      "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+    }
+  },
+  "source_after": {
+    "alpha/level.dat": {
+      "bytes": 405,
+      "sha256": "cecb353b393c68ba2f9f716a3b5bee6ff5f57ea708d6ed6f77a8babd6bc2d5eb"
+    },
+    "alpha/level.dat_old": {
+      "bytes": 405,
+      "sha256": "9b1a821cf75cfb2fc37f5ba407e46c113d01eeca4d16bec1b63cf9d055996d18"
+    },
+    "alpha/preserve-chunk.dat": {
+      "bytes": 34,
+      "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+    },
+    "alpha/region/r.-1.-1.mcr": {
+      "bytes": 475136,
+      "sha256": "e990e185dd6958849dc276f526198279fc315d62e28d3214930c2cbffc1538ee"
+    },
+    "alpha/region/r.-1.0.mcr": {
+      "bytes": 368640,
+      "sha256": "c18288c885c4f0d2190baea06ad92f2eda41ad2c8195f2e2d40f68d248036e57"
+    },
+    "alpha/region/r.0.-1.mcr": {
+      "bytes": 495616,
+      "sha256": "d2e8dc216f834e4fd455b2472a03a9ead0c618b908b85272620260366a1fe9e7"
+    },
+    "alpha/region/r.0.0.mcr": {
+      "bytes": 401408,
+      "sha256": "ede7c23e6fb58983dfff78805a130b879a37911fbd3b9a1249c6157aef03d567"
+    },
+    "alpha/region/r.9.9.mcr": {
+      "bytes": 8192,
+      "sha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+    },
+    "alpha/session.lock": {
+      "bytes": 8,
+      "sha256": "f0458d4e168a8216361aabd1a9f499a0f8790bd1f2b62321d83eb307129cec49"
+    },
+    "bravo/level.dat_old": {
+      "bytes": 131,
+      "sha256": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c"
+    },
+    "bravo/preserve-chunk.dat": {
+      "bytes": 34,
+      "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+    },
+    "older/level.dat": {
+      "bytes": 141,
+      "sha256": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea"
+    },
+    "older/preserve-chunk.dat": {
+      "bytes": 34,
+      "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+    }
+  },
+  "copies_after": {
+    "interpreter": {
+      "alpha/level.dat": {
+        "bytes": 405,
+        "sha256": "cecb353b393c68ba2f9f716a3b5bee6ff5f57ea708d6ed6f77a8babd6bc2d5eb"
+      },
+      "alpha/level.dat_old": {
+        "bytes": 405,
+        "sha256": "9b1a821cf75cfb2fc37f5ba407e46c113d01eeca4d16bec1b63cf9d055996d18"
+      },
+      "alpha/preserve-chunk.dat": {
+        "bytes": 34,
+        "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+      },
+      "alpha/region/r.-1.-1.mcr": {
+        "bytes": 475136,
+        "sha256": "e990e185dd6958849dc276f526198279fc315d62e28d3214930c2cbffc1538ee"
+      },
+      "alpha/region/r.-1.0.mcr": {
+        "bytes": 368640,
+        "sha256": "c18288c885c4f0d2190baea06ad92f2eda41ad2c8195f2e2d40f68d248036e57"
+      },
+      "alpha/region/r.0.-1.mcr": {
+        "bytes": 495616,
+        "sha256": "d2e8dc216f834e4fd455b2472a03a9ead0c618b908b85272620260366a1fe9e7"
+      },
+      "alpha/region/r.0.0.mcr": {
+        "bytes": 401408,
+        "sha256": "ede7c23e6fb58983dfff78805a130b879a37911fbd3b9a1249c6157aef03d567"
+      },
+      "alpha/region/r.9.9.mcr": {
+        "bytes": 8192,
+        "sha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+      },
+      "alpha/session.lock": {
+        "bytes": 8,
+        "sha256": "ea2eee1dfc090bd694a57cf2fdb5b32ded2f621f4f4dd71fd016d88093a27a1f"
+      },
+      "bravo/level.dat_old": {
+        "bytes": 131,
+        "sha256": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c"
+      },
+      "bravo/preserve-chunk.dat": {
+        "bytes": 34,
+        "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+      },
+      "older/level.dat": {
+        "bytes": 141,
+        "sha256": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea"
+      },
+      "older/preserve-chunk.dat": {
+        "bytes": 34,
+        "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+      }
+    },
+    "default": {
+      "alpha/level.dat": {
+        "bytes": 405,
+        "sha256": "cecb353b393c68ba2f9f716a3b5bee6ff5f57ea708d6ed6f77a8babd6bc2d5eb"
+      },
+      "alpha/level.dat_old": {
+        "bytes": 405,
+        "sha256": "9b1a821cf75cfb2fc37f5ba407e46c113d01eeca4d16bec1b63cf9d055996d18"
+      },
+      "alpha/preserve-chunk.dat": {
+        "bytes": 34,
+        "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+      },
+      "alpha/region/r.-1.-1.mcr": {
+        "bytes": 475136,
+        "sha256": "e990e185dd6958849dc276f526198279fc315d62e28d3214930c2cbffc1538ee"
+      },
+      "alpha/region/r.-1.0.mcr": {
+        "bytes": 368640,
+        "sha256": "c18288c885c4f0d2190baea06ad92f2eda41ad2c8195f2e2d40f68d248036e57"
+      },
+      "alpha/region/r.0.-1.mcr": {
+        "bytes": 495616,
+        "sha256": "d2e8dc216f834e4fd455b2472a03a9ead0c618b908b85272620260366a1fe9e7"
+      },
+      "alpha/region/r.0.0.mcr": {
+        "bytes": 401408,
+        "sha256": "ede7c23e6fb58983dfff78805a130b879a37911fbd3b9a1249c6157aef03d567"
+      },
+      "alpha/region/r.9.9.mcr": {
+        "bytes": 8192,
+        "sha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+      },
+      "alpha/session.lock": {
+        "bytes": 8,
+        "sha256": "034de57dc218cd71eae14c54acf7c274a552074ffe4ca214f98264578abcbd51"
+      },
+      "bravo/level.dat_old": {
+        "bytes": 131,
+        "sha256": "c2c0ffdf883a87ddfbce9f9e4711be1a6bc8c8bf0b24c81a79fd680f9584146c"
+      },
+      "bravo/preserve-chunk.dat": {
+        "bytes": 34,
+        "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+      },
+      "older/level.dat": {
+        "bytes": 141,
+        "sha256": "465bf25f91ff7ce43612311439d8f2d84d1bc3b0366e170e59509d8b35a6daea"
+      },
+      "older/preserve-chunk.dat": {
+        "bytes": 34,
+        "sha256": "5105b8d9b0666eca3a326c05a33a1027e06331d309b9a1979ed8a218e4e104bb"
+      }
+    }
+  }
+}

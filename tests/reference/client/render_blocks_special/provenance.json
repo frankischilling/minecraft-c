@@ -1,0 +1,46 @@
+{
+  "status": "CAPTURED_ORIGINAL",
+  "rows": 125,
+  "geometry_successes": 117,
+  "source_failure_prefixes": 8,
+  "platform": "Windows x64",
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\n",
+  "javac_version": "javac 17.0.17\n",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "execution_flags": [
+    "-Xint",
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow"
+  ],
+  "helper_sha256": {
+    "PlantObservation$1.class": "9207fd09b541a9067c176ae4236994d645c83c37342b7a5d4159a58d43fbd96f",
+    "PlantObservation.class": "09de75ac517e9a520aa05378beeba8bd5bc4d48b4a082ad9671070673acf4629"
+  },
+  "original_receipt": {
+    "exit": 0,
+    "timeout_seconds": 60,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 281496,
+    "stderr_bytes": 386,
+    "stdout_sha256": "6416610ce912c40313f27ca10bcf67dd3b98985ee8a06510c4d3a1a079fd391d",
+    "stderr_sha256": "8dd267fb293d35b4787f76bee6628286a3a50da1099d40dcf73a01a4a08206ce",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576
+  },
+  "finite_sha256": "1704a6adff4e51396f447d0375fdaac8e080a0217910cf801d52b829e50f38f6",
+  "scope": "Direct unchanged cv.a(Block,int,DDD) and NW CPU only; cv.i/jitter/anaglyph/World/DK/GL/pixels excluded.",
+  "external_attempts": {
+    "network": 0,
+    "native_links": 0,
+    "writes": 0,
+    "draw": 0
+  },
+  "source_inputs_unchanged": true,
+  "helper_unchanged": true,
+  "native_replay": "separate acceptance; not established by original capture"
+}

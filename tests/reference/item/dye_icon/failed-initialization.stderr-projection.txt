@@ -1,0 +1,15 @@
+WARNING: A terminally deprecated method in java.lang.System has been called
+WARNING: System::setSecurityManager has been called by DyeIconObservation (file:/[private-helper-classes]/)
+WARNING: Please consider reporting this to the maintainers of DyeIconObservation
+WARNING: System::setSecurityManager will be removed in a future release
+Exception in thread "main" java.lang.ExceptionInInitializerError
+	at jl.<clinit>(SourceFile:65)
+	at uu.<clinit>(SourceFile:223)
+	at wc.<clinit>(SourceFile:6)
+	at gm.<clinit>(SourceFile:61)
+	at DyeIconObservation.main(DyeIconObservation.java:19)
+Caused by: java.lang.NullPointerException: Cannot read field "bf" because "<parameter1>" is null
+	at iz.<init>(SourceFile:38)
+	at ny.<init>(SourceFile:17)
+	at ep.<clinit>(SourceFile:20)
+	... 5 more

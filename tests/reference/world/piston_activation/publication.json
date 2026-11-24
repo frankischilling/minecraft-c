@@ -1,0 +1,58 @@
+{
+  "schema": "PISTON_ACTIVATION_PUBLICATION_V1",
+  "kind": "postexecution-finite-projection",
+  "files": {
+    "ConstructorJson.java": {
+      "bytes": 1571,
+      "sha256": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3"
+    },
+    "PistonActivationObservation.java": {
+      "bytes": 11914,
+      "sha256": "031c22d90892b600613557cbd0238aaf37b546a1897f18c31cfa390f88b34b24"
+    },
+    "README.md": {
+      "bytes": 4301,
+      "sha256": "0ba1e8a3336a24a32c5ec2993921d25510fc64006719e39301f5db1ae9b60ce5"
+    },
+    "authored-worlds.json": {
+      "bytes": 5004,
+      "sha256": "fda2b3f14afdef17af84e2bf3a92ccc31ccf7b13012d0b820eb0448c8125fbab"
+    },
+    "cases.json": {
+      "bytes": 4104,
+      "sha256": "3bbfedc2eddb10d1d81bfc15fe5ee418ec323bfc331e0b43eff398ded47d35df"
+    },
+    "native-observations.json": {
+      "bytes": 594563,
+      "sha256": "04bcd99725a3c07d8eb3454fd5a8db18f4e1a16b1f352ccf301fedd78d1a9b18"
+    },
+    "observations.json": {
+      "bytes": 1399003,
+      "sha256": "1a7a26df39885b7faf38968c26d23647a4a30e84a861c69b8ffc943c038c98b5"
+    },
+    "packet.py": {
+      "bytes": 13870,
+      "sha256": "1d7fab5cb4aeef90f4316847d45bb835320600fb9548010bc6f1ea7eaf4ebf17"
+    },
+    "profiles.tsv": {
+      "bytes": 204,
+      "sha256": "b1a3ac41691cdf838bc97f1a5ab10e31cf2b4176c5083d440b2ef34eb43ce843"
+    },
+    "provenance.json": {
+      "bytes": 27927,
+      "sha256": "42df01e8988c0801226069aaedde457e69ed48375f1dc3164f2071d4f27f00c9"
+    },
+    "source-pins.json": {
+      "bytes": 134553,
+      "sha256": "ecc4099ed1d4f0f79798715b8199c6cb0dd8f6a7909f6597543ab74de8efb3fc"
+    },
+    "test_packet.py": {
+      "bytes": 12217,
+      "sha256": "69d25c51dd7a7843a1131c8ac6a6c4e1baa074f6efc2f794525b75623d739176"
+    },
+    "write_world.py": {
+      "bytes": 5420,
+      "sha256": "b2b1a16da016f25850e90759a35b70b1b1d140f320c3e44e28be277bef335f2c"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "scope": "Private predecessor history only; not a fresh public capture",
+  "first_capture": {
+    "status": "FAIL",
+    "receipt_sha256": "9560ec76ba4c8ec5e9f859db8650c85b6a3c21019e51f8db14ff857f78ba6f82",
+    "cause": "normal auditor lacked accounting for four constructed-but-unpublished HL cases"
+  },
+  "separate_accounted": {
+    "status": "PASS_WITH_UNOBSERVED_ENTITY_FRONTIER",
+    "receipt_sha256": "358b5c6547ad9da1034469de2a8c650709871bf1c0bcbf074553fe2415bc4e52",
+    "full_entropy_qualification": false,
+    "Source_processes": 8,
+    "logical_rows": 406
+  },
+  "public_capture": "See separate fresh capture.json after execution; these predecessor summaries are never the fresh cohort.",
+  "no_private_raw_capture_copied": true
+}

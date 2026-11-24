@@ -1,0 +1,73 @@
+{
+  "schema": "PLAYER_DAMAGE_WAKE_PROVENANCE_V1",
+  "status": "PASS_ORIGINAL_CPU_COMPONENTS_ONLY",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "finite_sha256": "8bd7000380dcef986303eab1d505d25026e2e86c2fd7efc1378f5a7e2b5ae449",
+  "public_source_sha256": {
+    "PlayerDamageWakeObservation.java": "a2c6df84392ce30849c34eeeb674eb21544b4c91cea47d31456cc89e6f381fc8",
+    "capture_reference.py": "42b2692fe87aac6ece5cfa8b19d9ba8177c7807aa187c4b236b9b8ea27df7e0f",
+    "packet.py": "83ff48d7800ec2be9b893ebdce040f2998d8ac785b8ec502a9e0e23772f9a9d5",
+    "profiles.tsv": "cfdd291461c5429465378076e259a5a159449bda56dd3e992151249ca04ae66b",
+    "source-pins.json": "e4a33d4b33c3f259752962a6fa23fa8fd917b5a1d0dc3055c2cb24aff50f8621"
+  },
+  "support_sha256": {
+    "capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "classfile.py": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60",
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3"
+  },
+  "binary_sha256": {
+    "client": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+  },
+  "helper_sha256": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "PlayerDamageWakeObservation$Guard.class": "d8f4514d89f717720edc16f79176ed57bc486e36ecf253f3920f15a2c13ee84a",
+    "PlayerDamageWakeObservation$Observer.class": "cdc6d8e926a1d52d305c08b75eb599fef548d36ca17cbaf5cef8ee575de76efc",
+    "PlayerDamageWakeObservation.class": "afe16cd0c098beb59c453265d36082c66faea673673f481f0a375841ad000ad0"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-0.stdout",
+      "stderr_file": "original-0.stderr",
+      "stdout_bytes": 106174,
+      "stderr_bytes": 399,
+      "stdout_sha256": "39a0fcb73f12c22bc15a4a85f668ee8fdd4fcecd1e79d2e8d0517a5515948793",
+      "stderr_sha256": "a0629a2068974256363de1ae5df06b1a85c7771811afad0cac97cc27b71fecca",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    {
+      "exit": 0,
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-1.stdout",
+      "stderr_file": "original-1.stderr",
+      "stdout_bytes": 106174,
+      "stderr_bytes": 399,
+      "stdout_sha256": "39a0fcb73f12c22bc15a4a85f668ee8fdd4fcecd1e79d2e8d0517a5515948793",
+      "stderr_sha256": "a0629a2068974256363de1ae5df06b1a85c7771811afad0cac97cc27b71fecca",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  ],
+  "rows_per_vm": 32,
+  "returns_per_vm": 25,
+  "exceptions_per_vm": 7,
+  "selected_scalars_per_vm": 4794,
+  "input_unchanged": true,
+  "helpers_unchanged": true
+}

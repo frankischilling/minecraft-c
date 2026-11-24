@@ -1,0 +1,64 @@
+{
+  "format": 1,
+  "profiles": 66,
+  "integer_fields": [
+    "mode_wrapper0_primitive1",
+    "registered_block_id",
+    "metadata_nibble",
+    "light_0dark_1sky15_2block15",
+    "emission_element_or_INT_MIN_original",
+    "bm_delta_java_wrap",
+    "texture_override",
+    "nullable_0none_1cache_2block_3material_4cache_and_block",
+    "bounds_index",
+    "rotation",
+    "flip",
+    "retained_ao",
+    "primitive_geometry_index"
+  ],
+  "coordinates": [
+    8,
+    64,
+    8
+  ],
+  "world_seed": 23,
+  "sky_subtraction": 3,
+  "original_fields_restored": [
+    "registered Block bm",
+    "registered Block material",
+    "UU.s[selected actual bn]"
+  ],
+  "NW": "One genuine begin, genuine b(DDD) translation(-.25,.5,-.75), unchanged constructor array length2097152, no draw/backing replacement. Authored 2M-word prior scratch array is independent observer memory. Every non-emitted actual word is checked against the prior array in each VM.",
+  "emission": "Actual static final UU.s array retained; only declared selected element mutation before source calls, restored after. INT_MIN profile operand means preserve original element, not write INT_MIN. No final-array replacement.",
+  "primitive_geometry": [
+    [
+      8,
+      64,
+      8,
+      0,
+      0
+    ],
+    [
+      -0.5,
+      -0.5,
+      -0.5,
+      0,
+      0
+    ],
+    [
+      "negative-zero",
+      "negative-zero",
+      "negative-zero",
+      "negative-zero",
+      "positive-zero"
+    ],
+    [
+      1.25,
+      -2.5,
+      3.75,
+      "float32 .4 widened",
+      "float32 -.4 widened"
+    ]
+  ],
+  "genuine_owners": "FD/MX/four loaded LM/EW/CV/NW; real registered VM50 and DB75/76; no gamebody replacement, RAW owner or fake World/cache."
+}

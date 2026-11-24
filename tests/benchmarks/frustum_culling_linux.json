@@ -1,0 +1,36 @@
+{
+  "baseline_commit": "fc7a5245d6b7956c0fd3fe1567956bccc8ad7a62",
+  "host": "Intel Core i9-10900F, WSL2 6.6.87.2-microsoft-standard-WSL2, logical CPU 0",
+  "compiler": "GCC 15.2.0, C17 -O3 -DNDEBUG -Wall -Wextra -Wpedantic -Werror",
+  "clock": "CLOCK_MONOTONIC, nanoseconds",
+  "scope": "Production chunk-culling loop, authored boxes and planes, 1100 passes per case. No GL, world ticks, or gameplay FPS.",
+  "order": "Baseline first in odd pairs and candidate first in even pairs. Each row lists baseline then candidate.",
+  "case_order": ["steady", "sweep"],
+  "common_work": [
+    {"case": "steady", "visited": 4505600, "tested": 244603, "throttled": 3616397, "digest": "235af3fc761888c4"},
+    {"case": "sweep", "visited": 4505600, "tested": 1766917, "throttled": 2094083, "digest": "304844214d717aa6"}
+  ],
+  "sha256": {
+    "harness": "d5cba6180cadae179dd069159074c9d9be89e7558b2ee989c0c32cd762e79ded",
+    "baseline_elf": "3f87630c96bddc8802541dccc4c918342470e11893ef53d694d9eb3a2d2fc099",
+    "candidate_elf": "757568402ac03a3b25c34996b19ae2a78b2d9b7783e770a616790cfb841d644d",
+    "candidate_frustum": "29b0d4539c2bb168fe528aa0450257bc54f8cb6dd5bf6fdd4c4458bb530401d6",
+    "candidate_culling": "fbaa16b5a9c4a41ca175eeabe4f543e2afb41e79e6fdcd58442a3f1c27c15012",
+    "candidate_internal_header": "e8c8bf205aa9e2c8b61814996cdf4d8a65d29b78d90594386cab7eefb3e5016a"
+  },
+  "warmup_ns": [[48706501, 166854003], [30092400, 56066701]],
+  "paired_ns": [
+    [[44642101, 153459003], [29457300, 55294001]],
+    [[43811101, 151925403], [28577101, 57931301]],
+    [[43158400, 155088103], [28168301, 53542101]],
+    [[44370001, 150087403], [29027600, 53631501]],
+    [[42604801, 153206502], [28509501, 53327501]],
+    [[42161101, 144202403], [28427000, 53145001]],
+    [[42005701, 159674202], [28815900, 54319101]],
+    [[42394700, 147565003], [28425601, 53228501]],
+    [[43415301, 151016103], [29753700, 55384901]],
+    [[42444100, 166157803], [28408401, 53085601]],
+    [[43255201, 145487903], [29564600, 54806601]],
+    [[41992201, 158638603], [28962001, 55729701]]
+  ]
+}

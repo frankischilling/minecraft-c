@@ -1,0 +1,148 @@
+{
+  "schema": "PISTON_ACTIVATION_AUTHORED_INPUTS_V1",
+  "files": {
+    "case00/level.dat": {
+      "bytes": 164,
+      "sha256": "605bb4ab55d3a7d2f4437571ba4950e38e53666ca866807cd2d7800c463d0772"
+    },
+    "case00/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "a7d21f486769043b0270122deec496525323a94cb0e223837769e01b264f82b3"
+    },
+    "case00/session.lock": {
+      "bytes": 8,
+      "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+    },
+    "case01/level.dat": {
+      "bytes": 164,
+      "sha256": "605bb4ab55d3a7d2f4437571ba4950e38e53666ca866807cd2d7800c463d0772"
+    },
+    "case01/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "240bea7653a8e10d81f189a59174c1c0a103bd4a493462e32ae0967c54fe3a9a"
+    },
+    "case01/session.lock": {
+      "bytes": 8,
+      "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+    },
+    "case02/level.dat": {
+      "bytes": 164,
+      "sha256": "605bb4ab55d3a7d2f4437571ba4950e38e53666ca866807cd2d7800c463d0772"
+    },
+    "case02/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "b2f4fbac549615ec1b3fdd1b472d67bfbc63d5f75ac51c4058c1d04cff6b2afc"
+    },
+    "case02/session.lock": {
+      "bytes": 8,
+      "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+    },
+    "case03/level.dat": {
+      "bytes": 164,
+      "sha256": "605bb4ab55d3a7d2f4437571ba4950e38e53666ca866807cd2d7800c463d0772"
+    },
+    "case03/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "5a21535b06f6e87ebca4f47a667e369bc91b8a3362b8b975a3969eb291af7250"
+    },
+    "case03/session.lock": {
+      "bytes": 8,
+      "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+    },
+    "case04/level.dat": {
+      "bytes": 164,
+      "sha256": "605bb4ab55d3a7d2f4437571ba4950e38e53666ca866807cd2d7800c463d0772"
+    },
+    "case04/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "ce7f8e40ff0006cf8ae53f5bc25c5ab14bc4a942541087f1bf2663b63782f78a"
+    },
+    "case04/session.lock": {
+      "bytes": 8,
+      "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+    },
+    "case05/level.dat": {
+      "bytes": 164,
+      "sha256": "605bb4ab55d3a7d2f4437571ba4950e38e53666ca866807cd2d7800c463d0772"
+    },
+    "case05/region/r.0.0.mcr": {
+      "bytes": 12288,
+      "sha256": "ffb7f7582db2efb15f5ff6a9bf59ea4c4609f96b9f7b2c9b9e766ccec98f5a83"
+    },
+    "case05/session.lock": {
+      "bytes": 8,
+      "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc"
+    }
+  },
+  "directories": [
+    "case00",
+    "case00/data",
+    "case00/region",
+    "case01",
+    "case01/data",
+    "case01/region",
+    "case02",
+    "case02/data",
+    "case02/region",
+    "case03",
+    "case03/data",
+    "case03/region",
+    "case04",
+    "case04/data",
+    "case04/region",
+    "case05",
+    "case05/data",
+    "case05/region"
+  ],
+  "payloads": {
+    "case00/level.dat": {
+      "bytes": 222,
+      "sha256": "081ecc9bfc1793c0e6a0efe40c7a907e63701b6440086a61d669994fd7e5ea32"
+    },
+    "case00/region/r.0.0.mcr#0,0": {
+      "bytes": 82360,
+      "sha256": "aa8a676694092140cfe40fe65f40571848c23fdc782c081e258ceb662abf08b2"
+    },
+    "case01/level.dat": {
+      "bytes": 222,
+      "sha256": "081ecc9bfc1793c0e6a0efe40c7a907e63701b6440086a61d669994fd7e5ea32"
+    },
+    "case01/region/r.0.0.mcr#0,0": {
+      "bytes": 82360,
+      "sha256": "c4ad2a2e50caf44bfa0de872e7141147f163a161bd0e29c0611cf59a866d9588"
+    },
+    "case02/level.dat": {
+      "bytes": 222,
+      "sha256": "081ecc9bfc1793c0e6a0efe40c7a907e63701b6440086a61d669994fd7e5ea32"
+    },
+    "case02/region/r.0.0.mcr#0,0": {
+      "bytes": 82360,
+      "sha256": "8f754e2d315630b4c65a029f76f29f6e4957465ebb375d56e4cfe55fe09a14ec"
+    },
+    "case03/level.dat": {
+      "bytes": 222,
+      "sha256": "081ecc9bfc1793c0e6a0efe40c7a907e63701b6440086a61d669994fd7e5ea32"
+    },
+    "case03/region/r.0.0.mcr#0,0": {
+      "bytes": 82360,
+      "sha256": "63ef392a177672e80898099299f9959e552da250ce82edf2dc9a0dc5b32d1239"
+    },
+    "case04/level.dat": {
+      "bytes": 222,
+      "sha256": "081ecc9bfc1793c0e6a0efe40c7a907e63701b6440086a61d669994fd7e5ea32"
+    },
+    "case04/region/r.0.0.mcr#0,0": {
+      "bytes": 82360,
+      "sha256": "4ad959d9d608175ec96377fc5ac5250e9c99ae4f1098282724db687d4cb33682"
+    },
+    "case05/level.dat": {
+      "bytes": 222,
+      "sha256": "081ecc9bfc1793c0e6a0efe40c7a907e63701b6440086a61d669994fd7e5ea32"
+    },
+    "case05/region/r.0.0.mcr#0,0": {
+      "bytes": 82360,
+      "sha256": "2c6cc976b770e97a3d62669337e03250d1a23f4470465e245c76bdba34e21e4f"
+    }
+  },
+  "portable_rule": "Require all12complete uncompressed NBT payload byte hashes. Retain original18compressed wire pins; report compressor/platform differences without repair or wire-identity claim."
+}

@@ -1,0 +1,590 @@
+{
+  "schema": 1,
+  "scope": "Retained-byte audits of the actual original observations; no new target execution",
+  "audits": {
+    "independent-capture-audit-v1.json": {
+      "private_original_fingerprint": {
+        "bytes": 21036,
+        "sha256": "46967194811cde759e5c060ade2b66c74f68b031e69f1ea39810173361744a5b"
+      },
+      "sanitized_report": {
+        "status": "PASS",
+        "scope": "Independent retained-byte original Sign component audit only; no target execution or native parity.",
+        "findings": [],
+        "capture_receipt": {
+          "bytes": 11751,
+          "sha256": "0080e98fd9643e11c2725bf4f0303bc958cce5f4948897edfc32af43a46b3f6c"
+        },
+        "checks": 62119,
+        "inputs_rehashed": 12,
+        "products_rehashed": 3,
+        "processes": {
+          "compiler": 1,
+          "fresh_vms": 4,
+          "modes": [
+            "interpreter",
+            "default",
+            "interpreter",
+            "default"
+          ],
+          "complete_pipes": true,
+          "raw_outputs_equal": true,
+          "stdout_bytes_per_vm": 267675,
+          "stderr_bytes_per_vm": 399
+        },
+        "physical_streams": [
+          {
+            "file": "compile.stdout",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "file": "compile.stderr",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "file": "0-interpreter.stdout",
+            "bytes": 267675,
+            "sha256": "49424fd1624d8582be567130b1d4fef3bff26b0cfd8ce53f25b1d69823cf1411"
+          },
+          {
+            "file": "0-interpreter.stderr",
+            "bytes": 399,
+            "sha256": "48a4e85b2fd33f4427cfeaa783c9d66d3766dbffdd05012130ab3c2823241536"
+          },
+          {
+            "file": "1-default.stdout",
+            "bytes": 267675,
+            "sha256": "49424fd1624d8582be567130b1d4fef3bff26b0cfd8ce53f25b1d69823cf1411"
+          },
+          {
+            "file": "1-default.stderr",
+            "bytes": 399,
+            "sha256": "48a4e85b2fd33f4427cfeaa783c9d66d3766dbffdd05012130ab3c2823241536"
+          },
+          {
+            "file": "2-interpreter.stdout",
+            "bytes": 267675,
+            "sha256": "49424fd1624d8582be567130b1d4fef3bff26b0cfd8ce53f25b1d69823cf1411"
+          },
+          {
+            "file": "2-interpreter.stderr",
+            "bytes": 399,
+            "sha256": "48a4e85b2fd33f4427cfeaa783c9d66d3766dbffdd05012130ab3c2823241536"
+          },
+          {
+            "file": "3-default.stdout",
+            "bytes": 267675,
+            "sha256": "49424fd1624d8582be567130b1d4fef3bff26b0cfd8ce53f25b1d69823cf1411"
+          },
+          {
+            "file": "3-default.stderr",
+            "bytes": 399,
+            "sha256": "48a4e85b2fd33f4427cfeaa783c9d66d3766dbffdd05012130ab3c2823241536"
+          }
+        ],
+        "case_inventory": [
+          "constructor-defaults",
+          "missing-all-text",
+          "mixed-missing-text",
+          "length-14",
+          "length-15",
+          "length-16",
+          "supplementary-inside-15",
+          "supplementary-cut-at-15",
+          "literal-unpaired-units",
+          "color-and-spacing",
+          "missing-coordinates",
+          "unknown-input-and-existing-output",
+          "late-wrong-text-1",
+          "late-wrong-text-2",
+          "late-wrong-text-3",
+          "late-wrong-text-4",
+          "late-wrong-coordinate-x",
+          "late-wrong-coordinate-y",
+          "late-wrong-coordinate-z",
+          "null-nbt-read",
+          "null-nbt-write",
+          "writer-public-overlong-lines"
+        ],
+        "per_vm": {
+          "rows": 126,
+          "cases": 22,
+          "selected_calls": {
+            "yk.<init>()V": 35,
+            "yk.b(Lnu;)V": 27,
+            "yk.a(Lnu;)V": 39
+          },
+          "negative_calls": [
+            {
+              "case": "late-wrong-text-1",
+              "phase": "second-read",
+              "class": "java.lang.ClassCastException",
+              "frames": [
+                [
+                  "nu",
+                  "i",
+                  121
+                ],
+                [
+                  "yk",
+                  "a",
+                  29
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$read$0",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "read",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  357
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            },
+            {
+              "case": "late-wrong-text-2",
+              "phase": "second-read",
+              "class": "java.lang.ClassCastException",
+              "frames": [
+                [
+                  "nu",
+                  "i",
+                  121
+                ],
+                [
+                  "yk",
+                  "a",
+                  29
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$read$0",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "read",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  357
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            },
+            {
+              "case": "late-wrong-text-3",
+              "phase": "second-read",
+              "class": "java.lang.ClassCastException",
+              "frames": [
+                [
+                  "nu",
+                  "i",
+                  121
+                ],
+                [
+                  "yk",
+                  "a",
+                  29
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$read$0",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "read",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  357
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            },
+            {
+              "case": "late-wrong-text-4",
+              "phase": "second-read",
+              "class": "java.lang.ClassCastException",
+              "frames": [
+                [
+                  "nu",
+                  "i",
+                  121
+                ],
+                [
+                  "yk",
+                  "a",
+                  29
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$read$0",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "read",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  357
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            },
+            {
+              "case": "late-wrong-coordinate-x",
+              "phase": "second-read",
+              "class": "java.lang.ClassCastException",
+              "frames": [
+                [
+                  "nu",
+                  "e",
+                  101
+                ],
+                [
+                  "ow",
+                  "a",
+                  38
+                ],
+                [
+                  "yk",
+                  "a",
+                  27
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$read$0",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "read",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  364
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            },
+            {
+              "case": "late-wrong-coordinate-y",
+              "phase": "second-read",
+              "class": "java.lang.ClassCastException",
+              "frames": [
+                [
+                  "nu",
+                  "e",
+                  101
+                ],
+                [
+                  "ow",
+                  "a",
+                  39
+                ],
+                [
+                  "yk",
+                  "a",
+                  27
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$read$0",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "read",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  364
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            },
+            {
+              "case": "late-wrong-coordinate-z",
+              "phase": "second-read",
+              "class": "java.lang.ClassCastException",
+              "frames": [
+                [
+                  "nu",
+                  "e",
+                  101
+                ],
+                [
+                  "ow",
+                  "a",
+                  40
+                ],
+                [
+                  "yk",
+                  "a",
+                  27
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$read$0",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "read",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  364
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            },
+            {
+              "case": "null-nbt-read",
+              "phase": "read-null",
+              "class": "java.lang.NullPointerException",
+              "frames": [
+                [
+                  "ow",
+                  "a",
+                  38
+                ],
+                [
+                  "yk",
+                  "a",
+                  27
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$read$0",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "read",
+                  264
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  368
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            },
+            {
+              "case": "null-nbt-write",
+              "phase": "write-null",
+              "class": "java.lang.NullPointerException",
+              "frames": [
+                [
+                  "ow",
+                  "b",
+                  48
+                ],
+                [
+                  "yk",
+                  "b",
+                  18
+                ],
+                [
+                  "SignNbtObservation",
+                  "lambda$write$1",
+                  269
+                ],
+                [
+                  "SignNbtObservation",
+                  "call",
+                  251
+                ],
+                [
+                  "SignNbtObservation",
+                  "write",
+                  269
+                ],
+                [
+                  "SignNbtObservation",
+                  "profiles",
+                  371
+                ],
+                [
+                  "SignNbtObservation",
+                  "main",
+                  414
+                ]
+              ]
+            }
+          ],
+          "class_origins": {
+            "yk": {
+              "bytes": 1046,
+              "sha256": "6c7245ad28444d045fff078aef8be80e6e40402d51f8ba18c77ad937ed4149e3"
+            },
+            "ow": {
+              "bytes": 3062,
+              "sha256": "b3d2c691cab2c8f78ba810a214e235b80f42c549a32453ada6b3b563c0b189cf"
+            },
+            "nu": {
+              "bytes": 4122,
+              "sha256": "a1a5701ec2180d01ddc604cc8c2e5aff1176b10faf83bdb64d2f1cc8c806ac4a"
+            },
+            "ij": {
+              "bytes": 1724,
+              "sha256": "9db862e2ee83e95a2db7a8495594d2c0e0bbe904d96c3f09f167f2b47b72b8d0"
+            },
+            "pp": {
+              "bytes": 822,
+              "sha256": "d5c29e2d379e1d34e18657da0f46a28600c1c5ef68e157115ceb4cd686c93515"
+            },
+            "xb": {
+              "bytes": 908,
+              "sha256": "f6c7123fb5cfe5a9edd4e47492ce5e11a8ceb6b6fdb1a4e71a5fc430030542ea"
+            },
+            "qp": {
+              "bytes": 825,
+              "sha256": "79609b1d0906c6c0cf1c86367e5a4a7bf1702bd1ebf44705df8c28a200bb4f43"
+            }
+          },
+          "scope": "Direct component objects only; public-overlong writer prestate separate; no native/World/GL/factory/binary NBT/file-save comparison."
+        },
+        "static": {
+          "classes": 14,
+          "methods_with_Code": 114,
+          "observed_class_origins": 7
+        },
+        "read_only_observer_review": {
+          "private_fields": "read only via Field.get/getBoolean; no reflective setter",
+          "public_prestate": "one yk.a assignment in separately recorded public-only case",
+          "alias_labels": "bounded linear == table; output only",
+          "capture_brackets": "initial/final/current12input and3product pins match; reviewed capturer additionally checks same pins before/after each VM",
+          "environment": "reviewed capturer rejects JAVA_TOOL_OPTIONS/_JAVA_OPTIONS/JDK_JAVA_OPTIONS before creation; exact commands retained; no separate environment snapshot is claimed"
+        },
+        "exclusions": [
+          "No native implementation equivalence",
+          "No World/GL/factory/packet/editor/tick qualification",
+          "No binary NBT or file save/roundtrip qualification",
+          "No whole-VM/startup/observer-off equivalence",
+          "No bootstrap smoke qualification inherited",
+          "No copying of captured hashes/Thread states/orders into execution"
+        ],
+        "audit_script": {
+          "bytes": 27386,
+          "sha256": "742a559c33cb7148bfdf723029d293e480f8b5809883d7011a5909f732d57b22"
+        },
+        "report_omissions": [
+          "Decoded original method instructions/operands remain private; published source-pins.json retains their Class/Code hashes"
+        ]
+      }
+    },
+    "null-write-root-prefix-audit.json": {
+      "private_original_fingerprint": {
+        "bytes": 331,
+        "sha256": "491e3e8d3e6e1107ec56ba506d07aa26bd4b18172a9541bb2d70e4972ca99d2a"
+      },
+      "sanitized_report": {
+        "status": "PASS",
+        "cases_per_vm": 4,
+        "fresh_vms": 4,
+        "selected_calls_per_vm": 8,
+        "scope": "Actual original null-line writer exception, Tile unchanged and all mutable Compound prefixes checked; no native mutable Compound equality",
+        "stdout_sha256": "9d34b8ab299312b0fd015f5640738d9f5b69ccdbe2b3caab6da4d622d6693167"
+      }
+    }
+  }
+}

@@ -1,0 +1,3673 @@
+[
+  {
+    "mode": "fire-added-solid",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-flammable-0",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-flammable-1",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-flammable-2",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-flammable-3",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        65,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-flammable-4",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        64,
+        14,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-flammable-5",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        64,
+        16,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-unsupported",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-obsidian-no-frame",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        49,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-portal-x",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        64,
+        15,
+        49,
+        0
+      ],
+      [
+        14,
+        65,
+        15,
+        49,
+        0
+      ],
+      [
+        14,
+        66,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        67,
+        15,
+        49,
+        0
+      ],
+      [
+        16,
+        63,
+        15,
+        49,
+        0
+      ],
+      [
+        16,
+        67,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        64,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        65,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        66,
+        15,
+        49,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-portal-z",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        63,
+        16,
+        49,
+        0
+      ],
+      [
+        15,
+        64,
+        14,
+        49,
+        0
+      ],
+      [
+        15,
+        64,
+        17,
+        49,
+        0
+      ],
+      [
+        15,
+        65,
+        14,
+        49,
+        0
+      ],
+      [
+        15,
+        65,
+        17,
+        49,
+        0
+      ],
+      [
+        15,
+        66,
+        14,
+        49,
+        0
+      ],
+      [
+        15,
+        66,
+        17,
+        49,
+        0
+      ],
+      [
+        15,
+        67,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        67,
+        16,
+        49,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-portal-broken",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        64,
+        15,
+        49,
+        0
+      ],
+      [
+        14,
+        66,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        67,
+        15,
+        49,
+        0
+      ],
+      [
+        16,
+        63,
+        15,
+        49,
+        0
+      ],
+      [
+        16,
+        67,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        64,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        65,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        66,
+        15,
+        49,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-portal-ambiguous",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        64,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        64,
+        14,
+        49,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-added-portal-cell-error-third",
+    "operation": "added",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 3,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        64,
+        15,
+        49,
+        0
+      ],
+      [
+        14,
+        65,
+        15,
+        49,
+        0
+      ],
+      [
+        14,
+        66,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        49,
+        0
+      ],
+      [
+        15,
+        67,
+        15,
+        49,
+        0
+      ],
+      [
+        16,
+        63,
+        15,
+        49,
+        0
+      ],
+      [
+        16,
+        67,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        64,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        65,
+        15,
+        49,
+        0
+      ],
+      [
+        17,
+        66,
+        15,
+        49,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-neighbor-solid",
+    "operation": "neighbor",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-neighbor-flammable",
+    "operation": "neighbor",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-neighbor-unsupported",
+    "operation": "neighbor",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-neighbor-cell-error",
+    "operation": "neighbor",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-isolated-age0",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-isolated-age3",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        3
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-isolated-age4",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        4
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-isolated-age15",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        15
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-unsupported",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-age15-extinguish",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4096,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        15
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-age15-continue",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 0,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        15
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-netherrack-rain",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": true,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        87,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        15
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-rain-self",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": true,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-rain-west",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": true,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        15,
+        65,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-rain-east",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": true,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        65,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        15,
+        65,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-rain-north",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": true,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        65,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        15,
+        65,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        65,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-rain-south",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": true,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        65,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        15,
+        65,
+        14,
+        1,
+        0
+      ],
+      [
+        15,
+        65,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        65,
+        15,
+        1,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-rain-desert",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": true,
+    "biome": "h",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-rain-tundra",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": true,
+    "biome": "k",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-5-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-5-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 69,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-85-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        85,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-85-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 69,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        85,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-53-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        53,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-53-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 69,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        53,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-17-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        17,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-17-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 114,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        17,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-18-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 19,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        18,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-18-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        18,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-47-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        47,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-47-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 69,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        47,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-46-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        46,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-46-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        46,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-31-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        2,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        31,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-31-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        2,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        31,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-35-remove",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 19,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        35,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-burn-35-replace",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        35,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-spread-seed1",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        16,
+        63,
+        15,
+        2,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        31,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-spread-seed8",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 8,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        16,
+        63,
+        15,
+        2,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        31,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-tnt-added-error",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 1,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        46,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-tnt-sound-error",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 1,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        46,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-tnt-cell-error-before-prime",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        46,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-height-normal",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": [
+      [
+        16,
+        15,
+        65
+      ]
+    ]
+  },
+  {
+    "mode": "fire-tick-height-range-error",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 1,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": [
+      [
+        16,
+        15,
+        65
+      ]
+    ]
+  },
+  {
+    "mode": "fire-tick-height-cell-error",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": [
+      [
+        16,
+        15,
+        65
+      ]
+    ]
+  },
+  {
+    "mode": "fire-world-tick",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-world-tick-cell-error",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 49,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 1,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-lava-ignition-5",
+    "operation": "lava",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 11,
+    "source_id": 1,
+    "random_seed": 2,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        66,
+        16,
+        5,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        11,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-lava-ignition-58",
+    "operation": "lava",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 11,
+    "source_id": 1,
+    "random_seed": 2,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        66,
+        16,
+        58,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        11,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-world-tick-lava",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 11,
+    "source_id": 1,
+    "random_seed": 2,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        14,
+        66,
+        16,
+        5,
+        0
+      ],
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        11,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-neighbor-a-null",
+    "operation": "neighbor",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": true,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-b-null",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": true,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        5,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-tick-a-null",
+    "operation": "tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": true,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-neighbor-a-null-provider-null",
+    "operation": "neighbor",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": true,
+    "null_flammability": false,
+    "null_provider": true,
+    "cells": [
+      [
+        15,
+        64,
+        15,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-world-random-player",
+    "operation": "world-tick",
+    "xyz": [
+      -57,
+      64,
+      -56
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 1,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 0,
+    "prequeue_delay": -1,
+    "random_player": true,
+    "g": -332372929,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        -57,
+        63,
+        -56,
+        87,
+        0
+      ],
+      [
+        -57,
+        64,
+        -56,
+        51,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-world-tick-tnt-added-error",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 1,
+    "sound_error_at": 0,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        46,
+        0
+      ]
+    ],
+    "heights": []
+  },
+  {
+    "mode": "fire-world-tick-tnt-sound-error",
+    "operation": "world-tick",
+    "xyz": [
+      15,
+      64,
+      15
+    ],
+    "entry_id": 51,
+    "source_id": 1,
+    "random_seed": 4,
+    "rain": false,
+    "biome": "i",
+    "cell_error_at": 0,
+    "range_error_at": 0,
+    "added_error_at": 0,
+    "sound_error_at": 1,
+    "prequeue_delay": 0,
+    "random_player": false,
+    "g": 17,
+    "cooldown": 6001,
+    "null_encouragement": false,
+    "null_flammability": false,
+    "null_provider": false,
+    "cells": [
+      [
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        15,
+        64,
+        15,
+        51,
+        5
+      ],
+      [
+        16,
+        63,
+        15,
+        1,
+        0
+      ],
+      [
+        16,
+        64,
+        15,
+        46,
+        0
+      ]
+    ],
+    "heights": []
+  }
+]

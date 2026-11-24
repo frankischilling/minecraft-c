@@ -1,0 +1,65 @@
+{
+  "schema": "ARROW_NBT_PROVENANCE_V1",
+  "scope": "44 paired representable and four source-only unchanged-original client Arrow NBT/parent/save/factory calls in four VMs; actual values, exception prefixes and Code; no mutable-native-writer, loaded gameplay, renderer or performance claim.",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_sources": {
+    "ArrowNbtObservation.java": "a3f463ba91e69fc21057360ffba381497463615a21d4b63d3655a022bff27ad8",
+    "ArrowNbtJdi.java": "c135e535086eec1b669a1d1478ccccfbc4ec990d142c4f53d3e08f38b10b9653",
+    "capture_reference.py": "9b0189d5e36cd3bca39042db7f3fd1a2e87655148a803725c8aa26483fbf679c",
+    "profiles.tsv": "62773f56eb6d54c713514196d982d22a90fe16476483a85b6151e74b0e6c2b0d",
+    "class-names.txt": "ed60d459239ef4a3ad3a83df4d99a56002a58b013bedb4ad8ccdcf69232cd528",
+    "source-pins.json": "80468da904c2ecc4a656a78ed8c4fc1419af81ab829dea3595ce4ce48681bcb8",
+    "PROTOCOL.md": "bdcd6badbed3fdda606cc9c8b1c9fd354a290d84958e5c8e899c7466fff50cba"
+  },
+  "processing_sources": {
+    "observation.py": "f43a0dc3a58eab6ea4f880bfccefc54108f2536a9ed51fbd28534c7f358d65e5",
+    "packet.py": "f96fa8bd73a494221deef9a1050ecbe1fbacdbd03d9a4d43f6840dc7b549ff70",
+    "export_reference.py": "5da1227f9120ecdd53291673b75615d85ba05cf97ba1914d5b484dac7a998fbb"
+  },
+  "finite_sha256": "628a6c3c6b3112107b2f4d1a314c1de1d10da74d2263913a8af007ce31265fb4",
+  "capture_sha256": "b7eb14801272b98c089b6f6cd28f36348d6c0acc41cd412035d205da5cc01c89",
+  "runs": [
+    {
+      "kind": "ordinary",
+      "stdout": {
+        "name": "ordinary-0.stdout",
+        "bytes": 406808,
+        "sha256": "6e714e3b80655d6bb4b84f1e06a8a8a3c569175a57724fe7b19ebffe88d31b0f"
+      }
+    },
+    {
+      "kind": "ordinary",
+      "stdout": {
+        "name": "ordinary-1.stdout",
+        "bytes": 406808,
+        "sha256": "ba5538abba57d1cbf79b81d65dbc596ec419bd9f87798a9c734b3c76de509cc6"
+      }
+    },
+    {
+      "kind": "debugger",
+      "stdout": {
+        "name": "debugger-0/target.stdout",
+        "bytes": 406808,
+        "sha256": "f02441a878ede4b257eb053611812a6ee435c9305d2184f3456a09a05f53d9d7"
+      },
+      "journal": {
+        "name": "debugger-0/journal.jsonl",
+        "bytes": 905917,
+        "sha256": "02729b977ba69ed39489bc829e01477f1e95db96f73341f75b19c7b563cc63ca"
+      }
+    },
+    {
+      "kind": "debugger",
+      "stdout": {
+        "name": "debugger-1/target.stdout",
+        "bytes": 406808,
+        "sha256": "1728ef64b9d2edb2d82f8a19d8944f736bb4b42ce6df1eefca6ce0121a5d6cf4"
+      },
+      "journal": {
+        "name": "debugger-1/journal.jsonl",
+        "bytes": 905917,
+        "sha256": "c8fdee9ed2d7a417ba71588d70cdd0c0985c2ab4308124305009f48a70da7593"
+      }
+    }
+  ]
+}

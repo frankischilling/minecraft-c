@@ -1,0 +1,5 @@
+# Preserve fingerprints of authored producers and reference inputs.
+*.java -text
+*.py -text
+*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+*.tsv -text

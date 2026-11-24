@@ -6,6 +6,7 @@ entity/tile attachment and world filesystem behavior remain observed evidence.
 """
 from __future__ import annotations
 from dataclasses import asdict
+from functools import lru_cache
 from pathlib import Path
 import argparse
 import copy
@@ -196,7 +197,7 @@ def chunk_schema(value, side, source, table, normalized, initial, identities, na
         tag = child(level_tag, field)
         raw = b'' if tag is None else bytes.fromhex(tag['value'])
         if normalized and role == 'blocks':
-            raw = bytes(table[x] for x in raw)
+            raw = raw.translate(table)
         require(item['length'] == len(raw) and item['values'] == raw.hex(), 'actual complete imported/normalized array: '+role)
     require(type(value['data']['minimum_height']) is int and value['data']['minimum_height'] == 0 and value['last_save_time'] == '0000000000000000', 'static decode and direct loader/writer keep minimum/r zero; LastUpdate ignored')
     populated = child(level_tag, 'TerrainPopulated')
@@ -430,14 +431,20 @@ JAR_CLASS_NAMES = {'client': ['a', 'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah
 
 REGISTRY_CLASSES = {'client': [None, 'eo', 'wp', 'ot', 'uu', 'uu', 'he', 'uu', 'om', 'nx', 'om', 'nx', 'gk', 'ne', 'mt', 'mt', 'mt', 'vg', 'bk', 'xf', 'fk', 'mt', 'uu', 'xq', 'rd', 'pt', 've', 'pc', 'ph', 'jq', 'rn', 'ru', 'jb', 'jq', 'h', 'ee', 'ut', 'wb', 'wb', 'tl', 'tl', 'l', 'l', 'ys', 'ys', 'uu', 'ah', 'hb', 'uu', 'fb', 'vm', 'yq', 'dd', 'ss', 'e', 'sm', 'mt', 'l', 'fi', 'ni', 'vl', 'tc', 'tc', 'uj', 'le', 'dp', 'pc', 'ss', 'uj', 'xr', 'bv', 'le', 'bv', 'bs', 'bs', 'db', 'db', 'oi', 'jr', 'nk', 'ac', 'or', 'rz', 'ri', 'fo', 'jw', 'fc', 'yi', 'oa', 'ly', 'ak', 'fc', 'um', 'wo', 'wo', 'ks', 'oq', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], 'server': [None, 'cx', 'oj', 'jf', 'na', 'na', 'eu', 'na', 'jc', 'is', 'jc', 'is', 'ei', 'ig', 'ic', 'ic', 'ic', 'nk', 'ar', 'ov', 'do', 'ic', 'na', 'pa', 'kl', 'jr', 'nj', 'jj', 'jn', 'gi', 'ku', 'kz', 'fz', 'gi', 'g', 'cq', 'mz', 'nw', 'nw', 'md', 'md', 'j', 'j', 'pw', 'pw', 'na', 't', 'er', 'na', 'dh', 'np', 'pt', 'bz', 'lu', 'e', 'lo', 'ic', 'j', 'dn', 'ij', 'no', 'lz', 'lz', 'mt', 'hc', 'cg', 'jj', 'lu', 'mt', 'pd', 'bc', 'hc', 'bc', 'az', 'az', 'by', 'by', 'iz', 'gj', 'ik', 'p', 'je', 'lf', 'ko', 'dt', 'gn', 'di', 'po', 'iu', 'hr', 'z', 'di', 'mw', 'oi', 'oi', 'gv', 'jd', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]}
 
+@lru_cache(maxsize=6)
+def _compile_helper(raw, path, mode):
+    return compile(raw, path, mode)
+
+
 def helpers():
     require(Path(__file__).resolve() == (ROOT/'scripts/reference/storage/compare_chunk_storage.py').resolve(), 'canonical executing chunk-storage source identity')
     old_path = ROOT/'scripts/reference/chunk/compare_chunk.py'
     raw = old_path.read_bytes()
     old = types.ModuleType('_stored_chunk_world')
     old.__file__ = str(old_path)
-    exec(compile(raw, str(old_path), 'exec'), old.__dict__)
-    common, executed = old.shared_helper(ROOT)
+    # Cache only code for the exact source bytes. Imports still get fresh namespaces.
+    exec(_compile_helper(raw, str(old_path), 'exec'), old.__dict__)
+    common, executed = old.shared_helper(ROOT, compile_source=_compile_helper)
     executed += [{'path': str(old_path.resolve()), **fp(raw)}, {'path': str(LEVEL_PATH.resolve()), **fp(LEVEL_RAW)}]
     return common, old, executed
 

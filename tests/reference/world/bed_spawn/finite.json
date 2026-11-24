@@ -1,0 +1,4043 @@
+{
+  "schema": "BED_SPAWN_FINITE_V1",
+  "rows": [
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 0,
+      "input": [
+        0,
+        0,
+        8,
+        64,
+        8,
+        0,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        0,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "9c99b05b77df8e7b010b32afe98d3384bd97ff37741310e09a41ab9d87d3d929",
+      "planes_after": "9c99b05b77df8e7b010b32afe98d3384bd97ff37741310e09a41ab9d87d3d929",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 1,
+      "input": [
+        1,
+        0,
+        8,
+        64,
+        8,
+        1,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        1,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "c1a593bd45a8e3025c61f373b74ac4d24f948c35ef6404c9c33f057ecd39d957",
+      "planes_after": "c1a593bd45a8e3025c61f373b74ac4d24f948c35ef6404c9c33f057ecd39d957",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 2,
+      "input": [
+        2,
+        0,
+        8,
+        64,
+        8,
+        2,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        2,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "35d32870c44ee53eac9d1090bd8b664e3e2b121a7a065d9261149753f23c9ddb",
+      "planes_after": "35d32870c44ee53eac9d1090bd8b664e3e2b121a7a065d9261149753f23c9ddb",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 3,
+      "input": [
+        3,
+        0,
+        8,
+        64,
+        8,
+        3,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        3,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "1ede6682681372710372e891bcd2a586098adece5feb57f93a5ea7f9bec2e367",
+      "planes_after": "1ede6682681372710372e891bcd2a586098adece5feb57f93a5ea7f9bec2e367",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 4,
+      "input": [
+        4,
+        0,
+        8,
+        64,
+        8,
+        4,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        4,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "19542727a8a3bb067037e205e3421355ee1101303ba2d712cbf84080afb4fa13",
+      "planes_after": "19542727a8a3bb067037e205e3421355ee1101303ba2d712cbf84080afb4fa13",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 5,
+      "input": [
+        5,
+        0,
+        8,
+        64,
+        8,
+        5,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        5,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "983adae1af84debb84a535be91f91c3826472b346dd2d3866136596c9fd34707",
+      "planes_after": "983adae1af84debb84a535be91f91c3826472b346dd2d3866136596c9fd34707",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 6,
+      "input": [
+        6,
+        0,
+        8,
+        64,
+        8,
+        6,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        6,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "b78e4ec7926112e3f3c1bc8268054d9936f5e893063a2f9d749f7b298b2b210f",
+      "planes_after": "b78e4ec7926112e3f3c1bc8268054d9936f5e893063a2f9d749f7b298b2b210f",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 7,
+      "input": [
+        7,
+        0,
+        8,
+        64,
+        8,
+        7,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        7,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "5e348825121037565a99135589f7ba4dcc78f8ccaaaa860c434d38f5886b195f",
+      "planes_after": "5e348825121037565a99135589f7ba4dcc78f8ccaaaa860c434d38f5886b195f",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 8,
+      "input": [
+        8,
+        0,
+        8,
+        64,
+        8,
+        8,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        8,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "f86dfbb98dfce58381ff6c59ea8f270a1228d27a0dc58a7b21c37356b744aa82",
+      "planes_after": "f86dfbb98dfce58381ff6c59ea8f270a1228d27a0dc58a7b21c37356b744aa82",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 9,
+      "input": [
+        9,
+        0,
+        8,
+        64,
+        8,
+        9,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        9,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "ca86aff28a8e2f4fec1fba085d1cc0078c042d78c81575e2783ae6fb5b270159",
+      "planes_after": "ca86aff28a8e2f4fec1fba085d1cc0078c042d78c81575e2783ae6fb5b270159",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 10,
+      "input": [
+        10,
+        0,
+        8,
+        64,
+        8,
+        10,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        10,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "392814289377cf91062a493162ec02b1bf8e92af90484c849e617dc0f9b06c7e",
+      "planes_after": "392814289377cf91062a493162ec02b1bf8e92af90484c849e617dc0f9b06c7e",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 11,
+      "input": [
+        11,
+        0,
+        8,
+        64,
+        8,
+        11,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        11,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "36fee9d3eab0a35bd309d241c577a090606752c84d22b28f66149591792786e5",
+      "planes_after": "36fee9d3eab0a35bd309d241c577a090606752c84d22b28f66149591792786e5",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 12,
+      "input": [
+        12,
+        0,
+        8,
+        64,
+        8,
+        12,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        12,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "d84566ae31c259027c8830686c9f8ef519e7f54e4f09411a0c366aa2f9669375",
+      "planes_after": "d84566ae31c259027c8830686c9f8ef519e7f54e4f09411a0c366aa2f9669375",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 13,
+      "input": [
+        13,
+        0,
+        8,
+        64,
+        8,
+        13,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        13,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "29c514e0cc181646e469b0191b19872992b7340f77d4c210641455d7c6925400",
+      "planes_after": "29c514e0cc181646e469b0191b19872992b7340f77d4c210641455d7c6925400",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 14,
+      "input": [
+        14,
+        0,
+        8,
+        64,
+        8,
+        14,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        14,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "315905f89b2321e716614c40357da2a7f87ccf74fb168c508a55ccda890641af",
+      "planes_after": "315905f89b2321e716614c40357da2a7f87ccf74fb168c508a55ccda890641af",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 15,
+      "input": [
+        15,
+        0,
+        8,
+        64,
+        8,
+        15,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        15,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "8d2d198ecb2cbef8f1b0fbc4b4d9790b9b8bb6e3509c6aa54550cd5b300401ae",
+      "planes_after": "8d2d198ecb2cbef8f1b0fbc4b4d9790b9b8bb6e3509c6aa54550cd5b300401ae",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 16,
+      "input": [
+        16,
+        0,
+        8,
+        64,
+        8,
+        3,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        3,
+        9,
+        63,
+        9,
+        1,
+        0
+      ],
+      "result": [
+        9,
+        64,
+        9
+      ],
+      "exception": "NONE",
+      "planes_before": "9e99e11b46bd73cfbe62ea0966df9df234247f61376692589f2b7292eba2b2f2",
+      "planes_after": "9e99e11b46bd73cfbe62ea0966df9df234247f61376692589f2b7292eba2b2f2",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 17,
+      "input": [
+        17,
+        0,
+        8,
+        64,
+        8,
+        0,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        0,
+        8,
+        63,
+        6,
+        1,
+        0
+      ],
+      "result": [
+        8,
+        64,
+        6
+      ],
+      "exception": "NONE",
+      "planes_before": "644aa0d6c96e81bcfc70340d23c263d0e9c2858ea4abb4e9b8ce70032bbbad4c",
+      "planes_after": "644aa0d6c96e81bcfc70340d23c263d0e9c2858ea4abb4e9b8ce70032bbbad4c",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 18,
+      "input": [
+        18,
+        0,
+        8,
+        64,
+        8,
+        2,
+        0,
+        1,
+        8,
+        64,
+        8,
+        26,
+        2
+      ],
+      "result": null,
+      "exception": "NONE",
+      "planes_before": "c60d8926b690e5e20ad3f853b223edad0a660dab2d3bcdbc57898fa73b7950a0",
+      "planes_after": "c60d8926b690e5e20ad3f853b223edad0a660dab2d3bcdbc57898fa73b7950a0",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": false
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 19,
+      "input": [
+        19,
+        0,
+        8,
+        64,
+        8,
+        0,
+        1,
+        3,
+        8,
+        64,
+        8,
+        26,
+        0,
+        7,
+        63,
+        7,
+        1,
+        0,
+        7,
+        63,
+        8,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        8
+      ],
+      "exception": "NONE",
+      "planes_before": "9abfb639aed345a319d149c58df0076322888d6a52ad512d7cc89cb1aa198f77",
+      "planes_after": "9abfb639aed345a319d149c58df0076322888d6a52ad512d7cc89cb1aa198f77",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 20,
+      "input": [
+        20,
+        0,
+        8,
+        64,
+        8,
+        0,
+        2,
+        3,
+        8,
+        64,
+        8,
+        26,
+        0,
+        7,
+        63,
+        7,
+        1,
+        0,
+        7,
+        63,
+        8,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "9abfb639aed345a319d149c58df0076322888d6a52ad512d7cc89cb1aa198f77",
+      "planes_after": "9abfb639aed345a319d149c58df0076322888d6a52ad512d7cc89cb1aa198f77",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 21,
+      "input": [
+        21,
+        0,
+        8,
+        64,
+        8,
+        0,
+        16,
+        13,
+        8,
+        64,
+        8,
+        26,
+        0,
+        7,
+        63,
+        6,
+        1,
+        0,
+        7,
+        63,
+        7,
+        1,
+        0,
+        7,
+        63,
+        8,
+        1,
+        0,
+        7,
+        63,
+        9,
+        1,
+        0,
+        8,
+        63,
+        6,
+        1,
+        0,
+        8,
+        63,
+        7,
+        1,
+        0,
+        8,
+        63,
+        8,
+        1,
+        0,
+        8,
+        63,
+        9,
+        1,
+        0,
+        9,
+        63,
+        6,
+        1,
+        0,
+        9,
+        63,
+        7,
+        1,
+        0,
+        9,
+        63,
+        8,
+        1,
+        0,
+        9,
+        63,
+        9,
+        1,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "planes_before": "f073528e092f57e014290ce59ab08b906bf338b9855989d5743a57c73e8b1f3b",
+      "planes_after": "f073528e092f57e014290ce59ab08b906bf338b9855989d5743a57c73e8b1f3b",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": false
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 22,
+      "input": [
+        22,
+        1,
+        8,
+        64,
+        8,
+        2,
+        0,
+        2,
+        8,
+        64,
+        8,
+        26,
+        2,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "35d32870c44ee53eac9d1090bd8b664e3e2b121a7a065d9261149753f23c9ddb",
+      "planes_after": "35d32870c44ee53eac9d1090bd8b664e3e2b121a7a065d9261149753f23c9ddb",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 23,
+      "input": [
+        23,
+        1,
+        8,
+        64,
+        8,
+        15,
+        0,
+        2,
+        8,
+        64,
+        8,
+        1,
+        15,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": null,
+      "exception": "NONE",
+      "planes_before": "a8a8efc42b421e8c22b735279ecf7fe65c924fd6caf1b7d9a1e3ee3d5b2fd8ef",
+      "planes_after": "a8a8efc42b421e8c22b735279ecf7fe65c924fd6caf1b7d9a1e3ee3d5b2fd8ef",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": false
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 24,
+      "input": [
+        24,
+        1,
+        16,
+        64,
+        16,
+        1,
+        0,
+        2,
+        16,
+        64,
+        16,
+        26,
+        1,
+        15,
+        63,
+        15,
+        1,
+        0
+      ],
+      "result": [
+        15,
+        64,
+        15
+      ],
+      "exception": "NONE",
+      "planes_before": "3bd917c99b3ef62eb6ce904c177d5213c50ae81d8232091af2b2a93d2c55eb0f",
+      "planes_after": "3bd917c99b3ef62eb6ce904c177d5213c50ae81d8232091af2b2a93d2c55eb0f",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 25,
+      "input": [
+        25,
+        1,
+        -16,
+        64,
+        -16,
+        3,
+        0,
+        2,
+        -16,
+        64,
+        -16,
+        26,
+        3,
+        -17,
+        63,
+        -17,
+        1,
+        0
+      ],
+      "result": [
+        -17,
+        64,
+        -17
+      ],
+      "exception": "NONE",
+      "planes_before": "6fc37a850c72ea559e5e21ca27d4019cc251fcfebde81f4b5190c6f77b07305f",
+      "planes_after": "6fc37a850c72ea559e5e21ca27d4019cc251fcfebde81f4b5190c6f77b07305f",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 26,
+      "input": [
+        26,
+        0,
+        8,
+        127,
+        8,
+        0,
+        0,
+        2,
+        8,
+        127,
+        8,
+        26,
+        0,
+        7,
+        126,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        127,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "003bca4dd55068dc2592415f9f4bea549edc7543489272e919d116a20811635f",
+      "planes_after": "003bca4dd55068dc2592415f9f4bea549edc7543489272e919d116a20811635f",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 27,
+      "input": [
+        27,
+        0,
+        8,
+        0,
+        8,
+        3,
+        0,
+        1,
+        8,
+        0,
+        8,
+        26,
+        3
+      ],
+      "result": null,
+      "exception": "NONE",
+      "planes_before": "0576ad188a52d158276774baff3cf878aa1d0ce879bb77d3fc3f9c79b33af10b",
+      "planes_after": "0576ad188a52d158276774baff3cf878aa1d0ce879bb77d3fc3f9c79b33af10b",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": false
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 28,
+      "input": [
+        28,
+        0,
+        8,
+        64,
+        8,
+        0,
+        -1,
+        2,
+        8,
+        64,
+        8,
+        26,
+        0,
+        7,
+        63,
+        7,
+        1,
+        0
+      ],
+      "result": [
+        7,
+        64,
+        7
+      ],
+      "exception": "NONE",
+      "planes_before": "9c99b05b77df8e7b010b32afe98d3384bd97ff37741310e09a41ab9d87d3d929",
+      "planes_after": "9c99b05b77df8e7b010b32afe98d3384bd97ff37741310e09a41ab9d87d3d929",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": true
+    },
+    {
+      "schema": "BED_SPAWN_V1",
+      "case": 29,
+      "input": [
+        29,
+        1,
+        8,
+        64,
+        8,
+        1,
+        0,
+        1,
+        8,
+        64,
+        8,
+        26,
+        1
+      ],
+      "result": null,
+      "exception": "NONE",
+      "planes_before": "6c5558fe305d1e0932ece597e64c9b94756dc7fbe558a416b7fc04066bccaf4e",
+      "planes_after": "6c5558fe305d1e0932ece597e64c9b94756dc7fbe558a416b7fc04066bccaf4e",
+      "random_before": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "random_after": [
+        "00000005deecefc9",
+        false,
+        "0000000000000000"
+      ],
+      "provider_same": true,
+      "input_same": true,
+      "fresh_result": false
+    }
+  ],
+  "journals": [
+    {
+      "case": 0,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 1,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 2,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 2
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 3,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 3
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 4,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 4
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 5,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 5
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 6,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 6
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 7,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 7
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 8,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 8
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 9,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 9
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 10,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 10
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 11,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 11
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 12,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 12
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 13,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 13
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 14,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 14
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 15,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 15
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 16,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 3
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 9,
+          "y": 64,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 9,
+          "y": 65,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 17,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 6,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 8,
+          "y": 64,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 8,
+          "y": 65,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 18,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 2
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 10,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 10,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 10,
+          "completed": true,
+          "result": 0
+        }
+      ]
+    },
+    {
+      "case": 19,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 20,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 6,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 21,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 8,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 8,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 8,
+          "y": 64,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 8,
+          "y": 65,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 9,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 9,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 9,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 9,
+          "y": 65,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 9,
+          "y": 64,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 9,
+          "y": 65,
+          "z": 9,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 8,
+          "y": 64,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 8,
+          "y": 65,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 8,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 8,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 9,
+          "y": 64,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 9,
+          "y": 65,
+          "z": 6,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 9,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 9,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 9,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 9,
+          "y": 65,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 22,
+      "journal": [
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 22,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 45,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 68,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 91,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "BLOCK",
+          "pc": 110,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 26
+        },
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 2
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 23,
+      "journal": [
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 22,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 45,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 68,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 91,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "BLOCK",
+          "pc": 110,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 24,
+      "journal": [
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 22,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 45,
+          "x": 1,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 68,
+          "x": 0,
+          "y": 0,
+          "z": 1,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 91,
+          "x": 1,
+          "y": 0,
+          "z": 1,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "BLOCK",
+          "pc": 110,
+          "x": 16,
+          "y": 64,
+          "z": 16,
+          "completed": true,
+          "result": 26
+        },
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 16,
+          "y": 64,
+          "z": 16,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 15,
+          "y": 63,
+          "z": 15,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 15,
+          "y": 64,
+          "z": 15,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 15,
+          "y": 65,
+          "z": 15,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 25,
+      "journal": [
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 22,
+          "x": -2,
+          "y": 0,
+          "z": -2,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 45,
+          "x": -1,
+          "y": 0,
+          "z": -2,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 68,
+          "x": -2,
+          "y": 0,
+          "z": -1,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 91,
+          "x": -1,
+          "y": 0,
+          "z": -1,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "BLOCK",
+          "pc": 110,
+          "x": -16,
+          "y": 64,
+          "z": -16,
+          "completed": true,
+          "result": 26
+        },
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": -16,
+          "y": 64,
+          "z": -16,
+          "completed": true,
+          "result": 3
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": -17,
+          "y": 63,
+          "z": -17,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": -17,
+          "y": 64,
+          "z": -17,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": -17,
+          "y": 65,
+          "z": -17,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 26,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 127,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 126,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 127,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 128,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 27,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 0,
+          "z": 8,
+          "completed": true,
+          "result": 3
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": -1,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": -1,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": -1,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": -1,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": -1,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": -1,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": -1,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": -1,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": -1,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 6,
+          "y": -1,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 6,
+          "y": -1,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 6,
+          "y": -1,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": -1,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": -1,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": -1,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": -1,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": -1,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": -1,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        }
+      ]
+    },
+    {
+      "case": 28,
+      "journal": [
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 113,
+          "x": 7,
+          "y": 64,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "AIR",
+          "pc": 127,
+          "x": 7,
+          "y": 65,
+          "z": 7,
+          "completed": true,
+          "result": 1
+        }
+      ]
+    },
+    {
+      "case": 29,
+      "journal": [
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 22,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 45,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 68,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "CAPTURED_ACQUIRE",
+          "pc": 91,
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "BLOCK",
+          "pc": 110,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 26
+        },
+        {
+          "kind": "METADATA",
+          "pc": 4,
+          "x": 8,
+          "y": 64,
+          "z": 8,
+          "completed": true,
+          "result": 1
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 7,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 8,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 9,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 10,
+          "y": 63,
+          "z": 7,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 10,
+          "y": 63,
+          "z": 8,
+          "completed": true,
+          "result": 0
+        },
+        {
+          "kind": "SUPPORT",
+          "pc": 101,
+          "x": 10,
+          "y": 63,
+          "z": 9,
+          "completed": true,
+          "result": 0
+        }
+      ]
+    }
+  ],
+  "code": [
+    {
+      "event": "code",
+      "class": "ve",
+      "method": "f",
+      "descriptor": "(Lfd;IIII)Lbr;",
+      "bytes": 177,
+      "sha256": "73d8e8bf553c2ff112e2ec45c26941790fc8712020f5228954ce15e757cb3327"
+    },
+    {
+      "event": "code",
+      "class": "fd",
+      "method": "e",
+      "descriptor": "(III)I",
+      "bytes": 72,
+      "sha256": "8b3c32792768032d38f020f47f0407bcc922ffa18ba4df38f9729079c2430957"
+    },
+    {
+      "event": "code",
+      "class": "fd",
+      "method": "h",
+      "descriptor": "(III)Z",
+      "bytes": 45,
+      "sha256": "9159cea1434cb4ef1f90e98a19398660c319d0876cab388766cdd40b18e9dd11"
+    },
+    {
+      "event": "code",
+      "class": "fd",
+      "method": "d",
+      "descriptor": "(III)Z",
+      "bytes": 16,
+      "sha256": "c5984fb280fe5166dacafc3f6e5f1a310f9c163691930c8e53ccc8d02bc893b2"
+    },
+    {
+      "event": "code",
+      "class": "gs",
+      "method": "a",
+      "descriptor": "(Lfd;Lbr;)Lbr;",
+      "bytes": 144,
+      "sha256": "ebda0f1eca894b175c4021f7b64513003a78bebf2afe0b8c0bb9c0e9c22beacd"
+    },
+    {
+      "event": "code",
+      "class": "ok",
+      "method": "c",
+      "descriptor": "(II)Llm;",
+      "bytes": 394,
+      "sha256": "06e08e7b1b2956f8a581b21a56578b29d153e418e53d7ae7ed298d0d78ea7817"
+    },
+    {
+      "event": "code",
+      "class": "fd",
+      "method": "a",
+      "descriptor": "(III)I",
+      "bytes": 64,
+      "sha256": "adf83ac7da3e525eb2cb08d6f7fb1d34683c61efdb1cefc26ee8f3cdc971bf0b"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "main_cases": [
+    "constructor-defaults",
+    "missing-all-text",
+    "mixed-missing-text",
+    "length-14",
+    "length-15",
+    "length-16",
+    "supplementary-inside-15",
+    "supplementary-cut-at-15",
+    "literal-unpaired-units",
+    "color-and-spacing",
+    "missing-coordinates",
+    "unknown-input-and-existing-output",
+    "late-wrong-text-1",
+    "late-wrong-text-2",
+    "late-wrong-text-3",
+    "late-wrong-text-4",
+    "late-wrong-coordinate-x",
+    "late-wrong-coordinate-y",
+    "late-wrong-coordinate-z",
+    "null-nbt-read",
+    "null-nbt-write",
+    "writer-public-overlong-lines"
+  ],
+  "null_line_cases": [
+    "public-null-line-0",
+    "public-null-line-1",
+    "public-null-line-2",
+    "public-null-line-3"
+  ],
+  "main_calls": {
+    "constructors": 35,
+    "reads": 39,
+    "writes": 27
+  },
+  "supplement_calls": {
+    "constructors": 4,
+    "reads": 0,
+    "writes": 4
+  },
+  "observer": "Read-only reflection on original private fields; output-only bounded linear == labels reset per case",
+  "public_prestate_cases": [
+    "writer-public-overlong-lines",
+    "public-null-line-0",
+    "public-null-line-1",
+    "public-null-line-2",
+    "public-null-line-3"
+  ],
+  "claims_excluded": [
+    "Native parity or String identity equality",
+    "Mutable native Compound failure prefixes",
+    "Observer-off or whole-VM neutrality",
+    "Original World/factory/render/editor behavior",
+    "Binary NBT order, region/file save roundtrips",
+    "OOM timing, concurrency or FPS"
+  ]
+}

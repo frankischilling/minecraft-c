@@ -1,0 +1,6341 @@
+{
+  "schema": 1,
+  "definitions": [
+    {
+      "id": 1,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        0
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "3f800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        1
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        2
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        3
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        4
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        5
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        6
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        7
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        8
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        9
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        10
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        11
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        12
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        13
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        14
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        15
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        16
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        17
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        18
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        19
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        20
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        21
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        22
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        23
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        24
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        25
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        26
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        27
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        28
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        29
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        30
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        31
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        32
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        33
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        34
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        35
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        36
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        37
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        38
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        39
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40400000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        40
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        41
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        42
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        43
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        44
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        45
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        46
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        47
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        48
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        49
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        50
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        51
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        52
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        53
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        54
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        55
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        56
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        57
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        58
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        59
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        60
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        61
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        62
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        63
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        64
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        65
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        66
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        67
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        68
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        69
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 71,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        70
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        71
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 73,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        72
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        73
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        74
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        75
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        76
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        77
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        78
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        79
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        80
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 82,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        81
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 83,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        82
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        83
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 85,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        84
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 86,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        85
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 87,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        86
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        87
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 89,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        88
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 90,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        89
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 91,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        90
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 92,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        91
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        92
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        93
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 95,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        94
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 96,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        95
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 97,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        96
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40400000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 98,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        97
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 99,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        98
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 100,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        99
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        100
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        101
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        102
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        103
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 105,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        104
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 106,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        105
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 107,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        106
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 108,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        107
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 109,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        108
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40400000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 110,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        109
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 111,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        110
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        111
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 113,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        112
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 114,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        113
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 115,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        114
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 116,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        115
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 117,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        116
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 118,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        117
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 119,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        118
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 120,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        119
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 121,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        120
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 122,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        121
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 123,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        122
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 124,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        123
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 125,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        124
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 126,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        125
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 127,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        126
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 128,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        127
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 129,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        128
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 130,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        129
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 131,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        130
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 132,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        131
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 133,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        132
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 134,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        133
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 135,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        134
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 136,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        135
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 137,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        136
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 138,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        137
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 139,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        138
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 140,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        139
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 141,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        140
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 142,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        141
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40400000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 143,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        142
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 144,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        143
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 145,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        144
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 146,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        145
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 147,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        146
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 148,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        147
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 149,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        148
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 150,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        149
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 151,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        150
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 152,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        151
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 153,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        152
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 154,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        153
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 155,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        154
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 156,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        155
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 157,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        156
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 158,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        157
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 159,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        158
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 160,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        159
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 161,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        160
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 162,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        161
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40400000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 163,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        162
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 164,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        163
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 165,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        164
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 166,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        165
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 167,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        166
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 168,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        167
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 169,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        168
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 170,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        169
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 171,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        170
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 172,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        171
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 173,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        172
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 174,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        173
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 175,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        174
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 176,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        175
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 177,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        176
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 178,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        177
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 179,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        178
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 180,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        179
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 181,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        180
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 182,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        181
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 183,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        182
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 184,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        183
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 185,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        184
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 186,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        185
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 187,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        186
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 188,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        187
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 189,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        188
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 190,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        189
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 191,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        190
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 192,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        191
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 193,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        192
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 194,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        193
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 195,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        194
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 196,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        195
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 197,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        196
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 198,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        197
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 199,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        198
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 200,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        199
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 201,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        200
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 202,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        201
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 203,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        202
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 204,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        203
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 205,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        204
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 206,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        205
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 207,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        206
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 208,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        207
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 209,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        208
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 210,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        209
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 211,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        210
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 212,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        211
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 213,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        212
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 214,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        213
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 215,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        214
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 216,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        215
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 217,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        216
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 218,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        217
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 219,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        218
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 220,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        219
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 221,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        220
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 222,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        221
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40a00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 223,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        222
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 224,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        223
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 225,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        224
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 226,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        225
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 227,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        226
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 228,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        227
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 229,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        228
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 230,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        229
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 231,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        230
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 232,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        231
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 233,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        232
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 234,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        233
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 235,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        234
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 236,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        235
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 237,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        236
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 238,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        237
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 239,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        238
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 240,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        239
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 241,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        240
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 242,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        241
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 243,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        242
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 244,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        243
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 245,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        244
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 246,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        245
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 247,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        246
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 248,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        247
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 249,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        248
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 250,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        249
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 251,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        250
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 252,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        251
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "41100000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 253,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        252
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 254,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        253
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40c00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 255,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        254
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "40e00000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 256,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [
+        255
+      ],
+      "operations": [
+        {
+          "method": "glTranslatef",
+          "arguments": [
+            "3f800000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 55
+          }
+        }
+      ]
+    },
+    {
+      "id": 257,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "00000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 258,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "00000000",
+            "00000000",
+            "3f2aaaab"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 259,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "00000000",
+            "3f2aaaab",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 260,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "00000000",
+            "3f2aaaab",
+            "3f2aaaab"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 261,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3f2aaaab",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 262,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3f2aaaab",
+            "00000000",
+            "3f2aaaab"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 263,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3f800000",
+            "3f2aaaab",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 264,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3f2aaaab",
+            "3f2aaaab",
+            "3f2aaaab"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 265,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3eaaaaab",
+            "3eaaaaab",
+            "3eaaaaab"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 266,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3eaaaaab",
+            "3eaaaaab",
+            "3f800000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 267,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3eaaaaab",
+            "3f800000",
+            "3eaaaaab"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 268,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3eaaaaab",
+            "3f800000",
+            "3f800000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 269,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3f800000",
+            "3eaaaaab",
+            "3eaaaaab"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 270,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3f800000",
+            "3eaaaaab",
+            "3f800000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 271,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3f800000",
+            "3f800000",
+            "3eaaaaab"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 272,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3f800000",
+            "3f800000",
+            "3f800000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 273,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "00000000",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 274,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "00000000",
+            "00000000",
+            "3e28a8a9"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 275,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "00000000",
+            "3e28a8a9",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 276,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "00000000",
+            "3e28a8a9",
+            "3e28a8a9"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 277,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3e28a8a9",
+            "00000000",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 278,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3e28a8a9",
+            "00000000",
+            "3e28a8a9"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 279,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3e28a8a9",
+            "3e28a8a9",
+            "00000000"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 280,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3e28a8a9",
+            "3e28a8a9",
+            "3e28a8a9"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 281,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3da8a8a9",
+            "3da8a8a9",
+            "3da8a8a9"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 282,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3da8a8a9",
+            "3da8a8a9",
+            "3e7cfcfd"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 283,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3da8a8a9",
+            "3e7cfcfd",
+            "3da8a8a9"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 284,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3da8a8a9",
+            "3e7cfcfd",
+            "3e7cfcfd"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 285,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3e7cfcfd",
+            "3da8a8a9",
+            "3da8a8a9"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 286,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3e7cfcfd",
+            "3da8a8a9",
+            "3e7cfcfd"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 287,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3e7cfcfd",
+            "3e7cfcfd",
+            "3da8a8a9"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    },
+    {
+      "id": 288,
+      "mode": 4864,
+      "phase": -2,
+      "part": null,
+      "batches": [],
+      "operations": [
+        {
+          "method": "glColor3f",
+          "arguments": [
+            "3e7cfcfd",
+            "3e7cfcfd",
+            "3e7cfcfd"
+          ],
+          "source_frames": {
+            "trace": 56
+          }
+        }
+      ]
+    }
+  ],
+  "model_definitions": [
+    {
+      "id": 289,
+      "mode": 4864,
+      "phase": 0,
+      "part": {
+        "class": "ps",
+        "label": "R0"
+      },
+      "batches": [
+        256,
+        257,
+        258,
+        259,
+        260,
+        261
+      ],
+      "operations": []
+    },
+    {
+      "id": 290,
+      "mode": 4864,
+      "phase": 1,
+      "part": {
+        "class": "ps",
+        "label": "R1"
+      },
+      "batches": [
+        262,
+        263,
+        264,
+        265,
+        266,
+        267
+      ],
+      "operations": []
+    }
+  ],
+  "list_allocations": [
+    {
+      "phase": -2,
+      "count": 288,
+      "base": 1,
+      "source_frames": {
+        "trace": 57
+      }
+    },
+    {
+      "phase": 0,
+      "count": 1,
+      "base": 289,
+      "source_frames": {
+        "trace": 12
+      }
+    },
+    {
+      "phase": 1,
+      "count": 1,
+      "base": 290,
+      "source_frames": {
+        "trace": 36
+      }
+    }
+  ]
+}

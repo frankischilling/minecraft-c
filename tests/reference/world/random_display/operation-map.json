@@ -1,0 +1,1629 @@
+{
+  "scope": "Unchanged original symbolic references/literals, not replacement source or answer fixtures.",
+  "methods": {
+    "fd.a(III)I": [
+      {
+        "pc": 1,
+        "opcode": "ldc",
+        "operation": "int -32000000"
+      },
+      {
+        "pc": 7,
+        "opcode": "ldc",
+        "operation": "int -32000000"
+      },
+      {
+        "pc": 13,
+        "opcode": "ldc",
+        "operation": "int 32000000"
+      },
+      {
+        "pc": 19,
+        "opcode": "ldc",
+        "operation": "int 32000000"
+      },
+      {
+        "pc": 48,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(II)Llm;"
+      },
+      {
+        "pc": 60,
+        "opcode": "invokevirtual",
+        "operation": "Method lm.a:(III)I"
+      }
+    ],
+    "fd.c(II)Llm;": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field v:Lcl;"
+      },
+      {
+        "pc": 6,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod cl.b:(II)Llm;"
+      }
+    ],
+    "fd.f(III)Lln;": [
+      {
+        "pc": 4,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(III)I"
+      },
+      {
+        "pc": 14,
+        "opcode": "getstatic",
+        "operation": "Field ln.a:Lln;"
+      },
+      {
+        "pc": 18,
+        "opcode": "getstatic",
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 24,
+        "opcode": "getfield",
+        "operation": "Field uu.bA:Lln;"
+      }
+    ],
+    "fd.e(III)I": [
+      {
+        "pc": 1,
+        "opcode": "ldc",
+        "operation": "int -32000000"
+      },
+      {
+        "pc": 7,
+        "opcode": "ldc",
+        "operation": "int -32000000"
+      },
+      {
+        "pc": 13,
+        "opcode": "ldc",
+        "operation": "int 32000000"
+      },
+      {
+        "pc": 19,
+        "opcode": "ldc",
+        "operation": "int 32000000"
+      },
+      {
+        "pc": 48,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(II)Llm;"
+      },
+      {
+        "pc": 68,
+        "opcode": "invokevirtual",
+        "operation": "Method lm.b:(III)I"
+      }
+    ],
+    "fd.a(DDDLjava/lang/String;FF)V": [
+      {
+        "pc": 6,
+        "opcode": "getfield",
+        "operation": "Field u:Ljava/util/List;"
+      },
+      {
+        "pc": 9,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 18,
+        "opcode": "getfield",
+        "operation": "Field u:Ljava/util/List;"
+      },
+      {
+        "pc": 23,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 41,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod pm.a:(Ljava/lang/String;DDDFF)V"
+      }
+    ],
+    "fd.a(Ljava/lang/String;DDDDDD)V": [
+      {
+        "pc": 6,
+        "opcode": "getfield",
+        "operation": "Field u:Ljava/util/List;"
+      },
+      {
+        "pc": 9,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod java/util/List.size:()I"
+      },
+      {
+        "pc": 18,
+        "opcode": "getfield",
+        "operation": "Field u:Ljava/util/List;"
+      },
+      {
+        "pc": 23,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;"
+      },
+      {
+        "pc": 43,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod pm.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "fd.g(III)Z": [
+      {
+        "pc": 0,
+        "opcode": "getstatic",
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 7,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(III)I"
+      },
+      {
+        "pc": 22,
+        "opcode": "invokevirtual",
+        "operation": "Method uu.c:()Z"
+      }
+    ],
+    "fd.h(III)Z": [
+      {
+        "pc": 0,
+        "opcode": "getstatic",
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 7,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(III)I"
+      },
+      {
+        "pc": 22,
+        "opcode": "getfield",
+        "operation": "Field uu.bA:Lln;"
+      },
+      {
+        "pc": 25,
+        "opcode": "invokevirtual",
+        "operation": "Method ln.h:()Z"
+      },
+      {
+        "pc": 33,
+        "opcode": "invokevirtual",
+        "operation": "Method uu.d:()Z"
+      }
+    ],
+    "fd.q(III)V": [
+      {
+        "pc": 8,
+        "opcode": "invokespecial",
+        "operation": "Method java/util/Random.\"<init>\":()V"
+      },
+      {
+        "pc": 26,
+        "opcode": "getfield",
+        "operation": "Field r:Ljava/util/Random;"
+      },
+      {
+        "pc": 31,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 36,
+        "opcode": "getfield",
+        "operation": "Field r:Ljava/util/Random;"
+      },
+      {
+        "pc": 41,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 49,
+        "opcode": "getfield",
+        "operation": "Field r:Ljava/util/Random;"
+      },
+      {
+        "pc": 54,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 59,
+        "opcode": "getfield",
+        "operation": "Field r:Ljava/util/Random;"
+      },
+      {
+        "pc": 64,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 72,
+        "opcode": "getfield",
+        "operation": "Field r:Ljava/util/Random;"
+      },
+      {
+        "pc": 77,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 82,
+        "opcode": "getfield",
+        "operation": "Field r:Ljava/util/Random;"
+      },
+      {
+        "pc": 87,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 100,
+        "opcode": "invokevirtual",
+        "operation": "Method a:(III)I"
+      },
+      {
+        "pc": 110,
+        "opcode": "getstatic",
+        "operation": "Field uu.m:[Luu;"
+      },
+      {
+        "pc": 125,
+        "opcode": "invokevirtual",
+        "operation": "Method uu.b:(Lfd;IIILjava/util/Random;)V"
+      }
+    ],
+    "uu.b(Lfd;IIILjava/util/Random;)V": [],
+    "ss.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:Luu;"
+      },
+      {
+        "pc": 11,
+        "opcode": "invokevirtual",
+        "operation": "Method uu.b:(Lfd;IIILjava/util/Random;)V"
+      }
+    ],
+    "bs.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 13,
+        "opcode": "invokespecial",
+        "operation": "Method i:(Lfd;III)V"
+      }
+    ],
+    "bs.i(Lfd;III)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field fd.r:Ljava/util/Random;"
+      },
+      {
+        "pc": 6,
+        "opcode": "ldc2_w",
+        "operation": "double 0.0625d"
+      },
+      {
+        "pc": 25,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 36,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 48,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 67,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.g:(III)Z"
+      },
+      {
+        "pc": 95,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.g:(III)Z"
+      },
+      {
+        "pc": 123,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.g:(III)Z"
+      },
+      {
+        "pc": 152,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.g:(III)Z"
+      },
+      {
+        "pc": 181,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.g:(III)Z"
+      },
+      {
+        "pc": 209,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.g:(III)Z"
+      },
+      {
+        "pc": 280,
+        "opcode": "ldc",
+        "operation": "String reddust"
+      },
+      {
+        "pc": 291,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "rp.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field bA:Lln;"
+      },
+      {
+        "pc": 4,
+        "opcode": "getstatic",
+        "operation": "Field ln.g:Lln;"
+      },
+      {
+        "pc": 14,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 25,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 45,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 51,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 58,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 62,
+        "opcode": "ldc",
+        "operation": "String liquid.water"
+      },
+      {
+        "pc": 66,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 69,
+        "opcode": "ldc",
+        "operation": "float 0.25f"
+      },
+      {
+        "pc": 72,
+        "opcode": "ldc",
+        "operation": "float 0.75f"
+      },
+      {
+        "pc": 77,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 82,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 85,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(DDDLjava/lang/String;FF)V"
+      },
+      {
+        "pc": 89,
+        "opcode": "getfield",
+        "operation": "Field bA:Lln;"
+      },
+      {
+        "pc": 92,
+        "opcode": "getstatic",
+        "operation": "Field ln.h:Lln;"
+      },
+      {
+        "pc": 105,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.f:(III)Lln;"
+      },
+      {
+        "pc": 108,
+        "opcode": "getstatic",
+        "operation": "Field ln.a:Lln;"
+      },
+      {
+        "pc": 121,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.g:(III)Z"
+      },
+      {
+        "pc": 131,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 141,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 151,
+        "opcode": "getfield",
+        "operation": "Field bw:D"
+      },
+      {
+        "pc": 162,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 170,
+        "opcode": "ldc",
+        "operation": "String lava"
+      },
+      {
+        "pc": 181,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "vm.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 5,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 12,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 20,
+        "opcode": "ldc",
+        "operation": "float 0.7f"
+      },
+      {
+        "pc": 29,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 35,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2199999988079071d"
+      },
+      {
+        "pc": 40,
+        "opcode": "ldc2_w",
+        "operation": "double 0.27000001072883606d"
+      },
+      {
+        "pc": 52,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 69,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 73,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 90,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 103,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 120,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 124,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 141,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 154,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 171,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 175,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 192,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 205,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 222,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 226,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 243,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 250,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 261,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 265,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 276,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "db.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:Z"
+      },
+      {
+        "pc": 13,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 20,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 26,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 29,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 33,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2d"
+      },
+      {
+        "pc": 42,
+        "opcode": "ldc",
+        "operation": "float 0.7f"
+      },
+      {
+        "pc": 48,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 51,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 55,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2d"
+      },
+      {
+        "pc": 65,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 71,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 74,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 78,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2d"
+      },
+      {
+        "pc": 85,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2199999988079071d"
+      },
+      {
+        "pc": 90,
+        "opcode": "ldc2_w",
+        "operation": "double 0.27000001072883606d"
+      },
+      {
+        "pc": 102,
+        "opcode": "ldc",
+        "operation": "String reddust"
+      },
+      {
+        "pc": 119,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 132,
+        "opcode": "ldc",
+        "operation": "String reddust"
+      },
+      {
+        "pc": 149,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 162,
+        "opcode": "ldc",
+        "operation": "String reddust"
+      },
+      {
+        "pc": 179,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 192,
+        "opcode": "ldc",
+        "operation": "String reddust"
+      },
+      {
+        "pc": 209,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 216,
+        "opcode": "ldc",
+        "operation": "String reddust"
+      },
+      {
+        "pc": 227,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "tc.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field b:Z"
+      },
+      {
+        "pc": 13,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 20,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 31,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 34,
+        "opcode": "ldc",
+        "operation": "float 6.0f"
+      },
+      {
+        "pc": 37,
+        "opcode": "ldc",
+        "operation": "float 16.0f"
+      },
+      {
+        "pc": 46,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 51,
+        "opcode": "ldc",
+        "operation": "float 0.52f"
+      },
+      {
+        "pc": 57,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 60,
+        "opcode": "ldc",
+        "operation": "float 0.6f"
+      },
+      {
+        "pc": 63,
+        "opcode": "ldc",
+        "operation": "float 0.3f"
+      },
+      {
+        "pc": 75,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 95,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 99,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 119,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 132,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 152,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 156,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 176,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 189,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 209,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 213,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 233,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 246,
+        "opcode": "ldc",
+        "operation": "String smoke"
+      },
+      {
+        "pc": 266,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 270,
+        "opcode": "ldc",
+        "operation": "String flame"
+      },
+      {
+        "pc": 290,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "sm.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 5,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 17,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 23,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 27,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 31,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2d"
+      },
+      {
+        "pc": 40,
+        "opcode": "ldc",
+        "operation": "float 0.0625f"
+      },
+      {
+        "pc": 49,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 55,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 59,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 63,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2d"
+      },
+      {
+        "pc": 73,
+        "opcode": "ldc",
+        "operation": "float 15.0f"
+      },
+      {
+        "pc": 80,
+        "opcode": "ldc",
+        "operation": "float 0.6f"
+      },
+      {
+        "pc": 83,
+        "opcode": "ldc",
+        "operation": "float 0.4f"
+      },
+      {
+        "pc": 101,
+        "opcode": "ldc",
+        "operation": "float 0.7f"
+      },
+      {
+        "pc": 104,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 114,
+        "opcode": "ldc",
+        "operation": "float 0.6f"
+      },
+      {
+        "pc": 117,
+        "opcode": "ldc",
+        "operation": "float 0.7f"
+      },
+      {
+        "pc": 143,
+        "opcode": "ldc",
+        "operation": "String reddust"
+      },
+      {
+        "pc": 160,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "wo.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field c:Z"
+      },
+      {
+        "pc": 13,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.e:(III)I"
+      },
+      {
+        "pc": 20,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 26,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 29,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 33,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2d"
+      },
+      {
+        "pc": 42,
+        "opcode": "ldc",
+        "operation": "float 0.4f"
+      },
+      {
+        "pc": 48,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 51,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 55,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2d"
+      },
+      {
+        "pc": 65,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 71,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 74,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 78,
+        "opcode": "ldc2_w",
+        "operation": "double 0.2d"
+      },
+      {
+        "pc": 94,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 136,
+        "opcode": "ldc2_w",
+        "operation": "double -0.3125d"
+      },
+      {
+        "pc": 144,
+        "opcode": "ldc2_w",
+        "operation": "double 0.3125d"
+      },
+      {
+        "pc": 152,
+        "opcode": "ldc2_w",
+        "operation": "double -0.3125d"
+      },
+      {
+        "pc": 160,
+        "opcode": "ldc2_w",
+        "operation": "double 0.3125d"
+      },
+      {
+        "pc": 212,
+        "opcode": "getstatic",
+        "operation": "Field a:[D"
+      },
+      {
+        "pc": 223,
+        "opcode": "getstatic",
+        "operation": "Field a:[D"
+      },
+      {
+        "pc": 235,
+        "opcode": "getstatic",
+        "operation": "Field a:[D"
+      },
+      {
+        "pc": 246,
+        "opcode": "getstatic",
+        "operation": "Field a:[D"
+      },
+      {
+        "pc": 256,
+        "opcode": "ldc",
+        "operation": "String reddust"
+      },
+      {
+        "pc": 273,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "ak.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 4,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 13,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 19,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 26,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 30,
+        "opcode": "ldc",
+        "operation": "String portal.portal"
+      },
+      {
+        "pc": 35,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 38,
+        "opcode": "ldc",
+        "operation": "float 0.4f"
+      },
+      {
+        "pc": 41,
+        "opcode": "ldc",
+        "operation": "float 0.8f"
+      },
+      {
+        "pc": 44,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(DDDLjava/lang/String;FF)V"
+      },
+      {
+        "pc": 60,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 71,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 83,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 102,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 113,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 117,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 121,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 129,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 133,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 137,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 145,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 149,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 153,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 166,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 170,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 183,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(III)I"
+      },
+      {
+        "pc": 187,
+        "opcode": "getfield",
+        "operation": "Field bn:I"
+      },
+      {
+        "pc": 196,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 200,
+        "opcode": "ldc2_w",
+        "operation": "double 0.25d"
+      },
+      {
+        "pc": 212,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 229,
+        "opcode": "ldc2_w",
+        "operation": "double 0.5d"
+      },
+      {
+        "pc": 233,
+        "opcode": "ldc2_w",
+        "operation": "double 0.25d"
+      },
+      {
+        "pc": 245,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 258,
+        "opcode": "ldc",
+        "operation": "String portal"
+      },
+      {
+        "pc": 272,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "yq.c(Lxp;III)Z": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field a:[I"
+      },
+      {
+        "pc": 9,
+        "opcode": "invokeinterface",
+        "operation": "InterfaceMethod xp.a:(III)I"
+      }
+    ],
+    "yq.b(Lfd;IIILjava/util/Random;)V": [
+      {
+        "pc": 4,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextInt:(I)I"
+      },
+      {
+        "pc": 13,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 19,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 26,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 30,
+        "opcode": "ldc",
+        "operation": "String fire.fire"
+      },
+      {
+        "pc": 35,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 41,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 44,
+        "opcode": "ldc",
+        "operation": "float 0.7f"
+      },
+      {
+        "pc": 47,
+        "opcode": "ldc",
+        "operation": "float 0.3f"
+      },
+      {
+        "pc": 50,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(DDDLjava/lang/String;FF)V"
+      },
+      {
+        "pc": 60,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.h:(III)Z"
+      },
+      {
+        "pc": 66,
+        "opcode": "getstatic",
+        "operation": "Field uu.as:Lyq;"
+      },
+      {
+        "pc": 76,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(Lxp;III)Z"
+      },
+      {
+        "pc": 95,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 105,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 108,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 112,
+        "opcode": "ldc",
+        "operation": "float 0.5f"
+      },
+      {
+        "pc": 122,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 129,
+        "opcode": "ldc",
+        "operation": "String largesmoke"
+      },
+      {
+        "pc": 143,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 155,
+        "opcode": "getstatic",
+        "operation": "Field uu.as:Lyq;"
+      },
+      {
+        "pc": 165,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(Lxp;III)Z"
+      },
+      {
+        "pc": 184,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 187,
+        "opcode": "ldc",
+        "operation": "float 0.1f"
+      },
+      {
+        "pc": 197,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 208,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 215,
+        "opcode": "ldc",
+        "operation": "String largesmoke"
+      },
+      {
+        "pc": 229,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 238,
+        "opcode": "getstatic",
+        "operation": "Field uu.as:Lyq;"
+      },
+      {
+        "pc": 248,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(Lxp;III)Z"
+      },
+      {
+        "pc": 269,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 272,
+        "opcode": "ldc",
+        "operation": "float 0.1f"
+      },
+      {
+        "pc": 282,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 293,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 300,
+        "opcode": "ldc",
+        "operation": "String largesmoke"
+      },
+      {
+        "pc": 314,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 323,
+        "opcode": "getstatic",
+        "operation": "Field uu.as:Lyq;"
+      },
+      {
+        "pc": 333,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(Lxp;III)Z"
+      },
+      {
+        "pc": 352,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 362,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 373,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 376,
+        "opcode": "ldc",
+        "operation": "float 0.1f"
+      },
+      {
+        "pc": 383,
+        "opcode": "ldc",
+        "operation": "String largesmoke"
+      },
+      {
+        "pc": 397,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 406,
+        "opcode": "getstatic",
+        "operation": "Field uu.as:Lyq;"
+      },
+      {
+        "pc": 416,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(Lxp;III)Z"
+      },
+      {
+        "pc": 435,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 445,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 458,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 461,
+        "opcode": "ldc",
+        "operation": "float 0.1f"
+      },
+      {
+        "pc": 468,
+        "opcode": "ldc",
+        "operation": "String largesmoke"
+      },
+      {
+        "pc": 482,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      },
+      {
+        "pc": 491,
+        "opcode": "getstatic",
+        "operation": "Field uu.as:Lyq;"
+      },
+      {
+        "pc": 501,
+        "opcode": "invokevirtual",
+        "operation": "Method c:(Lxp;III)Z"
+      },
+      {
+        "pc": 520,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 532,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 535,
+        "opcode": "ldc",
+        "operation": "float 0.1f"
+      },
+      {
+        "pc": 546,
+        "opcode": "invokevirtual",
+        "operation": "Method java/util/Random.nextFloat:()F"
+      },
+      {
+        "pc": 553,
+        "opcode": "ldc",
+        "operation": "String largesmoke"
+      },
+      {
+        "pc": 567,
+        "opcode": "invokevirtual",
+        "operation": "Method fd.a:(Ljava/lang/String;DDDDDD)V"
+      }
+    ],
+    "lm.a(III)I": [
+      {
+        "pc": 1,
+        "opcode": "getfield",
+        "operation": "Field b:[B"
+      }
+    ],
+    "li.a(III)I": []
+  },
+  "sampler_literals": {
+    "range": 16,
+    "samples": 1000,
+    "coordinate_World_random_draws": 6,
+    "fresh_local_default_Random": true,
+    "g_Q_read_or_write": false
+  },
+  "base_uu_b_literal_return": true
+}

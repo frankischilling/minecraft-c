@@ -1,0 +1,94 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Controlled LW callbacks are declared test inputs. All CD/OG/HP/GP/DW/IZ bodies and selected class resources come from the hash-checked original JAR.",
+  "capture": {
+    "id": "capture-06",
+    "sha256": "2c215a968b271eefb1ac63aec4cabdc061b03e41a44af9263974be4e2bb83a1d",
+    "status": "PASS",
+    "processes": 2,
+    "rows_per_process": 111,
+    "input_continuity": true,
+    "compiled_continuity": true,
+    "modes": [
+      "-Xint -Xverify:all",
+      "-Xverify:all"
+    ]
+  },
+  "execution_helpers": {
+    "ChestContainerObservation.java": "060b2f9a804c4672883384903575c73b561201271e15ef1a70c94113a59d4e22",
+    "cases.json": "55a55c79aa207a244278bc42fbae3338edc71db8b651da706c4a733e0123aaa1",
+    "capture.py": "64a715ea31c07b80f0cf2969db8e4da1a0ec281fc9a68185de8ce2f10e683ef7"
+  },
+  "publication_helpers": {
+    "projection.py": "b85654ab588e67b078f38957342970b0a2240234f6faf282bef65d098a6055f0",
+    "audit.py": "f9ca0865321440ebd16534f02350fabb0c23776a2d79a9242a6d998dc8f02689",
+    "publish.py": "aca0a694aec653f9550afe78809c7ef65e57de67b349e25fb81e9449d7d4a86f",
+    "test_packet.py": "9c0bd47aa5d4f384678c3e09d8462297b0e2f89d292e4bf59c2d0a475d499103",
+    "README.md": "c35a12b0f3b87bc2a70d69063720695a745156d08a2a070ebca6b1bbd4a28aa6"
+  },
+  "supporting_helper_inputs": {
+    "capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "compiled_helpers": {
+    "classes\\ChestContainerObservation$1.class": "76e4eaf01e08b673faa3cccd194fd0a9f44ffd86e9f90b6f34b47e22399876b8",
+    "classes\\ChestContainerObservation$Inventory.class": "47d1fa85c4fd755640045b0b3942c717341d20c91596d761b19b31d808177c70",
+    "classes\\ChestContainerObservation$ProbeFailure.class": "df534350e0eac0471978e348735e9591a622715c8cfd00473af315bd5db8dde0",
+    "classes\\ChestContainerObservation.class": "d689406e1ebd9d11e57ac3297955ab61cdde2e4afd5e7ff8f2ae23f6354165a1"
+  },
+  "captured_input_fingerprints": {
+    "C:\\Users\\admin\\minecraft\\b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\chest_container\\ChestContainerObservation.java": "060b2f9a804c4672883384903575c73b561201271e15ef1a70c94113a59d4e22",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\chest_container\\cases.json": "55a55c79aa207a244278bc42fbae3338edc71db8b651da706c4a733e0123aaa1",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\chest_container\\capture.py": "64a715ea31c07b80f0cf2969db8e4da1a0ec281fc9a68185de8ce2f10e683ef7",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "C:\\Users\\admin\\minecraft\\.local\\chest-reference\\capture-06\\declared-inputs.tsv": "05c4145012e1e61843e40345ad3d0f458bd28341128d43972045af3264ba4831"
+  },
+  "private_artifacts": {
+    "original.stdout": "721be41935ccb2eb235940ec1a06754eb0541dbe9ab4baf0b070779101705011",
+    "original.stderr": "6004f029029898e40c4501fb3c0eebf7213aad1c90f45f56dae749d1fe129c61",
+    "original-repeat.stdout": "721be41935ccb2eb235940ec1a06754eb0541dbe9ab4baf0b070779101705011",
+    "original-repeat.stderr": "6004f029029898e40c4501fb3c0eebf7213aad1c90f45f56dae749d1fe129c61",
+    "declared-inputs.tsv": "05c4145012e1e61843e40345ad3d0f458bd28341128d43972045af3264ba4831",
+    "java-version.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "java-version.stderr": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622",
+    "javac-version.stdout": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c",
+    "javac-version.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "java_version": [
+    "openjdk version \"17.0.17\" 2025-10-21",
+    "OpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)",
+    "OpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)"
+  ],
+  "javac_version": [
+    "javac 17.0.17"
+  ],
+  "outputs": {
+    "finite.json": "a6ff21423f2e6faf9c02b1b4e01cb2fe5032752fd68f2cf091ae43181bd8673d",
+    "source-pins.json": "4c75cbc599555ea4dbdf9ccee89428653b6d9e99f83f88f1ff7eb7d8bd3dd8b6",
+    "native-observations.h": "4ce3d455e5f0c9cb1f965e2ca41b4d368059d9e25c4755c0f742769c93a0b593"
+  },
+  "observer_scope": "Reflective field snapshots and callback records; no JDI/live bytecode instrumentation. Loaded original resource hashes and common source-JAR hash match archived class pins. No original class replacements are compiled.",
+  "publication_guard_scope": "This post-execution publisher rechecks recorded transport completion/byte counts/hashes and reparses both original streams against report rows before any public write. It also rederives selected class/Code pins from the unchanged archive. It executes no game code and changes no captured execution helper or observation.",
+  "controlled_inventory_scope": "Each declared LW owns a 64-cell test array. Its split returns the same nullable Stack without mutation; set stores directly without clamping or dirty. These are OG dispatch inputs, not original JS method observations.",
+  "native_projection_scope": "Exact CD layouts and selected Shift inputs/results/Stack aliases. Empty controlled-array tails beyond Player36 and storage27/54 are checked before omission. Includes no native acceptance claim.",
+  "remaining": "Actual JS/LW eligibility and dirty effects, genuine Player containers/publication, HP initialization/close/drawing, physical input, saved-world drift, image parity and FPS require separate controls.",
+  "failed_preparations": [
+    {
+      "id": "capture-01",
+      "status": "FAIL",
+      "capture_sha256": "9f4b2891f68d6234847b96984c2170468048d1cd1fb325cfb495d1f1d4fccc26",
+      "scope": "GM-first registry preparation failed in circular class initialization before any declared case. No result admitted."
+    }
+  ]
+}

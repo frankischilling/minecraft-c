@@ -44,6 +44,20 @@ All memory is reserved before mutation. This atomic in-memory failure policy
 does not reproduce partial original filesystem writes or establish durability.
 [Native region transport](../world/storage.md) owns those separate operations.
 
+### Allocation checks on import
+
+Import checks ordered, disjoint extents in one pass. If extents appear out
+of order or intersect their predecessor, import uses the reader's bounded
+sector sort. It checks the entire allocation table before reserving memory,
+so an overlap still reports an invalid image when the memory budget is zero.
+
+In ten alternating Windows Release pairs, importing and freeing a
+4 MiB image with 1,024 shuffled extents took 714 µs at the median, down
+from 1,383 µs. An ordered 128-extent image took 18.53 µs, down from
+26.75 µs. At eight extents, both builds took about 2.8 µs. Both imported
+the same bytes, and 1,600 authored layouts matched the previous import
+results on GCC and Clang.
+
 ## Original comparison scope
 
 Untouched client `qj` and server `jx` supply the allocation observations;

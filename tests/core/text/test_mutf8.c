@@ -14,8 +14,7 @@ static unsigned int checks;
         }                                                                                          \
     } while (0)
 
-static int test_known_bytes(void)
-{
+static int test_known_bytes(void) {
     /* DataOutputStream.writeUTF observations, with its two-byte prefix removed. */
     const uint16_t units[] = {0,      1,      0x7f,   0x80,   0x7ff, 0x800,
                               0xffff, 0xd800, 0xdc00, 0xd83d, 0xde00};
@@ -48,8 +47,7 @@ static int test_known_bytes(void)
     return 0;
 }
 
-static int test_empty_and_arguments(void)
-{
+static int test_empty_and_arguments(void) {
     const uint8_t input[] = {0x41};
     const uint16_t units[] = {0x41};
     uint8_t encoded[] = {0x55, 0x55};
@@ -89,8 +87,7 @@ static int test_empty_and_arguments(void)
     return 0;
 }
 
-static int test_capacity(void)
-{
+static int test_capacity(void) {
     const uint16_t input[] = {0x41, 0, 0xd800};
     const uint8_t bytes[] = {0x41, 0xc0, 0x80, 0xed, 0xa0, 0x80};
     uint8_t encoded[sizeof(bytes)];
@@ -127,8 +124,7 @@ static int test_capacity(void)
     return 0;
 }
 
-static int test_malformed(void)
-{
+static int test_malformed(void) {
     const struct {
         uint8_t bytes[8];
         size_t length;
@@ -166,8 +162,7 @@ static int test_malformed(void)
     return 0;
 }
 
-static int test_decoder_forms(void)
-{
+static int test_decoder_forms(void) {
     /* readUTF accepts raw NUL and non-shortest two-/three-byte forms. */
     for (uint32_t value = 0; value <= UINT32_C(0xffff); ++value) {
         uint8_t bytes[3] = {(uint8_t)(UINT32_C(0xe0) | (value >> 12)),
@@ -202,8 +197,7 @@ static int test_decoder_forms(void)
     return 0;
 }
 
-static int test_all_code_units(void)
-{
+static int test_all_code_units(void) {
     static uint16_t input[65536];
     static uint16_t output[65536];
     static uint8_t bytes[65536 * 3];
@@ -241,8 +235,7 @@ static int test_all_code_units(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_known_bytes() || test_empty_and_arguments() || test_capacity() || test_malformed() ||
         test_decoder_forms() || test_all_code_units()) {
         return 1;

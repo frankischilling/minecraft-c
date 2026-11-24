@@ -1,0 +1,1517 @@
+{
+  "schema": "FIRE_READER_WINDOWS_COST_V1",
+  "measurement_date": "2026-11-16",
+  "scope": {
+    "workload": "Synthetic Fire transport reader and corruption unittest CLI",
+    "tests_per_process": 10,
+    "native_processes_executed_for_measurement": 0,
+    "existing_native_profile_count": 71,
+    "existing_native_cohort_changed_by_reader_edit": false,
+    "claims_excluded": [
+      "whole CI suite timing",
+      "native replay timing",
+      "gameplay performance",
+      "FPS",
+      "Linux performance",
+      "statistical significance"
+    ]
+  },
+  "host": {
+    "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+    "os": "Windows-10-10.0.19045-SP0",
+    "processor": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel",
+    "logical_cpu_count": 20,
+    "python_executable_role": "PYTHON",
+    "runtime_identity_scope": "Recorded version and host metadata; executable byte continuity was not recorded."
+  },
+  "source_versions": {
+    "baseline": {
+      "repository_revision": "82a0a89df053c15e9c5c21f524a05dbe2a114e0f",
+      "path": "tests/reference/world/fire/test_native.py",
+      "sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "role": "BASELINE_READER"
+    },
+    "candidate": {
+      "path": "tests/reference/world/fire/test_native.py",
+      "sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "role": "CANDIDATE_READER"
+    }
+  },
+  "method": {
+    "pairs": 4,
+    "processes": 8,
+    "fresh_processes": true,
+    "order": [
+      {
+        "pair": 1,
+        "mode": "normal",
+        "order": [
+          "baseline",
+          "candidate"
+        ]
+      },
+      {
+        "pair": 2,
+        "mode": "optimized",
+        "order": [
+          "candidate",
+          "baseline"
+        ]
+      },
+      {
+        "pair": 3,
+        "mode": "normal",
+        "order": [
+          "candidate",
+          "baseline"
+        ]
+      },
+      {
+        "pair": 4,
+        "mode": "optimized",
+        "order": [
+          "baseline",
+          "candidate"
+        ]
+      }
+    ],
+    "elapsed_clock": "time.perf_counter",
+    "timed_boundary": "Immediately before loading the bounded capture helper and calling capture(command), through its return. Includes helper loading, child launch, plain unittest execution, pipe/file capture, stream hashes and receipt writing.",
+    "outside_timing": [
+      "selected-input and reader-source before/after guards",
+      "separate inventory audits",
+      "vector controls",
+      "profiling",
+      "summary calculation"
+    ],
+    "child_working_directory": "REPOSITORY_ROOT",
+    "child_environment": "Inherited environment with FIRE_PACKAGE prepended to PYTHONPATH.",
+    "paired_environment_sha256": "5da397b4c59f8f33144b3a90660714ff87a1e778c058d00dbc2c911dedbab19f",
+    "sample_size_note": "Two baseline and two candidate processes per Python mode; one Windows host.",
+    "implementation_change": "Compiled nonzero maximal equal-byte run regex replaces the Python byte/len loop; fixtures remain fresh and uncached.",
+    "command_representation": "Published commands are role projections, not verbatim private commands."
+  },
+  "guarded_inputs": {
+    "selected_nonreader_input_count": 13,
+    "public": {
+      "tests/reference/client/controller/capture.py": {
+        "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+      },
+      "tests/reference/entity/remaining_plants_wake/run_native.py": {
+        "sha256": "99827840e44c1efe9686805afd90c37ee832801bbd6ec1ba08f8d645c36c5a67"
+      },
+      "tests/reference/world/fire/capture_reference.py": {
+        "sha256": "674c3ddbf6b7c90b3cb556a30c5d2b54e49b98d8b7b4eefb35c1ce8aee660104"
+      },
+      "tests/reference/world/fire/finite.json": {
+        "sha256": "ff598d4d92610e738a1f6cecd0974e671daa7605cd937b19f6e3ac8550533df4"
+      },
+      "tests/reference/world/fire/fire-method-pins.json": {
+        "sha256": "1255eb868c4466d2800ad702fa3819407a6f5ecf4d3187c838dc928d28144ae9"
+      },
+      "tests/reference/world/fire/hashset_order.py": {
+        "sha256": "2e967d0d383f94561ea4c9c75f89e758745a60cca8457ac00517b4dcb18a49b8"
+      },
+      "tests/reference/world/fire/model.py": {
+        "sha256": "c08352ebd145ff4a8d13bc78701ee664674228bdc716b7b9573585709a4fe161"
+      },
+      "tests/reference/world/fire/packet.py": {
+        "sha256": "c80c59fe835e0c4a8a31dd06cd9bd2fc2b472b55ff86bb1d9f6fb10b5308e3c9"
+      },
+      "tests/reference/world/fire/profiles.json": {
+        "sha256": "74c9255be145fbfa9dcc2e8e4ff9a26a299f1fce0e2699aacd8825ed67c653dc"
+      },
+      "tests/reference/world/fire/provenance.json": {
+        "sha256": "1bdda1e712f921930aa994629462711381003463af5a4c4a1d5154253445090b"
+      },
+      "tests/reference/world/fire/run_native.py": {
+        "sha256": "941da3513c75c5b738cd0a834e3dee5b2018735c419387e6d0b92007e7ce0571"
+      },
+      "tests/reference/world/fire/test_packet.py": {
+        "sha256": "28ba75d3fdb769ec7031ad088679b184214dbe6b8d9a611389b0d9ff76afc7df"
+      }
+    },
+    "private_roles": {
+      "audit-wrapper": {
+        "sha256": "ab8182683122d80c80c512917c1e812b6de5b5c168ce44678b3e8559e659ca5f",
+        "executed_during_timed_pairs": false
+      }
+    },
+    "guard_scope": "Per-process selected reader source and13 selected nonreader files before/after; this is not a snapshot of the whole repository or runtime."
+  },
+  "paired_runs": [
+    {
+      "variant": "baseline",
+      "mode": "normal",
+      "elapsed_seconds": 57.917627500370145,
+      "unittest_reported_seconds": 57.75,
+      "result_record": {
+        "bytes": 5218,
+        "sha256": "5f35c77c6a30b33ac56d60245399cb9459ffc6d6093cd0eeec40548c7c7b6660"
+      },
+      "source_before_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "source_after_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "selected_inputs_before_after_equal": true,
+      "current_selected_inputs_match": true,
+      "capture": {
+        "raw_receipt": {
+          "bytes": 660,
+          "sha256": "cc48de83dcd754f73ce078de8ede11a1a0748ec74b199e94ef0bec5641c281fd"
+        },
+        "command_representation": "role projection, not the verbatim private command",
+        "command_roles": [
+          "PYTHON",
+          "-B",
+          "BASELINE_READER"
+        ],
+        "exit": 0,
+        "timeout_seconds": 180,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 115,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "b6f030d1878dec60201324d380a402833430e71acc16d267fe2b7a344a5c0ad0",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "pair": 1,
+      "position_in_pair": 1
+    },
+    {
+      "variant": "candidate",
+      "mode": "normal",
+      "elapsed_seconds": 8.582382599823177,
+      "unittest_reported_seconds": 8.427,
+      "result_record": {
+        "bytes": 5206,
+        "sha256": "9afb6bab892855218092e664e24962c596474306d5be3292eedef29bc74d5dff"
+      },
+      "source_before_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "source_after_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "selected_inputs_before_after_equal": true,
+      "current_selected_inputs_match": true,
+      "capture": {
+        "raw_receipt": {
+          "bytes": 647,
+          "sha256": "075decd987f3aafa5d988665e37a46a03ae2068122d0b9c25db70acd1a210a89"
+        },
+        "command_representation": "role projection, not the verbatim private command",
+        "command_roles": [
+          "PYTHON",
+          "-B",
+          "CANDIDATE_READER"
+        ],
+        "exit": 0,
+        "timeout_seconds": 180,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 114,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "082d21f167fb7ddef6df3dced82860703784bf8de88638136e9e8b8321a54528",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "pair": 1,
+      "position_in_pair": 2
+    },
+    {
+      "variant": "candidate",
+      "mode": "optimized",
+      "elapsed_seconds": 8.772553599905223,
+      "unittest_reported_seconds": 8.345,
+      "result_record": {
+        "bytes": 5225,
+        "sha256": "d891af901267fccb480390440e715dce651487ac7a786ed9647bf0bb91c917ed"
+      },
+      "source_before_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "source_after_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "selected_inputs_before_after_equal": true,
+      "current_selected_inputs_match": true,
+      "capture": {
+        "raw_receipt": {
+          "bytes": 658,
+          "sha256": "a6d3cb8fb448b0716bacc6cf0c442b0b908fba77ca341fc30f4b3833d4373579"
+        },
+        "command_representation": "role projection, not the verbatim private command",
+        "command_roles": [
+          "PYTHON",
+          "-B",
+          "-O",
+          "CANDIDATE_READER"
+        ],
+        "exit": 0,
+        "timeout_seconds": 180,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 114,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "55f2aadb8d2ea3c497a61f71be55de79bceeac614220f527a40f553933a1e303",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "pair": 2,
+      "position_in_pair": 1
+    },
+    {
+      "variant": "baseline",
+      "mode": "optimized",
+      "elapsed_seconds": 57.85286130011082,
+      "unittest_reported_seconds": 57.407,
+      "result_record": {
+        "bytes": 5237,
+        "sha256": "feac5558ff56cce04c6dc45766e5897dffedb6d385c1e9d00fcc99e00c7791de"
+      },
+      "source_before_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "source_after_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "selected_inputs_before_after_equal": true,
+      "current_selected_inputs_match": true,
+      "capture": {
+        "raw_receipt": {
+          "bytes": 671,
+          "sha256": "1c70ff163363ec5f2f3c2baee18b6a7070d009062026e55b97d74fdc379b1d90"
+        },
+        "command_representation": "role projection, not the verbatim private command",
+        "command_roles": [
+          "PYTHON",
+          "-B",
+          "-O",
+          "BASELINE_READER"
+        ],
+        "exit": 0,
+        "timeout_seconds": 180,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 115,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "cf2e54a37b245d098529b405e0dc77ddfea8ee93a719b5c313a988558a1e997f",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "pair": 2,
+      "position_in_pair": 2
+    },
+    {
+      "variant": "candidate",
+      "mode": "normal",
+      "elapsed_seconds": 8.432597800157964,
+      "unittest_reported_seconds": 8.275,
+      "result_record": {
+        "bytes": 5206,
+        "sha256": "c312fb593abece17526c56770a1b8bf0b73f093c4a3812e59b3c012321c75425"
+      },
+      "source_before_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "source_after_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "selected_inputs_before_after_equal": true,
+      "current_selected_inputs_match": true,
+      "capture": {
+        "raw_receipt": {
+          "bytes": 647,
+          "sha256": "122a9494c09b057031595134a5ab4af537a768c19bd3b9b563a54ef515882d27"
+        },
+        "command_representation": "role projection, not the verbatim private command",
+        "command_roles": [
+          "PYTHON",
+          "-B",
+          "CANDIDATE_READER"
+        ],
+        "exit": 0,
+        "timeout_seconds": 180,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 114,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "ae33fd8554ae7dfee6bce297471ea145194d5916c8412db0ab506e02e69062a6",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "pair": 3,
+      "position_in_pair": 1
+    },
+    {
+      "variant": "baseline",
+      "mode": "normal",
+      "elapsed_seconds": 57.862355899997056,
+      "unittest_reported_seconds": 57.705,
+      "result_record": {
+        "bytes": 5219,
+        "sha256": "02f68d1931419a6f216a557aebab910f8c6bf966e92f3fdef5a1034c074a84e4"
+      },
+      "source_before_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "source_after_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "selected_inputs_before_after_equal": true,
+      "current_selected_inputs_match": true,
+      "capture": {
+        "raw_receipt": {
+          "bytes": 660,
+          "sha256": "4e1ea809c15a27dd375f9ea1e654fe85c3bd3d4ce4597f37f1c4add2f97e4638"
+        },
+        "command_representation": "role projection, not the verbatim private command",
+        "command_roles": [
+          "PYTHON",
+          "-B",
+          "BASELINE_READER"
+        ],
+        "exit": 0,
+        "timeout_seconds": 180,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 115,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "315e58caf9c7108a24ec4858a13d5732fc033273adc650975457109aecf0214c",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "pair": 3,
+      "position_in_pair": 2
+    },
+    {
+      "variant": "baseline",
+      "mode": "optimized",
+      "elapsed_seconds": 58.55472830031067,
+      "unittest_reported_seconds": 58.13,
+      "result_record": {
+        "bytes": 5236,
+        "sha256": "c01587ff680471bfa3e3a405995dac5fcb50e07b0cce6dc251280ec459d952a3"
+      },
+      "source_before_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "source_after_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+      "selected_inputs_before_after_equal": true,
+      "current_selected_inputs_match": true,
+      "capture": {
+        "raw_receipt": {
+          "bytes": 671,
+          "sha256": "a0c397743b932fa84a10c332389f5f4a595a06cc6b05e41e67f7d7f487214cfd"
+        },
+        "command_representation": "role projection, not the verbatim private command",
+        "command_roles": [
+          "PYTHON",
+          "-B",
+          "-O",
+          "BASELINE_READER"
+        ],
+        "exit": 0,
+        "timeout_seconds": 180,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 115,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "f9e5c5f3bd591579b23338ea9d7e46c6fa079c8fff111a09db666235cf3c0f88",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "pair": 4,
+      "position_in_pair": 1
+    },
+    {
+      "variant": "candidate",
+      "mode": "optimized",
+      "elapsed_seconds": 8.882619800046086,
+      "unittest_reported_seconds": 8.417,
+      "result_record": {
+        "bytes": 5225,
+        "sha256": "eba7e13e4ffdaf5a76ab897253b997d866dbe89b5ed0d997a369d8759f4df28f"
+      },
+      "source_before_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "source_after_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+      "selected_inputs_before_after_equal": true,
+      "current_selected_inputs_match": true,
+      "capture": {
+        "raw_receipt": {
+          "bytes": 658,
+          "sha256": "d646c257cebddb23e2c07603c4d31058f5fae9aa1b17a078876264958d7ab3dd"
+        },
+        "command_representation": "role projection, not the verbatim private command",
+        "command_roles": [
+          "PYTHON",
+          "-B",
+          "-O",
+          "CANDIDATE_READER"
+        ],
+        "exit": 0,
+        "timeout_seconds": 180,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 0,
+        "stderr_bytes": 114,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "bbb2cbd9a37a7789a01241e28678854b00ede6854486013704089a01c7157f81",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "pair": 4,
+      "position_in_pair": 2
+    }
+  ],
+  "summary": {
+    "normal": {
+      "n_per_implementation": 2,
+      "baseline_seconds": [
+        57.917627500370145,
+        57.862355899997056
+      ],
+      "candidate_seconds": [
+        8.582382599823177,
+        8.432597800157964
+      ],
+      "baseline_median_seconds": 57.8899917001836,
+      "candidate_median_seconds": 8.50749019999057,
+      "median_elapsed_reduction_percent": 85.30403969644448
+    },
+    "optimized": {
+      "n_per_implementation": 2,
+      "baseline_seconds": [
+        57.85286130011082,
+        58.55472830031067
+      ],
+      "candidate_seconds": [
+        8.772553599905223,
+        8.882619800046086
+      ],
+      "baseline_median_seconds": 58.203794800210744,
+      "candidate_median_seconds": 8.827586699975654,
+      "median_elapsed_reduction_percent": 84.83331416744035
+    }
+  },
+  "inventory_audit": {
+    "timed": false,
+    "audited_processes": 4,
+    "cases": [
+      "__main__.NativeReader.test_actual_before_state_planes_and_typed_fields",
+      "__main__.NativeReader.test_all_declared_original_pairs",
+      "__main__.NativeReader.test_callback_order_deletion_and_committed_prefix",
+      "__main__.NativeReader.test_cleanup_stability_and_unvisited_plane_bytes",
+      "__main__.NativeReader.test_literal_inputs_status_and_class_preparation",
+      "__main__.NativeReader.test_retained_world_source_receipt_identity_and_retirement",
+      "__main__.NativeReader.test_source_null_sites_preserve_getter_before_array_order",
+      "__main__.NativeReader.test_tnt_publication_failure_keeps_real_entity_and_math_draw",
+      "__main__.NativeReader.test_transport_closure_completion_and_duplicate_json",
+      "__main__.NativeReader.test_world_random_fire_uses_complete_real_iterator_and_lcg"
+    ],
+    "tests": 10,
+    "subtests": 143,
+    "subtest_inventory_sha256": "a986de8e803b53df906571dabb9d84dca63e2795ab32e5b46499715803af3673",
+    "canonical_positive_transports": [
+      {
+        "mode": "fire-added-solid",
+        "canonical_transport_sha256": "9fe528974389ba9d4c4edb07297503491630ad08e1b211529bc0e4d523789650",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-flammable-0",
+        "canonical_transport_sha256": "c2d4d90bd86aef861e44a8a3da4f891d096e08c381a7ea1234d2f5bef286cd28",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-flammable-1",
+        "canonical_transport_sha256": "5b7b922791bd99c54c4f40bebd766ddee95473697b302186ecbba4b6d6d548b0",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-flammable-2",
+        "canonical_transport_sha256": "d36d14a018f4d3f7561a97069ba475d5adca99c80c6d6d60283af9857538ff87",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-flammable-3",
+        "canonical_transport_sha256": "c5c2a4bcdb4322783cda46d32e3633814fce95162874e9c74afae06a81deb722",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-flammable-4",
+        "canonical_transport_sha256": "8a88d44b2b798615694ef77993e7f3f7b2312fdeb51b388a09e0569060f667e1",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-flammable-5",
+        "canonical_transport_sha256": "6fbd7e6bbf157d7546b0126eb933b2d8bcbd7a25b9bdb16f7aa840b763f2a56f",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-unsupported",
+        "canonical_transport_sha256": "ab5228e5a31a05dfa4c6a3e0153a6a7308ac5e188f805c8ee495986b182a0874",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1183,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-obsidian-no-frame",
+        "canonical_transport_sha256": "ccce730cbdfb66a4c9b123727498b9f68fb52e5ae8face8d7f4e02edafc7234a",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-portal-x",
+        "canonical_transport_sha256": "bcdddd428c8c41431c8c1f1de2e66daca31f3e822d56f147fda590b7f944cc3e",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1258,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-portal-z",
+        "canonical_transport_sha256": "ffc3838eb0ea69c9c2e88c918a6be826df7a58b63155cdc7575c87e6caa3e4ed",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1258,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-portal-broken",
+        "canonical_transport_sha256": "757ab8a33ce0215002e4c537c1757da347a20a7ec35ef63fb7940d7c51fb01f6",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-portal-ambiguous",
+        "canonical_transport_sha256": "73b0e54783f6182b99b065603bb7051fd42c9c8c9cf07177a543c227778b222c",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-added-portal-cell-error-third",
+        "canonical_transport_sha256": "c8395c15e670c70144b3cada3aa04ac25176262d955213407ab1149708a85f9a",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1198,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-neighbor-solid",
+        "canonical_transport_sha256": "80fb412f9639c05144f8262586a990d25dfff5df870ebfd6402e149a1fb916d7",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1139,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-neighbor-flammable",
+        "canonical_transport_sha256": "f8b4fbaa4a9c98d58a08a8a33ac2518067f84508aa46d9c64caa93ee02fce57a",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1139,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-neighbor-unsupported",
+        "canonical_transport_sha256": "c2f9d0428e873fe1d2f02772d18c0edf9e3022a8db58fafc16c12f60ecf465cd",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1168,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-neighbor-cell-error",
+        "canonical_transport_sha256": "0e22d13f64fb9d1b70aa6caef4c6ae42f5f766578977059f1c8c6ee97eab74ec",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1168,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-isolated-age0",
+        "canonical_transport_sha256": "f0eb635124f0359dd60416e74b91f8604a6d19b19c4533944f5aa53515498062",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1151,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-isolated-age3",
+        "canonical_transport_sha256": "f303b09f6f8a0bacfd6cd029a48fe6748a035e2d03e9f098db1be4add2cda1e8",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1151,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-isolated-age4",
+        "canonical_transport_sha256": "2b0c32526c7b314a13f6875964499c5b0c239fdcff152559329ffbae1a19fac8",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-isolated-age15",
+        "canonical_transport_sha256": "d0874141f1586f40706758aa461fdfc52622a49e094a7ff18940861d87662238",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-unsupported",
+        "canonical_transport_sha256": "d73c82147ece8c15ab3a097ea2eba6861fa9de71f1c96c0a36cc60016986ea1a",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-age15-extinguish",
+        "canonical_transport_sha256": "037b580fda6853d17fa22273a1f15442b6b8c201a6188054041060a8a473c6d4",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-age15-continue",
+        "canonical_transport_sha256": "4a2a753d2ae79b34b20092b9012227f7d24eb5a748245d2e184c2763e3fd2763",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1151,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-netherrack-rain",
+        "canonical_transport_sha256": "5016bacc5bc98b4cf79b5174ef9dd8907bc913bd08e392c5e3a8c052f4678b28",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1151,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-rain-self",
+        "canonical_transport_sha256": "f5a2bf2583c06c858d570115ec1499d9ad6901a51de214705edfc216f418cb35",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1168,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-rain-west",
+        "canonical_transport_sha256": "441561e29e583b13ee386767b69183b98c04f6170eec90ab73b00dd982acb9bd",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1168,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-rain-east",
+        "canonical_transport_sha256": "26af605fe4a050d08a8f035e142324de98146296228c510b6ad9e5ba58b329af",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1168,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-rain-north",
+        "canonical_transport_sha256": "92a107ce6fe22d3232232e822f1b06c49a81db10f61356cb992e51cea6b07b7e",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1168,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-rain-south",
+        "canonical_transport_sha256": "f59c4d0fe4315e11950d47b229c35917024e932bb498b5771cd29e1a1bbcb18f",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1168,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-rain-desert",
+        "canonical_transport_sha256": "603f3aac4f619820b8ccac5cb65fa4c0ebb65eaa8ed281bc53bef64904ab3069",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1151,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-rain-tundra",
+        "canonical_transport_sha256": "7b37205da5de7fa724268fd9248089c301ae71e2718e481c4a2931600617a5eb",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1151,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-5-remove",
+        "canonical_transport_sha256": "8b992e4ad42f81774b6b445d11eb62297915f87afbbdec083aa6538d386eea99",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-5-replace",
+        "canonical_transport_sha256": "0fd34e7cbc59b45e28dc51f74f88cc14e70e1a3a68ea2fa746f23fb8c03b91fb",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-85-remove",
+        "canonical_transport_sha256": "1965649829889e47d38d180f4461dc6b3b5e2562c676a5fe74a2e9a49963c953",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-85-replace",
+        "canonical_transport_sha256": "5beb703201c6c272f7b07c2ae042f71672a4bf468dba75bdab77d04afd885a42",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-53-remove",
+        "canonical_transport_sha256": "df9a63d7479bacf0fbec114567606ce7bc027b0fb6631cc651a0346cd5bb6baf",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-53-replace",
+        "canonical_transport_sha256": "5a35dbc037cf0bbaad0db7eddc9946f4388847238acdb167dc9eef2d1603618f",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-17-remove",
+        "canonical_transport_sha256": "117a1e163591b61195f41b1bb5a4e2d21f50bb1e031c205e426807217df913b2",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-17-replace",
+        "canonical_transport_sha256": "ae7da6f51f2f67bd4706f9fe3397543393cb31af354c0bda338195ac6e23287c",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-18-remove",
+        "canonical_transport_sha256": "b0f67e674f0247fcf29e784a0368febeb16048da58eb776a6b63382950d6bb74",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-18-replace",
+        "canonical_transport_sha256": "19b550542ecf2acbf622ab0bd76ea18252b368756166af389c55d60ffae7f5e2",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-47-remove",
+        "canonical_transport_sha256": "24736ae2e356c1a2bb9f17724aacae49720cbf395160a6e2247dc6e9929eef99",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-47-replace",
+        "canonical_transport_sha256": "bc29f377049a08dd43b0dcaabb02fcf74b49c1baf9c96bec245e8c183203ee0a",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-46-remove",
+        "canonical_transport_sha256": "c7891a98e10106116b515cd619babcf19ac0952b1b01363a84c0a05f5170f0e2",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1306,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-46-replace",
+        "canonical_transport_sha256": "fa42546ef93817e4971ae0431ee1968fd1f9a43d4588d2a5f2fb2a050d297737",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1318,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-31-remove",
+        "canonical_transport_sha256": "6529750d2383ea8236acc249de3ff4cf1365aa93b3c4a863508db64eeecd199f",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-31-replace",
+        "canonical_transport_sha256": "145e1e8a32fb894499e2413659bbf768b21e72680d867a553c4b667707508f27",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-35-remove",
+        "canonical_transport_sha256": "d1d71f7107c34364f6d0a4642367a13f60e6907daecd3506c54c049ff7cea39e",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-burn-35-replace",
+        "canonical_transport_sha256": "0fdc2f6c9949a763121420605ce6d5ff9b300e8ef6b6f17e925e6e8d14fd4dea",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-spread-seed1",
+        "canonical_transport_sha256": "73deb923e11431f1079ddb80732ccc68f020e7ffedadb8cd1821b0b714194100",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-spread-seed8",
+        "canonical_transport_sha256": "f8c09b23b105ca9012bf37328ed4b151d1c346189fe76de3db440e6ae3d04182",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-tnt-added-error",
+        "canonical_transport_sha256": "f39a439bfa68e3d06e15d1e1390b81fff90e74424d2c4921c495c7a7560a86f0",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1277,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-tnt-sound-error",
+        "canonical_transport_sha256": "e78d27f2e9fd80c8c7fa9eb06aaed942aae927cfa9e025ff2fba89b960c3e6ed",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1318,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-tnt-cell-error-before-prime",
+        "canonical_transport_sha256": "cf2ee82a404ba7b5dae1ab4e9761184052646907ea53afc9efb8e8e7d6077cb4",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-height-normal",
+        "canonical_transport_sha256": "586c05ca9acc68fd8685a3c6a4eef8a3da765eea9ad3c1e9635fb8df2e55ac7f",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1196,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-height-range-error",
+        "canonical_transport_sha256": "b13fd8bb6b98f8c9dfbc1583a45748f5786ad7113b4007d620439fbb02c9266c",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1167,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-height-cell-error",
+        "canonical_transport_sha256": "b4630c6596d6caff6dfe3277bd0f11c6d27804cdf50ddd245109d978c1f22698",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1196,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-world-tick",
+        "canonical_transport_sha256": "e13edc9dc935474580fd33c04f24dd64970b34dc44a76127ee2817ec435d2e71",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1163,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-world-tick-cell-error",
+        "canonical_transport_sha256": "4a8c9b064df2489f3c1ad50ac85349b4cdd576efbe5f47d03fb33b4603e2be01",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": true
+        }
+      },
+      {
+        "mode": "fire-lava-ignition-5",
+        "canonical_transport_sha256": "c69afbe880e160057a5fdd5ab2e800bb06086dce540048ee0d819f320e114e66",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1180,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-lava-ignition-58",
+        "canonical_transport_sha256": "9d3be478803fef47ac36358aa555ae5df2984cc7ce8c9acff5068c2682ab897a",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1183,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-world-tick-lava",
+        "canonical_transport_sha256": "500e9f78255e249b8713ff64c1852cb9543684c1a05f7012ebb0b2e60a5d124e",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1192,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-neighbor-a-null",
+        "canonical_transport_sha256": "0b0274bb6c2ac3247e1ac4378601fb87fd7587bafc92b546b301942e77f52ec1",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 629,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-b-null",
+        "canonical_transport_sha256": "00476a23ae0cd741caf3ea62d6b4225b7628466550745b82b435915042918afd",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 641,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-tick-a-null",
+        "canonical_transport_sha256": "957326ce61f004220c8d9fa9928c35057cfc733c02dec1f14996fdf57aa91a69",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 641,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-neighbor-a-null-provider-null",
+        "canonical_transport_sha256": "6ad17f433999fdd35a39b49d42cdf4eabfd20ad9145ad4400157b00b04a7160a",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 629,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-world-random-player",
+        "canonical_transport_sha256": "f14b50371fcee47d1cbc161b1357c15dd3fd7589474d41ac444d53cea2ea2db4",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 6913,
+          "receipt_lifetime_checked": false
+        }
+      },
+      {
+        "mode": "fire-world-tick-tnt-added-error",
+        "canonical_transport_sha256": "f4f43064bec33ca5d3e00a0c76c3eb49353f85c5d4f790e13ab2d04dbe1bea22",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1289,
+          "receipt_lifetime_checked": true
+        }
+      },
+      {
+        "mode": "fire-world-tick-tnt-sound-error",
+        "canonical_transport_sha256": "0b35a795feb6bd89b7b62d9f81a718312fca50f76884bb92d34cbf6c54caf5cf",
+        "comparison": {
+          "matched": true,
+          "compared_scalars": 1330,
+          "receipt_lifetime_checked": true
+        }
+      }
+    ],
+    "comparison_scope": "Literal equality of the ten cases,143 subtests,71 canonical transport hashes and all returned comparison values across baseline/candidate and both modes.",
+    "runs": [
+      {
+        "variant": "baseline",
+        "mode": "normal",
+        "elapsed_seconds": 57.988339399918914,
+        "unittest_reported_seconds": 57.816,
+        "result_record": {
+          "bytes": 52826,
+          "sha256": "58302645ea40ead496f79d75d8e17d8a62670d14b6316f11a5e13579afe8b6fe"
+        },
+        "source_before_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+        "source_after_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+        "selected_inputs_before_after_equal": true,
+        "current_selected_inputs_match": true,
+        "capture": {
+          "raw_receipt": {
+            "bytes": 927,
+            "sha256": "e6863c73ad0feed280ae6b3b5e098dde39359f5021240b3fa39727caaf3a2484"
+          },
+          "command_representation": "role projection, not the verbatim private command",
+          "command_roles": [
+            "PYTHON",
+            "-B",
+            "AUDIT_WRAPPER",
+            "BASELINE_READER",
+            "FIRE_PACKAGE",
+            "AUDIT_OUTPUT",
+            "none"
+          ],
+          "exit": 0,
+          "timeout_seconds": 180,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 115,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "5434ee26d531ddddf09c6d7a602960e894682373163098dca27bc14a047a6368",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576
+        },
+        "raw_inventory_record": {
+          "bytes": 44845,
+          "sha256": "a2a70c31d33b5248930ca7484182803ac81f94b31f8da36838d631b01093f7e3"
+        },
+        "inventory_sha256": "c47b2eba913dfdee8f7ad4f5ecf65f5785b4d2d6d68a49c9ee15b21f5bedf95c"
+      },
+      {
+        "variant": "candidate",
+        "mode": "normal",
+        "elapsed_seconds": 8.623821299988776,
+        "unittest_reported_seconds": 8.457,
+        "result_record": {
+          "bytes": 52806,
+          "sha256": "d94d45e9449f358c9bcdc805efee44cee7a5f608a1800b060417c48126407b63"
+        },
+        "source_before_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+        "source_after_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+        "selected_inputs_before_after_equal": true,
+        "current_selected_inputs_match": true,
+        "capture": {
+          "raw_receipt": {
+            "bytes": 911,
+            "sha256": "07e11237ccc7e11e10e4c995a60a3ea3395cdb5ff4439b54b8d1bab926bed714"
+          },
+          "command_representation": "role projection, not the verbatim private command",
+          "command_roles": [
+            "PYTHON",
+            "-B",
+            "AUDIT_WRAPPER",
+            "CANDIDATE_READER",
+            "FIRE_PACKAGE",
+            "AUDIT_OUTPUT",
+            "none"
+          ],
+          "exit": 0,
+          "timeout_seconds": 180,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 114,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "79cdcd8ca604ae7444a7b54e9c1f6f414ca4cc02e29beb1971b1ce7ddd95d2a5",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576
+        },
+        "raw_inventory_record": {
+          "bytes": 44845,
+          "sha256": "a2a70c31d33b5248930ca7484182803ac81f94b31f8da36838d631b01093f7e3"
+        },
+        "inventory_sha256": "c47b2eba913dfdee8f7ad4f5ecf65f5785b4d2d6d68a49c9ee15b21f5bedf95c"
+      },
+      {
+        "variant": "baseline",
+        "mode": "optimized",
+        "elapsed_seconds": 57.99469690024853,
+        "unittest_reported_seconds": 57.561,
+        "result_record": {
+          "bytes": 52847,
+          "sha256": "72680956f37b376acfd38ae0d8168382d708e24e1239eb54d9ecba160a2cf367"
+        },
+        "source_before_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+        "source_after_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+        "selected_inputs_before_after_equal": true,
+        "current_selected_inputs_match": true,
+        "capture": {
+          "raw_receipt": {
+            "bytes": 941,
+            "sha256": "b09452dcfc2db2dd8c34c1473f9b364cb280e5299a5b4d2e361ac54e72729aaa"
+          },
+          "command_representation": "role projection, not the verbatim private command",
+          "command_roles": [
+            "PYTHON",
+            "-B",
+            "-O",
+            "AUDIT_WRAPPER",
+            "BASELINE_READER",
+            "FIRE_PACKAGE",
+            "AUDIT_OUTPUT",
+            "none"
+          ],
+          "exit": 0,
+          "timeout_seconds": 180,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 115,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "38c2de7b3164460514f689bf1800eb73eabc7bb8a2fe72eff79be9cbf62d1696",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576
+        },
+        "raw_inventory_record": {
+          "bytes": 44845,
+          "sha256": "9e1f36ed22365a06a84ef5c8e8a80d95f79c5dccacb3cec976efd4762b471d6c"
+        },
+        "inventory_sha256": "c47b2eba913dfdee8f7ad4f5ecf65f5785b4d2d6d68a49c9ee15b21f5bedf95c"
+      },
+      {
+        "variant": "candidate",
+        "mode": "optimized",
+        "elapsed_seconds": 8.99462529970333,
+        "unittest_reported_seconds": 8.549,
+        "result_record": {
+          "bytes": 52827,
+          "sha256": "9598107ee407280913d2848bb91f28bd157b932a3730114bb319fe95e0e18157"
+        },
+        "source_before_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+        "source_after_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+        "selected_inputs_before_after_equal": true,
+        "current_selected_inputs_match": true,
+        "capture": {
+          "raw_receipt": {
+            "bytes": 925,
+            "sha256": "d0ab424dd5111dad2faaf191a5913b3a9face5c1e889c5a601749275fbc44344"
+          },
+          "command_representation": "role projection, not the verbatim private command",
+          "command_roles": [
+            "PYTHON",
+            "-B",
+            "-O",
+            "AUDIT_WRAPPER",
+            "CANDIDATE_READER",
+            "FIRE_PACKAGE",
+            "AUDIT_OUTPUT",
+            "none"
+          ],
+          "exit": 0,
+          "timeout_seconds": 180,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 114,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "d407c87f92bfc9622ef861223069b84d513c43737223dcbb95e3e6e1cdebe75c",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576
+        },
+        "raw_inventory_record": {
+          "bytes": 44845,
+          "sha256": "9e1f36ed22365a06a84ef5c8e8a80d95f79c5dccacb3cec976efd4762b471d6c"
+        },
+        "inventory_sha256": "c47b2eba913dfdee8f7ad4f5ecf65f5785b4d2d6d68a49c9ee15b21f5bedf95c"
+      }
+    ]
+  },
+  "vector_controls": {
+    "timed": false,
+    "vector_cases_per_mode": 1545,
+    "input_types": [
+      "bytes",
+      "bytearray"
+    ],
+    "calls_per_implementation_per_mode": 3090,
+    "input_immutability_checked_by_control": true,
+    "runs": [
+      {
+        "mode": "normal",
+        "result": {
+          "status": "PASS",
+          "vectors": 1545,
+          "calls_per_implementation": 3090,
+          "baseline_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+          "candidate_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+          "outputs_sha256": "895a6024876427bcc6ebd58de6e444c12ef5d88f498e7d2ad3156a65a85df45b"
+        },
+        "capture": {
+          "raw_receipt": {
+            "bytes": 650,
+            "sha256": "58ef86bf2b978449f400036e18e129fd1f34f0ad5ebbfe00e0b78771f4c14718"
+          },
+          "command_representation": "role projection, not the verbatim private command",
+          "command_roles": [
+            "PYTHON",
+            "-B",
+            "VECTOR_HELPER"
+          ],
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 332,
+          "stderr_bytes": 0,
+          "stdout_sha256": "14b12eca0c8ad3f0b414c047e067b76ce59276fd65a1216476516a560df7b883",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576
+        }
+      },
+      {
+        "mode": "optimized",
+        "result": {
+          "status": "PASS",
+          "vectors": 1545,
+          "calls_per_implementation": 3090,
+          "baseline_sha256": "dc739c41699f759a1f325402372b616f4f2b7015f652db43433834f536fc0e88",
+          "candidate_sha256": "d2036fc3589d5b560dcf19fb2a97321e8bc7e8fd5b3c163d6e0e3e0e130dbff7",
+          "outputs_sha256": "895a6024876427bcc6ebd58de6e444c12ef5d88f498e7d2ad3156a65a85df45b"
+        },
+        "capture": {
+          "raw_receipt": {
+            "bytes": 661,
+            "sha256": "5698972e8daebfb4b149dac69762bb94f0915813aaec66b0065c521660c9600a"
+          },
+          "command_representation": "role projection, not the verbatim private command",
+          "command_roles": [
+            "PYTHON",
+            "-B",
+            "-O",
+            "VECTOR_HELPER"
+          ],
+          "exit": 0,
+          "timeout_seconds": 60,
+          "timed_out": false,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 332,
+          "stderr_bytes": 0,
+          "stdout_sha256": "14b12eca0c8ad3f0b414c047e067b76ce59276fd65a1216476516a560df7b883",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_limit": 4194304,
+          "stderr_limit": 1048576
+        }
+      }
+    ]
+  },
+  "exclusions": {
+    "guard_rejected_preliminary_sample": {
+      "reason": "A selected local audit wrapper changed during a preliminary instrumented baseline sample. Its timing was rejected; no input guard was relaxed.",
+      "included_in_paired_statistics": false,
+      "result_record": {
+        "bytes": 30197,
+        "sha256": "46076208097d81dc12943822a0154298d52ece3e85363320fc4f65c63638f205"
+      },
+      "raw_receipt": {
+        "bytes": 935,
+        "sha256": "c0e753937a1566f0aab6a4a773846b7dda55bdae2efc87a1abb4bf95a793cd61"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 115,
+        "sha256": "dce110ce45fa555380590f348e9a6c671c544de1c646c17381f54d718b3e1cd6"
+      },
+      "process_exit": 0,
+      "changed_role": "audit-wrapper",
+      "wrapper_before_sha256": "676fd64a0eda06952e18f71fc7c3b8f09bbccc01e6363bf1cc52535708080ad8",
+      "wrapper_after_sha256": "f3cccdef7dfe5b289267b3c96413e0a91e0ca964991c2637dc12bd46b57050f4"
+    },
+    "other_work_excluded_from_paired_statistics": [
+      "preliminary/warmup samples",
+      "cProfile",
+      "exploratory cache variant",
+      "inventory audits",
+      "vector controls"
+    ]
+  },
+  "retained_evidence": {
+    "paired_result_aggregate": {
+      "bytes": 42817,
+      "sha256": "cb15ba8c7f3bc2edaf4d02aa00013f1dda931d6e4d617fe9a9c8d00e72e37300"
+    },
+    "experiment_summary": {
+      "bytes": 4118,
+      "sha256": "ee4b1877807ae5dcc1b937fd1ac568bd8a830320e2c8dd560bc5f58a57d51b39"
+    },
+    "environment_metadata": {
+      "bytes": 463,
+      "sha256": "4df3134aa966d886ae8481db46c54be6cdc6dacaff38fe89297c255e5be7ef26"
+    },
+    "final_regex_audit_aggregate": {
+      "bytes": 110902,
+      "sha256": "de116a5d54851f0ab0515aa12657eae8d9ea392fbea789ab5ad9f7cb52ce3ad7"
+    },
+    "source_diff": {
+      "bytes": 723,
+      "sha256": "a902c11cf060bc012aac73306fa8b67466c287cc3f052df858a0bd56dc1e930d"
+    },
+    "private_helper_fingerprints": {
+      "pin_scope": "Current retained helper bytes checked at publication; no master-driver/vector-helper before/after snapshot was recorded.",
+      "measurement_driver": {
+        "bytes": 6729,
+        "sha256": "3512f880dc19b8202e647a675f1d4c243a01fd1218a25d51d0d5999cdd961d7b"
+      },
+      "audit_wrapper": {
+        "bytes": 2433,
+        "sha256": "ab8182683122d80c80c512917c1e812b6de5b5c168ce44678b3e8559e659ca5f"
+      },
+      "vector_helper": {
+        "bytes": 1981,
+        "sha256": "6bffeacce19469a0f37973af26e97bdfc546057f0cfd342ebd139106c893cba7"
+      }
+    }
+  },
+  "independent_verification": {
+    "kind": "Read-only retained receipt, stream, inventory, static source and guard audit; no execution of benchmark/test/native workloads.",
+    "paired_captures_checked": 8,
+    "inventory_captures_checked": 4,
+    "vector_captures_checked": 2,
+    "all_accepted_receipts_exit_zero": true,
+    "all_accepted_stream_counts_hashes_match": true,
+    "all_paired_and_inventory_source_input_guards_match": true,
+    "all_selected_current_files_match_captured_pins": true,
+    "all_full_precision_statistics_recomputed": true,
+    "source_changes_outside_runs_regex_import_and_constant": false,
+    "retained_private_evidence_unchanged_during_audit": true
+  }
+}

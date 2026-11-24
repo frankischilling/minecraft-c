@@ -1,0 +1,428 @@
+{
+  "schema": 1,
+  "entry": "actual inherited sn.e(DDD)V on genuine constructed dc",
+  "row_prefix": [
+    "POSITION",
+    "scenario"
+  ],
+  "input_doubles": [
+    "x",
+    "y",
+    "z"
+  ],
+  "input_floats": [
+    "width",
+    "height",
+    "offset",
+    "y_size"
+  ],
+  "output_doubles": [
+    "x",
+    "y",
+    "z",
+    "bounds_min_x",
+    "bounds_min_y",
+    "bounds_min_z",
+    "bounds_max_x",
+    "bounds_max_y",
+    "bounds_max_z"
+  ],
+  "vectors": [
+    {
+      "name": "ordinary",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 0
+    },
+    {
+      "name": "positive_zero",
+      "x": "0000000000000000",
+      "y": "0000000000000000",
+      "z": "0000000000000000",
+      "width": "00000000",
+      "height": "00000000",
+      "offset": "00000000",
+      "y_size": "00000000",
+      "id": 1
+    },
+    {
+      "name": "negative_zero",
+      "x": "8000000000000000",
+      "y": "8000000000000000",
+      "z": "8000000000000000",
+      "width": "80000000",
+      "height": "80000000",
+      "offset": "80000000",
+      "y_size": "80000000",
+      "id": 2
+    },
+    {
+      "name": "mixed_zero",
+      "x": "0000000000000000",
+      "y": "8000000000000000",
+      "z": "0000000000000000",
+      "width": "00000000",
+      "height": "80000000",
+      "offset": "00000000",
+      "y_size": "80000000",
+      "id": 3
+    },
+    {
+      "name": "positive_subnormal",
+      "x": "0000000000000001",
+      "y": "0000000000000001",
+      "z": "0000000000000001",
+      "width": "00000001",
+      "height": "00000001",
+      "offset": "00000001",
+      "y_size": "00000001",
+      "id": 4
+    },
+    {
+      "name": "negative_subnormal",
+      "x": "8000000000000001",
+      "y": "8000000000000001",
+      "z": "8000000000000001",
+      "width": "80000001",
+      "height": "80000001",
+      "offset": "80000001",
+      "y_size": "80000001",
+      "id": 5
+    },
+    {
+      "name": "nan_x",
+      "x": "7ff8123456789abc",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 6
+    },
+    {
+      "name": "nan_y",
+      "x": "4021000000000000",
+      "y": "7ff823456789abcd",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 7
+    },
+    {
+      "name": "nan_z",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "fff83456789abcde",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 8
+    },
+    {
+      "name": "nan_width",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "7fc12345",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 9
+    },
+    {
+      "name": "nan_height",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "ffc54321",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 10
+    },
+    {
+      "name": "nan_offset",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "7fc23456",
+      "y_size": "3e000000",
+      "id": 11
+    },
+    {
+      "name": "nan_y_size",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "ffc34567",
+      "id": 12
+    },
+    {
+      "name": "three_nan_y_path",
+      "x": "4021000000000000",
+      "y": "7ff823456789abcd",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "7fc23456",
+      "y_size": "ffc34567",
+      "id": 13
+    },
+    {
+      "name": "two_nan_x_path",
+      "x": "7ff8123456789abc",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "ffc12345",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 14
+    },
+    {
+      "name": "two_nan_z_path",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "fff83456789abcde",
+      "width": "7fc12345",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 15
+    },
+    {
+      "name": "nan_offset_and_y_size",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "7fc23456",
+      "y_size": "ffc34567",
+      "id": 16
+    },
+    {
+      "name": "nan_y_and_height",
+      "x": "4021000000000000",
+      "y": "7ff823456789abcd",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "ffc54321",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 17
+    },
+    {
+      "name": "all_nan",
+      "x": "7ff8123456789abc",
+      "y": "7ff823456789abcd",
+      "z": "fff83456789abcde",
+      "width": "7fc12345",
+      "height": "ffc54321",
+      "offset": "7fc23456",
+      "y_size": "ffc34567",
+      "id": 18
+    },
+    {
+      "name": "double_max",
+      "x": "7fefffffffffffff",
+      "y": "7fefffffffffffff",
+      "z": "ffefffffffffffff",
+      "width": "7f7fffff",
+      "height": "7f7fffff",
+      "offset": "ff7fffff",
+      "y_size": "7f7fffff",
+      "id": 19
+    },
+    {
+      "name": "positive_infinity",
+      "x": "7ff0000000000000",
+      "y": "7ff0000000000000",
+      "z": "7ff0000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 20
+    },
+    {
+      "name": "negative_infinity",
+      "x": "fff0000000000000",
+      "y": "fff0000000000000",
+      "z": "fff0000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 21
+    },
+    {
+      "name": "infinite_width",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "7f800000",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 22
+    },
+    {
+      "name": "negative_infinite_width",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "ff800000",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 23
+    },
+    {
+      "name": "infinite_height",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "7f800000",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 24
+    },
+    {
+      "name": "negative_infinite_height",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "ff800000",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 25
+    },
+    {
+      "name": "infinite_offset",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "7f800000",
+      "y_size": "3e000000",
+      "id": 26
+    },
+    {
+      "name": "negative_infinite_offset",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "ff800000",
+      "y_size": "3e000000",
+      "id": 27
+    },
+    {
+      "name": "infinite_y_size",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "7f800000",
+      "id": 28
+    },
+    {
+      "name": "negative_infinite_y_size",
+      "x": "4021000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "ff800000",
+      "id": 29
+    },
+    {
+      "name": "infinite_y_and_offset",
+      "x": "4021000000000000",
+      "y": "7ff0000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "7f800000",
+      "y_size": "00000000",
+      "id": 30
+    },
+    {
+      "name": "opposed_y_offset_size",
+      "x": "4021000000000000",
+      "y": "fff0000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "ff800000",
+      "y_size": "7f800000",
+      "id": 31
+    },
+    {
+      "name": "infinite_x_and_width",
+      "x": "7ff0000000000000",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "7f800000",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 32
+    },
+    {
+      "name": "signaling_nan_y_path",
+      "x": "4021000000000000",
+      "y": "7ff023456789abcd",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "3fe66666",
+      "offset": "7f823456",
+      "y_size": "ff834567",
+      "id": 33
+    },
+    {
+      "name": "signaling_nan_x_path",
+      "x": "7ff0123456789abc",
+      "y": "4020000000000000",
+      "z": "c021000000000000",
+      "width": "ff812345",
+      "height": "3fe66666",
+      "offset": "3fcf5c29",
+      "y_size": "3e000000",
+      "id": 34
+    },
+    {
+      "name": "height_cancellation",
+      "x": "4021000000000000",
+      "y": "4170000000000000",
+      "z": "c021000000000000",
+      "width": "3f19999a",
+      "height": "cb800000",
+      "offset": "3e800000",
+      "y_size": "3e000000",
+      "id": 35
+    }
+  ]
+}

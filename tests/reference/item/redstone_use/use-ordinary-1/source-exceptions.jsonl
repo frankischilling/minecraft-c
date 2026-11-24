@@ -1,0 +1,6 @@
+SOURCE_EXCEPTION	{"index":33,"name":"null-player-supported","exception":"java.lang.NullPointerException","frames":[["iz","a",79],["RedstoneUseObservation","main",251]]}
+SOURCE_EXCEPTION	{"index":34,"name":"null-player-unsupported","exception":"java.lang.NullPointerException","frames":[["iz","a",79],["RedstoneUseObservation","main",251]]}
+SOURCE_EXCEPTION	{"index":36,"name":"null-player-setterfalse","exception":"java.lang.NullPointerException","frames":[["iz","a",79],["RedstoneUseObservation","main",251]]}
+SOURCE_EXCEPTION	{"index":37,"name":"null-world","exception":"java.lang.NullPointerException","frames":[["ie","a",13],["iz","a",78],["RedstoneUseObservation","main",251]]}
+SOURCE_EXCEPTION	{"index":38,"name":"null-stack","exception":"java.lang.NullPointerException","frames":[["RedstoneUseObservation","main",251]]}
+SOURCE_EXCEPTION	{"index":39,"name":"callback-refuse-first-cell","exception":"java.lang.IllegalStateException","frames":[["RedstoneUseObservation$Observer","a",163],["fd","j",398],["fd","g",403],["fd","f",380],["ie","a",24],["iz","a",78],["RedstoneUseObservation","main",251]]}

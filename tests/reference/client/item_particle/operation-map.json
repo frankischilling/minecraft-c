@@ -1,0 +1,294 @@
+{
+  "authority": "Actual unchanged original class/Code pins and selected author-described operations; PCs freshly checked with JDK17 javap. No original implementation or captured answer table.",
+  "methods": [
+    {
+      "class": "pb",
+      "name": "<init>",
+      "descriptor": "(Lfd;DDDLgm;)V",
+      "Code_bytes": 59,
+      "Code_sha256": "f90b10a9b335093aefb7679c87b24711f30820c263d913ac8dfd5d212074bb34",
+      "operations": {
+        "10": "actual XW ancestor with zero velocity arguments",
+        "17": "actual Item virtual icon getter damage0; null Item fails here",
+        "20": "store returned icon",
+        "28": "white blue field",
+        "32": "white green field",
+        "35": "white red field",
+        "39": "actual Snow static reference",
+        "42": "actual Snow gravity field; null reference fails here",
+        "45": "store gravity",
+        "55": "halve ancestor size",
+        "58": "return"
+      }
+    },
+    {
+      "class": "pb",
+      "name": "c_",
+      "descriptor": "()I",
+      "Code_bytes": 2,
+      "Code_sha256": "72f9f6552e6d197350c5e3c69c75db7cd11b8ade64063263572b423eb5c535ad",
+      "operations": {
+        "0": "actual layer2 literal",
+        "1": "return"
+      }
+    },
+    {
+      "class": "pb",
+      "name": "a",
+      "descriptor": "(Lnw;FFFFFF)V",
+      "Code_bytes": 362,
+      "Code_sha256": "767a3c9a486b8c9b807c288e93b11ca6f8a36054df61340e0139da1eb1d0ebd9",
+      "operations": {
+        "86": "narrow interpolated relative X once",
+        "110": "narrow relative Y once",
+        "134": "narrow relative Z once",
+        "139": "actual inherited brightness",
+        "166": "NW color",
+        "214": "first custom vertex",
+        "262": "second custom vertex",
+        "310": "third custom vertex",
+        "358": "fourth custom vertex",
+        "361": "return"
+      }
+    },
+    {
+      "class": "xw",
+      "name": "<init>",
+      "descriptor": "(Lfd;DDDDDD)V",
+      "Code_bytes": 307,
+      "Code_sha256": "d0eb6e44210f2718e1a13643769da4f4ef74421e2cca2dd38b0c6865ebe88a2e",
+      "operations": {
+        "2": "actual SN constructor",
+        "20": "actual size .2/.2",
+        "30": "half-height offset",
+        "39": "actual position",
+        "60": "first shared double",
+        "81": "second shared double",
+        "102": "third shared double",
+        "120": "fourth shared double",
+        "123": "fifth shared double",
+        "164": "actual IN sqrt after shared doubles",
+        "186": "normalized velocity X store",
+        "210": "normalized velocity Y store",
+        "230": "normalized velocity Z store",
+        "238": "first own float",
+        "252": "second own float",
+        "266": "third own float",
+        "287": "fourth own float",
+        "303": "age zero store",
+        "306": "return"
+      }
+    },
+    {
+      "class": "xw",
+      "name": "c",
+      "descriptor": "(F)Lxw;",
+      "Code_bytes": 43,
+      "Code_sha256": "054524f48ee0c474c8b228f49d63566596b2968371eeb9aeb529268e974b9aba",
+      "operations": {}
+    },
+    {
+      "class": "xw",
+      "name": "d",
+      "descriptor": "(F)Lxw;",
+      "Code_bytes": 24,
+      "Code_sha256": "49957c58927e1c475a134ffdcffb810e4260999ba4a63a95f495a1c961d4c016",
+      "operations": {}
+    },
+    {
+      "class": "xw",
+      "name": "n",
+      "descriptor": "()Z",
+      "Code_bytes": 2,
+      "Code_sha256": "42ca1f85243342bd41983ab86f2235408fa46ded7466d4525196f66b9dbb5f3e",
+      "operations": {}
+    },
+    {
+      "class": "xw",
+      "name": "b",
+      "descriptor": "()V",
+      "Code_bytes": 1,
+      "Code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+      "operations": {}
+    },
+    {
+      "class": "xw",
+      "name": "w_",
+      "descriptor": "()V",
+      "Code_bytes": 148,
+      "Code_sha256": "3ec54531486e2e516bd32164292cb43c56dd6e0bc0493b7924336702fec11e6e",
+      "operations": {
+        "5": "previous X store",
+        "13": "previous Y store",
+        "21": "previous Z store",
+        "32": "age increment store before old-age compare",
+        "43": "actual K on expiry; flow continues",
+        "61": "gravity store",
+        "77": "actual inherited movement",
+        "89": "X damping",
+        "101": "Y damping",
+        "113": "Z damping",
+        "132": "ground X damping",
+        "144": "ground Z damping",
+        "147": "return"
+      }
+    },
+    {
+      "class": "xw",
+      "name": "a",
+      "descriptor": "(Lnw;FFFFFF)V",
+      "Code_bytes": 346,
+      "Code_sha256": "72995269aabd27a68762634c0f77d9ebc11b8063803d2c5e40b33e8e1de421fe",
+      "operations": {}
+    },
+    {
+      "class": "xw",
+      "name": "c_",
+      "descriptor": "()I",
+      "Code_bytes": 2,
+      "Code_sha256": "42ca1f85243342bd41983ab86f2235408fa46ded7466d4525196f66b9dbb5f3e",
+      "operations": {}
+    },
+    {
+      "class": "xw",
+      "name": "b",
+      "descriptor": "(Lnu;)V",
+      "Code_bytes": 1,
+      "Code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+      "operations": {}
+    },
+    {
+      "class": "xw",
+      "name": "a",
+      "descriptor": "(Lnu;)V",
+      "Code_bytes": 1,
+      "Code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+      "operations": {}
+    },
+    {
+      "class": "dn",
+      "name": "<init>",
+      "descriptor": "(Lfd;Lji;)V",
+      "Code_bytes": 64,
+      "Code_sha256": "2d53d1f9eefebd691e66e3dcefa97e33d81f0ecf7d9b60f29cc953c06086a88d",
+      "operations": {}
+    },
+    {
+      "class": "dn",
+      "name": "a",
+      "descriptor": "(Lxw;)V",
+      "Code_bytes": 49,
+      "Code_sha256": "052e97515cd5f871fe3608fe16089f990a874ed0a4c4d02d04faa3d51f3a5ad9",
+      "operations": {
+        "1": "actual virtual layer selector",
+        "19": "max4000 gate",
+        "29": "remove first occurrence at limit",
+        "42": "append actual occurrence",
+        "48": "return"
+      }
+    },
+    {
+      "class": "dn",
+      "name": "a",
+      "descriptor": "()V",
+      "Code_bytes": 80,
+      "Code_sha256": "fc31f896ee6fae457fb9bf1abb609e8ad55c645f2c3e42e5a81b7ccbd83477c0",
+      "operations": {
+        "41": "actual selected update",
+        "45": "fresh removal flag",
+        "61": "remove only after update returns",
+        "79": "return"
+      }
+    },
+    {
+      "class": "dn",
+      "name": "a",
+      "descriptor": "(Lsn;F)V",
+      "Code_bytes": 312,
+      "Code_sha256": "1dbedcabec40db7d9f244104178a7bae197906ea963c9002213f6d308f3fc4fc",
+      "operations": {
+        "97": "current shared X origin",
+        "117": "Y origin",
+        "137": "Z origin",
+        "215": "actual items atlas lookup",
+        "225": "actual bind",
+        "235": "actual NW begin",
+        "291": "actual selected PB render",
+        "302": "actual NW draw"
+      }
+    },
+    {
+      "class": "n",
+      "name": "<init>",
+      "descriptor": "(Lnet/minecraft/client/Minecraft;Lji;)V",
+      "Code_bytes": 652,
+      "Code_sha256": "7dbc9ae46fd1a1dea121a7c44c5e23f21e71b6277022541ab9aa9342bbb8e565",
+      "operations": {}
+    },
+    {
+      "class": "n",
+      "name": "a",
+      "descriptor": "(Ljava/lang/String;DDDDDD)V",
+      "Code_bytes": 753,
+      "Code_sha256": "495d19546cd1516316d7a5a02c0468e7dbc5dec81dfe8a056a8e535a95251ed4",
+      "operations": {
+        "27": "initial null guard return",
+        "103": "distance/NaN rejection return",
+        "683": "capture current App DN receiver",
+        "686": "actual RAW PB allocation",
+        "691": "fresh N World",
+        "699": "actual GM.aK active use",
+        "702": "actual PB constructor",
+        "705": "invoke captured receiver after constructor",
+        "752": "return"
+      }
+    },
+    {
+      "class": "gm",
+      "name": "a",
+      "descriptor": "(I)I",
+      "Code_bytes": 5,
+      "Code_sha256": "2e660696c7ad4cc98499c3a52362811be7e6172ae2e08cec643ef0dfb0f020e0",
+      "operations": {
+        "1": "actual icon field",
+        "4": "return"
+      }
+    },
+    {
+      "class": "sn",
+      "name": "<init>",
+      "descriptor": "(Lfd;)V",
+      "Code_bytes": 232,
+      "Code_sha256": "73b7a579d027d060b306fc636b93244c65dce91991310156937cd21a18c4d429",
+      "operations": {}
+    },
+    {
+      "class": "sn",
+      "name": "b",
+      "descriptor": "(DDD)V",
+      "Code_bytes": 2029,
+      "Code_sha256": "bc91e7daec2eea6393ccec1db61f09366d75ac360a55a63cf7105619abbb8e09",
+      "operations": {
+        "394": "actual null-World movement failure after reached prefix"
+      }
+    },
+    {
+      "class": "sn",
+      "name": "a",
+      "descriptor": "(F)F",
+      "Code_bytes": 162,
+      "Code_sha256": "eeffc18babc038ea16917d0c7eacd1ff506ea475bb9fd8a1bf7ac7cb5bf8a365",
+      "operations": {
+        "118": "actual null-World brightness failure after reached prefix"
+      }
+    },
+    {
+      "class": "in",
+      "name": "a",
+      "descriptor": "(D)F",
+      "Code_bytes": 6,
+      "Code_sha256": "29535f3f290f84c169aa98a9f64450a8ce757e84d08424806548dc5c55a473eb",
+      "operations": {}
+    }
+  ]
+}

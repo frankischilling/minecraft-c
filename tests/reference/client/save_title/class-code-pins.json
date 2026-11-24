@@ -1,0 +1,138 @@
+[
+  {
+    "class": "oz",
+    "class_sha256": "cc8f7789e10db045a9760df75705b342f5c52dc93c30b82d8734da3b8b67ca7e",
+    "method": "a",
+    "descriptor": "(Lke;)V",
+    "code_bytes": 177,
+    "code_sha256": "88988bd69b2ef812410b301f9df06af22193d2c54d96278a41b8c717097daca1"
+  },
+  {
+    "class": "net.minecraft.client.Minecraft",
+    "class_sha256": "db99df969e5f30d01ad4424a4d63d3b1f4a11832055dd291e65d476cfa4c38b3",
+    "method": "a",
+    "descriptor": "(Lfd;)V",
+    "code_bytes": 8,
+    "code_sha256": "99a54fc6fe171eab9e9aa33f30b9edc329d31def633e0454b6ce45da8f695396"
+  },
+  {
+    "class": "net.minecraft.client.Minecraft",
+    "class_sha256": "db99df969e5f30d01ad4424a4d63d3b1f4a11832055dd291e65d476cfa4c38b3",
+    "method": "a",
+    "descriptor": "(Lfd;Ljava/lang/String;)V",
+    "code_bytes": 8,
+    "code_sha256": "233e48c23aa0c58691fb7fd0c7f8967cce9564e8221beceb5c5ebe63477490a2"
+  },
+  {
+    "class": "net.minecraft.client.Minecraft",
+    "class_sha256": "db99df969e5f30d01ad4424a4d63d3b1f4a11832055dd291e65d476cfa4c38b3",
+    "method": "a",
+    "descriptor": "(Lfd;Ljava/lang/String;Lgs;)V",
+    "code_bytes": 367,
+    "code_sha256": "b1f62ed54519f79b9489884177d5c4cee54a64832f534103e6e019dccc4cb3e5"
+  },
+  {
+    "class": "fd",
+    "class_sha256": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+    "method": "b",
+    "descriptor": "()Lcl;",
+    "code_bytes": 31,
+    "code_sha256": "2d90101446fa343b18cbe470242d1f47d46b02a5e8a7513cb184fc67f82df612"
+  },
+  {
+    "class": "fd",
+    "class_sha256": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+    "method": "a",
+    "descriptor": "(ZLyb;)V",
+    "code_bytes": 54,
+    "code_sha256": "154b5b7715c572e95e4f281c9c2b72478ef7a0981a0dc5347f89cfabfd993b07"
+  },
+  {
+    "class": "fd",
+    "class_sha256": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+    "method": "a",
+    "descriptor": "(Lyb;)V",
+    "code_bytes": 7,
+    "code_sha256": "9206e8d923c68eeb46b7450cdfad5d9fd29fbc5e3c78429226c5ec70fc9cdab2"
+  },
+  {
+    "class": "mk",
+    "class_sha256": "a1a7ad2e6f36e609de6ee4ffa24535cdd1dde13a12e47fa708362ca82d2f26d8",
+    "method": "a",
+    "descriptor": "(Ljava/lang/String;)V",
+    "code_bytes": 11,
+    "code_sha256": "4c667be79e36972e01778ae6039e8d3a30e60a546d5d47601731972498d92ae7"
+  },
+  {
+    "class": "mk",
+    "class_sha256": "a1a7ad2e6f36e609de6ee4ffa24535cdd1dde13a12e47fa708362ca82d2f26d8",
+    "method": "b",
+    "descriptor": "(Ljava/lang/String;)V",
+    "code_bytes": 14,
+    "code_sha256": "35e2b26540ddb4ac78ee69289eac375c7c4a68f742c637da068a60aa2cc81b9c"
+  },
+  {
+    "class": "mk",
+    "class_sha256": "a1a7ad2e6f36e609de6ee4ffa24535cdd1dde13a12e47fa708362ca82d2f26d8",
+    "method": "c",
+    "descriptor": "(Ljava/lang/String;)V",
+    "code_bytes": 111,
+    "code_sha256": "e88c0b30f74af71dbdb94cd80a156e0126acd8a2eef97d6704dffa659727426a"
+  },
+  {
+    "class": "mk",
+    "class_sha256": "a1a7ad2e6f36e609de6ee4ffa24535cdd1dde13a12e47fa708362ca82d2f26d8",
+    "method": "d",
+    "descriptor": "(Ljava/lang/String;)V",
+    "code_bytes": 47,
+    "code_sha256": "6e2da3264ddf2d834779086c6865d332187d1da023d66941d9b09993246c5681"
+  },
+  {
+    "class": "ok",
+    "class_sha256": "0030b48ceb7c6ae5086de17a777c7226fc39d076d11548c0a8d31c28bbbb0732",
+    "method": "a",
+    "descriptor": "(ZLyb;)Z",
+    "code_bytes": 119,
+    "code_sha256": "db7438732819f36b38f8a1e124315976965e9a00f30936632abb784a4c3b74a4"
+  },
+  {
+    "class": "n",
+    "class_sha256": "d3f85a1136da30d4590b16f7bd5db44d0db3e73f6d42e1f0b018426542da0c16",
+    "method": "a",
+    "descriptor": "(Lfd;)V",
+    "code_bytes": 74,
+    "code_sha256": "20ef877f2661992475665c3652b4fbaa486488750040ea658a0346ac4f8b81d2"
+  },
+  {
+    "class": "dn",
+    "class_sha256": "a4992db8f7765066458ef19fd471933a0ac5af61257bd1dbe08f67a5be69b57d",
+    "method": "a",
+    "descriptor": "(Lfd;)V",
+    "code_bytes": 30,
+    "code_sha256": "3e08ba0d6397083cf1c60a09c02bb518cbee37ee9746cb6cdc07a116d91c2f7e"
+  },
+  {
+    "class": "xi",
+    "class_sha256": "06364685db72448c44cf4e9bf0922f418c88c0caf48635dbfd40b57512e97742",
+    "method": "b",
+    "descriptor": "()V",
+    "code_bytes": 1,
+    "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d"
+  },
+  {
+    "class": "xi",
+    "class_sha256": "06364685db72448c44cf4e9bf0922f418c88c0caf48635dbfd40b57512e97742",
+    "method": "c",
+    "descriptor": "()V",
+    "code_bytes": 12,
+    "code_sha256": "e9b725808a4f23a8f8bd9cf2acdae8ba8addbc92764cf7127109bca1bf7e3681"
+  },
+  {
+    "class": "fu",
+    "class_sha256": "baa1bc76a2451de306229c87a2964b48abf09c0b16353c25f1bb4cdcff79cb2c",
+    "method": "<init>",
+    "descriptor": "()V",
+    "code_bytes": 115,
+    "code_sha256": "96f1321a63dcd8776b04d1a5394b08b058d89daf0f2cbaf5d95ff234c797004c"
+  }
+]

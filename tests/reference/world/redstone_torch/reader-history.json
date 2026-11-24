@@ -1,0 +1,10 @@
+{
+  "reason": "Reader-only closed method metadata, integer process bounds and unique tool path arrays; native declarations have no Code",
+  "previous_manifest_sha256": "a78be53763ecbd4a9e809c6d3ea01a9a60a2019e600563c45494ce2d3638a3fe",
+  "previous_packet_sha256": "115688f2c4afc961dd9b038d15512ed01e48c422dd28f15e8e9fb9246158bcbe",
+  "unchanged_execution_input_freeze_sha256": "bc3088204f4eabac8ee57878fe89619b749ec2f7dfeb15054a885217ee0a762d",
+  "unchanged_capture_products": 60,
+  "fresh_vm_processes": 8,
+  "original_rows": 406,
+  "full_entropy_qualification": false
+}

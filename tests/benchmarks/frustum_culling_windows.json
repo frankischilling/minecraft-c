@@ -1,0 +1,36 @@
+{
+  "baseline_commit": "fc7a5245d6b7956c0fd3fe1567956bccc8ad7a62",
+  "host": "Intel Core i9-10900F, Windows 10 x64, logical CPU 0",
+  "compiler": "MSVC 19.51 x64, C17 /O2 /DNDEBUG /W4 /WX /fp:strict /Gy /Gw",
+  "clock": "QueryPerformanceCounter, converted to nanoseconds",
+  "scope": "Production chunk-culling loop, authored boxes and planes, 1100 passes per case. The benchmark versions of the frustum entry points use distinct link symbols from the shared client support libraries.",
+  "order": "Baseline first in odd pairs and candidate first in even pairs. Each row lists baseline then candidate.",
+  "case_order": ["steady", "sweep"],
+  "common_work": [
+    {"case": "steady", "visited": 4505600, "tested": 244603, "throttled": 3616397, "digest": "235af3fc761888c4"},
+    {"case": "sweep", "visited": 4505600, "tested": 1766917, "throttled": 2094083, "digest": "304844214d717aa6"}
+  ],
+  "sha256": {
+    "harness": "def15a12c40eebe57eb7a48a7375a30dd0fc8390bb00227cb1de577c215e316c",
+    "baseline_exe": "f1d319e0970231c0983207006fa5a5794625feb83ef84250be815d3998aa5df7",
+    "candidate_exe": "bdd98feb32f57f54041abd13bc8ea7cb5b129a5a1469e59d560950176b095b98",
+    "candidate_frustum": "29b0d4539c2bb168fe528aa0450257bc54f8cb6dd5bf6fdd4c4458bb530401d6",
+    "candidate_culling": "fbaa16b5a9c4a41ca175eeabe4f543e2afb41e79e6fdcd58442a3f1c27c15012",
+    "candidate_internal_header": "e8c8bf205aa9e2c8b61814996cdf4d8a65d29b78d90594386cab7eefb3e5016a"
+  },
+  "warmup_ns": [[66129900, 243836300], [44109000, 74948100]],
+  "paired_ns": [
+    [[65419100, 237078100], [43766900, 75376800]],
+    [[66102000, 258312500], [42759500, 74894100]],
+    [[68033300, 236614600], [43075100, 76295100]],
+    [[65845100, 234779100], [43656600, 77058900]],
+    [[68938400, 241553800], [42894700, 75978800]],
+    [[66699900, 237252300], [42804500, 76804100]],
+    [[65681700, 242554000], [43659000, 75034400]],
+    [[70863700, 244128200], [45791700, 74802700]],
+    [[68328600, 247892600], [45371600, 76952000]],
+    [[65580500, 235061800], [43332700, 74727300]],
+    [[66011500, 235936400], [46315000, 78651900]],
+    [[65642600, 240848900], [43632700, 76387800]]
+  ]
+}

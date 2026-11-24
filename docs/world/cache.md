@@ -16,7 +16,7 @@ Successful generation must supply a finished, nonnull, stable chunk.
 
 Publication replaces or inserts the original requested packed key, appends that
 same returned identity, then activates it. A normal activation sets `active`
-before tile registration and all eight ordered entity-slice registrations.
+before TileEntity registration and all eight ordered entity-slice registrations.
 Blank activation is a virtual no-op. The coordinator then checks the four live
 population anchors in order: current, west, north, northwest. Wrapped coordinate
 arithmetic, short-circuit order and repeated presence checks follow the original.
@@ -44,6 +44,12 @@ All acquisition/drop changes use the paired mutation functions, preserving its
 actual add/remove history. Restoring current array membership alone cannot restore
 selection order. The separate [lifecycle coordinator](lifecycle.md) supplies the
 unload schedule.
+
+Validation checks that the pending array contains unique keys. In ordered mode
+it also checks the history size and confirms that the history contains each
+key. Small queues use a direct scan. Above 16 keys, validation checks batches
+of up to 512 keys in a 2 KiB stack table and looks for cross-batch duplicates.
+Validation leaves the array and history intact.
 
 ## Ownership, recursion and failures
 
@@ -84,7 +90,7 @@ methods, aliases, wrapping, recursion and failure preservation. Independent
 bytecode review matches all 231 acquisition instructions across client `ok`,
 base server `jb` and dedicated `he`. Public contract checks and genuine original
 observations remain separate evidence. Production comparisons of this combined
-coordinator and retained normal generation now have a three-context production
+coordinator and retained Overworld generation now have a three-context production
 oracle and lossless public replay. Their [reference evidence](../reference/cache.md)
 separates genuine observations from injected callback tests. At source
 `9a50ac67997082c89dbc43cf4274fba1427c1565`, all 52 selected local tests pass on
@@ -102,5 +108,5 @@ runtime modules compose represented storage, saving and owner retirement;
 their exact-source qualification is recorded separately in the
 [lifecycle ledger](../reference/lifecycle.md#exact-source-lifecycle-checkpoint).
 Read-only [region inspection](../storage/region.md), unpublished
-[normal generation](generation.md) and [full finishing](finishing.md) retain
+[Overworld generation](generation.md) and [full finishing](finishing.md) retain
 their own contracts and evidence.

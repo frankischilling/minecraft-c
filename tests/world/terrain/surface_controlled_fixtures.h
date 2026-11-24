@@ -12,6 +12,7 @@ static const uint64_t controlled_sand_after[2][4] = {
      UINT64_C(0x6221b83e56753f3e)},
 };
 static const int32_t controlled_first_sandstone[] = {1, 0};
+
 typedef struct chunk_seed_fixture {
     int32_t x;
     int32_t z;

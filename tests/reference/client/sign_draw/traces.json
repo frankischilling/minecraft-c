@@ -1,0 +1,1597 @@
+{
+  "schema": 1,
+  "traces": [
+    [
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 0
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 0
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 6
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 0
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 15
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glPushMatrix",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 6
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glTranslatef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 140
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glRotatef",
+        "descriptor": "(FFFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 149
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glTranslatef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 157
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glBindTexture",
+        "descriptor": "(II)V",
+        "pc": 0
+      },
+      {
+        "class": "ji",
+        "method": "a",
+        "descriptor": "(Ljava/awt/image/BufferedImage;I)V",
+        "pc": 4
+      },
+      {
+        "class": "ji",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;)I",
+        "pc": 201
+      },
+      {
+        "class": "je",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;)V",
+        "pc": 11
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 174
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glBindTexture",
+        "descriptor": "(II)V",
+        "pc": 0
+      },
+      {
+        "class": "ji",
+        "method": "b",
+        "descriptor": "(I)V",
+        "pc": 9
+      },
+      {
+        "class": "je",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;)V",
+        "pc": 14
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 174
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glPushMatrix",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 177
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glScalef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 188
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glGenLists",
+        "descriptor": "(I)I",
+        "pc": 0
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 2
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 6
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glNewList",
+        "descriptor": "(II)V",
+        "pc": 0
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 15
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 6
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glDrawArrays",
+        "descriptor": "(III)V",
+        "pc": 0
+      },
+      {
+        "class": "nw",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 351
+      },
+      {
+        "class": "tz",
+        "method": "a",
+        "descriptor": "(Lnw;F)V",
+        "pc": 194
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 41
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 6
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glEndList",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 50
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 6
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glCallList",
+        "descriptor": "(I)V",
+        "pc": 0
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 244
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 6
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glPopMatrix",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 198
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glTranslatef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 225
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glScalef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 235
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glNormal3f",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 245
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glDepthMask",
+        "descriptor": "(Z)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 249
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glBindTexture",
+        "descriptor": "(II)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 40
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 377
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glColor4f",
+        "descriptor": "(FFFF)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 118
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 377
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glPushMatrix",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 129
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 377
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glTranslatef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 137
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 377
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glCallLists",
+        "descriptor": "(Ljava/nio/IntBuffer;)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 376
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 377
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glPopMatrix",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 379
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 377
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glDepthMask",
+        "descriptor": "(Z)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 387
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glColor4f",
+        "descriptor": "(FFFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 394
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glPopMatrix",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 397
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;)I",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 356
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 377
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 377
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glTranslatef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 41
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glRotatef",
+        "descriptor": "(FFFF)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 64
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glGenLists",
+        "descriptor": "(I)I",
+        "pc": 0
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 2
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 15
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glNewList",
+        "descriptor": "(II)V",
+        "pc": 0
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 15
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 15
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glDrawArrays",
+        "descriptor": "(III)V",
+        "pc": 0
+      },
+      {
+        "class": "nw",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 351
+      },
+      {
+        "class": "tz",
+        "method": "a",
+        "descriptor": "(Lnw;F)V",
+        "pc": 194
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 41
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 15
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glEndList",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 50
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 15
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glCallList",
+        "descriptor": "(I)V",
+        "pc": 0
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 244
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 15
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glBindTexture",
+        "descriptor": "(II)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 40
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 342
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glColor4f",
+        "descriptor": "(FFFF)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 118
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 342
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glPushMatrix",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 129
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 342
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glTranslatef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 137
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 342
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glCallLists",
+        "descriptor": "(Ljava/nio/IntBuffer;)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 376
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 342
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glPopMatrix",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 379
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 342
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;)I",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 321
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 0
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 342
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "sj",
+        "method": "a",
+        "descriptor": "(Ljava/lang/String;IIIZ)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "b",
+        "descriptor": "(Ljava/lang/String;III)V",
+        "pc": 7
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 342
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 356
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "nw",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "<init>",
+        "descriptor": "(Lkv;Ljava/lang/String;Lji;)V",
+        "pc": 464
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1143
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glDrawArrays",
+        "descriptor": "(III)V",
+        "pc": 0
+      },
+      {
+        "class": "nw",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 351
+      },
+      {
+        "class": "sj",
+        "method": "<init>",
+        "descriptor": "(Lkv;Ljava/lang/String;Lji;)V",
+        "pc": 464
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1143
+      }
+    ],
+    [
+      {
+        "class": "nw",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "tz",
+        "method": "a",
+        "descriptor": "(Lnw;F)V",
+        "pc": 194
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 41
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 6
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "nw",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 0
+      },
+      {
+        "class": "tz",
+        "method": "a",
+        "descriptor": "(Lnw;F)V",
+        "pc": 194
+      },
+      {
+        "class": "ps",
+        "method": "d",
+        "descriptor": "(F)V",
+        "pc": 41
+      },
+      {
+        "class": "ps",
+        "method": "a",
+        "descriptor": "(F)V",
+        "pc": 25
+      },
+      {
+        "class": "rf",
+        "method": "a",
+        "descriptor": "()V",
+        "pc": 15
+      },
+      {
+        "class": "po",
+        "method": "a",
+        "descriptor": "(Lyk;DDDF)V",
+        "pc": 195
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1889
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glTranslatef",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "<init>",
+        "descriptor": "(Lkv;Ljava/lang/String;Lji;)V",
+        "pc": 477
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1143
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glColor3f",
+        "descriptor": "(FFF)V",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "<init>",
+        "descriptor": "(Lkv;Ljava/lang/String;Lji;)V",
+        "pc": 710
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1143
+      }
+    ],
+    [
+      {
+        "class": "org.lwjgl.opengl.GL11",
+        "method": "glGenLists",
+        "descriptor": "(I)I",
+        "pc": 0
+      },
+      {
+        "class": "sj",
+        "method": "<init>",
+        "descriptor": "(Lkv;Ljava/lang/String;Lji;)V",
+        "pc": 252
+      },
+      {
+        "class": "SignDrawObservation",
+        "method": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "pc": 1143
+      }
+    ]
+  ]
+}

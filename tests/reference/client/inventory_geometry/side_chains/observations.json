@@ -1,0 +1,1818 @@
+{
+  "owners": {
+    "blocks": 96,
+    "outer_id": 53,
+    "inner_id": 67,
+    "wood_id": 5,
+    "outer_class": "ss",
+    "inner_class": "ss",
+    "wood_class": "uu",
+    "field_owner": "ss",
+    "field_name": "a",
+    "field_type": "uu",
+    "field_modifiers": 2,
+    "field_final": false,
+    "raw_allocations": 0,
+    "game_substitution": false
+  },
+  "inputs": [
+    {
+      "call": 0,
+      "profile": 0,
+      "side": 0,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 1,
+      "profile": 0,
+      "side": 1,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 2,
+      "profile": 0,
+      "side": 2,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 3,
+      "profile": 0,
+      "side": 3,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 4,
+      "profile": 0,
+      "side": 4,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 5,
+      "profile": 0,
+      "side": 5,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 6,
+      "profile": 0,
+      "side": -1,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 7,
+      "profile": 0,
+      "side": 6,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 8,
+      "profile": 0,
+      "side": -2147483648,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 9,
+      "profile": 0,
+      "side": 2147483647,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 4
+    },
+    {
+      "call": 10,
+      "profile": 1,
+      "side": 0,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 11,
+      "profile": 1,
+      "side": 1,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 12,
+      "profile": 1,
+      "side": 2,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 13,
+      "profile": 1,
+      "side": 3,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 14,
+      "profile": 1,
+      "side": 4,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 15,
+      "profile": 1,
+      "side": 5,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 16,
+      "profile": 1,
+      "side": -1,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 17,
+      "profile": 1,
+      "side": 6,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 18,
+      "profile": 1,
+      "side": -2147483648,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 19,
+      "profile": 1,
+      "side": 2147483647,
+      "outer_source": 67,
+      "inner_source": 5,
+      "wood_texture": 83
+    },
+    {
+      "call": 20,
+      "profile": 2,
+      "side": 0,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 21,
+      "profile": 2,
+      "side": 1,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 22,
+      "profile": 2,
+      "side": 2,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 23,
+      "profile": 2,
+      "side": 3,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 24,
+      "profile": 2,
+      "side": 4,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 25,
+      "profile": 2,
+      "side": 5,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 26,
+      "profile": 2,
+      "side": -1,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 27,
+      "profile": 2,
+      "side": 6,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 28,
+      "profile": 2,
+      "side": -2147483648,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    },
+    {
+      "call": 29,
+      "profile": 2,
+      "side": 2147483647,
+      "outer_source": 67,
+      "inner_source": null,
+      "wood_texture": 83
+    }
+  ],
+  "returns": [
+    {
+      "call": 0,
+      "profile": 0,
+      "side": 0,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 1,
+      "profile": 0,
+      "side": 1,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 2,
+      "profile": 0,
+      "side": 2,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 3,
+      "profile": 0,
+      "side": 3,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 4,
+      "profile": 0,
+      "side": 4,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 5,
+      "profile": 0,
+      "side": 5,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 6,
+      "profile": 0,
+      "side": -1,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 7,
+      "profile": 0,
+      "side": 6,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 8,
+      "profile": 0,
+      "side": -2147483648,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 9,
+      "profile": 0,
+      "side": 2147483647,
+      "returned": true,
+      "texture": 4,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 10,
+      "profile": 1,
+      "side": 0,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 11,
+      "profile": 1,
+      "side": 1,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 12,
+      "profile": 1,
+      "side": 2,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 13,
+      "profile": 1,
+      "side": 3,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 14,
+      "profile": 1,
+      "side": 4,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 15,
+      "profile": 1,
+      "side": 5,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 16,
+      "profile": 1,
+      "side": -1,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 17,
+      "profile": 1,
+      "side": 6,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 18,
+      "profile": 1,
+      "side": -2147483648,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 19,
+      "profile": 1,
+      "side": 2147483647,
+      "returned": true,
+      "texture": 83,
+      "exception": null,
+      "source_stack": [],
+      "outer_source": 67,
+      "inner_source": 5,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 20,
+      "profile": 2,
+      "side": 0,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 21,
+      "profile": 2,
+      "side": 1,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 22,
+      "profile": 2,
+      "side": 2,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 23,
+      "profile": 2,
+      "side": 3,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 24,
+      "profile": 2,
+      "side": 4,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 25,
+      "profile": 2,
+      "side": 5,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 26,
+      "profile": 2,
+      "side": -1,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 27,
+      "profile": 2,
+      "side": 6,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 28,
+      "profile": 2,
+      "side": -2147483648,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    },
+    {
+      "call": 29,
+      "profile": 2,
+      "side": 2147483647,
+      "returned": false,
+      "texture": null,
+      "exception": "java.lang.NullPointerException",
+      "source_stack": [
+        "ss.a",
+        "ss.a",
+        "InventorySideChainsTarget.main"
+      ],
+      "outer_source": 67,
+      "inner_source": null,
+      "bounds_unchanged": true
+    }
+  ],
+  "complete": {
+    "calls": 30,
+    "returned": 20,
+    "failed": 10,
+    "network": 0,
+    "native_links": 0,
+    "cycle_executed": false,
+    "raw_allocations": 0,
+    "debugger_method_invocations": 0
+  },
+  "events": [
+    {
+      "event": "live-code",
+      "class": "ss",
+      "method": "a",
+      "descriptor": "(I)I",
+      "bytes": 9,
+      "sha256": "0b86e0da7082456a60ce27f879636b60789c8d2f984090b61ed586aaf786bbd6"
+    },
+    {
+      "event": "getter-entry",
+      "call": 0,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 0,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 0,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 0,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "live-code",
+      "class": "uu",
+      "method": "a",
+      "descriptor": "(I)I",
+      "bytes": 5,
+      "sha256": "5e5d14f709d860f1cdea2e6c150d802146d44c7760ea4cc48128430ca05d07ba"
+    },
+    {
+      "event": "getter-entry",
+      "call": 0,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 0,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 1,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 1,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 1,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 1,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 1,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 1,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 2,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 2,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 2,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 2,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 2,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 2,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 3,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 3,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 3,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 3,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 3,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 3,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 4,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 4,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 4,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 4,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 4,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 4,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 5,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 5,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 5,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 5,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 5,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 5,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 6,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": -1,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 6,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": -1,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 6,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": -1,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 7,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 6,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 7,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 6,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 7,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 6,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 8,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": -2147483648,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 8,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": -2147483648,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 8,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": -2147483648,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 9,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 2147483647,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 9,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 2147483647,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 9,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 2147483647,
+      "source_id": null,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 10,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 0,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 10,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 0,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 10,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 0,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 11,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 1,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 11,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 1,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 11,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 1,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 12,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 2,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 12,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 2,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 12,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 2,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 13,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 3,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 13,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 3,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 13,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 3,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 14,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 4,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 14,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 4,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 14,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 4,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 15,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 5,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 15,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 5,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 15,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 5,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 16,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": -1,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 16,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": -1,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 16,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": -1,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 17,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 6,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 17,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 6,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 17,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 6,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 18,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": -2147483648,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 18,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": -2147483648,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 18,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": -2147483648,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 19,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 2147483647,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 19,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 2147483647,
+      "source_id": 5,
+      "texture": 16
+    },
+    {
+      "event": "getter-entry",
+      "call": 19,
+      "class": "uu",
+      "receiver": 1225,
+      "id": 5,
+      "side": 2147483647,
+      "source_id": null,
+      "texture": 83
+    },
+    {
+      "event": "getter-entry",
+      "call": 20,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 0,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 20,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 0,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 20,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 21,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 1,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 21,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 1,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 21,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 22,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 2,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 22,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 2,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 22,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 23,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 3,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 23,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 3,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 23,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 24,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 4,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 24,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 4,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 24,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 25,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 5,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 25,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 5,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 25,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 26,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": -1,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 26,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": -1,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 26,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 27,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 6,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 27,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 6,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 27,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 28,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": -2147483648,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 28,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": -2147483648,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 28,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    },
+    {
+      "event": "getter-entry",
+      "call": 29,
+      "class": "ss",
+      "receiver": 1223,
+      "id": 53,
+      "side": 2147483647,
+      "source_id": 67,
+      "texture": 4
+    },
+    {
+      "event": "getter-entry",
+      "call": 29,
+      "class": "ss",
+      "receiver": 1224,
+      "id": 67,
+      "side": 2147483647,
+      "source_id": null,
+      "texture": 16
+    },
+    {
+      "event": "source-exception",
+      "call": 29,
+      "exception": "java.lang.NullPointerException",
+      "site": {
+        "class": "ss",
+        "method": "a",
+        "descriptor": "(I)I",
+        "pc": 5
+      },
+      "frames": [
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 67
+        },
+        {
+          "site": {
+            "class": "ss",
+            "method": "a",
+            "descriptor": "(I)I",
+            "pc": 5
+          },
+          "receiver_id": 53
+        }
+      ]
+    }
+  ],
+  "live_code": [
+    {
+      "event": "live-code",
+      "class": "ss",
+      "method": "a",
+      "descriptor": "(I)I",
+      "bytes": 9,
+      "sha256": "0b86e0da7082456a60ce27f879636b60789c8d2f984090b61ed586aaf786bbd6"
+    },
+    {
+      "event": "live-code",
+      "class": "uu",
+      "method": "a",
+      "descriptor": "(I)I",
+      "bytes": 5,
+      "sha256": "5e5d14f709d860f1cdea2e6c150d802146d44c7760ea4cc48128430ca05d07ba"
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "schema": "SKELETON_FIRE_SOURCE_PROVENANCE_V1",
+  "scope": "24 complete original client FR firing calls in each of four VMs; four-VM ordinary-common and two-VM additional local-Arrow source domains; independent entropy and native outcome boundaries explicit; no native FR, SL tick, encounter, audiovisual or performance qualification.",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "capture_sha256": "53a6fe2dac7b562455a37355ef3a9308c1a89365cde8603f5ae0e14e9b581308",
+  "source_postflight_sha256": "53c9af7be5c0362e328a09fda97e7d9b8b81c1537e91f5b057adaca7d2b958af",
+  "captured_sources": {
+    "SkeletonFireObservation.java": {
+      "path": "SkeletonFireObservation.java",
+      "sha256": "531f0fa5a6a2648ad5ff461ec2a5f5b028569604ff19fd18bc2427d45c5fbabb"
+    },
+    "SkeletonFireJdi.java": {
+      "path": "SkeletonFireJdi.java",
+      "sha256": "6cb37616f27458dc5e8d261fbcc3b1b22c6ecba1be52de8ae6e7e825b40e1c55"
+    },
+    "profiles.tsv": {
+      "path": "profiles.tsv",
+      "sha256": "57ae11a3ab1ef9f168ea84ada57261e4b45cf8f678b9481564ebab7666ec5a29"
+    },
+    "class-names.txt": {
+      "path": "class-names.txt",
+      "sha256": "26978f48d7b1b26e5393899283087dbf3235404c3029b0e1aa3a866495ee8f15"
+    },
+    "source-pins.json": {
+      "path": "source-pins.json",
+      "sha256": "c216b0a1bc88c3405323b2f83c1e673ae2a515e4f47f4e1bfdbe4e3914822bf4"
+    },
+    "capture_reference.py": {
+      "path": "captured/capture_reference.py",
+      "sha256": "1e5257fba88955a8c19016a3e14f43881a1edb189f16e0ac48ebea4c709a5fda"
+    },
+    "PROTOCOL.md": {
+      "path": "captured/PROTOCOL.md",
+      "sha256": "3d3f8a4c5f37c1a9f632eb98f373d8703097aaf83e69b0e3efb8804cb87367ea"
+    },
+    "observation.py": {
+      "path": "captured/observation.py",
+      "sha256": "f04d18b8c19d3f9b5de132f214b02df33c6ffceab143be453ec744ec06d01b4d"
+    },
+    "preflight.py": {
+      "path": "captured/preflight.py",
+      "sha256": "9a70d6d72e2206d6573433e34e1c1d7350c4fa1e24182101b602c785bb7f61bf"
+    },
+    "leaf_ledger.py": {
+      "path": "captured/leaf_ledger.py",
+      "sha256": "fbac9e2269bb63381acd5b342658dbcb21c7aedf50544d3c2979241c3117cf54"
+    },
+    "seal.json": {
+      "path": "captured/seal.json",
+      "sha256": "af26f78ba9ef2bbff432092b62936376cde16cb298110297ec984a9d0bc14f23"
+    }
+  },
+  "current_processing": {
+    "observation.py": "9f6e71d1cd696fb903779c9e55c9aa7bf616da3883bf0b072d0f1dbb0225adfb",
+    "packet.py": "dda06e433364b2fe106ef6ff3a9c10409285ea259697f06da8545a5b9ddca920",
+    "export_reference.py": "3b9b9495669637d41a02b0948972ecf47a6fe787117c2f91dfc5e225242f8ded",
+    "leaf_ledger.py": "5c0a1f768500767750eca63aec0f8c7ddea07a5e37e025e956399890c674e3b2"
+  },
+  "finite_sha256": "b8149e3a8c97793db621be8fb1a7d39a1b7fbdffee9fcba5d37dfbcdfddf98b0",
+  "helper_metadata_sha256": "53fdd712068e04b57fb27a50c5a0c067a6419359c1467dc6c20035d18d05c1d4",
+  "processing_receipt_sha256": "9781cf0560c69963747bf4f037daf01eedd903fe6f7b946eea7884fd2ee43f8c",
+  "runs": [
+    {
+      "kind": "ordinary",
+      "index": 0,
+      "calls": 24,
+      "normal_returns": 15,
+      "exceptions": {
+        "java/lang/NullPointerException": 7,
+        "java/lang/IllegalStateException": 2
+      },
+      "stdout_sha256": "72dbea271ef81bcdd98e8cddefd61d7641e9c0cd55e29becb9429da87b09961f",
+      "target_stderr": "exact four-line JDK17 SecurityManager warning only",
+      "stderr_sha256": "acabbc97fb35cd9133e2de1db9bd17f11afc751e25a741178242936c7fea6442"
+    },
+    {
+      "kind": "ordinary",
+      "index": 1,
+      "calls": 24,
+      "normal_returns": 15,
+      "exceptions": {
+        "java/lang/NullPointerException": 7,
+        "java/lang/IllegalStateException": 2
+      },
+      "stdout_sha256": "d6c0b019b54c196b0c9b90e679ad9b33757f1df807b5fdd1603e56b071aae808",
+      "target_stderr": "exact four-line JDK17 SecurityManager warning only",
+      "stderr_sha256": "acabbc97fb35cd9133e2de1db9bd17f11afc751e25a741178242936c7fea6442"
+    },
+    {
+      "kind": "debugger",
+      "index": 0,
+      "calls": 24,
+      "normal_returns": 15,
+      "exceptions": {
+        "java/lang/NullPointerException": 7,
+        "java/lang/IllegalStateException": 2
+      },
+      "stdout_sha256": "8e59f08af34d54674e3420fb6a27f3d0da42c4cdf2bfc1fbbe787cddec633b93",
+      "target_stderr": "exact four-line JDK17 SecurityManager warning only",
+      "stderr_sha256": "acabbc97fb35cd9133e2de1db9bd17f11afc751e25a741178242936c7fea6442",
+      "events": 2671,
+      "source_Code": 26,
+      "helper_Code": 2,
+      "gaussian_calls": 81,
+      "Skeleton_float_calls": 16,
+      "publication_returns": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          false
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [],
+        [
+          true
+        ]
+      ],
+      "journal_sha256": "dc1ac7d1603bd760da0bbf19f29294a3e446b5c42eaa423c8db3d05a19368e88",
+      "target_receipt": {
+        "reaped": true,
+        "exit": 0,
+        "timed_out": false,
+        "streams_complete": true,
+        "reader_error": null,
+        "timeout_seconds": 540,
+        "limit_each": 16777216,
+        "stdout_bytes": 351577,
+        "stderr_bytes": 398
+      }
+    },
+    {
+      "kind": "debugger",
+      "index": 1,
+      "calls": 24,
+      "normal_returns": 15,
+      "exceptions": {
+        "java/lang/NullPointerException": 7,
+        "java/lang/IllegalStateException": 2
+      },
+      "stdout_sha256": "1d1e2803ce6b0bbbdaf671534f9210e34990edb548ef6f77e0463c9438d9da0f",
+      "target_stderr": "exact four-line JDK17 SecurityManager warning only",
+      "stderr_sha256": "acabbc97fb35cd9133e2de1db9bd17f11afc751e25a741178242936c7fea6442",
+      "events": 2671,
+      "source_Code": 26,
+      "helper_Code": 2,
+      "gaussian_calls": 81,
+      "Skeleton_float_calls": 16,
+      "publication_returns": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          false
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [],
+        [
+          true
+        ]
+      ],
+      "journal_sha256": "c8b827a6a307f0c62dc7bd9ee5e6c27934b979e4246f9ace01916d3cb45fd572",
+      "target_receipt": {
+        "reaped": true,
+        "exit": 0,
+        "timed_out": false,
+        "streams_complete": true,
+        "reader_error": null,
+        "timeout_seconds": 540,
+        "limit_each": 16777216,
+        "stdout_bytes": 351577,
+        "stderr_bytes": 398
+      }
+    }
+  ]
+}

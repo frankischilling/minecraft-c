@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "scope": "Declared initial scenes, followed by unchanged-original calls; no invocation repairs.",
+  "app": {"constructor": [null, null, null, 854, 480, false, null], "display": [854, 480], "session": ["WorkbenchAutoClose", "-"], "mouse-component": "genuine java.awt.Canvas, size 854 by 480"},
+  "world": {"name": "WorkbenchAutoClose", "seed": 23, "dimension": 0, "chunks": [[-1,-1],[-1,0],[-1,1],[0,-1],[0,0],[0,1],[1,-1],[1,0],[1,1]], "blocks": "empty constructor bytes except Table58 at 8,64,8 in chunk0,0", "remote-before-player-constructor": false},
+  "input": {"constructor": "LR(Settings)", "attachment": "actual Minecraft.a(World,String,Player) source protocol at bytecodes 194 through 205; declared before invocation"},
+  "screen-open": "actual DC.a(8,64,8), invoking genuine OO constructor and Minecraft.display/DA.initialize/ID.b",
+  "stacks": {"cursor": [5,7,0,0], "grid0": [280,2,0,0], "grid8": null, "alias-case": "one Stack280 count2 shared by cursor/grid0/grid8"},
+  "cases": [
+    {"profile": "tick-removed", "operation": "gs-tick", "position": [8.5,67.0,8.5], "remove": true, "alias": false},
+    {"profile": "tick-distance", "operation": "gs-tick", "position": [17.5,67.0,8.5], "remove": false, "alias": false},
+    {"profile": "tick-removed-alias", "operation": "gs-tick", "position": [8.5,67.0,8.5], "remove": true, "alias": true},
+    {"profile": "tick-valid", "operation": "gs-tick", "position": [8.5,67.0,8.5], "remove": false, "alias": false},
+    {"profile": "predicate-distance64", "operation": "predicate", "position": [16.5,64.5,8.5], "remove": false, "alias": false},
+    {"profile": "predicate-distance-over64", "operation": "predicate", "position": [16.500000000000004,64.5,8.5], "remove": false, "alias": false},
+    {"profile": "direct-dc-removed", "operation": "direct-dc", "position": [8.5,67.0,8.5], "remove": true, "alias": false}
+  ]
+}

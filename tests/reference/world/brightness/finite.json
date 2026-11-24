@@ -1,0 +1,16 @@
+{
+  "rows": [
+    "BRIGHT 0 00000000",
+    "BRIGHT 1 80000000",
+    "BRIGHT 2 3f800001",
+    "BRIGHT 3 bf800001",
+    "BRIGHT 4 00000001",
+    "BRIGHT 5 7f800000",
+    "BRIGHT 6 ff800000",
+    "BRIGHT 7 7fc12345",
+    "BRIGHT 8 ffc54321",
+    "BRIGHT 9 7fa12345",
+    "BRIGHT_NULL dimension java.lang.NullPointerException",
+    "BRIGHT_NULL table java.lang.NullPointerException"
+  ]
+}

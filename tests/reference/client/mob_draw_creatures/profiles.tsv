@@ -1,0 +1,14 @@
+case	kind	partial	phase	size	normalize
+0 cn .375 first 0 reset
+1 cn 1 reuse 0 reset
+2 uw .375 first 1 reset
+3 uw 1 reuse 1 reset
+4 xt .375 first_after_slime 0 carry
+5 xt 1 reuse 0 reset
+6 uw .375 size2_first 2 reset
+7 uw 1 size2_reuse 2 reset
+8 uw .375 size4_first 4 reset
+9 uw 1 size4_reuse 4 reset
+10 cn .375 reuse_after_slime 0 carry
+11 gb .375 first_after_spider 0 carry
+12 gb 1 reuse 0 reset

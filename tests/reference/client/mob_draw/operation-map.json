@@ -1,0 +1,129 @@
+{
+  "authority": "Unchanged original selected operation PCs; structural metadata, not replacement bodies.",
+  "methods": [
+    {
+      "class": "th",
+      "name": "a",
+      "descriptor": "(Lsn;F)V",
+      "operations": {
+        "76": "actual Entity-own-World brightness",
+        "87": "actual GL RGB",
+        "112": "explicit-coordinate dispatch"
+      },
+      "Code_bytes": 116,
+      "Code_sha256": "a143a2086437bf02a52d274352fcb95d4386d69669d291acd9b6067d43a9251b"
+    },
+    {
+      "class": "th",
+      "name": "a",
+      "descriptor": "(Lsn;DDDFF)V",
+      "operations": {
+        "2": "canonical renderer lookup",
+        "24": "primary renderer draw",
+        "39": "BW postdraw after return"
+      },
+      "Code_bytes": 43,
+      "Code_sha256": "151fc920d1dd1a7bd587ccdab7ebf560faadd956ddf7e9915904c70e4dcbad40"
+    },
+    {
+      "class": "gv",
+      "name": "a",
+      "descriptor": "(Lls;DDDFF)V",
+      "operations": {
+        "0": "push modelview",
+        "6": "disable cull",
+        "17": "actual swing",
+        "20": "primary swing store",
+        "49": "actual riding predicate",
+        "52": "primary riding store",
+        "254": "actual primary skin lookup",
+        "275": "model event",
+        "297": "primary model render",
+        "315": "four virtual pass predicates",
+        "340": "actual secondary model draw",
+        "365": "extra helper",
+        "371": "fresh brightness",
+        "382": "color multiplier",
+        "737": "rescale off",
+        "747": "print caught Java Exception only",
+        "753": "cull on",
+        "756": "single source pop",
+        "766": "label helper"
+      },
+      "Code_bytes": 770,
+      "Code_sha256": "e5dcae93f40afe48f07f0793fabc606d11d2de226d25234f29ef268776e3e216"
+    },
+    {
+      "class": "xy",
+      "name": "a",
+      "descriptor": "(Ldl;IF)Z",
+      "operations": {
+        "14": "fur texture",
+        "19": "fresh brightness",
+        "25": "watcher color",
+        "63": "fur RGB"
+      },
+      "Code_bytes": 70,
+      "Code_sha256": "b29a9a410caff620e0fedc21fd8956be6d679440107b7bfe8e4dfccdff0d9072"
+    },
+    {
+      "class": "bw",
+      "name": "b",
+      "descriptor": "(Lsn;DDDFF)V",
+      "operations": {
+        "7": "actual Settings.j",
+        "38": "camera distance",
+        "78": "shadow child"
+      },
+      "Code_bytes": 101,
+      "Code_sha256": "bc23b5d571cdc016cce59ac4f047a80f4e344bcd1d6c96637a4c9d3d64e9f1b2"
+    },
+    {
+      "class": "ji",
+      "name": "b",
+      "descriptor": "(Ljava/lang/String;)I",
+      "operations": {
+        "1": "actual pack-list read before cache",
+        "4": "actual selected pack",
+        "13": "String cache lookup",
+        "28": "hit return",
+        "98": "set source clamp flag",
+        "110": "actual pack stream",
+        "117": "actual image upload",
+        "122": "clear clamp flag after upload",
+        "213": "source cache publication",
+        "218": "return actual texture name"
+      },
+      "Code_bytes": 268,
+      "Code_sha256": "94669e532a38d2dcdb21b863fe0a41c7e05a7881d5c57a6b706932f12ea56fbe"
+    },
+    {
+      "class": "ji",
+      "name": "a",
+      "descriptor": "(Ljava/awt/image/BufferedImage;I)V",
+      "operations": {
+        "4": "bind actual texture",
+        "49": "nearest min when no mipmap",
+        "61": "nearest mag",
+        "80": "blur min linear",
+        "92": "blur mag linear",
+        "111": "source wrap S GL_CLAMP",
+        "123": "source wrap T GL_CLAMP",
+        "451": "actual level0 RGBA upload"
+      },
+      "Code_bytes": 705,
+      "Code_sha256": "6ccec4a13839fc7f0ba790479f68e3c4a82fc7cd17780245a3651139060180c0"
+    },
+    {
+      "class": "i",
+      "name": "a",
+      "descriptor": "(Ljava/lang/String;)Ljava/io/InputStream;",
+      "operations": {
+        "3": "genuine Class.getResourceAsStream",
+        "6": "return actual resource stream"
+      },
+      "Code_bytes": 7,
+      "Code_sha256": "fced01ab6e1b616f1ebe1ff447b0830a346c996a850595d084d4d53a8681179d"
+    }
+  ]
+}

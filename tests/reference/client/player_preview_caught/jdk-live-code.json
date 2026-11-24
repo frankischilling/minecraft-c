@@ -1,0 +1,270 @@
+{
+  "schema": 1,
+  "scope": "Actual bootstrap-loader JDK17 Throwable print and NPE.getMessage Code/LineNumberTables; pinned runtime image/JVM inputs are in provenance.",
+  "methods": {
+    "java.lang.NullPointerException.getMessage()Ljava/lang/String;": {
+      "native": false,
+      "bootstrap-loader": true,
+      "lines": [
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 0,
+          "line": 110,
+          "file": "NullPointerException.java"
+        },
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 5,
+          "line": 111,
+          "file": "NullPointerException.java"
+        },
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 9,
+          "line": 112,
+          "file": "NullPointerException.java"
+        },
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 13,
+          "line": 113,
+          "file": "NullPointerException.java"
+        },
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 21,
+          "line": 116,
+          "file": "NullPointerException.java"
+        },
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 29,
+          "line": 117,
+          "file": "NullPointerException.java"
+        },
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 34,
+          "line": 119,
+          "file": "NullPointerException.java"
+        },
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 41,
+          "line": 120,
+          "file": "NullPointerException.java"
+        },
+        {
+          "class": "java.lang.NullPointerException",
+          "method": "getMessage",
+          "descriptor": "()Ljava/lang/String;",
+          "pc": 46,
+          "line": 122,
+          "file": "NullPointerException.java"
+        }
+      ],
+      "code_bytes": 48,
+      "code_sha256": "4ec0e3c19bb1b0d87f576ba57d4061688aad353c1658800d27f4f7704faa3580"
+    },
+    "java.lang.Throwable.printStackTrace()V": {
+      "native": false,
+      "bootstrap-loader": true,
+      "lines": [
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "()V",
+          "pc": 0,
+          "line": 650,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "()V",
+          "pc": 7,
+          "line": 651,
+          "file": "Throwable.java"
+        }
+      ],
+      "code_bytes": 8,
+      "code_sha256": "a305bb1e1902f6e41a6dade9f74d3f14700186bfec649556d362745d05af98fc"
+    },
+    "java.lang.Throwable.printStackTrace(Ljava/io/PrintStream;)V": {
+      "native": false,
+      "bootstrap-loader": true,
+      "lines": [
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/io/PrintStream;)V",
+          "pc": 0,
+          "line": 659,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/io/PrintStream;)V",
+          "pc": 12,
+          "line": 660,
+          "file": "Throwable.java"
+        }
+      ],
+      "code_bytes": 13,
+      "code_sha256": "45494776e0f310c035510426bd4b5a606ca18ef8aa178c9a81cb6e4b9646810d"
+    },
+    "java.lang.Throwable.printStackTrace(Ljava/lang/Throwable$PrintStreamOrWriter;)V": {
+      "native": false,
+      "bootstrap-loader": true,
+      "lines": [
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 0,
+          "line": 665,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 11,
+          "line": 666,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 19,
+          "line": 668,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 26,
+          "line": 670,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 31,
+          "line": 671,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 37,
+          "line": 672,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 63,
+          "line": 673,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 87,
+          "line": 672,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 93,
+          "line": 676,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 121,
+          "line": 677,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 134,
+          "line": 676,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 140,
+          "line": 680,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 146,
+          "line": 681,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 151,
+          "line": 682,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 164,
+          "line": 683,
+          "file": "Throwable.java"
+        },
+        {
+          "class": "java.lang.Throwable",
+          "method": "printStackTrace",
+          "descriptor": "(Ljava/lang/Throwable$PrintStreamOrWriter;)V",
+          "pc": 176,
+          "line": 684,
+          "file": "Throwable.java"
+        }
+      ],
+      "code_bytes": 177,
+      "code_sha256": "c9ea2ee46814d1cd54847873baa8502763e63efbb772cae02130d0efc05cb5f9"
+    }
+  }
+}

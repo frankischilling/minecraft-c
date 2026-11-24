@@ -1,0 +1,39 @@
+{
+  "authority": "actual retained JDK17.0.17 class bytes; static inspection only",
+  "classes": {
+    "sun/misc/Unsafe": {
+      "module": "jdk.unsupported",
+      "class_sha256": "dd16b5fd485067830c7667d235d9a5e38ac8cffa8e29c170b1d0b09467e860a1",
+      "methods": [
+        {
+          "name": "shouldBeInitialized",
+          "descriptor": "(Ljava/lang/Class;)Z",
+          "flags": 1,
+          "length": 8,
+          "sha256": "d5c6f243acbd59f3836a53097fedd1c1c68f02a5996e91e14d79f2936b845f39"
+        }
+      ]
+    },
+    "jdk/internal/misc/Unsafe": {
+      "module": "java.base",
+      "class_sha256": "7a1ad32b2fdf579580db4ce3066ffe0466ef864f691818a12482126ce0cd8498",
+      "methods": [
+        {
+          "name": "shouldBeInitialized",
+          "descriptor": "(Ljava/lang/Class;)Z",
+          "flags": 1,
+          "length": 18,
+          "sha256": "57fbc2963dbf76b0173472da6932d7879c97d2a0e58d6365a39ad9bb25222e4e"
+        },
+        {
+          "name": "shouldBeInitialized0",
+          "descriptor": "(Ljava/lang/Class;)Z",
+          "flags": 258
+        }
+      ]
+    }
+  },
+  "data_flow": "sun/misc wrapper getstatic0 -> internal shouldBeInitialized4; internal null check then native shouldBeInitialized0@14, native flags258/no Code. No ensureClassInitialized call or field store.",
+  "semantics": "metadata probe only; Math holder and QY static fields are read only after initialized=true, cold counter/state remains null",
+  "safety": "No Unsafe field writes, allocation, class initialization or memory reads/writes are invoked. Class.forName holder uses initialize=false."
+}

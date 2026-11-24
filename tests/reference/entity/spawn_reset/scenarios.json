@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "fixture": {
+    "x": 8.5, "y": 8.0, "z": 8.5,
+    "width": 1.0, "height": 1.0, "offset": 0.25, "y_size": 0.125,
+    "velocity": [2.0, 3.0, 4.0],
+    "previous_position": [-9.0, -10.0, -11.0],
+    "smoothing_position": [-12.0, -13.0, -14.0],
+    "yaw": 37.0, "pitch": -17.0, "previous_yaw": -11.0, "previous_pitch": -13.0,
+    "health": 3, "death": 9, "random_seed": 38
+  },
+  "row": {
+    "prefix": ["SPAWN", "body", "scenario", "complete", "failure_class_or_dash", "failure_method_or_dash"],
+    "doubles": ["x", "y", "z", "velocity_x", "velocity_y", "velocity_z", "aJ", "aK", "aL", "bl", "bm", "bn", "bounds_min_x", "bounds_min_y", "bounds_min_z", "bounds_max_x", "bounds_max_y", "bounds_max_z"],
+    "floats": ["offset", "width", "height", "y_size", "yaw", "pitch", "previous_yaw", "previous_pitch"],
+    "ints": ["health", "death", "world_present", "bounds_present"],
+    "hex_longs": ["entity_random_state", "world_random_state"],
+    "null_bounds_coordinates": "0000000000000000",
+    "body": {"0": "ordinary virtual gs.t_ on genuine dc", "1": "direct inherited sn.t_ body on same genuine dc"}
+  },
+  "scenarios": [
+    {"id": 0, "name": "air"},
+    {"id": 1, "name": "floor", "blocks": {"id": 1, "x_range": [6, 12], "y_range": [7, 7], "z_range": [6, 12]}},
+    {"id": 2, "name": "solid_column", "blocks": {"id": 1, "x_range": [8, 8], "y_range": [0, 12], "z_range": [8, 8]}},
+    {"id": 3, "name": "zero_y", "y_bits": "0000000000000000"},
+    {"id": 4, "name": "negative_zero_y", "y_bits": "8000000000000000"},
+    {"id": 5, "name": "negative_y", "y_bits": "c000000000000000"},
+    {"id": 6, "name": "nan_y", "y_bits": "7ff8123456789abc"},
+    {"id": 7, "name": "null_world", "null_world": true},
+    {"id": 8, "name": "null_bounds", "null_bounds": true, "failure": {"class": "sn", "method": "e"}},
+    {"id": 9, "name": "null_bounds_zero_y", "null_bounds": true, "y_bits": "0000000000000000"},
+    {"id": 10, "name": "slab", "blocks": {"id": 44, "x_range": [8, 8], "y_range": [7, 7], "z_range": [8, 8]}},
+    {"id": 11, "name": "fence", "blocks": {"id": 85, "x_range": [8, 8], "y_range": [7, 7], "z_range": [8, 8]}},
+    {"id": 12, "name": "bed", "blocks": {"id": 26, "x_range": [8, 8], "y_range": [7, 7], "z_range": [8, 8]}},
+    {"id": 13, "name": "null_collision_list", "null_world_field": "K", "failure": {"class": "fd", "method": "a"}},
+    {"id": 14, "name": "null_provider", "null_world_field": "v", "failure": {"class": "fd", "method": "f"}},
+    {"id": 15, "name": "null_nearby_list", "null_world_field": "R", "failure": {"class": "fd", "method": "b"}},
+    {"id": 16, "name": "null_world_and_bounds", "null_world": true, "null_bounds": true},
+    {"id": 17, "name": "null_bounds_nan_y", "null_bounds": true, "y_bits": "7ff8123456789abc"},
+    {"id": 18, "name": "positive_subnormal_y", "y_bits": "0000000000000001"},
+    {"id": 19, "name": "negative_infinite_y", "y_bits": "fff0000000000000"},
+    {"id": 20, "name": "nan_x", "x_bits": "7ff8123456789abc"}
+  ]
+}

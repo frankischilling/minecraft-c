@@ -1,0 +1,10 @@
+case	scene	item_id	tame	inventory	main_array	selected
+0	empty_stack	NULL	false	actual	actual	0
+1	untamed_bone	352	false	actual	actual	0
+2	tame_bone	352	true	actual	actual	0
+3	tame_pork	319	true	actual	actual	0
+4	tame_apple	260	true	actual	actual	0
+5	tame_book	340	true	actual	actual	0
+6	untamed_pork	319	false	actual	actual	0
+7	null_inventory	NULL	false	NULL	actual	0
+8	null_main_array	NULL	false	actual	NULL	0

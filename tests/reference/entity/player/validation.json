@@ -1,0 +1,62 @@
+{
+  "schema": "PLAYER_CONSTRUCTION_REFERENCE_VALIDATION_V1",
+  "windows_original_comparison": {
+    "status": "passed",
+    "java": "HotSpot JDK17.0.17+10",
+    "native": {
+      "path": "C:\\Users\\admin\\minecraft\\build-world-renderer-20261025a\\Debug\\mc_player_construction_probe.exe",
+      "bytes": 2943488,
+      "sha256": "f69a4a5ecc797fd22b811540c12589ef4bc18fd71a65ef10db3cf2452e250b39"
+    },
+    "JAR_binding": {
+      "bytes": 1465375,
+      "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+      "classes": 187,
+      "Code_methods": 1862
+    },
+    "original_validation": {
+      "cases": 8,
+      "successful_returns": 6,
+      "actual_failed_receivers": 2,
+      "snapshots": 71,
+      "watcher_hooks": 8,
+      "JDI_Code_pins": 4
+    },
+    "comparison": {
+      "cases": 8,
+      "ready_cases": 6,
+      "constructor_fields": 912,
+      "bounds_fields": 36,
+      "slot_cells": 1680,
+      "alias_checks": 18,
+      "formula_replay_fields": 24,
+      "source_null_failures": 2,
+      "actual_failed_receiver_fields": 303,
+      "actual_failed_receiver_bounds": 12
+    },
+    "runtime_origins_per_VM": 187,
+    "stderr_bytes": 0,
+    "normal_and_JDI_exact_original_class_initialization": true,
+    "native_source_pins_unchanged_after_run": true
+  },
+  "authored_protocol_windows": {
+    "checks": 32,
+    "valid_tapes": 6,
+    "rejected_tapes": 26,
+    "exact_rejection_exit": 2,
+    "exact_rejection_diagnostic": "Player probe input: invalid draw tape",
+    "before_output_and_World_creation": true,
+    "sanitizer_or_crash_output_cannot_pass": true
+  },
+  "negative_metadata_checks": 11,
+  "admission_checks": 5,
+  "red_evidence": "Frozen old native accepted a15digit token and created World/output; strengthened driver rejected that behavior before root parser correction. Captures stay private.",
+  "public_line_endings": "LF before source/class/manifest pinning",
+  "pending": "Parent owns final integrated Windows/Linux Clang/GCC ABI builds, sanitizer/protocol/reference reruns and source-pin refresh after any further root edits. Linux portability is implemented but not newly measured by this harness stage.",
+  "scope": "Six real completed dc constructors; two real source null failures and71read-only JDI receiver checkpoints. Genuine original fd/wy/rh/gr inputs, nullable Minecraft stored unread. Deterministic fields, bounds,45Slot graph and aliases compared; four recovered Math draws feed separately labelled native scalar formulas only. Production native constructor uses its independent application Math stream. No gameplay/tick/render/network/audio, matching entropy/default-Random seed or absolute Entity ID equivalence.",
+  "private_evidence_directory": ".local\\player-construction-reference-validation-20261025a",
+  "raw_captures_assets_classes_published": false,
+  "root_source_writes": false,
+  "root_builds": false,
+  "git_commands": false
+}

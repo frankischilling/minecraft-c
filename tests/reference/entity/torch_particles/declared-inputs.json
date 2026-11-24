@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "status": "AUTHORED_NOT_CAPTURED",
+  "profiles": 36,
+  "columns": [
+    "name",
+    "kind",
+    "operation",
+    "age",
+    "lifetime",
+    "texture",
+    "initial_g_bits",
+    "subclass_a_bits",
+    "partial_bits",
+    "ground",
+    "light_0dark_1sky15_2block15",
+    "null_world",
+    "velocity_y_bits",
+    "orientation"
+  ],
+  "constructor_kinds": {
+    "smoke_default": {
+      "descriptor": "(Lfd;DDDDDD)V",
+      "delegation": "Actual XN default delegates scaled constructor with1F"
+    },
+    "smoke_scaled": {
+      "scale": "3f800000"
+    },
+    "large_smoke": {
+      "scale": "40200000"
+    },
+    "smoke_zero": {
+      "scale": "00000000"
+    },
+    "smoke_negative": {
+      "scale": "bf000000"
+    },
+    "flame": {
+      "descriptor": "(Lfd;DDDDDD)V"
+    }
+  },
+  "constructor_operands": {
+    "position": [
+      "4021000000000000",
+      "4050200000000000",
+      "4021000000000000"
+    ],
+    "velocity": [
+      "3fc0000000000000",
+      "bfd0000000000000",
+      "3fb0000000000000"
+    ]
+  },
+  "component_postconstructor": {
+    "particle_size": [
+      "3e4ccccd",
+      "3e4ccccd"
+    ],
+    "height_offset": "3dcccccd",
+    "y_size": "00000000",
+    "tick_position": [
+      "4021000000000000",
+      "4050200000000000",
+      "4021000000000000"
+    ],
+    "draw_position": [
+      "4008000000000000",
+      "4010000000000000",
+      "4014000000000000"
+    ],
+    "tick_previous": [
+      "bff0000000000000",
+      "c000000000000000",
+      "c008000000000000"
+    ],
+    "draw_previous": [
+      "3ff0000000000000",
+      "4000000000000000",
+      "4008000000000000"
+    ],
+    "velocity_xz": [
+      "3fc0000000000000",
+      "3fb0000000000000"
+    ],
+    "jitter_cd": [
+      "3e800000",
+      "3f400000"
+    ],
+    "gravity": "3e000000",
+    "rgb": [
+      "3e800000",
+      "3f000000",
+      "3f400000"
+    ],
+    "tick_no_clip": true,
+    "dead": false
+  },
+  "world": "Genuine FD/WY/XA constructor plus four genuine LM constructors inserted into actual OK Map/List; no World subclass, RAW owner or source-body replacement. All target writes/network/native links/exec denied.",
+  "entropy": "One genuine warm default Smoke initializes shared Math in source order. Actual constructors execute untouched before any component authoring. Math/private Random are read only, never rebound, seeded or supplied samples. Ordinary private initial state will be explicitly inferred; separate JDI observes it directly.",
+  "scope": "All component ticks explicitly no-clip, including presetground and zero-vertical-displacement; loaded Torch frames qualify ordinary native collision separately. Every independent draw uses a fresh genuine NW constructor with2097152 backing words and one actual begin. Geometry rows compare every active NW word and preserve every word outside append against own prior."
+}

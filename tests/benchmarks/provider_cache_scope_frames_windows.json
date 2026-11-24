@@ -1,0 +1,820 @@
+{
+  "schema": "PROVIDER_CACHE_SCOPE_NATIVE_FRAMES_WINDOWS_V1",
+  "date": "2026-11-15",
+  "status": "PASS_NATIVE_FPS_OPPORTUNITY_ONLY",
+  "scope": "Four deadline-driven intervals, same authored scene/camera and frozen observer object. Work totals and deadline frame counts may differ. No fixed-work parity, statistical significance, load/generation split, or GPU attribution is claimed.",
+  "baseline_commit": "ff81d0eaa9508e8f7e4c83253622794d86db9c0c",
+  "order": [
+    "baseline",
+    "candidate",
+    "candidate",
+    "baseline"
+  ],
+  "opportunities": 4,
+  "retries": 0,
+  "same_observer_object": {
+    "bytes": 1081853,
+    "sha256": "8bd1d45b458a815e8c90c96caa709b847f3efb148e8f27fc2d0e6414cb2655a9"
+  },
+  "observer_source": {
+    "bytes": 23120,
+    "sha256": "b0d8302a95206108bddf9bafc36b1912d96410e57b4fcc3f231234d924a57831"
+  },
+  "candidate_runtime_sources": {
+    "src/world/runtime/runtime.c": {
+      "bytes": 73387,
+      "sha256": "8007bf13c12073f0b3481bb2063d5abf405d22df822039f4e7055f8c25bd7dd5"
+    },
+    "src/world/runtime/chunk_provider.c": {
+      "bytes": 18807,
+      "sha256": "216f95ded403c80994a57bc6dc6007e8c9a34dc24ea10fa2e920c0994898d9a2"
+    },
+    "src/world/runtime/chunk_provider_owned.inc": {
+      "bytes": 13742,
+      "sha256": "77699de4b41cd462f53a883a1e2ddd63bb3eda9ef8d312695f55d53ceb112350"
+    },
+    "src/world/runtime/chunk_provider_internal.h": {
+      "bytes": 12161,
+      "sha256": "4edef8d61edef011d6aaa4a45eeadf9232107ec115e26e2021607805466ebb80"
+    }
+  },
+  "baseline_library_roles": 92,
+  "controlled_candidate_roles": 30,
+  "shared_roles": 62,
+  "only_changed_library": [
+    "mc_simulation.lib"
+  ],
+  "products": {
+    "baseline": {
+      "cache_frames.exe": {
+        "bytes": 9757184,
+        "sha256": "50fc8d0d7ffddded72e7e544eb3395ca4b01f12b2b2c26c101013d65df55c436"
+      },
+      "OpenAL32.dll": {
+        "bytes": 1603072,
+        "sha256": "793119f71130dcf5ab91f79eac5d783b2d65505c9e8ab4fd39002970ebb6e656"
+      }
+    },
+    "candidate": {
+      "cache_frames.exe": {
+        "bytes": 9758208,
+        "sha256": "a40c308d58635b7307b486d1f38548470a88cf6ff779f918e0638946a44ca18c"
+      },
+      "OpenAL32.dll": {
+        "bytes": 1603072,
+        "sha256": "793119f71130dcf5ab91f79eac5d783b2d65505c9e8ab4fd39002970ebb6e656"
+      }
+    }
+  },
+  "monitor": {
+    "physical": "DISPLAY2",
+    "startup_work_bounds": "-1920,0,1920,1040",
+    "hint_before_child_creation": true
+  },
+  "source_input_count": 2296,
+  "all_inputs_unchanged": true,
+  "frame_guard_receipt_sha256": "945415645a94b5fbb918bb44536614fd897c8542a68fd94276dc93ec01fc73bd",
+  "two_interval_medians": {
+    "baseline": {
+      "fps": 36.848687041697545,
+      "host_p95_ms": 52.019099999999995,
+      "host_max_ms": 242.7733,
+      "source_tick_mean_ms": 8.704360902210878
+    },
+    "candidate": {
+      "fps": 37.99884285015083,
+      "host_p95_ms": 48.4912,
+      "host_max_ms": 170.52305,
+      "source_tick_mean_ms": 7.4268776749551035
+    }
+  },
+  "profiles": [
+    {
+      "label": "baseline",
+      "round": 0,
+      "fps": 36.45822434363585,
+      "context": {
+        "major": "3",
+        "minor": "3",
+        "profile": "1",
+        "swap-zero": "1",
+        "width": "854",
+        "height": "480",
+        "view-distance": "3",
+        "performance-mode": "1"
+      },
+      "gpu": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "3.3.0 NVIDIA 581.42"
+      },
+      "measurement": {
+        "row-version": "2",
+        "qpc-hz": "10000000",
+        "start": "22198722288801",
+        "end": "22198822403386",
+        "warmup-frames": "58",
+        "frames": "365",
+        "world-ticks": "190",
+        "healthy": "1",
+        "capacity": "0",
+        "focus-invalid": "0",
+        "process-kernel-100ns": "10468750",
+        "process-user-100ns": "96875000"
+      },
+      "work": {
+        "completed": true,
+        "main_entry": 57,
+        "main_ticks": 190,
+        "world_entry": 40,
+        "world_coordinator_returns": 190,
+        "world_draws_proved": 365,
+        "simulation_advanced": true,
+        "checkpoints": [
+          {
+            "stage": "timed-entry",
+            "present": "1",
+            "main-ticks": "57",
+            "world-ticks": "40",
+            "world-draws": "61",
+            "world-time": "39",
+            "paused": "0",
+            "random-calls": "39",
+            "random-samples": "1126320",
+            "display-calls": "39",
+            "display-samples": "39000",
+            "display-random": "234000"
+          },
+          {
+            "stage": "timed-returned",
+            "present": "1",
+            "main-ticks": "247",
+            "world-ticks": "230",
+            "world-draws": "426",
+            "world-time": "229",
+            "paused": "0",
+            "random-calls": "229",
+            "random-samples": "6613520",
+            "display-calls": "229",
+            "display-samples": "229000",
+            "display-random": "1374000"
+          }
+        ],
+        "checkpoint_deltas": {
+          "random-calls": 190,
+          "display-calls": 190,
+          "display-random": 1140000,
+          "random-samples": 5487200,
+          "world-draws": 365,
+          "world-ticks": 190,
+          "display-samples": 190000,
+          "main-ticks": 190
+        },
+        "world_time_delta": 190
+      },
+      "host_frame": {
+        "count": 365,
+        "mean_ms": 27.41999397260274,
+        "p50_ms": 21.315,
+        "p95_ms": 47.6421,
+        "p99_ms": 152.6713,
+        "max_ms": 243.1038
+      },
+      "source_tick_batch": {
+        "count": 365,
+        "mean_ms": 8.977805756164383,
+        "p50_ms": 0.000199,
+        "p95_ms": 32.147299,
+        "p99_ms": 128.0671,
+        "max_ms": 225.505499
+      },
+      "source_pre_HUD_prefix_not_GPU_time": {
+        "count": 365,
+        "mean_ms": 17.897241378082192,
+        "p50_ms": 18.3697,
+        "p95_ms": 27.0856,
+        "p99_ms": 35.0221,
+        "max_ms": 39.5716
+      },
+      "cache_totals": {
+        "world_ticks_delta": 190,
+        "map_delta": 21,
+        "insertion_delta": 21,
+        "derived_mutation_scope_get_attempts": 1559428,
+        "hits_delta": 21766295,
+        "misses_delta": 21,
+        "generic_gets_delta": 1559449,
+        "raw_exports_delta": 0,
+        "rebuilds_delta": 216
+      },
+      "indexed_miss_frames": 19,
+      "over_100ms": {
+        "frames": 9,
+        "host": {
+          "count": 9,
+          "mean_ms": 156.01332222222223,
+          "p50_ms": 139.0054,
+          "p95_ms": 243.1038,
+          "p99_ms": 243.1038,
+          "max_ms": 243.1038
+        },
+        "tick": {
+          "count": 9,
+          "mean_ms": 132.22784433333334,
+          "p50_ms": 112.573701,
+          "p95_ms": 225.505499,
+          "p99_ms": 225.505499,
+          "max_ms": 225.505499
+        },
+        "pre_hud": {
+          "count": 9,
+          "mean_ms": 23.23931122222222,
+          "p50_ms": 22.2804,
+          "p95_ms": 39.5716,
+          "p99_ms": 39.5716,
+          "max_ms": 39.5716
+        },
+        "total_tick_ms": 1190.050599,
+        "totals": {
+          "world_ticks_delta": 13,
+          "map_delta": 10,
+          "insertion_delta": 10,
+          "derived_mutation_scope_get_attempts": 1157135,
+          "hits_delta": 837451,
+          "misses_delta": 10,
+          "generic_gets_delta": 1157145,
+          "raw_exports_delta": 0,
+          "rebuilds_delta": 24
+        }
+      },
+      "monitor_receipts": [
+        {
+          "window": "frame",
+          "x": "-1387",
+          "y": "280",
+          "width": "854",
+          "height": "480",
+          "target": "-1920,0,1920,1040"
+        },
+        {
+          "window": "canvas",
+          "x": "-1387",
+          "y": "280",
+          "width": "854",
+          "height": "480",
+          "target": "-1920,0,1920,1040"
+        }
+      ],
+      "snapshot_timing": "Initial before existing timed start; each frame snapshot after its existing host end timestamp.",
+      "stdout_sha256": "acbf3c15ea17b4c69f9b1667b73330086184754759a42bef225acf81b0681085",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate",
+      "round": 0,
+      "fps": 37.95221209262145,
+      "context": {
+        "major": "3",
+        "minor": "3",
+        "profile": "1",
+        "swap-zero": "1",
+        "width": "854",
+        "height": "480",
+        "view-distance": "3",
+        "performance-mode": "1"
+      },
+      "gpu": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "3.3.0 NVIDIA 581.42"
+      },
+      "measurement": {
+        "row-version": "2",
+        "qpc-hz": "10000000",
+        "start": "22198916055929",
+        "end": "22199016181845",
+        "warmup-frames": "71",
+        "frames": "380",
+        "world-ticks": "192",
+        "healthy": "1",
+        "capacity": "0",
+        "focus-invalid": "0",
+        "process-kernel-100ns": "9687500",
+        "process-user-100ns": "95625000"
+      },
+      "work": {
+        "completed": true,
+        "main_entry": 58,
+        "main_ticks": 192,
+        "world_entry": 41,
+        "world_coordinator_returns": 192,
+        "world_draws_proved": 380,
+        "simulation_advanced": true,
+        "checkpoints": [
+          {
+            "stage": "timed-entry",
+            "present": "1",
+            "main-ticks": "58",
+            "world-ticks": "41",
+            "world-draws": "74",
+            "world-time": "40",
+            "paused": "0",
+            "random-calls": "40",
+            "random-samples": "1155200",
+            "display-calls": "40",
+            "display-samples": "40000",
+            "display-random": "240000"
+          },
+          {
+            "stage": "timed-returned",
+            "present": "1",
+            "main-ticks": "250",
+            "world-ticks": "233",
+            "world-draws": "454",
+            "world-time": "232",
+            "paused": "0",
+            "random-calls": "232",
+            "random-samples": "6700160",
+            "display-calls": "232",
+            "display-samples": "232000",
+            "display-random": "1392000"
+          }
+        ],
+        "checkpoint_deltas": {
+          "random-calls": 192,
+          "display-calls": 192,
+          "display-random": 1152000,
+          "random-samples": 5544960,
+          "world-draws": 380,
+          "world-ticks": 192,
+          "display-samples": 192000,
+          "main-ticks": 192
+        },
+        "world_time_delta": 192
+      },
+      "host_frame": {
+        "count": 380,
+        "mean_ms": 26.33941236842105,
+        "p50_ms": 21.96,
+        "p95_ms": 51.9373,
+        "p99_ms": 138.4794,
+        "max_ms": 169.4079
+      },
+      "source_tick_batch": {
+        "count": 380,
+        "mean_ms": 7.286486315789473,
+        "p50_ms": 0.000101,
+        "p95_ms": 25.8373,
+        "p99_ms": 119.8187,
+        "max_ms": 138.4811
+      },
+      "source_pre_HUD_prefix_not_GPU_time": {
+        "count": 380,
+        "mean_ms": 18.509469210526316,
+        "p50_ms": 18.256901,
+        "p95_ms": 28.5508,
+        "p99_ms": 39.4738,
+        "max_ms": 55.861701
+      },
+      "cache_totals": {
+        "world_ticks_delta": 192,
+        "map_delta": 29,
+        "insertion_delta": 29,
+        "derived_mutation_scope_get_attempts": 1438794,
+        "hits_delta": 20560990,
+        "misses_delta": 29,
+        "generic_gets_delta": 1438823,
+        "raw_exports_delta": 0,
+        "rebuilds_delta": 225
+      },
+      "indexed_miss_frames": 24,
+      "over_100ms": {
+        "frames": 7,
+        "host": {
+          "count": 7,
+          "mean_ms": 136.49684285714287,
+          "p50_ms": 138.4794,
+          "p95_ms": 169.4079,
+          "p99_ms": 169.4079,
+          "max_ms": 169.4079
+        },
+        "tick": {
+          "count": 7,
+          "mean_ms": 109.36420028571429,
+          "p50_ms": 119.8187,
+          "p95_ms": 138.4811,
+          "p99_ms": 138.4811,
+          "max_ms": 138.4811
+        },
+        "pre_hud": {
+          "count": 7,
+          "mean_ms": 26.544171142857145,
+          "p50_ms": 30.1426,
+          "p95_ms": 40.327,
+          "p99_ms": 40.327,
+          "max_ms": 40.327
+        },
+        "total_tick_ms": 765.549402,
+        "totals": {
+          "world_ticks_delta": 7,
+          "map_delta": 11,
+          "insertion_delta": 11,
+          "derived_mutation_scope_get_attempts": 878002,
+          "hits_delta": 682750,
+          "misses_delta": 11,
+          "generic_gets_delta": 878013,
+          "raw_exports_delta": 0,
+          "rebuilds_delta": 18
+        }
+      },
+      "monitor_receipts": [
+        {
+          "window": "frame",
+          "x": "-1387",
+          "y": "280",
+          "width": "854",
+          "height": "480",
+          "target": "-1920,0,1920,1040"
+        },
+        {
+          "window": "canvas",
+          "x": "-1387",
+          "y": "280",
+          "width": "854",
+          "height": "480",
+          "target": "-1920,0,1920,1040"
+        }
+      ],
+      "snapshot_timing": "Initial before existing timed start; each frame snapshot after its existing host end timestamp.",
+      "stdout_sha256": "0d9eff46ec82a715ddaf1ae4ec68d404eb29d27874a371a9e8138c9df75d19b3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "candidate",
+      "round": 1,
+      "fps": 38.04547360768021,
+      "context": {
+        "major": "3",
+        "minor": "3",
+        "profile": "1",
+        "swap-zero": "1",
+        "width": "854",
+        "height": "480",
+        "view-distance": "3",
+        "performance-mode": "1"
+      },
+      "gpu": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "3.3.0 NVIDIA 581.42"
+      },
+      "measurement": {
+        "row-version": "2",
+        "qpc-hz": "10000000",
+        "start": "22199110193684",
+        "end": "22199210337003",
+        "warmup-frames": "61",
+        "frames": "381",
+        "world-ticks": "192",
+        "healthy": "1",
+        "capacity": "0",
+        "focus-invalid": "0",
+        "process-kernel-100ns": "14062500",
+        "process-user-100ns": "94375000"
+      },
+      "work": {
+        "completed": true,
+        "main_entry": 58,
+        "main_ticks": 192,
+        "world_entry": 41,
+        "world_coordinator_returns": 192,
+        "world_draws_proved": 381,
+        "simulation_advanced": true,
+        "checkpoints": [
+          {
+            "stage": "timed-entry",
+            "present": "1",
+            "main-ticks": "58",
+            "world-ticks": "41",
+            "world-draws": "64",
+            "world-time": "40",
+            "paused": "0",
+            "random-calls": "40",
+            "random-samples": "1155200",
+            "display-calls": "40",
+            "display-samples": "40000",
+            "display-random": "240000"
+          },
+          {
+            "stage": "timed-returned",
+            "present": "1",
+            "main-ticks": "250",
+            "world-ticks": "233",
+            "world-draws": "445",
+            "world-time": "232",
+            "paused": "0",
+            "random-calls": "232",
+            "random-samples": "6700160",
+            "display-calls": "232",
+            "display-samples": "232000",
+            "display-random": "1392000"
+          }
+        ],
+        "checkpoint_deltas": {
+          "random-calls": 192,
+          "display-calls": 192,
+          "display-random": 1152000,
+          "random-samples": 5544960,
+          "world-draws": 381,
+          "world-ticks": 192,
+          "display-samples": 192000,
+          "main-ticks": 192
+        },
+        "world_time_delta": 192
+      },
+      "host_frame": {
+        "count": 381,
+        "mean_ms": 26.270441994750655,
+        "p50_ms": 22.271,
+        "p95_ms": 45.0451,
+        "p99_ms": 110.6024,
+        "max_ms": 171.6382
+      },
+      "source_tick_batch": {
+        "count": 381,
+        "mean_ms": 7.567269034120734,
+        "p50_ms": 0.000101,
+        "p95_ms": 26.002499,
+        "p99_ms": 92.2971,
+        "max_ms": 159.8175
+      },
+      "source_pre_HUD_prefix_not_GPU_time": {
+        "count": 381,
+        "mean_ms": 18.162771417322833,
+        "p50_ms": 18.395201,
+        "p95_ms": 27.0133,
+        "p99_ms": 35.8998,
+        "max_ms": 52.412199
+      },
+      "cache_totals": {
+        "world_ticks_delta": 192,
+        "map_delta": 21,
+        "insertion_delta": 21,
+        "derived_mutation_scope_get_attempts": 1178990,
+        "hits_delta": 21498108,
+        "misses_delta": 21,
+        "generic_gets_delta": 1179011,
+        "raw_exports_delta": 0,
+        "rebuilds_delta": 217
+      },
+      "indexed_miss_frames": 18,
+      "over_100ms": {
+        "frames": 4,
+        "host": {
+          "count": 4,
+          "mean_ms": 140.55565,
+          "p50_ms": 133.2005,
+          "p95_ms": 171.6382,
+          "p99_ms": 171.6382,
+          "max_ms": 171.6382
+        },
+        "tick": {
+          "count": 4,
+          "mean_ms": 117.848625,
+          "p50_ms": 93.8687,
+          "p95_ms": 159.8175,
+          "p99_ms": 159.8175,
+          "max_ms": 159.8175
+        },
+        "pre_hud": {
+          "count": 4,
+          "mean_ms": 22.1577745,
+          "p50_ms": 11.2674,
+          "p95_ms": 52.412199,
+          "p99_ms": 52.412199,
+          "max_ms": 52.412199
+        },
+        "total_tick_ms": 471.3945,
+        "totals": {
+          "world_ticks_delta": 5,
+          "map_delta": 6,
+          "insertion_delta": 6,
+          "derived_mutation_scope_get_attempts": 536464,
+          "hits_delta": 315917,
+          "misses_delta": 6,
+          "generic_gets_delta": 536470,
+          "raw_exports_delta": 0,
+          "rebuilds_delta": 11
+        }
+      },
+      "monitor_receipts": [
+        {
+          "window": "frame",
+          "x": "-1387",
+          "y": "280",
+          "width": "854",
+          "height": "480",
+          "target": "-1920,0,1920,1040"
+        },
+        {
+          "window": "canvas",
+          "x": "-1387",
+          "y": "280",
+          "width": "854",
+          "height": "480",
+          "target": "-1920,0,1920,1040"
+        }
+      ],
+      "snapshot_timing": "Initial before existing timed start; each frame snapshot after its existing host end timestamp.",
+      "stdout_sha256": "683ec4c7dbcc56877fcf4790aa2b426112c479cbfbd1d2b0e4f80ea6fb051219",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "baseline",
+      "round": 1,
+      "fps": 37.23914973975924,
+      "context": {
+        "major": "3",
+        "minor": "3",
+        "profile": "1",
+        "swap-zero": "1",
+        "width": "854",
+        "height": "480",
+        "view-distance": "3",
+        "performance-mode": "1"
+      },
+      "gpu": {
+        "vendor": "NVIDIA Corporation",
+        "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+        "version": "3.3.0 NVIDIA 581.42"
+      },
+      "measurement": {
+        "row-version": "2",
+        "qpc-hz": "10000000",
+        "start": "22199305588760",
+        "end": "22199405752164",
+        "warmup-frames": "58",
+        "frames": "373",
+        "world-ticks": "194",
+        "healthy": "1",
+        "capacity": "0",
+        "focus-invalid": "0",
+        "process-kernel-100ns": "11718750",
+        "process-user-100ns": "93125000"
+      },
+      "work": {
+        "completed": true,
+        "main_entry": 56,
+        "main_ticks": 194,
+        "world_entry": 39,
+        "world_coordinator_returns": 194,
+        "world_draws_proved": 373,
+        "simulation_advanced": true,
+        "checkpoints": [
+          {
+            "stage": "timed-entry",
+            "present": "1",
+            "main-ticks": "56",
+            "world-ticks": "39",
+            "world-draws": "61",
+            "world-time": "38",
+            "paused": "0",
+            "random-calls": "38",
+            "random-samples": "1097440",
+            "display-calls": "38",
+            "display-samples": "38000",
+            "display-random": "228000"
+          },
+          {
+            "stage": "timed-returned",
+            "present": "1",
+            "main-ticks": "250",
+            "world-ticks": "233",
+            "world-draws": "434",
+            "world-time": "232",
+            "paused": "0",
+            "random-calls": "232",
+            "random-samples": "6700160",
+            "display-calls": "232",
+            "display-samples": "232000",
+            "display-random": "1392000"
+          }
+        ],
+        "checkpoint_deltas": {
+          "random-calls": 194,
+          "display-calls": 194,
+          "display-random": 1164000,
+          "random-samples": 5602720,
+          "world-draws": 373,
+          "world-ticks": 194,
+          "display-samples": 194000,
+          "main-ticks": 194
+        },
+        "world_time_delta": 194
+      },
+      "host_frame": {
+        "count": 373,
+        "mean_ms": 26.841731099195712,
+        "p50_ms": 21.7321,
+        "p95_ms": 56.3961,
+        "p99_ms": 133.5081,
+        "max_ms": 242.4428
+      },
+      "source_tick_batch": {
+        "count": 373,
+        "mean_ms": 8.430916048257373,
+        "p50_ms": 0.0002,
+        "p95_ms": 43.0506,
+        "p99_ms": 116.262201,
+        "max_ms": 210.7394
+      },
+      "source_pre_HUD_prefix_not_GPU_time": {
+        "count": 373,
+        "mean_ms": 17.85967930294906,
+        "p50_ms": 18.627199,
+        "p95_ms": 27.6813,
+        "p99_ms": 33.8355,
+        "max_ms": 42.7296
+      },
+      "cache_totals": {
+        "world_ticks_delta": 194,
+        "map_delta": 22,
+        "insertion_delta": 22,
+        "derived_mutation_scope_get_attempts": 1541713,
+        "hits_delta": 24333216,
+        "misses_delta": 22,
+        "generic_gets_delta": 1541735,
+        "raw_exports_delta": 0,
+        "rebuilds_delta": 221
+      },
+      "indexed_miss_frames": 22,
+      "over_100ms": {
+        "frames": 8,
+        "host": {
+          "count": 8,
+          "mean_ms": 140.097525,
+          "p50_ms": 123.2687,
+          "p95_ms": 242.4428,
+          "p99_ms": 242.4428,
+          "max_ms": 242.4428
+        },
+        "tick": {
+          "count": 8,
+          "mean_ms": 121.242075125,
+          "p50_ms": 105.989,
+          "p95_ms": 210.7394,
+          "p99_ms": 210.7394,
+          "max_ms": 210.7394
+        },
+        "pre_hud": {
+          "count": 8,
+          "mean_ms": 18.331962625,
+          "p50_ms": 16.7189,
+          "p95_ms": 31.2006,
+          "p99_ms": 31.2006,
+          "max_ms": 31.2006
+        },
+        "total_tick_ms": 969.936601,
+        "totals": {
+          "world_ticks_delta": 12,
+          "map_delta": 8,
+          "insertion_delta": 8,
+          "derived_mutation_scope_get_attempts": 906323,
+          "hits_delta": 990663,
+          "misses_delta": 8,
+          "generic_gets_delta": 906331,
+          "raw_exports_delta": 0,
+          "rebuilds_delta": 22
+        }
+      },
+      "monitor_receipts": [
+        {
+          "window": "frame",
+          "x": "-1387",
+          "y": "280",
+          "width": "854",
+          "height": "480",
+          "target": "-1920,0,1920,1040"
+        },
+        {
+          "window": "canvas",
+          "x": "-1387",
+          "y": "280",
+          "width": "854",
+          "height": "480",
+          "target": "-1920,0,1920,1040"
+        }
+      ],
+      "snapshot_timing": "Initial before existing timed start; each frame snapshot after its existing host end timestamp.",
+      "stdout_sha256": "42f64af317d0cbceee2bc334abb15c60c0ce0d6eaa0038f5e95031d6ff884943",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "counter_scope": "generic_gets minus misses counts scoped dispatch attempts for both products; candidate positive hints mean it no longer measures linear scans.",
+  "limits": [
+    "Two intervals per version, one Tiny sky scene; no statistical-significance claim.",
+    "Real deadlines yield different frame, World-tick, cache-miss and scoped-dispatch work totals.",
+    "Counter snapshots occur after existing host-end QPC; between-frame overhead remains included in deadlines.",
+    "No direct load/generation/lighting attribution, GPU timing, pixel comparison or original-game FPS comparison."
+  ]
+}

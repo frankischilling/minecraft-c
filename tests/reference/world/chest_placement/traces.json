@@ -1,0 +1,10121 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "rows": [
+    {
+      "index": 0,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            6,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            10,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            6
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            10
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            6,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            6,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            6,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            10,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            10,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            10,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            6
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            10
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            6,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 1
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            6,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 7
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 32,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            6,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 8
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            6,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "queries": [
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            14,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            14
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "queries": [
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            13,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            14,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            14
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "queries": [
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            14,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            14
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "queries": [
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            13
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            14,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            14
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "queries": [
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            14,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            14
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "queries": [
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            17,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "queries": [
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            14,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            17,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "queries": [
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            18,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            17,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "queries": [
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            14
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            17,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "queries": [
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            15
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            15,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            17,
+            64,
+            17
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            16
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            16,
+            64,
+            18
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            15,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            17,
+            64,
+            16
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            15
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            16,
+            64,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            -2147483648,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            -2147483648,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            -2147483648,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            -2147483648,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            -2147483648,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            -2147483648,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            -2147483648,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            -2147483648,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            -2147483648,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            -2147483648,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            -2147483648,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            -2147483648,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            -2147483648,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            -1,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            -1,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            -1,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            -1,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            -1,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            -1,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            -1,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            -1,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            -1,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            -1,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            -1,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            -1,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            -1,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            0,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            0,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            0,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            0,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            0,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            0,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            0,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            0,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            0,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            0,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            0,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            0,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            0,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            127,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            127,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            127,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            127,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            127,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            127,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            127,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            127,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            127,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            127,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            127,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            127,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            127,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            128,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            128,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            128,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            128,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            128,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            128,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            128,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            128,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            128,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            128,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            128,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            128,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            128,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 51,
+      "queries": [
+        {
+          "xyz": [
+            7,
+            2147483647,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            2147483647,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            2147483647,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            2147483647,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            7,
+            2147483647,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            2147483647,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            2147483647,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            2147483647,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            2147483647,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            7,
+            2147483647,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            9,
+            2147483647,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            2147483647,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            2147483647,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "queries": [
+        {
+          "xyz": [
+            2147483647,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            -2147483647,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            -2147483648,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            -2147483648,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            2147483647,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            -2147483647,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            -2147483648,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            -2147483648,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            -2147483648,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            2147483647,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            -2147483647,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            -2147483648,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            -2147483648,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 53,
+      "queries": [
+        {
+          "xyz": [
+            2147483646,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 10
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            -2147483648,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 30
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            2147483647,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 50
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            2147483647,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 70
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            2147483646,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 99
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            -2147483648,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 115
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            2147483647,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 131
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            2147483647,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            },
+            {
+              "method": "e.a(Lfd;III)Z",
+              "pc": 147
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            2147483647,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            2147483646,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            -2147483648,
+            64,
+            8
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            2147483647,
+            64,
+            7
+          ]
+        },
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            2147483647,
+            64,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "index": 54,
+      "queries": [],
+      "entered_E": [
+        {
+          "method": "e.a(Lfd;III)Z",
+          "world_null": true,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 55,
+      "queries": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 56,
+      "queries": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            }
+          ],
+          "result": 0
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 57,
+      "queries": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 58,
+      "queries": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 59,
+      "queries": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 60,
+      "queries": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            9,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 43
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            7
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 62
+            }
+          ],
+          "result": 0
+        },
+        {
+          "xyz": [
+            8,
+            64,
+            9
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 81
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 61,
+      "queries": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            }
+          ],
+          "result": 54
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 24
+            }
+          ],
+          "result": 54
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 62,
+      "queries": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "source_frames": [
+            {
+              "method": "e.h(Lfd;III)Z",
+              "pc": 5
+            }
+          ],
+          "result": 1
+        }
+      ],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": false,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "index": 63,
+      "queries": [],
+      "entered_E": [
+        {
+          "method": "e.h(Lfd;III)Z",
+          "world_null": true,
+          "xyz": [
+            8,
+            64,
+            8
+          ]
+        }
+      ]
+    }
+  ],
+  "live_Code": {
+    "e.a(Lfd;III)Z": {
+      "code_bytes": 157,
+      "code_sha256": "37b296847197814ae31763181d2c1920956d1fa31559d0e3b5bf208a889738c7"
+    },
+    "fd.a(III)I": {
+      "code_bytes": 64,
+      "code_sha256": "adf83ac7da3e525eb2cb08d6f7fb1d34683c61efdb1cefc26ee8f3cdc971bf0b"
+    },
+    "e.h(Lfd;III)Z": {
+      "code_bytes": 95,
+      "code_sha256": "266a4a748b7ae1ebf114cefec5420b341792b2ad7c75f449174f2bdac65e71b4"
+    }
+  }
+}

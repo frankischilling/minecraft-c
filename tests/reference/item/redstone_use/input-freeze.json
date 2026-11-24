@@ -1,0 +1,12 @@
+{
+  "status": "FROZEN_BEFORE_HELPER_AUTHORING",
+  "files": {
+    "use-profiles.tsv": "fbe4c90374af6287e33211e8ca3e503bfb7a5e053ae51159013ac92fbe57e873",
+    "support-profiles.tsv": "67301c8f667f6ef47b5c635ab96d8a6e17438a709277d8b333294308ab66e2d6",
+    "declared-inputs.json": "b18c57a8bb6f18b3e3a3ed13a972e98cc94835e5c7b592ac2521d8356408522d"
+  },
+  "profiles": [
+    42,
+    12
+  ]
+}

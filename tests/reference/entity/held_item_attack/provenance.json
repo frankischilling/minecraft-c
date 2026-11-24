@@ -1,0 +1,236 @@
+{
+  "schema": 1,
+  "status": "CAPTURED_ORIGINAL",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "platform": "Windows x64; supplied Temurin JDK17.0.17+10",
+  "scope": "422 exact deterministic held attacks +3 independently audited Cow10 death attacks per ordinary process;202 Item IDs/38 classes; no native/graphical claim.",
+  "original_formula_audit": {
+    "rows": 422,
+    "inventory_ids": 202,
+    "runtime_classes": 38,
+    "direct_base_ids": 22,
+    "durability_rows": 320,
+    "break_rows": 120,
+    "saddle_rows": 16,
+    "research_rows_preserved": 32,
+    "random_rebinding": false,
+    "deterministic_fields_only": true
+  },
+  "ordinary_captures": [
+    {
+      "status": "PASS",
+      "capture_sha256": "f53abf659ca8495e05dbc7025309a2f8b71f917b1d9690eb199e08cef0198471",
+      "inputs_and_helpers_unchanged": true,
+      "original_receipt": {
+        "command": [
+          "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+          "-Xint",
+          "-Xverify:all",
+          "-Xmx256m",
+          "-Djava.awt.headless=true",
+          "-Djava.security.manager=allow",
+          "--add-opens=java.base/java.util=ALL-UNNAMED",
+          "-Djava.io.tmpdir=C:\\Users\\admin\\minecraft\\.local\\held-item-original-qualified-b\\tmp",
+          "-classpath",
+          "C:\\Users\\admin\\minecraft\\.local\\held-item-original-qualified-b\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+          "HeldItemObservation",
+          "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+          "C:\\Users\\admin\\minecraft\\.local\\held-item-original-qualified-b\\game"
+        ],
+        "exit": 0,
+        "timeout_seconds": 300,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_file": "original.stdout",
+        "stderr_file": "original.stderr",
+        "stdout_bytes": 368689,
+        "stderr_bytes": 385,
+        "stdout_sha256": "085a86f0af737ed49057192f41a67fcbec374ecd4e895fac7f337d49dedae477",
+        "stderr_sha256": "a94b8c6464764f4f7f92c7f61751053993a451902ea3e24bbb5fa7c671f4138e",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "helpers_sha256": {
+        "HeldItemObservation$1.class": "d83955ded575a7382dcf6efa96b2ca22253c57e62069b99b1798599614613b9d",
+        "HeldItemObservation$Observer.class": "3ca52a91713043c458954020163608fde2bfa31f867063ef4c524a67eb13cb73",
+        "HeldItemObservation.class": "3c8389f370dce2ef98d2cecdb321a132baec5ac8d0534c037649a976b47debf0"
+      },
+      "artifact_sha256": {
+        "capture.json": "f53abf659ca8495e05dbc7025309a2f8b71f917b1d9690eb199e08cef0198471",
+        "original.stdout": "085a86f0af737ed49057192f41a67fcbec374ecd4e895fac7f337d49dedae477",
+        "original.stderr": "a94b8c6464764f4f7f92c7f61751053993a451902ea3e24bbb5fa7c671f4138e",
+        "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source-pins.json": "8ea71623e35bb6d76804522aa341552a2a827af6a82543a8fde8cbbc9eb205b7"
+      },
+      "cow_entropy_audit": [
+        {
+          "profile": "cow10-diamond-ordinary",
+          "after": "00001873dff85a1b",
+          "pitch": "3f7df4ac",
+          "quantity": 2,
+          "float_draws": 2,
+          "next_int_attempts": 1
+        },
+        {
+          "profile": "cow10-diamond-falling",
+          "after": "00001326830fea3e",
+          "pitch": "3f838ebf",
+          "quantity": 2,
+          "float_draws": 2,
+          "next_int_attempts": 1
+        },
+        {
+          "profile": "cow10-diamond-break",
+          "after": "0000d462f9185d2f",
+          "pitch": "3f7bcc27",
+          "quantity": 2,
+          "float_draws": 2,
+          "next_int_attempts": 1
+        }
+      ]
+    },
+    {
+      "status": "PASS",
+      "capture_sha256": "f7bb720032c7df9c96f91e9084088f3a0e74f522357e668393b07ebd94ecd86c",
+      "inputs_and_helpers_unchanged": true,
+      "original_receipt": {
+        "command": [
+          "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+          "-Xint",
+          "-Xverify:all",
+          "-Xmx256m",
+          "-Djava.awt.headless=true",
+          "-Djava.security.manager=allow",
+          "--add-opens=java.base/java.util=ALL-UNNAMED",
+          "-Djava.io.tmpdir=C:\\Users\\admin\\minecraft\\.local\\held-item-original-qualified-c\\tmp",
+          "-classpath",
+          "C:\\Users\\admin\\minecraft\\.local\\held-item-original-qualified-c\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+          "HeldItemObservation",
+          "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+          "C:\\Users\\admin\\minecraft\\.local\\held-item-original-qualified-c\\game"
+        ],
+        "exit": 0,
+        "timeout_seconds": 300,
+        "timed_out": false,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_file": "original.stdout",
+        "stderr_file": "original.stderr",
+        "stdout_bytes": 368418,
+        "stderr_bytes": 385,
+        "stdout_sha256": "737209afaf493dec3261f334378ccead783a0aaeeaf36715f651ff71c071f631",
+        "stderr_sha256": "dab870e8f2057c6b6b1623ff2f502a5cf971863828d9a7a56edcb2e37ab06ab6",
+        "stdout_limit": 4194304,
+        "stderr_limit": 1048576
+      },
+      "helpers_sha256": {
+        "HeldItemObservation$1.class": "d83955ded575a7382dcf6efa96b2ca22253c57e62069b99b1798599614613b9d",
+        "HeldItemObservation$Observer.class": "3ca52a91713043c458954020163608fde2bfa31f867063ef4c524a67eb13cb73",
+        "HeldItemObservation.class": "3c8389f370dce2ef98d2cecdb321a132baec5ac8d0534c037649a976b47debf0"
+      },
+      "artifact_sha256": {
+        "capture.json": "f7bb720032c7df9c96f91e9084088f3a0e74f522357e668393b07ebd94ecd86c",
+        "original.stdout": "737209afaf493dec3261f334378ccead783a0aaeeaf36715f651ff71c071f631",
+        "original.stderr": "dab870e8f2057c6b6b1623ff2f502a5cf971863828d9a7a56edcb2e37ab06ab6",
+        "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "source-pins.json": "8ea71623e35bb6d76804522aa341552a2a827af6a82543a8fde8cbbc9eb205b7"
+      },
+      "cow_entropy_audit": [
+        {
+          "profile": "cow10-diamond-ordinary",
+          "after": "00002bc8a73a979e",
+          "pitch": "3f764603",
+          "quantity": 0,
+          "float_draws": 2,
+          "next_int_attempts": 1
+        },
+        {
+          "profile": "cow10-diamond-falling",
+          "after": "0000e22cd06de076",
+          "pitch": "3f84bea3",
+          "quantity": 2,
+          "float_draws": 2,
+          "next_int_attempts": 1
+        },
+        {
+          "profile": "cow10-diamond-break",
+          "after": "00002c291fda8eff",
+          "pitch": "3f85c677",
+          "quantity": 2,
+          "float_draws": 2,
+          "next_int_attempts": 1
+        }
+      ]
+    }
+  ],
+  "selected422_equal_across_independent_vms": true,
+  "cow_raw_entropy_audited_per_process": true,
+  "game_class_substitutions": false,
+  "uninitialized_game_allocations": false,
+  "constructor_or_shared_entropy_rebound": false,
+  "invocation_state_repairs": false,
+  "network_attempts": 0,
+  "native_library_load_attempts": 0,
+  "file_io_policy": "Original statistic writer allowed on disposable prepared game directory; no file-write denial/sandbox claim.",
+  "unarmed_fixture_sha256": "b3d468cdfe08111eb972af120b85aa5f468d3ae90eb379c531be0892187bbcb5",
+  "capture_inputs": {
+    "C:\\Users\\admin\\minecraft\\b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\held_item_attack\\HeldItemObservation.java": "f554a0aca64a6c1e3209e1d03b21cf6d407efa3fc633f6f44d69bc066ed569b7",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\held_item_attack\\compare.py": "598f6b3dbe49c5ac72f0d1f0cc5fa101ce585137d6417d709fa1c76ed0c28c92",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\held_item_attack\\audit_research.py": "d54427857d893c38991985dc308699777fe03699955fd97ab2c8529f8eb4a3be",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\held_item_attack\\audit.py": "15797321821c4a3635b41961ea32a122f377fe3bd4ce13ee3c44a00a15ecf7d1",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\held_item_attack\\cow.py": "9e2705741660050095ebe366cfbebe848bfc37b67c3bbbe6d75a640b7018f77d",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\held_item_attack\\research-rows.json": "576a5688193627c1ed971441d6491f1cf5e5bdc4c5df261792570e330aaae367",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\held_item_attack\\cases.json": "33bc5832c7a77f58cf1b9218c7759c258557ccc0c7feffaa7a99391d28d7b66f",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\held_item_attack\\capture_reference.py": "bf66be4c888820eb644ff18390c4aed045848e6752e775f08f56b87715526ca3",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\player_attack\\capture_reference.py": "b06d1b4bdb739c209d724bfc8ace55c54feb781caabd0f0a8f0ed1995d409c97",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\player_attack\\compare.py": "3aabf0b4706f68d07bb05e9a4db390dd928745f444e947b20ea5698346e7abcb",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\player_attack\\finite.json": "b3d468cdfe08111eb972af120b85aa5f468d3ae90eb379c531be0892187bbcb5",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\player_attack\\PlayerAttackObservation.java": "45b8bf1d614e90a4f6a1aa21ad78d393d0bf2746a239427e2455bbeddc5a15c4",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\player_attack\\provenance.json": "a56bfb0b94739cb612a68e71844fd5654e876b6bb2a759d6b23c40ee9d9bd138",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\player_attack\\README.md": "6f61bccb16763b8c0828a5caabf2db24299f4f8d79885227207c206e4b25c5f4",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\player_attack\\source-pins.json": "2887666f106e61a4a7004045b090044319262ddfb5c2557bde963e92f5e78175",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\entity\\player_attack\\test_packet.py": "1ac98d59eb3d135cbf85ef98307e577a8fc4a02e81bcbdc662730f51ae5a8c9a"
+  },
+  "source_files": {
+    "HeldItemObservation.java": "f554a0aca64a6c1e3209e1d03b21cf6d407efa3fc633f6f44d69bc066ed569b7",
+    "capture_reference.py": "bf66be4c888820eb644ff18390c4aed045848e6752e775f08f56b87715526ca3",
+    "compare.py": "598f6b3dbe49c5ac72f0d1f0cc5fa101ce585137d6417d709fa1c76ed0c28c92",
+    "audit.py": "15797321821c4a3635b41961ea32a122f377fe3bd4ce13ee3c44a00a15ecf7d1",
+    "cow.py": "9e2705741660050095ebe366cfbebe848bfc37b67c3bbbe6d75a640b7018f77d",
+    "audit_research.py": "d54427857d893c38991985dc308699777fe03699955fd97ab2c8529f8eb4a3be",
+    "test_packet.py": "cb68c4275a120cfdad82ce08b2e5a84a79fe0511268ac0db93a8e04ca6a297ac",
+    "README.md": "c7e767ba63afec45c93f95e24ac3e810b0c8f96bdb7c22aa1232bc2a90537d77",
+    "cases.json": "33bc5832c7a77f58cf1b9218c7759c258557ccc0c7feffaa7a99391d28d7b66f",
+    "research-rows.json": "576a5688193627c1ed971441d6491f1cf5e5bdc4c5df261792570e330aaae367"
+  },
+  "fixtures": {
+    "finite.json": "312efdc0e4b980a178b2210c701a863fb43d70228aff122d10911ef0d7fe6549",
+    "item-inventory.json": "2f9009573ef92f9fb854d205deb544ec0969d71187bf8cced5f31b72dde0d9c7",
+    "source-pins.json": "8ea71623e35bb6d76804522aa341552a2a827af6a82543a8fde8cbbc9eb205b7",
+    "research-audit.json": "3ab8f3f4bb0bd0be8e3d0526e1a4a1ae37146623604eb8fe060d10c9b773de21",
+    "cow-death.json": "3d9a756b7153bf882027e5de035eb1a97e6679e4f733df5ce7466eeb2e2afba4",
+    "discovery-observations.json": "c2e8465f45e90601591f0bf623a4691bd3e76b79c17b905cf293a992a5c4e72f"
+  },
+  "limits": [
+    "Prepared warm Item/statistic initializers; no cold initializer/VM allocation/OOME claim.",
+    "Independent constructor/private/shared entropy: only explicitly audited Cow-private attack/death transitions are reconstructed; other random constructor/geometry fields are outside comparison.",
+    "No read-only JDI instruction trace, complete World graph, pixels/audio or long-session comparison.",
+    "Cow10 raw drops may differ between processes; explicit deterministic40-field projection occurs only after each process passes its own seed/sound/quantity/publication audit."
+  ]
+}

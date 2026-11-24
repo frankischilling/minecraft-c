@@ -1,0 +1,15 @@
+FOOD	0	260	1	5	10	260	1	-2147483648	9	true	NONE	0	false
+FOOD	1	297	0	20	10	297	0	-2147483648	9	true	NONE	0	true
+FOOD	2	319	-1	20	-1	319	-1	-2147483648	9	true	NONE	0	false
+FOOD	3	320	-8	0	71	320	-8	-2147483648	9	true	NONE	0	true
+FOOD	4	322	2147483647	-1	71	322	2147483647	-2147483648	9	true	NONE	0	false
+FOOD	5	349	0	-2147483647	-1073741824	349	0	-2147483648	9	true	NONE	0	true
+FOOD	6	350	1	20	10	350	1	-2147483648	9	true	NONE	0	false
+FOOD	7	357	7	18	10	357	7	-2147483648	9	true	NONE	0	true
+FOOD	8	282	0	15	10	281	1	0	0	false	NONE	0	false
+FOOD	9	282	2	20	10	281	1	0	0	false	NONE	0	true
+FOOD	10	282	-1	0	71	281	1	0	0	false	NONE	0	false
+FOOD	11	260	0	5	71	-1	-1	-1	-1	false	java.lang.NullPointerException	0	false
+FOOD	12	282	0	5	71	-1	-1	-1	-1	false	java.lang.NullPointerException	0	true
+FOOD	13	357	0	5	71	-1	-1	-1	-1	false	java.lang.NullPointerException	0	false
+FOOD_COMPLETE rows=14 network=0 native=0 execs=0 denied-writes=0 game-code-replacements=0 world-writes=3

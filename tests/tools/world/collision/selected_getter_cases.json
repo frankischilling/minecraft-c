@@ -1,0 +1,3088 @@
+{
+  "scope": "Authored client component inputs and source-derived vectors; unexecuted",
+  "cases": [
+    {
+      "name": "ladder-two",
+      "id": 65,
+      "metadata": 2,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4017800000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fec000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 95,
+            "receiver_id": 65,
+            "reference_owner": "uu",
+            "bounds_store": 30,
+            "metadata_returned": true,
+            "metadata": 2,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-invalid-zero",
+      "id": 65,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4017800000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fec000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fec000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 95,
+            "receiver_id": 65,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": true,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-three",
+      "id": 65,
+      "metadata": 3,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4014800000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fec000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3fc0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 95,
+            "receiver_id": 65,
+            "reference_owner": "uu",
+            "bounds_store": 47,
+            "metadata_returned": true,
+            "metadata": 3,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-invalid-one",
+      "id": 65,
+      "metadata": 1,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4014800000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3fc0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3fc0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 95,
+            "receiver_id": 65,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": true,
+            "metadata": 1,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-four",
+      "id": 65,
+      "metadata": 4,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "400f000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3fc0000000000000"
+        ],
+        "fields_after": [
+          "3fec000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 95,
+            "receiver_id": 65,
+            "reference_owner": "uu",
+            "bounds_store": 66,
+            "metadata_returned": true,
+            "metadata": 4,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-five",
+      "id": 65,
+      "metadata": 5,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4009000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "3fec000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 95,
+            "receiver_id": 65,
+            "reference_owner": "uu",
+            "bounds_store": 83,
+            "metadata_returned": true,
+            "metadata": 5,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-invalid-fifteen",
+      "id": 65,
+      "metadata": 15,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4009000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 95,
+            "receiver_id": 65,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": true,
+            "metadata": 15,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "door-one",
+      "id": 64,
+      "metadata": 1,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4014c00000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3fc8000000000000"
+        ],
+        "frames": [
+          {
+            "class": "le",
+            "pc": 18,
+            "receiver_id": 64,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 64,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "door-two",
+      "id": 64,
+      "metadata": 2,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "400e800000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3fc8000000000000"
+        ],
+        "fields_after": [
+          "3fea000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "le",
+            "pc": 18,
+            "receiver_id": 64,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 64,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "door-six",
+      "id": 64,
+      "metadata": 6,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4017400000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "3fea000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fea000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "le",
+            "pc": 18,
+            "receiver_id": 64,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 64,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "door-six-repeat",
+      "id": 64,
+      "metadata": 6,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4017400000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fea000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fea000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "le",
+            "pc": 18,
+            "receiver_id": 64,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 64,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "trap-closed",
+      "id": 96,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "40500c0000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3fc8000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "oq",
+            "pc": 18,
+            "receiver_id": 96,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 96,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "trap-open-four",
+      "id": 96,
+      "metadata": 4,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4017400000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3fc8000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fea000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "oq",
+            "pc": 18,
+            "receiver_id": 96,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 96,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "trap-open-seven",
+      "id": 96,
+      "metadata": 7,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4009800000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fea000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc8000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "oq",
+            "pc": 18,
+            "receiver_id": 96,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 96,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "trap-open-seven-repeat",
+      "id": 96,
+      "metadata": 7,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4009800000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc8000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc8000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "oq",
+            "pc": 18,
+            "receiver_id": 96,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 96,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "standing-sign-null-world",
+      "id": 63,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "400a000000000000",
+          "4050000000000000",
+          "4015000000000000",
+          "400e000000000000",
+          "4050400000000000",
+          "4017000000000000"
+        ],
+        "fields_before": [
+          "3fd0000000000000",
+          "0000000000000000",
+          "3fd0000000000000",
+          "3fe8000000000000",
+          "3ff0000000000000",
+          "3fe8000000000000"
+        ],
+        "fields_after": [
+          "3fd0000000000000",
+          "0000000000000000",
+          "3fd0000000000000",
+          "3fe8000000000000",
+          "3ff0000000000000",
+          "3fe8000000000000"
+        ],
+        "frames": [
+          {
+            "class": "uj",
+            "pc": 18,
+            "receiver_id": 63,
+            "reference_owner": "rw",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 63,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "wall-sign-two",
+      "id": 68,
+      "metadata": 2,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050120000000000",
+          "4017800000000000",
+          "4010000000000000",
+          "4050320000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "3fd0000000000000",
+          "0000000000000000",
+          "3fd0000000000000",
+          "3fe8000000000000",
+          "3ff0000000000000",
+          "3fe8000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "3fd2000000000000",
+          "3fec000000000000",
+          "3ff0000000000000",
+          "3fe9000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "uj",
+            "pc": 18,
+            "receiver_id": 68,
+            "reference_owner": "rw",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 68,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "wall-sign-three",
+      "id": 68,
+      "metadata": 3,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050120000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "4050320000000000",
+          "4014800000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "3fd2000000000000",
+          "3fec000000000000",
+          "3ff0000000000000",
+          "3fe9000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "3fd2000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3fe9000000000000",
+          "3fc0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "uj",
+            "pc": 18,
+            "receiver_id": 68,
+            "reference_owner": "rw",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 68,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "wall-sign-three-repeat",
+      "id": 68,
+      "metadata": 3,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050120000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "4050320000000000",
+          "4014800000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "3fd2000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3fe9000000000000",
+          "3fc0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "3fd2000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3fe9000000000000",
+          "3fc0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "uj",
+            "pc": 18,
+            "receiver_id": 68,
+            "reference_owner": "rw",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": true,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 68,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cactus-selected",
+      "id": 81,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008800000000000",
+          "4050000000000000",
+          "4014400000000000",
+          "400f800000000000",
+          "4050400000000000",
+          "4017c00000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "or",
+            "pc": 43,
+            "receiver_id": 81,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "or",
+          40
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cactus-collision",
+      "id": 81,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": true,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008800000000000",
+          "4050000000000000",
+          "4014400000000000",
+          "400f800000000000",
+          "40503c0000000000",
+          "4017c00000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "",
+          0
+        ],
+        "collision_child": [
+          "or",
+          44
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cactus-rounding-wrap",
+      "id": 81,
+      "metadata": 0,
+      "xyz": [
+        16777217,
+        2147483647,
+        -16777217
+      ],
+      "world": false,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4170000000000000",
+          "41dfffffffc00000",
+          "c170000000000000",
+          "4170000020000000",
+          "c1e0000000000000",
+          "c170000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "or",
+            "pc": 43,
+            "receiver_id": 81,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "or",
+          40
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cactus-wrapped-x",
+      "id": 81,
+      "metadata": 0,
+      "xyz": [
+        2147483647,
+        0,
+        -2147483648
+      ],
+      "world": false,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "41e0000000000000",
+          "0000000000000000",
+          "c1e0000000000000",
+          "c1e0000000000000",
+          "3ff0000000000000",
+          "c1e0000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "or",
+            "pc": 43,
+            "receiver_id": 81,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "or",
+          40
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cake-selected",
+      "id": 92,
+      "metadata": 2,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "400a800000000000",
+          "4050000000000000",
+          "4014400000000000",
+          "400f800000000000",
+          "4050200000000000",
+          "4017c00000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "um",
+            "pc": 71,
+            "receiver_id": 92,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": true,
+            "metadata": 2,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "um",
+          68
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cake-selected-repeat",
+      "id": 92,
+      "metadata": 2,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "400a800000000000",
+          "4050000000000000",
+          "4014400000000000",
+          "400f800000000000",
+          "4050200000000000",
+          "4017c00000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "um",
+            "pc": 71,
+            "receiver_id": 92,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": true,
+            "metadata": 2,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "um",
+          68
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cake-collision",
+      "id": 92,
+      "metadata": 2,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": true,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "400a800000000000",
+          "4050000000000000",
+          "4014400000000000",
+          "400f800000000000",
+          "40501c0000000000",
+          "4017c00000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "",
+          0
+        ],
+        "collision_child": [
+          "um",
+          71
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cake-rounding-outside-y",
+      "id": 92,
+      "metadata": 0,
+      "xyz": [
+        16777217,
+        -1,
+        -16777217
+      ],
+      "world": true,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4170000000000000",
+          "bff0000000000000",
+          "c170000000000000",
+          "4170000020000000",
+          "bfe0000000000000",
+          "c170000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "um",
+            "pc": 71,
+            "receiver_id": 92,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": true,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "um",
+          68
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "stairs-wood-prototype",
+      "id": 53,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": true,
+      "expected": {
+        "bounds": [
+          "4009000000000000",
+          "4050100000000000",
+          "4016000000000000",
+          "400e000000000000",
+          "4050380000000000",
+          "4019000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "ss",
+            "pc": 12,
+            "receiver_id": 53,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 5,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": 5,
+        "prototype_fields": [
+          "3fc0000000000000",
+          "3fd0000000000000",
+          "3fe0000000000000",
+          "3fe8000000000000",
+          "3fec000000000000",
+          "3ff4000000000000"
+        ]
+      }
+    },
+    {
+      "name": "stairs-stone-prototype",
+      "id": 67,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": true,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": [
+          "4008000000000000",
+          "4050000000000000",
+          "4014000000000000",
+          "4010000000000000",
+          "4050400000000000",
+          "4018000000000000"
+        ],
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "ss",
+            "pc": 12,
+            "receiver_id": 67,
+            "reference_owner": "uu",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          },
+          {
+            "class": "uu",
+            "pc": 47,
+            "receiver_id": 4,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": true
+          }
+        ],
+        "source_null": false,
+        "native_policy": false,
+        "selected_child": [
+          "uu",
+          44
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": 4,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-null-world",
+      "id": 65,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 5,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": true,
+        "native_policy": false,
+        "selected_child": [
+          "",
+          0
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "door-null-world",
+      "id": 64,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fea000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "3fea000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "le",
+            "pc": 6,
+            "receiver_id": 64,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": true,
+        "native_policy": false,
+        "selected_child": [
+          "le",
+          7
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "trap-null-world",
+      "id": 96,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc8000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc8000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "oq",
+            "pc": 6,
+            "receiver_id": 96,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": true,
+        "native_policy": false,
+        "selected_child": [
+          "oq",
+          6
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "wall-sign-null-world",
+      "id": 68,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "3fd2000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3fe9000000000000",
+          "3fc0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "3fd2000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3fe9000000000000",
+          "3fc0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "uj",
+            "pc": 6,
+            "receiver_id": 68,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": true,
+        "native_policy": false,
+        "selected_child": [
+          "uj",
+          13
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cake-null-world",
+      "id": 92,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "um",
+            "pc": 5,
+            "receiver_id": 92,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": true,
+        "native_policy": false,
+        "selected_child": [
+          "",
+          0
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "null-virtual-receiver",
+      "id": 0,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": false,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "frames": [],
+        "source_null": true,
+        "native_policy": false,
+        "selected_child": [
+          "",
+          0
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "native-output-slot-guard",
+      "id": 81,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": false,
+      "output_guard": true,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [],
+        "source_null": false,
+        "native_policy": true,
+        "selected_child": [
+          "",
+          0
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-null-before-native-fp",
+      "id": 65,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": true,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 5,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": true,
+        "native_policy": false,
+        "selected_child": [
+          "",
+          0
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cactus-native-fp",
+      "id": 81,
+      "metadata": 0,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": false,
+      "collision": false,
+      "success": false,
+      "bad_fp": true,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "or",
+            "pc": 5,
+            "receiver_id": 81,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": false,
+        "native_policy": true,
+        "selected_child": [
+          "or",
+          5
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "ladder-native-fp-after-store",
+      "id": 65,
+      "metadata": 3,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": false,
+      "bad_fp": true,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3fc0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3fc0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "dp",
+            "pc": 92,
+            "receiver_id": 65,
+            "reference_owner": "uu",
+            "bounds_store": 47,
+            "metadata_returned": true,
+            "metadata": 3,
+            "state_shape_returned": false,
+            "returned": false
+          },
+          {
+            "class": "uu",
+            "pc": 6,
+            "receiver_id": 65,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": false,
+            "metadata": 0,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": false,
+        "native_policy": true,
+        "selected_child": [
+          "uu",
+          6
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    },
+    {
+      "name": "cake-native-fp-after-read",
+      "id": 92,
+      "metadata": 4,
+      "xyz": [
+        3,
+        64,
+        5
+      ],
+      "world": true,
+      "collision": false,
+      "success": false,
+      "bad_fp": true,
+      "output_guard": false,
+      "custom_prototype": false,
+      "expected": {
+        "bounds": null,
+        "fields_before": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "fields_after": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000",
+          "3ff0000000000000"
+        ],
+        "frames": [
+          {
+            "class": "um",
+            "pc": 20,
+            "receiver_id": 92,
+            "reference_owner": "",
+            "bounds_store": 0,
+            "metadata_returned": true,
+            "metadata": 4,
+            "state_shape_returned": false,
+            "returned": false
+          }
+        ],
+        "source_null": false,
+        "native_policy": true,
+        "selected_child": [
+          "um",
+          20
+        ],
+        "collision_child": [
+          "",
+          0
+        ],
+        "prototype_id": -1,
+        "prototype_fields": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ]
+      }
+    }
+  ],
+  "limits": [
+    "No nonnull-World original parity yet",
+    "No forged Stairs-null prototype",
+    "Native FP/output controls are not original Java exceptions",
+    "Legacy GAME World fixture, no source World caller credit"
+  ]
+}

@@ -1,0 +1,10 @@
+west-repeater-93-metadata-0 0 55 7 0 -2147483648 0 -1 93 0 0 0 0 0
+west-repeater-93-metadata-1 0 55 7 0 -2147483648 0 -1 93 1 0 0 0 0
+west-repeater-93-metadata-2 0 55 7 0 -2147483648 0 -1 93 2 0 0 0 0
+west-repeater-93-metadata-3 0 55 7 0 -2147483648 0 -1 93 3 0 0 0 0
+west-repeater-94-metadata-0 0 55 7 0 -2147483648 0 -1 94 0 0 0 0 0
+west-repeater-94-metadata-1 0 55 7 0 -2147483648 0 -1 94 1 0 0 0 0
+west-repeater-94-metadata-2 0 55 7 0 -2147483648 0 -1 94 2 0 0 0 0
+west-repeater-94-metadata-3 0 55 7 0 -2147483648 0 -1 94 3 0 0 0 0
+west-pressure-plate 0 55 7 0 -2147483648 0 -1 70 0 0 0 0 0
+west-stone 0 55 7 0 -2147483648 0 -1 1 0 0 0 0 0

@@ -1,0 +1,54 @@
+{
+  "schema": "PISTON_MOBILITY_PUBLICATION_V1",
+  "scope": "Post-execution packaging; archive pins are not live-Code evidence.",
+  "files": {
+    "PistonMobilityObservation.java": {
+      "bytes": 5315,
+      "sha256": "0986d471664666a0ddb10a7c90e49c49a169ffec3fc164d30f39ed88377f7784"
+    },
+    "publish.py": {
+      "bytes": 3455,
+      "sha256": "cc21447982ff9a5b5cf9f2c2a63e4c640787653bf0a2e3f1d16f4cb5358e1a6c"
+    },
+    "README.md": {
+      "bytes": 2660,
+      "sha256": "448216c8f704d039bf63778ac87e06e9d529c2d24223b53eb098daeacf0f0954"
+    },
+    "capture.py": {
+      "bytes": 7537,
+      "sha256": "dad2415163b77b3701738e15fbd3ecbabb0aeb998df67c55d8ba71060739209b"
+    },
+    "test_packet.py": {
+      "bytes": 7856,
+      "sha256": "249771eb737a8389d53bc96a0d1c755c0f9a318491fbb237164c507faefba2f8"
+    },
+    "cases.json": {
+      "bytes": 590,
+      "sha256": "f196535ddacf70a0659b9c8e2934f0c2efd9c60a1a8d7fb18c5b32adf5178c64"
+    },
+    "packet.py": {
+      "bytes": 12110,
+      "sha256": "a47009a59fef95be4742a5359c893ea839cc78c7f951d3219c1bcf4228ffcc8d"
+    },
+    "source-pins.json": {
+      "bytes": 197746,
+      "sha256": "fdc3461f68823bb89c3a5f04449688d1de702e43d36f80ef353e3d9a5cbd647c"
+    },
+    "finite.json": {
+      "bytes": 36117,
+      "sha256": "61432471a12c71e80b2cbba1ec390c215f55815b5a8ea473b4a42567fc42bff3"
+    },
+    "observations.json": {
+      "bytes": 62615,
+      "sha256": "7802fde603ca7a0ed396e10873d2dc07fa2ea306f05a782fdfb3b94330a5bcea"
+    },
+    "provenance.json": {
+      "bytes": 35452,
+      "sha256": "fa7c38cb285b1136c1aa7f8563b95a2d95b0b6ce7e0b1ab881211021674f27db"
+    },
+    "native-observations.h": {
+      "bytes": 1309,
+      "sha256": "38c5bbcee3903382f22464d01154da21e1615033dd67183ee47bda8c720e3734"
+    }
+  }
+}

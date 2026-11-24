@@ -1,0 +1,13 @@
+id	name	cooldown	distance_hex	target_null	target_bounds_null	actor_bounds_null	target_min_y	target_max_y	qualification
+0	positive_cooldown_unread_nulls	1	7fc12345	1	0	1	64.25	65.75	returned
+1	distance_two_unread_nulls	0	40000000	1	0	1	64.25	65.75	returned
+2	distance_nan_unread_nulls	0	7fc12345	1	0	1	64.25	65.75	returned
+3	lower_touch	0	3f800000	0	0	0	62	64	returned
+4	upper_touch	0	3f800000	0	0	0	66	68	returned
+5	vertical_gap	0	3f800000	0	0	0	60	61	returned
+6	overlap_zero_cooldown	0	3f800000	0	0	0	64.25	65.75	hurt-prefix61
+7	overlap_negative_cooldown	-1	3f800000	0	0	0	64.25	65.75	hurt-prefix61
+8	null_target	0	3f800000	1	0	0	64.25	65.75	npe14
+9	null_target_bounds	0	3f800000	0	1	0	64.25	65.75	npe17
+10	null_actor_bounds	0	3f800000	0	0	1	64.25	65.75	npe24
+11	unordered_target_max	0	3f800000	0	0	0	64.25	NaN	returned

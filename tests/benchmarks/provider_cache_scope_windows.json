@@ -1,0 +1,7178 @@
+{
+  "schema": "PROVIDER_CACHE_SCOPE_WINDOWS_V1",
+  "status": "PASS_FIXED_WORK_SEMANTICS",
+  "date": "2026-11-15",
+  "scope": "QPC elapsed fixed get_failure workload over all warmed residents. Timing includes alias coordinate generation, status/coordinate folds and raw pointer fold; identity/raw-state/setup checks are outside clocks. No callback/churn/load/rebuild timing, public-vs-internal adapter or FPS claim.",
+  "baseline_commit": "ff81d0eaa9508e8f7e4c83253622794d86db9c0c",
+  "host": {
+    "os": "Windows-10-10.0.19045-SP0",
+    "processor": "Intel Core i9-10900F",
+    "physical_memory_gib": 48
+  },
+  "compiler": {
+    "family": "MSVC",
+    "toolset": "14.51.36231",
+    "configuration": "Release",
+    "target": "x64",
+    "flags": [
+      "/nologo",
+      "/DWIN32",
+      "/D_WINDOWS",
+      "/O2",
+      "/Ob2",
+      "/DNDEBUG",
+      "-std:c17",
+      "-MD",
+      "-experimental:c11atomics",
+      "/W4",
+      "/WX",
+      "/fp:strict",
+      "/showIncludes",
+      "/FS",
+      "-c"
+    ]
+  },
+  "clock": "QueryPerformanceCounter elapsed ticks; no process CPU accounting or overhead subtraction",
+  "workload": {
+    "calls_per_sample": 65536,
+    "samples_per_process": 7,
+    "balanced_fresh_processes": 48,
+    "qualification_fresh_processes": 12,
+    "process_order": [
+      "baseline",
+      "candidate",
+      "candidate",
+      "baseline",
+      "candidate",
+      "baseline",
+      "baseline",
+      "candidate"
+    ],
+    "same_compiled_object": {
+      "bytes": 218334,
+      "sha256": "ee2255452580b1342211e6329836ab5c7805e3344bc3f981e829d9b4e471e90f"
+    },
+    "source_identity": {
+      "status": "PASS_INITIAL_COMMENT_ONLY",
+      "measured_source_sha256": "e3ebe6a39a84e06d90c7f648b6b1203b3fd3e5f13ba064d2b8b1b46e032c424e",
+      "published_source_sha256": "44e2d910c33d3988b5af3351200ddb079305efa2f525dfc63092bbffa492752f",
+      "identical_remainder_sha256": "acd8f0878881cae74abb0368898d884d396257815ebe2bef1bc4803ee7e64c9b",
+      "same_compiled_object": "ee2255452580b1342211e6329836ab5c7805e3344bc3f981e829d9b4e471e90f",
+      "timing_scope": "Elapsed time includes real GET plus coordinate/alias selection, raw status aggregation and coordinate/pointer checksum folds."
+    },
+    "coordinates": "x=2*(index%16), z=2*(index/16); all selected keys prequalified; uniform73-step permutation; every32nd timed call uses packedX+32768 alias"
+  },
+  "libraries": {
+    "mc_simulation.lib": {
+      "baseline": {
+        "bytes": 8924994,
+        "sha256": "3f4f089938b0e2b38f231a49fcf2c86181cf7b47b7cee05706165f6587b875f0"
+      },
+      "candidate": {
+        "bytes": 8936814,
+        "sha256": "2807dc449f4bf5e70d78cf625ae927555533dac6c0f3b1b28aa9e9dead453e30"
+      }
+    },
+    "mc_persistence.lib": {
+      "baseline": {
+        "bytes": 582404,
+        "sha256": "6364978b7976aea5cdaf14fb40bc4cb771f37df718d2776f7adc80c45319a712"
+      },
+      "candidate": {
+        "bytes": 582404,
+        "sha256": "6364978b7976aea5cdaf14fb40bc4cb771f37df718d2776f7adc80c45319a712"
+      }
+    },
+    "mc_world_saved_data.lib": {
+      "baseline": {
+        "bytes": 134422,
+        "sha256": "61704886de89ccf1445594802d9dea0f5290912d5a4281267d70a2ea0613aca9"
+      },
+      "candidate": {
+        "bytes": 134422,
+        "sha256": "61704886de89ccf1445594802d9dea0f5290912d5a4281267d70a2ea0613aca9"
+      }
+    },
+    "mc_gzip_input.lib": {
+      "baseline": {
+        "bytes": 72312,
+        "sha256": "c8ea681579c8cd09438b0041c3c17e9bbe06c28f8966c1ec03a36712763624ed"
+      },
+      "candidate": {
+        "bytes": 72312,
+        "sha256": "c8ea681579c8cd09438b0041c3c17e9bbe06c28f8966c1ec03a36712763624ed"
+      }
+    },
+    "mc_compressed_output.lib": {
+      "baseline": {
+        "bytes": 45608,
+        "sha256": "4de0333728681be4cd5b5dbbaffc3e812f346c55ade981ca8b3ff6f4bbee285b"
+      },
+      "candidate": {
+        "bytes": 45608,
+        "sha256": "4de0333728681be4cd5b5dbbaffc3e812f346c55ade981ca8b3ff6f4bbee285b"
+      }
+    },
+    "mc_inventory.lib": {
+      "baseline": {
+        "bytes": 367688,
+        "sha256": "ce1492cd2cf15021b103231e82a502acc5f2c4458b608c9315ad72dc54ccaefe"
+      },
+      "candidate": {
+        "bytes": 367688,
+        "sha256": "ce1492cd2cf15021b103231e82a502acc5f2c4458b608c9315ad72dc54ccaefe"
+      }
+    },
+    "mc_movement_input.lib": {
+      "baseline": {
+        "bytes": 15930,
+        "sha256": "106d1a884ccbe5d4a53aa69570ed8994bf3ce7b469187aeb112d8f113d12e3eb"
+      },
+      "candidate": {
+        "bytes": 15930,
+        "sha256": "106d1a884ccbe5d4a53aa69570ed8994bf3ce7b469187aeb112d8f113d12e3eb"
+      }
+    },
+    "mc_math_classes.lib": {
+      "baseline": {
+        "bytes": 11816,
+        "sha256": "e0a0a2351a20b52beca41efa958f2d16e9d87358cf070f6880cb14a23196691a"
+      },
+      "candidate": {
+        "bytes": 11816,
+        "sha256": "e0a0a2351a20b52beca41efa958f2d16e9d87358cf070f6880cb14a23196691a"
+      }
+    },
+    "mc_client_notice.lib": {
+      "baseline": {
+        "bytes": 165200,
+        "sha256": "49fd262484a1b98767a4adfba5efb4ad247e424b78fa1299c0d4fad22d84da04"
+      },
+      "candidate": {
+        "bytes": 165200,
+        "sha256": "49fd262484a1b98767a4adfba5efb4ad247e424b78fa1299c0d4fad22d84da04"
+      }
+    },
+    "mc_registry.lib": {
+      "baseline": {
+        "bytes": 1371366,
+        "sha256": "37a7e767db48aab71f7ae6c567f5c3673199093bafe9d175d72e626eaad84763"
+      },
+      "candidate": {
+        "bytes": 1371366,
+        "sha256": "37a7e767db48aab71f7ae6c567f5c3673199093bafe9d175d72e626eaad84763"
+      }
+    },
+    "mc_item.lib": {
+      "baseline": {
+        "bytes": 37944,
+        "sha256": "964196136f35df3592f90733608c39eeebdea15d94af76cf440db5f598bd35eb"
+      },
+      "candidate": {
+        "bytes": 37944,
+        "sha256": "964196136f35df3592f90733608c39eeebdea15d94af76cf440db5f598bd35eb"
+      }
+    },
+    "mc_world.lib": {
+      "baseline": {
+        "bytes": 310130,
+        "sha256": "55cfeec175c2e86fb63d86ffbe4825ed73ff659be9477698f3a520eccd3a4b53"
+      },
+      "candidate": {
+        "bytes": 310130,
+        "sha256": "55cfeec175c2e86fb63d86ffbe4825ed73ff659be9477698f3a520eccd3a4b53"
+      }
+    },
+    "mc_block.lib": {
+      "baseline": {
+        "bytes": 8510,
+        "sha256": "649b332ba05876eb77bb1e411bac5aa4d956a17b2e2dbfff94ad5e8f9c6e36ed"
+      },
+      "candidate": {
+        "bytes": 8510,
+        "sha256": "649b332ba05876eb77bb1e411bac5aa4d956a17b2e2dbfff94ad5e8f9c6e36ed"
+      }
+    },
+    "mc_entity_classes.lib": {
+      "baseline": {
+        "bytes": 181778,
+        "sha256": "52f7854c9d9f36f087bb422ff1235e7ec75316e86ae4228981fd205af8c4d28f"
+      },
+      "candidate": {
+        "bytes": 181778,
+        "sha256": "52f7854c9d9f36f087bb422ff1235e7ec75316e86ae4228981fd205af8c4d28f"
+      }
+    },
+    "mc_game_settings.lib": {
+      "baseline": {
+        "bytes": 266654,
+        "sha256": "2c33a8f83f3f17dbec178682cf8ab1752a2572dc3bcdd058f84992f1d74a0871"
+      },
+      "candidate": {
+        "bytes": 266654,
+        "sha256": "2c33a8f83f3f17dbec178682cf8ab1752a2572dc3bcdd058f84992f1d74a0871"
+      }
+    },
+    "mc_client_sound_pool.lib": {
+      "baseline": {
+        "bytes": 78358,
+        "sha256": "c257898c8d362ae7a56e4dfb6aa73d02bc5c278f639bb338422981767fcf2ebb"
+      },
+      "candidate": {
+        "bytes": 78358,
+        "sha256": "c257898c8d362ae7a56e4dfb6aa73d02bc5c278f639bb338422981767fcf2ebb"
+      }
+    },
+    "mc_client_sound_files.lib": {
+      "baseline": {
+        "bytes": 33494,
+        "sha256": "85359febe10ae5b6e3ae0f2a470ba71944ed478e4c50ce59c958c73a5f6a0516"
+      },
+      "candidate": {
+        "bytes": 33494,
+        "sha256": "85359febe10ae5b6e3ae0f2a470ba71944ed478e4c50ce59c958c73a5f6a0516"
+      }
+    },
+    "mc_java_file_urls.lib": {
+      "baseline": {
+        "bytes": 38742,
+        "sha256": "41bfdeb67af764f8651f13a1cb12ea00af2efd2c4ed68c94ba45b1f8fab87fa9"
+      },
+      "candidate": {
+        "bytes": 38742,
+        "sha256": "41bfdeb67af764f8651f13a1cb12ea00af2efd2c4ed68c94ba45b1f8fab87fa9"
+      }
+    },
+    "mc_client_game_directory.lib": {
+      "baseline": {
+        "bytes": 23380,
+        "sha256": "a8712355d79211274d0082dbcb943d0fedceee3e3a3cab6a8355c14481004ea3"
+      },
+      "candidate": {
+        "bytes": 23380,
+        "sha256": "a8712355d79211274d0082dbcb943d0fedceee3e3a3cab6a8355c14481004ea3"
+      }
+    },
+    "mc_client_directory_native.lib": {
+      "baseline": {
+        "bytes": 39560,
+        "sha256": "53b8fbb6a928a6bb1aac1c90344ff0fd04e4bec8f095411cab80a80501ecfdfd"
+      },
+      "candidate": {
+        "bytes": 39560,
+        "sha256": "53b8fbb6a928a6bb1aac1c90344ff0fd04e4bec8f095411cab80a80501ecfdfd"
+      }
+    },
+    "mc_java_file_writers.lib": {
+      "baseline": {
+        "bytes": 30386,
+        "sha256": "ec14c23876257098e730f593aefa0b7db623b2a0902b1b02d05eb8071893265e"
+      },
+      "candidate": {
+        "bytes": 30386,
+        "sha256": "ec14c23876257098e730f593aefa0b7db623b2a0902b1b02d05eb8071893265e"
+      }
+    },
+    "mc_java_outputs.lib": {
+      "baseline": {
+        "bytes": 65302,
+        "sha256": "815f7dadb25c5507ff2183aabe24cfbc7b513632eb38ee670d8bc43d72238697"
+      },
+      "candidate": {
+        "bytes": 65302,
+        "sha256": "815f7dadb25c5507ff2183aabe24cfbc7b513632eb38ee670d8bc43d72238697"
+      }
+    },
+    "mc_java_files.lib": {
+      "baseline": {
+        "bytes": 135210,
+        "sha256": "a4f5f0d07a8d2a18f38c7b6784859c31d37ab1c949415e89ac91cc430d4bd131"
+      },
+      "candidate": {
+        "bytes": 135210,
+        "sha256": "a4f5f0d07a8d2a18f38c7b6784859c31d37ab1c949415e89ac91cc430d4bd131"
+      }
+    },
+    "mc_world_info.lib": {
+      "baseline": {
+        "bytes": 64994,
+        "sha256": "d6a357fad836de83baeb7a63dfee61dfbd62e8d0df7ba63a1b64721a97701b4c"
+      },
+      "candidate": {
+        "bytes": 64994,
+        "sha256": "d6a357fad836de83baeb7a63dfee61dfbd62e8d0df7ba63a1b64721a97701b4c"
+      }
+    },
+    "mc_storage.lib": {
+      "baseline": {
+        "bytes": 203992,
+        "sha256": "64238ba713d0c15d96984fd2210720b20e21027577cb1ab404ece91755f26fa3"
+      },
+      "candidate": {
+        "bytes": 203992,
+        "sha256": "64238ba713d0c15d96984fd2210720b20e21027577cb1ab404ece91755f26fa3"
+      }
+    },
+    "zs.lib": {
+      "baseline": {
+        "bytes": 212540,
+        "sha256": "904d56a4a3bb6d28034260115a0d098f54672da30e95b3151cf26d51ae3fbc7a"
+      },
+      "candidate": {
+        "bytes": 212540,
+        "sha256": "904d56a4a3bb6d28034260115a0d098f54672da30e95b3151cf26d51ae3fbc7a"
+      }
+    },
+    "mc_core.lib": {
+      "baseline": {
+        "bytes": 373940,
+        "sha256": "400fe466efcc1f07ac6bb9d75836629fb2ad51aee29466add9bf2328fd1b817d"
+      },
+      "candidate": {
+        "bytes": 373940,
+        "sha256": "400fe466efcc1f07ac6bb9d75836629fb2ad51aee29466add9bf2328fd1b817d"
+      }
+    },
+    "mc_platform_time.lib": {
+      "baseline": {
+        "bytes": 31458,
+        "sha256": "78e00d1144bdf9a1f569532694ebfb773e442323fd02431235e6c1a00ae968fb"
+      },
+      "candidate": {
+        "bytes": 31458,
+        "sha256": "78e00d1144bdf9a1f569532694ebfb773e442323fd02431235e6c1a00ae968fb"
+      }
+    },
+    "mc_platform_text.lib": {
+      "baseline": {
+        "bytes": 8570,
+        "sha256": "44269c595a982f4021eeae1612ee62745ee11be87b5d6852cc65936f231d62a6"
+      },
+      "candidate": {
+        "bytes": 8570,
+        "sha256": "44269c595a982f4021eeae1612ee62745ee11be87b5d6852cc65936f231d62a6"
+      }
+    },
+    "mc_platform_files.lib": {
+      "baseline": {
+        "bytes": 47022,
+        "sha256": "61ac7bb98d7a40db666154c7b4ad3d7f2e49ab79fc5b94b3a8fcaae58dd26093"
+      },
+      "candidate": {
+        "bytes": 47022,
+        "sha256": "61ac7bb98d7a40db666154c7b4ad3d7f2e49ab79fc5b94b3a8fcaae58dd26093"
+      }
+    }
+  },
+  "only_changed_library": [
+    "mc_simulation.lib"
+  ],
+  "candidate_runtime_sources": {
+    "src/world/runtime/runtime.c": {
+      "bytes": 73387,
+      "sha256": "8007bf13c12073f0b3481bb2063d5abf405d22df822039f4e7055f8c25bd7dd5"
+    },
+    "src/world/runtime/chunk_provider.c": {
+      "bytes": 18807,
+      "sha256": "216f95ded403c80994a57bc6dc6007e8c9a34dc24ea10fa2e920c0994898d9a2"
+    },
+    "src/world/runtime/chunk_provider_owned.inc": {
+      "bytes": 13742,
+      "sha256": "77699de4b41cd462f53a883a1e2ddd63bb3eda9ef8d312695f55d53ceb112350"
+    },
+    "src/world/runtime/chunk_provider_internal.h": {
+      "bytes": 12161,
+      "sha256": "4edef8d61edef011d6aaa4a45eeadf9232107ec115e26e2021607805466ebb80"
+    }
+  },
+  "guards": {
+    "all_native_semantic_records_equal": true,
+    "all_selected_inputs_unchanged": true,
+    "real_source_worlds": true,
+    "checked_cleanup": true
+  },
+  "medians": [
+    {
+      "count": 8,
+      "depth": 1,
+      "process_medians_ns": {
+        "baseline": 20.888519287109375,
+        "candidate": 22.498321533203125
+      },
+      "baseline_over_candidate": 0.9284478958255621
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "process_medians_ns": {
+        "baseline": 23.85711669921875,
+        "candidate": 22.284698486328125
+      },
+      "baseline_over_candidate": 1.0705604436988598
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "process_medians_ns": {
+        "baseline": 34.66033935546875,
+        "candidate": 22.93701171875
+      },
+      "baseline_over_candidate": 1.5111096327833955
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "process_medians_ns": {
+        "baseline": 34.062957763671875,
+        "candidate": 22.977447509765625
+      },
+      "baseline_over_candidate": 1.4824517714247767
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "process_medians_ns": {
+        "baseline": 67.97714233398438,
+        "candidate": 25.626373291015625
+      },
+      "baseline_over_candidate": 2.6526243710738635
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "process_medians_ns": {
+        "baseline": 67.07382202148438,
+        "candidate": 27.21405029296875
+      },
+      "baseline_over_candidate": 2.464676198486123
+    }
+  ],
+  "cases": [
+    {
+      "count": 8,
+      "depth": 1,
+      "turn": 0,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 13368,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 13399,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 13367,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 13373,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 13350,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 13410,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 13361,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 20.39794921875,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 80,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 1,
+      "turn": 1,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14542,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 14585,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14582,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14522,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14718,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 14582,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14554,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.2503662109375,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 80,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 1,
+      "turn": 2,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14409,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 14524,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14542,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14466,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14377,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15291,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 15346,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.161865234375,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 80,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 1,
+      "turn": 3,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14010,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 13847,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 13445,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 13902,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 13451,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15962,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 15705,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 21.2127685546875,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 80,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 1,
+      "turn": 4,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14707,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15096,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14626,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15021,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 18186,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 16721,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 17536,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 23.03466796875,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 80,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 1,
+      "turn": 5,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15091,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15018,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 17015,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 16996,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15060,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15049,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 15039,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.979736328125,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 80,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 1,
+      "turn": 6,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 13421,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 13604,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14966,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 13464,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15163,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 13449,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 13477,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 20.56427001953125,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 80,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 1,
+      "turn": 7,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14635,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 14393,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 16080,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15261,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 18428,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 14907,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14622,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.74627685546875,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 80,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "turn": 0,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15539,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15562,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 16498,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15593,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15573,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15543,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 15628,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 23.76251220703125,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 81,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "turn": 1,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14508,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 14444,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14347,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15341,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14443,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15591,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14505,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.13287353515625,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 81,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "turn": 2,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14365,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 14377,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14284,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14309,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15864,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15054,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14431,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 21.93756103515625,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 81,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "turn": 3,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15523,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15584,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 15697,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 16876,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15953,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15598,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 17397,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 23.95172119140625,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 81,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "turn": 4,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15802,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 16113,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14950,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14981,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14899,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 14704,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14727,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.8118896484375,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 81,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "turn": 5,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14368,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 14822,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14415,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14413,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14410,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 14396,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14389,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 21.9879150390625,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 81,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "turn": 6,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14591,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 14570,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 18167,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 27464,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 28283,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 23196,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14737,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 27.72064208984375,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 81,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 8,
+      "depth": 2,
+      "turn": 7,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15418,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15068,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14746,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14629,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14704,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 14683,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14680,
+          "frequency": 10000000,
+          "checksum": 1840867092695286659,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.4365234375,
+      "semantics": {
+        "context": {
+          "count": 8,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 1840867092695286659,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 8,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 16330659171348929187,
+          "checksum": 1840867092695286659,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 81,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "turn": 0,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 22464,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 22898,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 22885,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 22413,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 22931,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 22959,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 29427,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 34.9395751953125,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 304,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "turn": 1,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15344,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15355,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 15381,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15363,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15360,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15339,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 15351,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 23.42987060546875,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 304,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "turn": 2,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14894,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15006,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 15677,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15841,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14608,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 14632,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14646,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.7264404296875,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 304,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "turn": 3,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 22584,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 22046,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 22532,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 22052,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 22022,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 24223,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 22600,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 34.381103515625,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 304,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "turn": 4,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15498,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15170,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 15090,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15380,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15028,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15750,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14636,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 23.1475830078125,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 304,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "turn": 5,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 22843,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 23322,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 23382,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 23733,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 22796,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 23645,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 23524,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 35.6781005859375,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 304,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "turn": 6,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 23085,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 22091,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 22615,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 22315,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 22040,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 22030,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 22068,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 33.70819091796875,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 304,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 1,
+      "turn": 7,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14877,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 16059,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 15005,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14871,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14834,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 14880,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14864,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.70050048828125,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 304,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "turn": 0,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 27129,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 23696,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 23287,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 23316,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 23490,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 23631,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 24389,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 36.05804443359375,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 305,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "turn": 1,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15099,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15043,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 15050,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15214,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15094,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15111,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 15068,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 23.0316162109375,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 305,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "turn": 2,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15020,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15397,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 15163,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14941,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15224,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15024,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 15045,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.95684814453125,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 305,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "turn": 3,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 22290,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 22090,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 23240,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 22122,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 22173,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 22132,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 22093,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 33.770751953125,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 305,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "turn": 4,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 15054,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15072,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 15231,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 15166,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 15071,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 15071,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 15951,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.998046875,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 305,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "turn": 5,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 22678,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 23283,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 22515,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 22650,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 22501,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 22513,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 22514,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 34.35516357421875,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 305,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "turn": 6,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 22107,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 24062,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 22000,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 22009,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 21999,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 22016,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 22722,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 33.59375,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 305,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 64,
+      "depth": 2,
+      "turn": 7,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 14711,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 15821,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 14748,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 14776,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 14800,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 14791,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 14794,
+          "frequency": 10000000,
+          "checksum": 14993994340151149443,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 22.56927490234375,
+      "semantics": {
+        "context": {
+          "count": 64,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 14993994340151149443,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 64,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 13982162517337011779,
+          "checksum": 14993994340151149443,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 305,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "turn": 0,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 46745,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 44294,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 44383,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 50533,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 47211,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 44539,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 45852,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 69.964599609375,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1072,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "turn": 1,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 17092,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 17300,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 17168,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 17119,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 17138,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 17207,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 17165,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 26.19171142578125,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1072,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "turn": 2,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 16418,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 16470,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 16484,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 16427,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 16610,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 17772,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 16425,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 25.1312255859375,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1072,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "turn": 3,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 46602,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 44448,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 44252,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 44189,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 45687,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 44148,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 44069,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 67.523193359375,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1072,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "turn": 4,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 16863,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 16910,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 16596,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 16516,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 16505,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 16519,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 16485,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 25.20599365234375,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1072,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "turn": 5,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 44467,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 44919,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 44857,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 44812,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 44836,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 45022,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 44747,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 68.414306640625,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1072,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "turn": 6,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 45133,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 44210,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 44263,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 45336,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 44115,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 44119,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 45903,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 67.53997802734375,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1072,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 1,
+      "turn": 7,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 17083,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 17038,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 17027,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 16982,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 18534,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 17070,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 17073,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 26.0467529296875,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 1,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 1,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1072,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "turn": 0,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 44069,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 43400,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 43490,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 44743,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 43409,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 43492,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 45230,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 66.363525390625,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1073,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "turn": 1,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 17788,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 17893,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 18879,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 17136,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 17522,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 18019,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 17623,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 27.142333984375,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1073,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "turn": 2,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 18394,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 18151,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 18001,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 18009,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 17966,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 17963,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 18133,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 27.47955322265625,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1073,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "turn": 3,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 44600,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 44274,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 45553,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 44449,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 44494,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 44460,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 45452,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 67.8924560546875,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1073,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "turn": 4,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 17286,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 18419,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 18118,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 17882,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 17523,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 17938,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 17470,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 27.2857666015625,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1073,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "turn": 5,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 44252,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 50098,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 43912,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 43617,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 44048,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 43436,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 43897,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 67.00439453125,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1073,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "turn": 6,
+      "variant": "baseline",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 45574,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 44373,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 44191,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 43265,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 43297,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 44003,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 43382,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 67.14324951171875,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1073,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    },
+    {
+      "count": 256,
+      "depth": 2,
+      "turn": 7,
+      "variant": "candidate",
+      "samples": [
+        {
+          "sample": 0,
+          "calls": 65536,
+          "ticks": 16300,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 1,
+          "calls": 65536,
+          "ticks": 16443,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 2,
+          "calls": 65536,
+          "ticks": 16632,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 3,
+          "calls": 65536,
+          "ticks": 17927,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 4,
+          "calls": 65536,
+          "ticks": 16594,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 5,
+          "calls": 65536,
+          "ticks": 16464,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        },
+        {
+          "sample": 6,
+          "calls": 65536,
+          "ticks": 16497,
+          "frequency": 10000000,
+          "checksum": 13987992626246058883,
+          "identity_guard": 1
+        }
+      ],
+      "median_ns_per_call": 25.17242431640625,
+      "semantics": {
+        "context": {
+          "count": 256,
+          "depth": 2,
+          "calls": 65536,
+          "samples": 7,
+          "pointer_bits": 64
+        },
+        "samples": [
+          {
+            "sample": 0,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 1,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 2,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 3,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 4,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 5,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          },
+          {
+            "sample": 6,
+            "calls": 65536,
+            "checksum": 13987992626246058883,
+            "identity_guard": 1
+          }
+        ],
+        "invariants": {
+          "count": 256,
+          "depth": 2,
+          "calls": 458752,
+          "planes": 17476070254991740163,
+          "checksum": 13987992626246058883,
+          "exact_identities": 1,
+          "source_fields": 1,
+          "random": 1,
+          "cache": 1,
+          "pending": 1,
+          "diagnostics": 1,
+          "sentinels": 1,
+          "ownership": 1,
+          "scopes": 1,
+          "generic_dispatch": 1
+        },
+        "finish": {
+          "checks": 1073,
+          "cleanup": 1,
+          "genuine_source_world": 1
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Warmed resident scoped GET plus fixed loop/checksum work, not API-only latency.",
+    "No actual callback, map churn, load, generation, rebuild, render or gameplay FPS timed.",
+    "Eight-Chunk depth-one case regresses; no blanket speedup claim.",
+    "No original-game performance comparison or statistical-significance claim."
+  ]
+}

@@ -1,0 +1,349 @@
+{
+  "status": "SOURCE_ONLY_UNCOMPILED_UNRUN",
+  "scope": "actual descriptor/GZIP/ij/as source reproduction plan; normal metadata/list authored, diagnostics/handler/destructive/conversion descendants incomplete",
+  "client_jar": {
+    "bytes": 1465375,
+    "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+  },
+  "native_sources": {
+    "include/mc/client/saves/save_format.h": {
+      "bytes": 10745,
+      "sha256": "f8c2bc79edf07274735e56f1617424269466c0abf81b5bad69c0757523305cac"
+    },
+    "include/mc/core/math/classes.h": {
+      "bytes": 2851,
+      "sha256": "d5ed6ad20bd01e9f14f0dc2bec3278d9ec929d2f236718b3a75b3ffdb52181f7"
+    },
+    "include/mc/storage/compression/inflater.h": {
+      "bytes": 3032,
+      "sha256": "6c84e96ad1d339023683b851229bc2f656a783398819f7b81ef197b2827e1600"
+    },
+    "include/mc/storage/nbt/input.h": {
+      "bytes": 4025,
+      "sha256": "0b44f3491ce554c5af7da91fb41d9ef438a9b82d19d36a0ba3057c9fc42ce98a"
+    },
+    "include/mc/storage/nbt/nbt.h": {
+      "bytes": 5416,
+      "sha256": "c396fcce30ebf0ed9ca85f4108cd0cf6af6c04ed1a1371d85721fe69d006fd22"
+    },
+    "include/mc/world/info/info.h": {
+      "bytes": 16610,
+      "sha256": "ce3f532dadb59f3e856b7eed079b7bbad0501a990278ef289429d32828739647"
+    },
+    "include/mc/world/storage/gzip_input.h": {
+      "bytes": 3526,
+      "sha256": "e0399f26a08f05031bec8fdda8da83b3af652666683d5d861b42dfb2dfc161fe"
+    },
+    "include/mc/world/storage/java_file.h": {
+      "bytes": 9762,
+      "sha256": "90f055fdf01d9e04eb1d0881492868968ab4fab814fd29b5bcf8d8360eedba67"
+    },
+    "src/client/saves/internal.h": {
+      "bytes": 2248,
+      "sha256": "78ce2c0f0eaa48312ef9dc66b1bab20c84528c4c3165015dd9d6352af8649eda"
+    },
+    "src/client/saves/list.c": {
+      "bytes": 6827,
+      "sha256": "99dddf4f0be43029e76242e86815c58f4bda5713057e2f2e9af5a1b02a0757a9"
+    },
+    "src/client/saves/metadata.c": {
+      "bytes": 21131,
+      "sha256": "8a458f12e59a048ec84559327ca8760effa109dd1a4023b89c5c32b236424623"
+    },
+    "src/client/saves/owner.c": {
+      "bytes": 17724,
+      "sha256": "0c3e7111cc7358be4ec0ed6afe873f3847262998c962dbeb856d942185077830"
+    },
+    "src/client/saves/selection.c": {
+      "bytes": 11917,
+      "sha256": "f6df956399a9a4d4d213533b89568344155428fed063c231394e9c39ea31df77"
+    },
+    "src/client/startup/directory_inputs.c": {
+      "bytes": 12819,
+      "sha256": "649009bdb75f1e7e3390c5435d204363913252900bd76c2c1a599c9f734c1872"
+    },
+    "src/client/startup/directory_inputs.h": {
+      "bytes": 3068,
+      "sha256": "e1ede87707847eafb153b4f6e1944aa8a1dd456abac84ad96b9942999b1c8584"
+    },
+    "src/client/startup/directory_native.c": {
+      "bytes": 11477,
+      "sha256": "fe8718591ec0f4aaf0f026c6c9da9464bf2543d23752dbfb4a8b2f8552b33699"
+    },
+    "src/client/startup/directory_native.h": {
+      "bytes": 1720,
+      "sha256": "678212c63200cb899eefd9c50e86ffc5dbf67b9f456b19a81e17b125f1176aa4"
+    },
+    "src/client/startup/game_directory.c": {
+      "bytes": 15042,
+      "sha256": "30afcca6ea440ad606811109d60173507d62101696216eb2f0e33cec1183e8c8"
+    },
+    "src/client/startup/game_directory.h": {
+      "bytes": 3966,
+      "sha256": "fd1c00bf660f6cb9dd2e2d83131dace0023ec2e7b73d65b5e6ef5f60de3d8a0a"
+    },
+    "src/core/math/classes.c": {
+      "bytes": 5789,
+      "sha256": "dfc409411976db13b1fa8f647ea5c4ce68db8b8bae7db78d82759d68af2d6e22"
+    },
+    "src/core/text/mutf8.c": {
+      "bytes": 6360,
+      "sha256": "6bab1dff3040916cc9f80ae00a5c94f94c4d1408d522896a1af05336b1883a17"
+    },
+    "src/core/text/mutf8_input.h": {
+      "bytes": 827,
+      "sha256": "4b359c0853772300305bb9237cea7dd059cdd44bb5604410a467864d946bc8f5"
+    },
+    "src/platform/files/directory.c": {
+      "bytes": 25948,
+      "sha256": "8f0b22e72af405854eded307571cb10fb3a8ba6028d1a95795fc46d7688874bf"
+    },
+    "src/platform/files/directory.h": {
+      "bytes": 3094,
+      "sha256": "6e5d7cdc6e1da7195565d9f014424f3381fd1250755c753efa7c665c87f8c791"
+    },
+    "src/platform/files/normalize.inc": {
+      "bytes": 1339,
+      "sha256": "83bb13ae332beb66e91930151d57e4f52f41c1051471160e908f304aec3015d6"
+    },
+    "src/storage/compression/compression.c": {
+      "bytes": 8869,
+      "sha256": "cea41f665222059ecb6098b4d1409cb8d0fc0794f204b52cf62ea0353818c56d"
+    },
+    "src/storage/compression/inflater.c": {
+      "bytes": 9083,
+      "sha256": "b982c8e1ca2cafc5094e8f84d95a66da9a8c368969aff81853b1e92c7ea83db0"
+    },
+    "src/storage/compression/kernel.c": {
+      "bytes": 3541,
+      "sha256": "f0ac88733fb34f99818e450c07ed57b12dd1f309f4a0ab0ca14c6d9c678d2add"
+    },
+    "src/storage/compression/kernel.h": {
+      "bytes": 1336,
+      "sha256": "f84b45f91fe249fecbfcf0b76961db25af2f635a82e13f02496789d1b2425a96"
+    },
+    "src/storage/nbt/nbt.c": {
+      "bytes": 45341,
+      "sha256": "e415065e121a5503074c1a0f06f17f681e5c86b1efa2926cb8e7d7e795cced7b"
+    },
+    "src/storage/nbt/stream_internal.h": {
+      "bytes": 1461,
+      "sha256": "f177fc3fa9b4512d9012b410b5f39e679df2013e3b68758b476d2529c829200d"
+    },
+    "src/storage/nbt/stream_owner.inc": {
+      "bytes": 10585,
+      "sha256": "84d5301eebcfdd3eb7f33aa6f2e9a5d10163c3a467360b5cd1f3aa26113a1afa"
+    },
+    "src/storage/nbt/stream_support.inc": {
+      "bytes": 10454,
+      "sha256": "20cd1c54661ff2083e60326f4b4c0df23a12c25bb2f6c934d22ca5296dba0103"
+    },
+    "src/world/info/info.c": {
+      "bytes": 43559,
+      "sha256": "8679d499d1b78adedb6cc6e6f393321ae61f3abca108a6917f50877a905c8265"
+    },
+    "src/world/storage/gzip_input.c": {
+      "bytes": 34055,
+      "sha256": "e10066a9fa571595569560d1144416a47a1448a1a283f1cf570f4458f037087d"
+    },
+    "src/world/storage/java_file.c": {
+      "bytes": 20200,
+      "sha256": "78b98d53c4bda8e9562e9352de2276e3013bc4c9ebc0f11dcda1ffd238706725"
+    },
+    "src/world/storage/java_file_internal.h": {
+      "bytes": 2483,
+      "sha256": "338b72d5814c58a7f7df26abf880c4cef481ccc13950b5a0d752e48a18cd252e"
+    },
+    "src/world/storage/java_file_io.c": {
+      "bytes": 23540,
+      "sha256": "45a3b4ba821604c0996a5e24d6d976241a1e50a2716c3ce2aec59eec4048a62a"
+    },
+    "src/world/storage/java_file_list.c": {
+      "bytes": 12132,
+      "sha256": "b1ad299f9d0b6393ebefb7b33201c63e15438245be5b920374d5cea12aec4553"
+    },
+    "src/world/storage/java_file_text.c": {
+      "bytes": 2600,
+      "sha256": "2c775fb34a95f562eaa5663fb7d44230849143d400b8aa7d08b5271f587fc6a2"
+    },
+    "src/world/storage/java_file_text.h": {
+      "bytes": 457,
+      "sha256": "e3ff9de23705612069aa6e3974e746f02d30714762154661ab72c523220d5442"
+    },
+    "tests/world/storage/trace_source_stream.c": {
+      "bytes": 9927,
+      "sha256": "1ed39c057fd5d5c99583f628a6cf216d154f3494e28f2ef41c297ea9312f5a0d"
+    },
+    "include/mc/core/java/int_set.h": {
+      "bytes": 5032,
+      "sha256": "cc09767e77dcf687d0ebb819b1d2809fba7e94fc251557354262c5e2a245be5d"
+    },
+    "include/mc/core/java/java.h": {
+      "bytes": 3573,
+      "sha256": "87a9d709f5607cacd692dd76c767790b9029fac3fdc8d24481fed6d50a409e53"
+    },
+    "include/mc/core/java/properties.h": {
+      "bytes": 4344,
+      "sha256": "b266c2f3124fc5e81671b49f06ba4257d7ec56461b5cde9c7bc4d9a1cc50761d"
+    },
+    "include/mc/core/java/reader.h": {
+      "bytes": 3059,
+      "sha256": "d606f35402ee028d5ea7e5ce12e4c41525b189e5d66b0f44f0e17db0234a8ea9"
+    },
+    "include/mc/core/math/math.h": {
+      "bytes": 1885,
+      "sha256": "63bb56dc1425a8115b36e878d8c0cab33b9cc36ae397ccab9d5d02f12a16ec56"
+    },
+    "include/mc/core/text/mutf8.h": {
+      "bytes": 1457,
+      "sha256": "dadc75d81348ae505579f7ed25c5dc9ce480f8a75a04bb955e486d84f24885f9"
+    },
+    "include/mc/storage/compression/compression.h": {
+      "bytes": 3188,
+      "sha256": "e74504fa58c2b02867d6696fc623c1a201a814c0c596ba76fd22a7964f2139a1"
+    },
+    "include/mc/storage/level/level.h": {
+      "bytes": 4818,
+      "sha256": "1183fde34d59004697aa81a8ca1c376cd17099523a15adc61ceb8afd8f2886c0"
+    },
+    "include/mc/storage/nbt/array.h": {
+      "bytes": 2944,
+      "sha256": "d54a1cb89a9d8c22528bee410c11ef83d29782a8b4d41c629f06f3fccddc46ae"
+    },
+    "include/mc/storage/nbt/tree.h": {
+      "bytes": 3055,
+      "sha256": "5051ba448beef4cb5dcac46df4e4d02eb936a7b67964dac64fce13ee94ac5bde"
+    },
+    "include/mc/storage/region/writer.h": {
+      "bytes": 5234,
+      "sha256": "25312fb383d2c3383297cf84db88f15ed6a026e8da6841062bb3fe16c24c6b19"
+    },
+    "include/mc/world/cache/acquire.h": {
+      "bytes": 11225,
+      "sha256": "c0d8e604db9302bb0c8ca971bae2921b167a4e95e3340ba2ea7a4ca5c0167423"
+    },
+    "include/mc/world/cache/cache.h": {
+      "bytes": 2170,
+      "sha256": "9dcd13256748b675be22a21373f2de80d2586fa2a1a5bd54b7aaafb866af5035"
+    },
+    "include/mc/world/chunk/data.h": {
+      "bytes": 2193,
+      "sha256": "837c683716ef46818a002237aec2441dc186946e0191e009da094619bf5280c8"
+    },
+    "include/mc/world/chunk/nibbles.h": {
+      "bytes": 1388,
+      "sha256": "3169c22153b888ff9df9e8a746bad5bad7009dcd6ef7dd4be39e7bee274158b9"
+    },
+    "include/mc/world/chunk/references.h": {
+      "bytes": 857,
+      "sha256": "eebab4eda381828090672a75f87196b1e84a7d5bd1a720af39c063cb699551d8"
+    },
+    "include/mc/world/chunk/state.h": {
+      "bytes": 1133,
+      "sha256": "4eadb829176da3e8a9609b13447e87803c8a8c95aa834d60ffa0e0819f6b3418"
+    },
+    "include/mc/world/storage/chunk.h": {
+      "bytes": 5539,
+      "sha256": "f58c096313fd841d0ce1a4436e520251497a1b72318d04b68f29bafa2f62091b"
+    },
+    "include/mc/world/storage/regions.h": {
+      "bytes": 4655,
+      "sha256": "4233b34b793eca6cc8a2b324af46badd762e2617feffa13b61fef679890dce72"
+    },
+    "include/mc/world/storage/status.h": {
+      "bytes": 857,
+      "sha256": "3a1b750e2d969a44d15d263dbc33b7d0ed9417ecb223843297b7d104cccd2054"
+    },
+    "include/mc/world/storage/store.h": {
+      "bytes": 20327,
+      "sha256": "21d205621c786a5e10a127b1ca4f2ecc16e492c336c5bbe2412152011d1a3a4d"
+    },
+    "src/core/java/java.c": {
+      "bytes": 8217,
+      "sha256": "efa5f6b0c997ed9a160184785f699ab822d2ba2dd501a1b2228d63a5360fa2db"
+    },
+    "src/core/math/math.c": {
+      "bytes": 1203,
+      "sha256": "a28b1681f42433d221c6e0b66b2e81515b9e3d53f60abf78a63a4c9ed729c202"
+    },
+    "src/platform/text/charset.c": {
+      "bytes": 2302,
+      "sha256": "14811da607746dc2681508e7ea7a2289ec1c6845214f4222ee2330a0d952f334"
+    },
+    "src/platform/text/locale.c": {
+      "bytes": 2833,
+      "sha256": "2509ed246b840f79d90a89f9f421aca0f6faffff808a8feb65fd5901c460a967"
+    },
+    "src/platform/time/millis.c": {
+      "bytes": 2886,
+      "sha256": "45d7a7d0ebe3d6ddeed64f3dbdc396c6bd4b5e7fa42de2f45fc77ebda4ea5866"
+    },
+    "src/platform/time/millis.h": {
+      "bytes": 1796,
+      "sha256": "be29675facc5b5b98d186c89374c0486228182d6d8bfa9fea0ec64f8785b7da9"
+    },
+    "src/storage/nbt/tree.c": {
+      "bytes": 8212,
+      "sha256": "64e757a05a937befbf5d34a3e9b47bad47d9f5dcce694af8c374a26aa1f37eab"
+    },
+    "src/world/info/weather_source_internal.h": {
+      "bytes": 1212,
+      "sha256": "0a975f1f7116c54687f3f1e2af79ef87319118c43b3caeefa1236eedc7793da4"
+    }
+  },
+  "reference_sources": {
+    "class-code-pins.json": {
+      "bytes": 63877,
+      "sha256": "16228f35c7768937f6b6273618420c1aedf5e805adef39df841f51a371d4d6bc"
+    },
+    "compare_stream.py": {
+      "bytes": 12428,
+      "sha256": "87b1fbdc0a607315dd8c66218384cb97a378f10209388d5959dc0da9b855eff0"
+    },
+    "jdk-stream-code-pins.json": {
+      "bytes": 14719,
+      "sha256": "bcb6c6a410b1b726737889a2296ad71a7aea28f1fc5941de825ed338f19fcad2"
+    },
+    "README.md": {
+      "bytes": 4506,
+      "sha256": "4cf01251529029e8dc604fc7981ea797c9a392c58edf0ad1a326b9ae8c6da4ad"
+    },
+    "stream-code-pins.json": {
+      "bytes": 18075,
+      "sha256": "6cd22ac737dbdc7e96cb4eb90fd32d57a5ae9164ffbeafdf83fc50b0f69ec51d"
+    },
+    "StreamObservation.java": {
+      "bytes": 4719,
+      "sha256": "1ce079064888e7351fcbdd77b56e3d129694a3b1f414934799947bf2708c9613"
+    },
+    "stream_cases.py": {
+      "bytes": 3276,
+      "sha256": "76fcfae65e0a6d9ca51107a76197c40400ddf79acb7d058c3942a062c530c6d4"
+    },
+    "test_stream_driver.py": {
+      "bytes": 2998,
+      "sha256": "7ecb8d7cdd396f82f31ee49e4eedbda26c00d1705e62f4becad52d420fc6e447"
+    }
+  },
+  "helper_inputs": {
+    "tests/reference/client/notice/capture.py": {
+      "bytes": 5247,
+      "sha256": "4355d5e1f253355d239c6938762f05235b47059b4c3e8beb6e8306b4b34381e2"
+    },
+    "tests/reference/client/notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    }
+  },
+  "original_JDK_cases": 35,
+  "helper_class_inventory": [
+    "StreamObservation.class"
+  ],
+  "JDK_profile": "explicit JDK17; selected actual method Code must match jdk-stream-code-pins, actual class/jmod/tool bytes retained per run",
+  "not_evidence": [
+    "no native/JVM/compiler/controller/fixture run",
+    "no captured original output/classes/assets",
+    "no Java exception-message/frame or whole startup/visual equality",
+    "no document-wide wrapper cache across independent Data adoptions"
+  ]
+}

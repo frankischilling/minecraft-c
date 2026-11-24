@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Finite unchanged-original client TallGrass inherited harvest: 68 complete singleplayer controller calls and six nullable-Player direct calls, in genuine prepared World/Chunk/Player/Stack owners.",
+  "profiles": {
+    "total": 74,
+    "controller": 68,
+    "direct": 6,
+    "items": 28,
+    "events": 96
+  },
+  "files": {
+    "profiles.tsv": {
+      "bytes": 2868,
+      "sha256": "1bcb47106eee94d4ee9f3c54c35bb9bd578602977897464d1d23bf514a408c01"
+    },
+    "observations.tsv": {
+      "bytes": 20934,
+      "sha256": "f764457bb72f919eaf182ab287cccf447266b6a4c80e7cd6a827f45d0c342e9d"
+    },
+    "guards.tsv": {
+      "bytes": 135,
+      "sha256": "eaad99cadb4ee2bde306c730a04b1e5b7551d3bb3c1acdddce4224ee8a42c4e8"
+    },
+    "source-pins.json": {
+      "bytes": 179961,
+      "sha256": "37e6aab870de37ea1ad4a2400aa81c391a006bb8acbcbea8302206d00b051ab9"
+    },
+    "schema.json": {
+      "bytes": 2761,
+      "sha256": "523ba763045430a7dc87ed6b6572700d2836c5f8e8523a51d2abd81c107c6949"
+    }
+  },
+  "original_capture": {
+    "fresh_vm_repeats": 2,
+    "all_selected_rows_identical": true,
+    "whole_stdout_identical": true,
+    "whole_stdout_sha256": "23555ff700a33c7c10dc66b0bfff45417e12cb80b7beca2e9cc60b7b34936f8e",
+    "all_supplied_inputs_unchanged": true,
+    "input_count": 14,
+    "runtime": "OpenJDK Temurin17.0.17+10 x64; interpreted, verified, headless,512MB heap.",
+    "flags": [
+      "-Xint",
+      "-Xverify:all",
+      "-Xmx512m",
+      "-Djava.awt.headless=true",
+      "-Djava.security.manager=allow",
+      "--add-opens=java.base/java.lang=ALL-UNNAMED",
+      "--add-opens=java.base/java.util=ALL-UNNAMED"
+    ],
+    "source_guards": {
+      "network_attempts": 0,
+      "native_link_attempts": 0
+    },
+    "actual_denial_controls": {
+      "connect": 1,
+      "listen": 1,
+      "native_link": 1
+    },
+    "timer_workers_joined": true,
+    "original_classes_rewritten_or_substituted": false,
+    "capture_record_sha256": "c41ca396b67e6aa7a090f575310405e86875159b959a65368b9047a5baa2a0dd"
+  },
+  "helper_sha256": {
+    "tests/reference/block/harvest/BlockHarvestObservation.java": "92ff3667b679e8c7e0470799815d9d0f3415853765653c14ef3f47ea0649f821",
+    "tests/reference/block/tall_grass_harvest/capture_reference.py": "3813d68cb68c8ee12d4646b2db25bcfcf3912c65fbc79759fd5fb0b2ce3da819"
+  },
+  "shared_helper_sha256": {
+    "tests/reference/client/controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "tests/reference/client/controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tests/reference/block/harvest/packet.py": "4f6fb54b7847ab52f0417d1f5f73bb5799a0d96efc8ccbbffee37d40d0d554b0"
+  },
+  "limits": [
+    "Arranged original method invocations, not original full client input, pixels/audio, save/reload, server behavior or complete game parity.",
+    "Only target CHANGE and ItemINSERT listeners are recorded. Other original listener methods still execute with the declared ordinary-return observer.",
+    "Explicit World/Math seeds are authored inputs. Default Entity Random constructor entropy, clocks, identities and unselected fields are not compared.",
+    "Cold class-initialization failures and unrestricted host/JDK/VM or malformed native storage behavior are outside this corpus.",
+    "The nullable statistic, writer and Player controls describe actual reached source exceptions and prior effects; native allocation/admission/refusal controls have separate scope.",
+    "The six NULL-Player direct calls are supplemental exception-prefix observations, not additional native direct-entry replay. Direct RU drop-ID calls have a different Random prefix and are not counted here."
+  ]
+}

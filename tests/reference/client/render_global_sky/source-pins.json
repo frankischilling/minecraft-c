@@ -1,0 +1,137 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "n": {
+      "class_bytes": 24327,
+      "class_sha256": "d3f85a1136da30d4590b16f7bd5db44d0db3e73f6d42e1f0b018426542da0c16",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(Lnet/minecraft/client/Minecraft;Lji;)V",
+          "access": 1,
+          "code_bytes": 652,
+          "code_sha256": "7dbc9ae46fd1a1dea121a7c44c5e23f21e71b6277022541ab9aa9342bbb8e565"
+        },
+        {
+          "name": "a",
+          "descriptor": "(F)V",
+          "access": 1,
+          "code_bytes": 937,
+          "code_sha256": "bed039bb1d0e1d5d896acb2360edb53cb4a867ba7f0b6b70b5c12a7a2abfe613"
+        }
+      ]
+    },
+    "xa": {
+      "class_bytes": 2050,
+      "class_sha256": "8b72b6ce0a7b402b5177623251a38ff305573f16f3172efa3290bb45b8fe3afa",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 40,
+          "code_sha256": "d120f06e639bfa314d860e8b1e0045bbd5e7284625dc59bd986d08f94e5b5a4a"
+        }
+      ]
+    },
+    "wd": {
+      "class_bytes": 1070,
+      "class_sha256": "b18bebc5ad5a3812851978fe028cb4e442b0b7c0f5ba8e17891fe6bd2c519651",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "33916b80d60652642de7b755b56363d094875ec08724021a822a6188c255b107"
+        }
+      ]
+    },
+    "ji": {
+      "class_bytes": 9493,
+      "class_sha256": "12e7e22d5555a4bc0d433a7c2203ace664c3fdae6e73dc2ae736ee4da6a7b86a",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "b",
+          "descriptor": "(Ljava/lang/String;)I",
+          "access": 1,
+          "code_bytes": 268,
+          "code_sha256": "94669e532a38d2dcdb21b863fe0a41c7e05a7881d5c57a6b706932f12ea56fbe"
+        }
+      ]
+    },
+    "u": {
+      "class_bytes": 1482,
+      "class_sha256": "576afd3ecfe6600be5ffd6b75ccdc0177872e9bb86a51a9e34b9dba0f92ab0b2",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 9,
+          "code_bytes": 25,
+          "code_sha256": "4acfba7494e965c62b42b966ce9247f76c8f62707a89a0cb9aa6ac3def3a2cda"
+        }
+      ]
+    },
+    "nw": {
+      "class_bytes": 5557,
+      "class_sha256": "2facc45feb91d0fea0c5888ac6793a87ffa6e4cdf5b0cc4e418c6c162ca8bf33",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 415,
+          "code_sha256": "6b22ea3c837c5afb9713209d9dea8c5bde822ffa4e6cef179f8c5e87be1b1218"
+        },
+        {
+          "name": "a",
+          "descriptor": "(I)V",
+          "access": 1,
+          "code_bytes": 52,
+          "code_sha256": "7d103dedbb14ef967f5b65795adb22640447c963342a049e707c36c1fdca8b12"
+        },
+        {
+          "name": "a",
+          "descriptor": "(FFFF)V",
+          "access": 1,
+          "code_bytes": 26,
+          "code_sha256": "1e52ffb36ef54d6d51819f91507c32e1856107ebab6e339d088742e4c6ce85d8"
+        },
+        {
+          "name": "a",
+          "descriptor": "(IIII)V",
+          "access": 1,
+          "code_bytes": 140,
+          "code_sha256": "62e072691dadada14c6f6ee80a938f7971845bd8ac416d452be65a9dd8890661"
+        },
+        {
+          "name": "a",
+          "descriptor": "(DDDDD)V",
+          "access": 1,
+          "code_bytes": 17,
+          "code_sha256": "f4e2d88e0b699ee47188e063968b2bcb16d70418fb718ae9cf5cdc3fa1753191"
+        },
+        {
+          "name": "a",
+          "descriptor": "(DDD)V",
+          "access": 1,
+          "code_bytes": 451,
+          "code_sha256": "68b649bef9b5e0d8322863f5f0306d30946b5222319e05d1666b343856ec9ed8"
+        }
+      ]
+    }
+  }
+}

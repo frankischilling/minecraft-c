@@ -1,0 +1,528 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "rows": [
+    {
+      "field": "aL",
+      "id": 70,
+      "runtime_class": "bv",
+      "superclass": "uu",
+      "owners": {
+        "color": "uu",
+        "render_type": "uu",
+        "shape": "bv",
+        "texture_metadata": "uu",
+        "texture_side": "uu",
+        "bounds": "uu"
+      },
+      "class_sha256": {
+        "uu": "caeaf354357d66fc168c7f03bf62bb6c6a1fe459e9be6b537d4d5d1efabd0845",
+        "bv": "a74a0ec39d7dd2457dd0aac07474a81f9dc6bd216b91bc0b2545a71e1bc0903e"
+      },
+      "registered_identity": true,
+      "render_type": 0,
+      "texture_field": 1,
+      "constructor_bounds": [
+        "3fb0000000000000",
+        "0000000000000000",
+        "3fb0000000000000",
+        "3fee000000000000",
+        "3fa0000000000000",
+        "3fee000000000000"
+      ],
+      "after_scalar_bounds": [
+        "3fb0000000000000",
+        "0000000000000000",
+        "3fb0000000000000",
+        "3fee000000000000",
+        "3fa0000000000000",
+        "3fee000000000000"
+      ],
+      "color_samples": [
+        {
+          "metadata": -2147483648,
+          "color": 16777215
+        },
+        {
+          "metadata": -1,
+          "color": 16777215
+        },
+        {
+          "metadata": 0,
+          "color": 16777215
+        },
+        {
+          "metadata": 1,
+          "color": 16777215
+        },
+        {
+          "metadata": 15,
+          "color": 16777215
+        },
+        {
+          "metadata": 2147483647,
+          "color": 16777215
+        }
+      ],
+      "texture_samples": [
+        {
+          "side": -2147483648,
+          "metadata": -2147483648,
+          "value": 1
+        },
+        {
+          "side": -1,
+          "metadata": -2147483648,
+          "value": 1
+        },
+        {
+          "side": 0,
+          "metadata": -2147483648,
+          "value": 1
+        },
+        {
+          "side": 1,
+          "metadata": -2147483648,
+          "value": 1
+        },
+        {
+          "side": 15,
+          "metadata": -2147483648,
+          "value": 1
+        },
+        {
+          "side": 2147483647,
+          "metadata": -2147483648,
+          "value": 1
+        },
+        {
+          "side": -2147483648,
+          "metadata": -1,
+          "value": 1
+        },
+        {
+          "side": -1,
+          "metadata": -1,
+          "value": 1
+        },
+        {
+          "side": 0,
+          "metadata": -1,
+          "value": 1
+        },
+        {
+          "side": 1,
+          "metadata": -1,
+          "value": 1
+        },
+        {
+          "side": 15,
+          "metadata": -1,
+          "value": 1
+        },
+        {
+          "side": 2147483647,
+          "metadata": -1,
+          "value": 1
+        },
+        {
+          "side": -2147483648,
+          "metadata": 0,
+          "value": 1
+        },
+        {
+          "side": -1,
+          "metadata": 0,
+          "value": 1
+        },
+        {
+          "side": 0,
+          "metadata": 0,
+          "value": 1
+        },
+        {
+          "side": 1,
+          "metadata": 0,
+          "value": 1
+        },
+        {
+          "side": 15,
+          "metadata": 0,
+          "value": 1
+        },
+        {
+          "side": 2147483647,
+          "metadata": 0,
+          "value": 1
+        },
+        {
+          "side": -2147483648,
+          "metadata": 1,
+          "value": 1
+        },
+        {
+          "side": -1,
+          "metadata": 1,
+          "value": 1
+        },
+        {
+          "side": 0,
+          "metadata": 1,
+          "value": 1
+        },
+        {
+          "side": 1,
+          "metadata": 1,
+          "value": 1
+        },
+        {
+          "side": 15,
+          "metadata": 1,
+          "value": 1
+        },
+        {
+          "side": 2147483647,
+          "metadata": 1,
+          "value": 1
+        },
+        {
+          "side": -2147483648,
+          "metadata": 15,
+          "value": 1
+        },
+        {
+          "side": -1,
+          "metadata": 15,
+          "value": 1
+        },
+        {
+          "side": 0,
+          "metadata": 15,
+          "value": 1
+        },
+        {
+          "side": 1,
+          "metadata": 15,
+          "value": 1
+        },
+        {
+          "side": 15,
+          "metadata": 15,
+          "value": 1
+        },
+        {
+          "side": 2147483647,
+          "metadata": 15,
+          "value": 1
+        },
+        {
+          "side": -2147483648,
+          "metadata": 2147483647,
+          "value": 1
+        },
+        {
+          "side": -1,
+          "metadata": 2147483647,
+          "value": 1
+        },
+        {
+          "side": 0,
+          "metadata": 2147483647,
+          "value": 1
+        },
+        {
+          "side": 1,
+          "metadata": 2147483647,
+          "value": 1
+        },
+        {
+          "side": 15,
+          "metadata": 2147483647,
+          "value": 1
+        },
+        {
+          "side": 2147483647,
+          "metadata": 2147483647,
+          "value": 1
+        }
+      ],
+      "inventory_bounds": [
+        "0000000000000000",
+        "3fd8000000000000",
+        "0000000000000000",
+        "3ff0000000000000",
+        "3fe4000000000000",
+        "3ff0000000000000"
+      ],
+      "repeated_inventory_bounds": [
+        "0000000000000000",
+        "3fd8000000000000",
+        "0000000000000000",
+        "3ff0000000000000",
+        "3fe4000000000000",
+        "3ff0000000000000"
+      ]
+    },
+    {
+      "field": "aN",
+      "id": 72,
+      "runtime_class": "bv",
+      "superclass": "uu",
+      "owners": {
+        "color": "uu",
+        "render_type": "uu",
+        "shape": "bv",
+        "texture_metadata": "uu",
+        "texture_side": "uu",
+        "bounds": "uu"
+      },
+      "class_sha256": {
+        "uu": "caeaf354357d66fc168c7f03bf62bb6c6a1fe459e9be6b537d4d5d1efabd0845",
+        "bv": "a74a0ec39d7dd2457dd0aac07474a81f9dc6bd216b91bc0b2545a71e1bc0903e"
+      },
+      "registered_identity": true,
+      "render_type": 0,
+      "texture_field": 4,
+      "constructor_bounds": [
+        "3fb0000000000000",
+        "0000000000000000",
+        "3fb0000000000000",
+        "3fee000000000000",
+        "3fa0000000000000",
+        "3fee000000000000"
+      ],
+      "after_scalar_bounds": [
+        "3fb0000000000000",
+        "0000000000000000",
+        "3fb0000000000000",
+        "3fee000000000000",
+        "3fa0000000000000",
+        "3fee000000000000"
+      ],
+      "color_samples": [
+        {
+          "metadata": -2147483648,
+          "color": 16777215
+        },
+        {
+          "metadata": -1,
+          "color": 16777215
+        },
+        {
+          "metadata": 0,
+          "color": 16777215
+        },
+        {
+          "metadata": 1,
+          "color": 16777215
+        },
+        {
+          "metadata": 15,
+          "color": 16777215
+        },
+        {
+          "metadata": 2147483647,
+          "color": 16777215
+        }
+      ],
+      "texture_samples": [
+        {
+          "side": -2147483648,
+          "metadata": -2147483648,
+          "value": 4
+        },
+        {
+          "side": -1,
+          "metadata": -2147483648,
+          "value": 4
+        },
+        {
+          "side": 0,
+          "metadata": -2147483648,
+          "value": 4
+        },
+        {
+          "side": 1,
+          "metadata": -2147483648,
+          "value": 4
+        },
+        {
+          "side": 15,
+          "metadata": -2147483648,
+          "value": 4
+        },
+        {
+          "side": 2147483647,
+          "metadata": -2147483648,
+          "value": 4
+        },
+        {
+          "side": -2147483648,
+          "metadata": -1,
+          "value": 4
+        },
+        {
+          "side": -1,
+          "metadata": -1,
+          "value": 4
+        },
+        {
+          "side": 0,
+          "metadata": -1,
+          "value": 4
+        },
+        {
+          "side": 1,
+          "metadata": -1,
+          "value": 4
+        },
+        {
+          "side": 15,
+          "metadata": -1,
+          "value": 4
+        },
+        {
+          "side": 2147483647,
+          "metadata": -1,
+          "value": 4
+        },
+        {
+          "side": -2147483648,
+          "metadata": 0,
+          "value": 4
+        },
+        {
+          "side": -1,
+          "metadata": 0,
+          "value": 4
+        },
+        {
+          "side": 0,
+          "metadata": 0,
+          "value": 4
+        },
+        {
+          "side": 1,
+          "metadata": 0,
+          "value": 4
+        },
+        {
+          "side": 15,
+          "metadata": 0,
+          "value": 4
+        },
+        {
+          "side": 2147483647,
+          "metadata": 0,
+          "value": 4
+        },
+        {
+          "side": -2147483648,
+          "metadata": 1,
+          "value": 4
+        },
+        {
+          "side": -1,
+          "metadata": 1,
+          "value": 4
+        },
+        {
+          "side": 0,
+          "metadata": 1,
+          "value": 4
+        },
+        {
+          "side": 1,
+          "metadata": 1,
+          "value": 4
+        },
+        {
+          "side": 15,
+          "metadata": 1,
+          "value": 4
+        },
+        {
+          "side": 2147483647,
+          "metadata": 1,
+          "value": 4
+        },
+        {
+          "side": -2147483648,
+          "metadata": 15,
+          "value": 4
+        },
+        {
+          "side": -1,
+          "metadata": 15,
+          "value": 4
+        },
+        {
+          "side": 0,
+          "metadata": 15,
+          "value": 4
+        },
+        {
+          "side": 1,
+          "metadata": 15,
+          "value": 4
+        },
+        {
+          "side": 15,
+          "metadata": 15,
+          "value": 4
+        },
+        {
+          "side": 2147483647,
+          "metadata": 15,
+          "value": 4
+        },
+        {
+          "side": -2147483648,
+          "metadata": 2147483647,
+          "value": 4
+        },
+        {
+          "side": -1,
+          "metadata": 2147483647,
+          "value": 4
+        },
+        {
+          "side": 0,
+          "metadata": 2147483647,
+          "value": 4
+        },
+        {
+          "side": 1,
+          "metadata": 2147483647,
+          "value": 4
+        },
+        {
+          "side": 15,
+          "metadata": 2147483647,
+          "value": 4
+        },
+        {
+          "side": 2147483647,
+          "metadata": 2147483647,
+          "value": 4
+        }
+      ],
+      "inventory_bounds": [
+        "0000000000000000",
+        "3fd8000000000000",
+        "0000000000000000",
+        "3ff0000000000000",
+        "3fe4000000000000",
+        "3ff0000000000000"
+      ],
+      "repeated_inventory_bounds": [
+        "0000000000000000",
+        "3fd8000000000000",
+        "0000000000000000",
+        "3ff0000000000000",
+        "3fe4000000000000",
+        "3ff0000000000000"
+      ]
+    }
+  ]
+}

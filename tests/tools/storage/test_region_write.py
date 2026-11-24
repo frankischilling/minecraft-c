@@ -71,6 +71,14 @@ def change_record(fixture,side,mode,change):
 
 
 class TransportTests(unittest.TestCase):
+    def test_nested_json_comparison_keeps_numeric_types(self):
+        expected = [{"values": [0, 1, {"ready": True}]}]
+        self.assertTrue(region.same_json(copy.deepcopy(expected), expected))
+        for actual in ([{"values": [False, 1, {"ready": True}]}],
+                       [{"values": [0, 1.0, {"ready": True}]}],
+                       [{"values": [0, 1, {"ready": 1}]}]):
+            self.assertFalse(region.same_json(actual, expected))
+
     def test_complete_wire_bits_and_zero_write_schedule(self):
         raw=region.encode_replay("fresh",b"",[dict(x=-2147483648,z=-1,timestamp=0xffffffff,payload=b"opaque")])
         self.assertEqual(input_frames(raw),(0,b"",[(0x80000000,0xffffffff,0xffffffff,b"opaque")]))
@@ -180,6 +188,52 @@ class FixtureTests(unittest.TestCase):
             self.assertEqual(states[-3][2],states[-2][2]);self.assertEqual(states[-2][2],states[-1][2])
             self.assertEqual(initial,b"" if mode==0 else states[0][2])
 
+    def test_read_only_audit_and_timestamp_projection_preserve_all_input_fields(self):
+        pool={digest:region.unpack(value,region.MAX_FILE) for digest,value in self.fixture["blobs"].items()}
+        records=[region.strict_json(region.unpack(self.fixture["originals"]["client"][mode]))
+                 for mode in ("observed","control")]
+        files=[region.pool_evidence(record,pool) for record in records]
+        before=json.dumps(records,separators=(",",":"),sort_keys=True)
+        for record,evidence in zip(records,files): region.audit(record,evidence)
+        comparison=region.compare(records[0],files[0],records[1],files[1])
+        self.assertTrue(comparison["recorded_call_sequences_exact"])
+        self.assertEqual(json.dumps(records,separators=(",",":"),sort_keys=True),before)
+        # Equal files may use a bulk comparison, but one changed byte outside
+        # the permitted timestamp slots must still reach the full rejection.
+        changed=dict(files[1].mapping)
+        name="snapshots/final/cache/region/r.0.0.mcr"
+        image=bytearray(changed[name]);image[-1]^=1;changed[name]=bytes(image)
+        with self.assertRaisesRegex(region.Failure,"only explicit observed written timestamp slots"):
+            region.compare(records[0],files[0],records[1],region.Evidence(mapping=changed))
+        self.assertEqual(json.dumps(records,separators=(",",":"),sort_keys=True),before)
+
+    def test_audit_rejects_changed_padding_outside_write(self):
+        pool = {digest: region.unpack(value, region.MAX_FILE)
+                for digest, value in self.fixture["blobs"].items()}
+        record = region.strict_json(region.unpack(self.fixture["originals"]["client"]["observed"]))
+        changed = region.pool_evidence(record, pool).mapping
+        name = "allocation/region/r.0.0.mcr"
+        snapshot = next(row for row in record["events"]
+                        if row["kind"] == "snapshot" and row["label"] == "B-exact-two")
+        path = f"snapshots/{snapshot['directory']}/{name}"
+        image = bytearray(changed[path])
+        image[3 * 4096 - 1] ^= 1  # Padding in the previous write's sector.
+        changed[path] = bytes(image)
+        snapshot["files"][name] = region.blob(changed[path])
+
+        with self.assertRaisesRegex(region.Failure, "all unrelated original bytes preserved"):
+            region.audit(record, region.Evidence(mapping=changed))
+
+    def test_retained_owner_audit_rejects_numeric_type_alias(self):
+        pool = {digest: region.unpack(value, region.MAX_FILE)
+                for digest, value in self.fixture["blobs"].items()}
+        record = region.strict_json(region.unpack(self.fixture["originals"]["client"]["observed"]))
+        free_sectors = record["final_state"]["held_regions"][0]["free"]
+        self.assertIs(free_sectors[0], False)
+        free_sectors[0] = 0
+        with self.assertRaisesRegex(region.Failure, "complete retained final region owners"):
+            region.audit(record, region.pool_evidence(record, pool))
+
     def test_corpus_omissions_duplicates_sides_order_and_counts_fail(self):
         for name in ("missing","duplicate","side","profile","count","index","extra"):
             value=copy.deepcopy(self.fixture)
@@ -188,6 +242,23 @@ class FixtureTests(unittest.TestCase):
             elif name=="extra": value["cases"].append(copy.deepcopy(value["cases"][0]))
             else: value["cases"][0][name if name!="count" else "writes"]={"side":"unknown","profile":"unknown","count":11,"index":True}[name]
             with self.subTest(name=name),self.assertRaises(region.Failure): region.validate_public_metadata(value)
+
+    def test_header_words_require_exact_signed_integers(self):
+        record = region.strict_json(region.unpack(self.fixture["originals"]["client"]["observed"]))
+        snapshot = next(row for row in record["events"]
+                        if row["kind"] == "snapshot" and row["state"]["held_regions"])
+        owner = snapshot["state"]["held_regions"][0]
+        for name in ("locations", "timestamps"):
+            words = owner[name]
+            saved = words[-1]
+            for invalid in (True, float(saved), None, -(1 << 31) - 1, 1 << 31):
+                words[-1] = invalid
+                try:
+                    with self.subTest(header=name, value=invalid), self.assertRaisesRegex(
+                            region.Failure, "original header bits: exact integer bounds"):
+                        region.validate_original(record, None, "client", "observed", public=True)
+                finally:
+                    words[-1] = saved
 
     def test_incomplete_or_weak_provenance_and_class_bindings_fail(self):
         for name in ("mode","jar","source","source_digest","exporter","helper","class_version","class_version_float","original_class","tool","counts","controls"):

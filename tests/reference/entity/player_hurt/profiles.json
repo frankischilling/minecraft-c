@@ -1,0 +1,382 @@
+[
+  {
+    "profile": 0,
+    "label": "full_empty",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 1,
+    "label": "repeat_empty",
+    "amounts": [
+      4,
+      3,
+      4,
+      7
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 2,
+    "label": "half_boundary",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 10,
+    "previous_damage": 4,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 3,
+    "label": "remote",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 1,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 4,
+    "label": "dead",
+    "amounts": [
+      4
+    ],
+    "health": 0,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 5,
+    "label": "zero",
+    "amounts": [
+      0
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 6,
+    "label": "armor_carry",
+    "amounts": [
+      1,
+      2,
+      3
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 298,
+    "damage": 0,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 7,
+    "label": "armor_remainder",
+    "amounts": [
+      1
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 24,
+    "item": 298,
+    "damage": 0,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 8,
+    "label": "armor_threshold",
+    "amounts": [
+      1,
+      2
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 298,
+    "damage": 32,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 9,
+    "label": "armor_break",
+    "amounts": [
+      1
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 298,
+    "damage": 33,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 10,
+    "label": "nonarmor_slot",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 1,
+    "damage": 0,
+    "mode": 0,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 11,
+    "label": "null_inventory",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 2,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 12,
+    "label": "null_armor_array",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 3,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 13,
+    "label": "bad_stack_id",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 298,
+    "damage": 0,
+    "mode": 4,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 14,
+    "label": "null_app",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 5,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 15,
+    "label": "null_writer",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 6,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 16,
+    "label": "null_world",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 7,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 17,
+    "label": "null_private_random",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 8,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 18,
+    "label": "throw_sound",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 9,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 19,
+    "label": "sound_clears_world",
+    "amounts": [
+      4
+    ],
+    "health": 20,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 10,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 20,
+    "label": "suppressed_null_random",
+    "amounts": [
+      3
+    ],
+    "health": 20,
+    "by": 11,
+    "previous_damage": 4,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 8,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  },
+  {
+    "profile": 21,
+    "label": "fatal_first_prefix",
+    "amounts": [
+      4
+    ],
+    "health": 4,
+    "by": 0,
+    "previous_damage": 0,
+    "remainder": 0,
+    "item": 0,
+    "damage": -1,
+    "mode": 11,
+    "actor_seed": 38,
+    "world_seed": 2468,
+    "math_seed": 0
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "u": {
+      "class_bytes": 1482,
+      "class_sha256": "576afd3ecfe6600be5ffd6b75ccdc0177872e9bb86a51a9e34b9dba0f92ab0b2",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 9,
+          "code_bytes": 25,
+          "code_sha256": "4acfba7494e965c62b42b966ce9247f76c8f62707a89a0cb9aa6ac3def3a2cda"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 9,
+          "code_sha256": "f121570f783be7afbc1e1bc2f773ae518dfe9ede49de38a69fd166f9716f5ad8"
+        }
+      ]
+    },
+    "ge": {
+      "class_bytes": 2023,
+      "class_sha256": "4c302c844a8fae626f6ab56de47dc5b1032131e176e1fac7754869c472b57722",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "c",
+          "descriptor": "(I)Ljava/nio/ByteBuffer;",
+          "access": 41,
+          "code_bytes": 13,
+          "code_sha256": "8b14925f1c50ec7f4a49d4779a4a97685543ccaebda31791e0e730b4e69a2f06"
+        },
+        {
+          "name": "e",
+          "descriptor": "(I)Ljava/nio/FloatBuffer;",
+          "access": 9,
+          "code_bytes": 10,
+          "code_sha256": "839dde21a1114f3467f4ab9be0b881521e326391ae2cead007e4a9f55cfbb9fe"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 21,
+          "code_sha256": "3a8ed585e3dbc8536ddaf5101e9a5fb533e4ca276f778a70ba8b3d6eb4ecb4fb"
+        }
+      ]
+    }
+  }
+}

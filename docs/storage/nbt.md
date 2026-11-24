@@ -1,5 +1,12 @@
 # Raw NBT storage
 
+[`tree.h`](../../include/mc/storage/nbt/tree.h) supplies independent immutable
+source copies for owners such as [ItemStack](../item/stack.md). It preserves raw
+payload bits and meaningful names without inspecting decoded-document layouts.
+List-child names, which the format ignores, become empty. The allocation ceiling
+covers either validation scratch or the new complete tree allocation; callers
+deduct their other simultaneous live allocations before composing operations.
+
 The `mc_storage` library exposes the original Beta tag format through
 [`nbt.h`](../../include/mc/storage/nbt/nbt.h). It depends on `mc_core`, with no
 graphics, audio, Java, assets, sockets, compression or file initialization.
@@ -12,8 +19,26 @@ implemented codec scope. Complete world compatibility remains a separate task.
 compound root, matching the original utility's separate validation boundary.
 Both report consumed input bytes, so callers decide whether trailing data is
 allowed. A successful document owns copies of every retained name, payload and
-child; input bytes can be released after decoding. Views remain valid until
-`mc_nbt_document_free`. Treat decoded trees as immutable.
+child and returns one caller hold. Input bytes can be released after decoding.
+Keep that document hold while using borrowed tag views;
+`mc_nbt_document_free` releases it.
+
+[`array.h`](../../include/mc/storage/nbt/array.h) supplies shared mutable byte-array
+handles. Acquiring a decoded handle checks the exact reachable ByteArray tag
+pointer before inspecting it and retains its actual payload without copying.
+Repeated acquisition returns the same handle while held. Different empty tags
+have distinct nonnull handles even when their payload pointers are NULL; a
+NULL handle represents a null array. Each live decoded handle keeps its
+supplying document and payload alive after the caller releases the document.
+The wrapper uses that document's remaining allocation budget and releases the
+charge with its final hold.
+
+Mutate bytes only under a live array hold with exclusive access. No const
+reader or codec may use the same document, tags or bytes during mutation. Tag
+descriptors, lengths and ownership stay unchanged. Immutable source trees from
+`tree.h` retain their separate contract. [MapData](../world/saved-data.md#named-values-and-mapdata)
+uses these shared handles for colors, including decoded arrays retained after
+the caller releases its document hold.
 
 ```c
 mc_nbt_document *document = NULL;
@@ -84,7 +109,8 @@ also return errors. Caller-constructed heterogeneous lists are rejected rather
 than reproducing the original object's malformed serialization. These choices
 do not change normal valid NBT data.
 
-The codec does not open, overwrite or convert worlds. Gzip streams, region
-compression/addressing, world fields, recovery and both save round-trip
-directions require further implementation and original comparisons before a
-save writer can be supported.
+The codec performs no filesystem operations. [Compression](compression.md),
+[region records](region.md), [World storage](../world/storage.md) and
+[GAME saving](../world/saving.md) define the separate container, ownership and
+write paths and their finite verification scopes. Complete World compatibility,
+recovery and gameplay restart remain acceptance work.

@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static bool read_exact(const char *path, uint8_t *bytes, size_t length)
-{
+static bool read_exact(const char *path, uint8_t *bytes, size_t length) {
     FILE *stream = fopen(path, "rb");
     if (stream == NULL)
         return false;
@@ -16,16 +15,14 @@ static bool read_exact(const char *path, uint8_t *bytes, size_t length)
     return valid;
 }
 
-static void print_bytes(const char *name, const uint8_t *bytes, size_t length)
-{
+static void print_bytes(const char *name, const uint8_t *bytes, size_t length) {
     printf("\"%s\":{\"length\":%zu,\"values\":\"", name, length);
     for (size_t index = 0; index < length; ++index)
         printf("%02x", (unsigned)bytes[index]);
     printf("\"}");
 }
 
-static void snapshot(const char *name, const mc_chunk_data *data)
-{
+static void snapshot(const char *name, const mc_chunk_data *data) {
     printf("\"%s\":{", name);
     print_bytes("blocks", data->blocks, MC_CHUNK_BLOCKS);
     printf(",");
@@ -39,8 +36,7 @@ static void snapshot(const char *name, const mc_chunk_data *data)
     printf(",\"minimum_height\":%" PRId32 "}", data->minimum_height);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     static uint8_t blocks[MC_CHUNK_BLOCKS];
     static uint8_t initial[MC_CHUNK_BLOCKS];
     static uint8_t repeated[MC_CHUNK_BLOCKS];

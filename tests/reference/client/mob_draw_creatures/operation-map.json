@@ -1,0 +1,510 @@
+{
+  "authority": "Unchanged original class/Code pins; authored selected operations checked against actual JDK17 javap. No replacement implementations or executed-answer table.",
+  "methods": [
+    {
+      "class": "cn",
+      "name": "<init>",
+      "descriptor": "(Lfd;)V",
+      "Code_bytes": 26,
+      "Code_sha256": "9a6d485122432cbb660bc1622f66934b15594affdf46b9b405acf2c3d1ca7930",
+      "operations": {}
+    },
+    {
+      "class": "es",
+      "name": "<init>",
+      "descriptor": "(Lko;F)V",
+      "Code_bytes": 7,
+      "Code_sha256": "d2f90cffab1afcfe4a90fdc71f01d3faa88b4bd7fb10f1062676d01168f5e85d",
+      "operations": {}
+    },
+    {
+      "class": "es",
+      "name": "a",
+      "descriptor": "(Lxt;DDDFF)V",
+      "Code_bytes": 15,
+      "Code_sha256": "1e2c61514e5b2901d94737bb166ff306085a17402948f247c41a8d4e741b08b0",
+      "operations": {}
+    },
+    {
+      "class": "es",
+      "name": "a",
+      "descriptor": "(Lxt;FFF)V",
+      "Code_bytes": 79,
+      "Code_sha256": "245bfa8dcca080e84692dba28f3ad6b9d89a2bdee7e82d3365ec9489c5d43294",
+      "operations": {
+        "42": "translate up",
+        "52": "rotate180 minus body yaw",
+        "60": "rotate interpolated pitch",
+        "68": "rotate interpolated yaw",
+        "75": "translate down"
+      }
+    },
+    {
+      "class": "es",
+      "name": "a",
+      "descriptor": "(Lxt;F)V",
+      "Code_bytes": 1,
+      "Code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+      "operations": {}
+    },
+    {
+      "class": "es",
+      "name": "b",
+      "descriptor": "(Lxt;F)F",
+      "Code_bytes": 19,
+      "Code_sha256": "5a8c63d7970cb56c0fff205af965bec72e8afd2cace74cff3c766121b2c13204",
+      "operations": {
+        "15": "actual alternate age float add",
+        "18": "return"
+      }
+    },
+    {
+      "class": "es",
+      "name": "a",
+      "descriptor": "(Lls;F)V",
+      "Code_bytes": 10,
+      "Code_sha256": "2623769be6ac3b0e2bf0b0c1fae0dd1efec3452d8f3ed27edf598677240bc64f",
+      "operations": {}
+    },
+    {
+      "class": "es",
+      "name": "c",
+      "descriptor": "(Lls;F)F",
+      "Code_bytes": 10,
+      "Code_sha256": "c20329c70f9586c15feebff2146da24cfc45fabded1b594d7c0c52f585503e07",
+      "operations": {}
+    },
+    {
+      "class": "es",
+      "name": "a",
+      "descriptor": "(Lls;FFF)V",
+      "Code_bytes": 13,
+      "Code_sha256": "cd293be578d438b251c97482a298ce2efd66b5c3f24bd1f1b5fa03668bab886c",
+      "operations": {}
+    },
+    {
+      "class": "es",
+      "name": "a",
+      "descriptor": "(Lls;DDDFF)V",
+      "Code_bytes": 18,
+      "Code_sha256": "810442806ab068b5ca8f68a465cb9b25e889f04242cf828d1e1dadb4dbb4f6a4",
+      "operations": {}
+    },
+    {
+      "class": "es",
+      "name": "a",
+      "descriptor": "(Lsn;DDDFF)V",
+      "Code_bytes": 18,
+      "Code_sha256": "810442806ab068b5ca8f68a465cb9b25e889f04242cf828d1e1dadb4dbb4f6a4",
+      "operations": {}
+    },
+    {
+      "class": "gb",
+      "name": "<init>",
+      "descriptor": "(Lfd;)V",
+      "Code_bytes": 12,
+      "Code_sha256": "b4203167a4c398b7b92408feade8e64c273cf267b06cf1b771ff65ac35da8156",
+      "operations": {}
+    },
+    {
+      "class": "gb",
+      "name": "s",
+      "descriptor": "()Z",
+      "Code_bytes": 19,
+      "Code_sha256": "5d38e0a138e3990c196f2fe83702eeed0ef480e9c408a822e55e21bb4b1a4b36",
+      "operations": {
+        "1": "actual watcher owner read",
+        "6": "Byte17 getter",
+        "18": "return"
+      }
+    },
+    {
+      "class": "gb",
+      "name": "a_",
+      "descriptor": "(F)F",
+      "Code_bytes": 22,
+      "Code_sha256": "ded0b43046f8e8092b3fb34af750724f2fae84b0641106eadaf1018b7a22cfb6",
+      "operations": {
+        "21": "return actual int-wrap then float swell"
+      }
+    },
+    {
+      "class": "il",
+      "name": "<init>",
+      "descriptor": "()V",
+      "Code_bytes": 6,
+      "Code_sha256": "f4d78125a4a6484bf0e55e74da8096bb076695964089f88dd4aee1599c7c7cca",
+      "operations": {}
+    },
+    {
+      "class": "il",
+      "name": "<init>",
+      "descriptor": "(F)V",
+      "Code_bytes": 329,
+      "Code_sha256": "1a1e1f2f055e8ead95e57c0f5cdd9230155e6aa8aede6d0ba3d47c512bdaa931",
+      "operations": {}
+    },
+    {
+      "class": "il",
+      "name": "a",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 68,
+      "Code_sha256": "6a890a9b41707371146cf66d3a3c34f8592c2611d40d8bc265ce9933de210c75",
+      "operations": {
+        "10": "virtual pose",
+        "19": "part render in a,c,d,e,f,g order",
+        "28": "part render in a,c,d,e,f,g order",
+        "37": "part render in a,c,d,e,f,g order",
+        "46": "part render in a,c,d,e,f,g order",
+        "55": "part render in a,c,d,e,f,g order",
+        "64": "part render in a,c,d,e,f,g order"
+      }
+    },
+    {
+      "class": "il",
+      "name": "b",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 107,
+      "Code_sha256": "0bc19c665abe0516c7a4d1eb6a278bdb069bab7da3a7dfd3c1f7fafff5fc9858",
+      "operations": {
+        "9": "head yaw store",
+        "21": "head pitch store",
+        "32": "first leg cosine",
+        "54": "second cosine",
+        "76": "third cosine",
+        "95": "fourth cosine",
+        "103": "last leg store"
+      }
+    },
+    {
+      "class": "m",
+      "name": "<init>",
+      "descriptor": "()V",
+      "Code_bytes": 26,
+      "Code_sha256": "461481869a7542201f5bf6375174808d8bc8d9ac8346af58206165b62263d3fb",
+      "operations": {}
+    },
+    {
+      "class": "m",
+      "name": "a",
+      "descriptor": "(Lgb;F)V",
+      "Code_bytes": 95,
+      "Code_sha256": "af01855003881510045a65c0eb4836db5266cf69d15d333173f320c5858d3afc",
+      "operations": {
+        "4": "actual pre-scale swell",
+        "15": "actual sine even zero swell",
+        "91": "actual scale"
+      }
+    },
+    {
+      "class": "m",
+      "name": "a",
+      "descriptor": "(Lgb;FF)I",
+      "Code_bytes": 92,
+      "Code_sha256": "c4e1937f2e282470149cc2745de56162969a0830460fe94e144ec878362fa341",
+      "operations": {
+        "6": "separate color swell",
+        "23": "zero color for even flash interval"
+      }
+    },
+    {
+      "class": "m",
+      "name": "a",
+      "descriptor": "(Lgb;IF)Z",
+      "Code_bytes": 139,
+      "Code_sha256": "0d4a550a89eacf70ff1d42d44fe14154ab3364ee13750f620bd8cee4a9cb4032",
+      "operations": {
+        "1": "actual powered watcher predicate on every pass",
+        "24": "true-powered texture child outside finite default scope",
+        "113": "true-powered texture-matrix reset outside default scope",
+        "138": "default powered-false return"
+      }
+    },
+    {
+      "class": "m",
+      "name": "b",
+      "descriptor": "(Lgb;IF)Z",
+      "Code_bytes": 2,
+      "Code_sha256": "42ca1f85243342bd41983ab86f2235408fa46ded7466d4525196f66b9dbb5f3e",
+      "operations": {}
+    },
+    {
+      "class": "m",
+      "name": "a",
+      "descriptor": "(Lls;F)V",
+      "Code_bytes": 10,
+      "Code_sha256": "0ab86bc652577bce0da30f1cf2d7c0b469849fbad0bc0ddf49e1081c5b39177c",
+      "operations": {}
+    },
+    {
+      "class": "m",
+      "name": "a",
+      "descriptor": "(Lls;FF)I",
+      "Code_bytes": 11,
+      "Code_sha256": "91d9b7456d809bb969376fc82a65f87e425b0c6c97eb95f3a63438cf5962526b",
+      "operations": {}
+    },
+    {
+      "class": "m",
+      "name": "a",
+      "descriptor": "(Lls;IF)Z",
+      "Code_bytes": 11,
+      "Code_sha256": "621a7a80abc72b3cb8a5bd78ffe6f99acc9b0905d9464cfdf69c038254530260",
+      "operations": {}
+    },
+    {
+      "class": "m",
+      "name": "b",
+      "descriptor": "(Lls;IF)Z",
+      "Code_bytes": 11,
+      "Code_sha256": "5ddb5c0ea155447f6a186bac6824d8fb17f3409badded0a317793d6981e9f6a9",
+      "operations": {}
+    },
+    {
+      "class": "mj",
+      "name": "<init>",
+      "descriptor": "(Lko;Lko;F)V",
+      "Code_bytes": 12,
+      "Code_sha256": "094f209a6a0b5456b753514d783d4a9a89fe4bffb4b3f140dcbf4e7438c10ef4",
+      "operations": {}
+    },
+    {
+      "class": "mj",
+      "name": "a",
+      "descriptor": "(Luw;IF)Z",
+      "Code_bytes": 55,
+      "Code_sha256": "7e20f54f2ea9397c92985a36bec19e13ea3f364faac0e20f7b262d58ef663c11",
+      "operations": {
+        "9": "store actual own outer through GV secondary setter",
+        "15": "enable NORMALIZE",
+        "21": "enable blend",
+        "30": "source-alpha blend function",
+        "34": "pass0 true",
+        "43": "pass1 disables blend",
+        "50": "pass1 white color",
+        "54": "false"
+      }
+    },
+    {
+      "class": "mj",
+      "name": "a",
+      "descriptor": "(Luw;F)V",
+      "Code_bytes": 64,
+      "Code_sha256": "d16b9a6408ddc23d4191d75f9d2afd0a4602946cb6decce8d62f09c736d78cf3",
+      "operations": {
+        "1": "actual size getter",
+        "28": "interpolated squash divided by size-dependent denominator",
+        "36": "squash reciprocal",
+        "60": "actual anisotropic scale"
+      }
+    },
+    {
+      "class": "mj",
+      "name": "a",
+      "descriptor": "(Lls;F)V",
+      "Code_bytes": 10,
+      "Code_sha256": "6317b850f878553f7f9fb4c399f3944ab8a25896fbfb79f4a5166948c7e69f51",
+      "operations": {}
+    },
+    {
+      "class": "mj",
+      "name": "a",
+      "descriptor": "(Lls;IF)Z",
+      "Code_bytes": 11,
+      "Code_sha256": "372db364e6bfcc3b57d0d2cb3efc18614a5253b0a811c23a1b4d36719c369513",
+      "operations": {}
+    },
+    {
+      "class": "no",
+      "name": "<init>",
+      "descriptor": "(I)V",
+      "Code_bytes": 163,
+      "Code_sha256": "1c518d02ec7bfe26cb0266449d0968c72ac256c2be9224c783879d69a1698c12",
+      "operations": {}
+    },
+    {
+      "class": "no",
+      "name": "b",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 1,
+      "Code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+      "operations": {}
+    },
+    {
+      "class": "no",
+      "name": "a",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 57,
+      "Code_sha256": "63fd09e8ee688e896f6e1c20504efa2a35c84b95f5dca75b14f21a48c3c92106",
+      "operations": {
+        "10": "actual empty pose",
+        "19": "current a part render",
+        "35": "current b render when nonnull",
+        "44": "current c render",
+        "53": "current d render"
+      }
+    },
+    {
+      "class": "sc",
+      "name": "<init>",
+      "descriptor": "()V",
+      "Code_bytes": 520,
+      "Code_sha256": "46f9255bb13a83c352bb70556f6132db45c200f5a95b3e7da5a157ba45776833",
+      "operations": {}
+    },
+    {
+      "class": "sc",
+      "name": "a",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 113,
+      "Code_sha256": "ea3b6ab5dad9135899c2d3146463d8ff0cc0887370fd7bc1d2818bb411b7e73a",
+      "operations": {
+        "10": "virtual pose",
+        "19": "part render in a..k order",
+        "28": "part render in a..k order",
+        "37": "part render in a..k order",
+        "46": "part render in a..k order",
+        "55": "part render in a..k order",
+        "64": "part render in a..k order",
+        "73": "part render in a..k order",
+        "82": "part render in a..k order",
+        "91": "part render in a..k order",
+        "100": "part render in a..k order",
+        "109": "part render in a..k order"
+      }
+    },
+    {
+      "class": "sc",
+      "name": "b",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 631,
+      "Code_sha256": "391b03864e07080f21118352c24677241c115dd307a080955ca148c6adf4a704",
+      "operations": {
+        "248": "first cosine after head and base stores"
+      }
+    },
+    {
+      "class": "uw",
+      "name": "<init>",
+      "descriptor": "(Lfd;)V",
+      "Code_bytes": 54,
+      "Code_sha256": "6596737633d796666c1ad3c09148063d1f103fa91c9a2257956f0a530ce6c5bb",
+      "operations": {}
+    },
+    {
+      "class": "uw",
+      "name": "e",
+      "descriptor": "(I)V",
+      "Code_bytes": 56,
+      "Code_sha256": "7e9ff596010f98b0969b6dee6a43c2b4ea252bab2399eec7d7d8ffde1091affb",
+      "operations": {
+        "15": "actual watcher size store",
+        "29": "actual size fields",
+        "36": "actual size-squared health",
+        "52": "actual position/bounds setter"
+      }
+    },
+    {
+      "class": "uw",
+      "name": "v",
+      "descriptor": "()I",
+      "Code_bytes": 10,
+      "Code_sha256": "9cdaec6ffb2719048aa198187707c240a8058e21580f229c38fd30b19fdc4cba",
+      "operations": {
+        "1": "actual watcher owner",
+        "6": "Byte16 getter",
+        "9": "signed byte size return"
+      }
+    },
+    {
+      "class": "wn",
+      "name": "<init>",
+      "descriptor": "()V",
+      "Code_bytes": 224,
+      "Code_sha256": "f9327807870e7188aad90fcca008f315c4e3a9b35e9bdf23cab4bf0bfdb0af79",
+      "operations": {}
+    },
+    {
+      "class": "wn",
+      "name": "b",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 31,
+      "Code_sha256": "da184cb38ddcf63d09df4387642919d5fda05c02cca66b9e16f9299320086cbc",
+      "operations": {
+        "9": "reread actual array length",
+        "21": "store third argument to each actual part pitch",
+        "30": "return"
+      }
+    },
+    {
+      "class": "wn",
+      "name": "a",
+      "descriptor": "(FFFFFF)V",
+      "Code_bytes": 54,
+      "Code_sha256": "45105d243261a0bfd3750a9a14a306916bb8d38fe7cebcc46e092fd43920244a",
+      "operations": {
+        "10": "virtual pose",
+        "19": "body render",
+        "31": "reread actual tentacle array length",
+        "41": "actual array element",
+        "44": "tentacle render"
+      }
+    },
+    {
+      "class": "xt",
+      "name": "<init>",
+      "descriptor": "(Lfd;)V",
+      "Code_bytes": 108,
+      "Code_sha256": "55c980f7d1b74824ca8998cda1b6deb022f7311f183b5fe9532aba3fa68ebee3",
+      "operations": {}
+    },
+    {
+      "class": "yx",
+      "name": "<init>",
+      "descriptor": "()V",
+      "Code_bytes": 24,
+      "Code_sha256": "7d97736cd57946e4e01e39b417cffe26b5b79491601257b67bf43559cb723386",
+      "operations": {}
+    },
+    {
+      "class": "yx",
+      "name": "a",
+      "descriptor": "(Lcn;)F",
+      "Code_bytes": 3,
+      "Code_sha256": "f706f3687d4f8b6f1022630ca0de70abdaef2afe185c7fca511cf14eb7ad2236",
+      "operations": {}
+    },
+    {
+      "class": "yx",
+      "name": "a",
+      "descriptor": "(Lcn;IF)Z",
+      "Code_bytes": 61,
+      "Code_sha256": "1d2945538379aa7deb6a822fe2c81f5e00088d81ec9072b1d424dd0643f9b7cd",
+      "operations": {
+        "15": "actual eyes texture helper before brightness",
+        "21": "fresh brightness at fixed partial1",
+        "33": "enable blend",
+        "39": "disable alpha test",
+        "48": "source-alpha blend function",
+        "56": "actual white and computed alpha color",
+        "60": "true even alpha zero"
+      }
+    },
+    {
+      "class": "yx",
+      "name": "a",
+      "descriptor": "(Lls;)F",
+      "Code_bytes": 9,
+      "Code_sha256": "4b0354ebdd0f2406dc2f63a9f2900ebca7fd933629a7a41a94e86bb84267f9ed",
+      "operations": {}
+    },
+    {
+      "class": "yx",
+      "name": "a",
+      "descriptor": "(Lls;IF)Z",
+      "Code_bytes": 11,
+      "Code_sha256": "47185c84e481ffaf3774ff5e5abd31389102076d22515befe07019c2a1f24965",
+      "operations": {}
+    }
+  ]
+}

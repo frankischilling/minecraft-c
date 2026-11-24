@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "inputs_unchanged": true,
+  "inputs": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/bin/java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/bin/javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "FoodObservation.java": "20ffdeac7df81c54f69cdec14181a966d5415b7e445f72e38e4dcddf349d10d4",
+    "profiles.tsv": "655a82e05d49e8cd0901eba2970a620c5d5d761e5d99980a0f08fcb6df9b9d52",
+    "private-original-capture-driver.py": "d0c79509e1ccbd135370aa98d7bfffc7ccb5160977a2434a0ceb6fad1fbcb537"
+  },
+  "ordinary_fresh_vms": 2,
+  "profiles": 14,
+  "selected_sha256": "9b86ff3f7736741cc9aef94326259f57e202fbd6a22c263438a241a806203f09",
+  "stdout_sha256": [
+    "e2eee24f41371e472b31fae88c0a855b1c6f05da0b8e03089fe3f3e25c25f929",
+    "e2eee24f41371e472b31fae88c0a855b1c6f05da0b8e03089fe3f3e25c25f929"
+  ],
+  "helpers": {
+    "FoodObservation$1.class": "5195c106fc5289c88ed0acc2c144e6e0920bc84328129633f8b66a0cbac606d7",
+    "FoodObservation.class": "0341ae1a714980b748a49ee6539f4b60be8a196c1ba1f379a74c976c0548ddce"
+  },
+  "scope": "Unchanged original IZ wrapper in-air calls; ordinary fresh VMs only, genuine App, World, Player, Stack and statistics owners. No direct Item-only observation, JDI, graphics, save cycle, audio, server or full gameplay qualification.",
+  "metadata_projection": {
+    "format": 1,
+    "policy": "Portable artifact identities replace absolute private input paths; scope identifies the actual enclosing call. Raw ordinary stdout bytes and all observed scalar fields remain unchanged.",
+    "private_raw_receipt_sha256": "d6debb3e0e0e8e886e6730abcecb0835489ef1a4194c356274afcedad5c133c9"
+  }
+}

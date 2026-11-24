@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "scope": "Protected GZ.a(SN,F)12 profiles;7returns65,3SourceNPE gates,2native unreturned hurt61 prefixes",
+  "chronology": {
+    "captured_before_public_rehoming": true,
+    "public_paths_were_capture_start_inputs": false,
+    "current_public_bindings": "Separate post-capture exact authored-helper/TSV/static-pin byte bindings; portable capture runner is a later adapted orchestration",
+    "public_source_transform": "Exactly archived_bytes.replace(b\"\\r\\n\",b\"\\n\"); no broader whitespace/text normalization",
+    "public_helpers_byte_identical_to_archived_sources": false
+  },
+  "compiled_helpers_sha256": {
+    "ConstructorJson.class": "1d49f80ca7097e808a497f3a861381a387f18208f6817852dcbf5eebc343fa5e",
+    "MonsterJdi.class": "0154df16b6a40e73587ac7495aaba0be753204868d1af1232d3654c9aef99403",
+    "MonsterTarget.class": "c296fafd6519abcbcd6faafdad6f8fb78cdec9dce1b15784d9cb5b9fa3342e92"
+  },
+  "runtime_class_pins_sha256": "c600714acc6bd105678cdd7f8e86b284958bf4dac8a0978997230dd4b8a4bf76",
+  "original_capture": {
+    "capture_sha256": "1a7f6d74c428e6dfca6b624117c2ecb94cc55854327e4d4cfbb82aa49b38097b",
+    "status": "PROTOTYPE_RECORDED_UNQUALIFIED",
+    "inputs": 11,
+    "helpers": 3,
+    "output_artifacts": 21,
+    "bound_original_classes": 230,
+    "live_original_methods": 6
+  },
+  "original_archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "limits": [
+    "Source capture keeps its historical unqualified status; public rehoming is not a new capture or blanket full-method parity claim.",
+    "Hurt rows compare the actual Source entry at GZ61 with targethealth10; Source later health5/GZreturn65 is retained independently and never credited to Native.",
+    "Canonical actor UZ and target WH roles are strict; similar health or nonnull pointers are insufficient.",
+    "Bare Native mode needs only the actual executable/public authored inputs and never opens an Original archive or build receipt.",
+    "Public helper/declaration text is LF-normalized after capture; raw archived helper inputs and actual compiled Original helper binary/Code pins remain unchanged. No public Java recompilation is claimed."
+  ],
+  "captured_authored_inputs_sha256": {
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "MonsterTarget.java": "febafc4c9b1d9aff9a70a2a2b5ce3cb2867ded04f74b2a18d360b90227a6091b",
+    "MonsterJdi.java": "f5cf55c429434040d552132ef7df4f795d122b1f5870cc71319ca488327e047e",
+    "profiles.tsv": "c591b07a811986e88992176c725bb012cbe5a1fc3c860dd8d09117ecfe6946cf",
+    "source-pins.json": "24cbcf27dbb0b3488ec8d5e2fccc44a56809a0f6b7b4bd2d8d2a7af7babd476f"
+  },
+  "public_normalized_authored_inputs_sha256": {
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "MonsterTarget.java": "0504223d9b43925fdbccd537b20d1484c24440a90e959af31c3a08f7a637579f",
+    "MonsterJdi.java": "146891d46a2923be2e456207a47d952e0ed9f38e33a27c7ee82434630e416f01",
+    "profiles.tsv": "6b74143e413718677021087213552b33fd8b4999217c59a35e8564dfb714abeb",
+    "source-pins.json": "631719a57b3bec7aa972bd3f7d807a41422f238cf50f74af0fa5a22fc833ac43"
+  },
+  "normalization_CRLF_pairs_by_file": {
+    "ConstructorJson.java": 0,
+    "MonsterTarget.java": 97,
+    "MonsterJdi.java": 127,
+    "profiles.tsv": 13,
+    "source-pins.json": 3691
+  }
+}

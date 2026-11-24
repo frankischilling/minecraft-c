@@ -1,0 +1,1 @@
+SOURCE_EXCEPTION	{"index":11,"name":"null-world","exception":"java.lang.NullPointerException","frames":[["sm","a",45],["RedstoneUseObservation","main",253]]}

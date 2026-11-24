@@ -1,0 +1,67 @@
+{
+  "status": "PASS_ORIGINAL_CPU_COMPONENTS_ONLY",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "finite_sha256": "275921c147c78d9669f38da5cfaf086665e47fff835447a03a1919ceb9a19d45",
+  "capture_sha256": "eaa9b6e0fbcabceefc9383374cec46eb17628791ea30a78a06fcf0fef8c7190b",
+  "sources": {
+    "RecursiveWakeObservation.java": "3ba10d5f17a4132476600ad29a71fad5706b2fabcd812f6593c608e21a7e4f6f",
+    "capture_reference.py": "c13e40f0f0e0ddd42d0545634220430d6c60a0d84a1d49e0fdf034763143a448",
+    "packet.py": "18cbe56f0603a6727f3227d50ea1d117669b109b0ee6a36afa60c8feac3ff17f",
+    "README.md": "45544a69b17fa2097c35048f7868ef35552650426b2ef70f08639bc64f8d32bd"
+  },
+  "shared": {
+    "setup": "a2c6df84392ce30849c34eeeb674eb21544b4c91cea47d31456cc89e6f381fc8",
+    "class_pins": "e4a33d4b33c3f259752962a6fa23fa8fd917b5a1d0dc3055c2cb24aff50f8621",
+    "packet": "83ff48d7800ec2be9b893ebdce040f2998d8ac785b8ec502a9e0e23772f9a9d5",
+    "capture": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "classfile": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60",
+    "json": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "previous_provenance": "6a6c949b1b77bd0e00ea4d2592ad363a4f953200ece78ba9a49e0eaa9dcecb86"
+  },
+  "methods": {
+    "gs.a(Lsn;I)Z": {
+      "code_length": 162,
+      "code_sha256": "e7fa6ca23e1ee796814b132548f3461b372ac343a28b397075a7da36da7316f4"
+    },
+    "gs.a(ZZZ)V": {
+      "code_length": 235,
+      "code_sha256": "ba029b701d0f19f5ffeb40692908ef5771c801c18a746ef0975c15f700efb6dc"
+    },
+    "ve.b(Lfd;IIII)V": {
+      "code_length": 133,
+      "code_sha256": "8fb6769b7630f336fc3dc7822fe1fa95a649b611cb5b4d2dec3f2786359f35d1"
+    },
+    "ve.f(Lfd;IIII)Lbr;": {
+      "code_length": 177,
+      "code_sha256": "73d8e8bf553c2ff112e2ec45c26941790fc8712020f5228954ce15e757cb3327"
+    }
+  },
+  "helpers": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "PlayerDamageWakeObservation$Guard.class": "d8f4514d89f717720edc16f79176ed57bc486e36ecf253f3920f15a2c13ee84a",
+    "PlayerDamageWakeObservation$Observer.class": "cdc6d8e926a1d52d305c08b75eb599fef548d36ca17cbaf5cef8ee575de76efc",
+    "PlayerDamageWakeObservation.class": "afe16cd0c098beb59c453265d36082c66faea673673f481f0a375841ad000ad0",
+    "RecursiveWakeObservation$Observer.class": "098c77c33d8787e8be7f627a3b6a10d08300f6345170dc191e23996a46b6aade",
+    "RecursiveWakeObservation.class": "f717c32f253d2daeeef62b5bc137761bcf889df003523808d342946ba3b24af1"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "output_overflow": false,
+      "reader_errors": {},
+      "stdout_sha256": "159fb4f385daf8dfbd3321276e30882ff3ecd6c1ce9c48317ebcb412fca8a122",
+      "stderr_sha256": "7210c18e3e174b66cfef3d3ba655bc0f37ebf317eb4d3870aeaf33c4c8b56116"
+    },
+    {
+      "exit": 0,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "output_overflow": false,
+      "reader_errors": {},
+      "stdout_sha256": "159fb4f385daf8dfbd3321276e30882ff3ecd6c1ce9c48317ebcb412fca8a122",
+      "stderr_sha256": "7210c18e3e174b66cfef3d3ba655bc0f37ebf317eb4d3870aeaf33c4c8b56116"
+    }
+  ]
+}

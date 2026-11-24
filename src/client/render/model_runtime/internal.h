@@ -1,0 +1,95 @@
+#ifndef MC_CLIENT_RENDER_MODEL_RUNTIME_PRIVATE_INTERNAL_H
+#define MC_CLIENT_RENDER_MODEL_RUNTIME_PRIVATE_INTERNAL_H
+
+#include "../../../entity/player/tick_math_internal.h"
+#include "../model_runtime_internal.h"
+
+void model_runtime_at(mc_client_model_runtime_error *, const char *, const char *, const char *,
+                      int32_t);
+bool model_runtime_fail(mc_client_model_runtime_error *, mc_client_model_runtime_status,
+                        const char *);
+bool model_runtime_null(mc_client_model_runtime_error *, const char *);
+bool model_runtime_admit(mc_client_managed_renderer *, manager_model *, mc_client_graphics_site,
+                         mc_client_model_runtime_error *);
+bool model_runtime_quadruped(const manager_model *);
+bool model_runtime_fp(mc_client_model_runtime_error *);
+bool model_runtime_math(const mc_client_model_runtime_context *, mc_client_model_runtime_error *);
+
+typedef enum model_runtime_math_kind {
+    MODEL_RUNTIME_COSINE,
+    MODEL_RUNTIME_SINE,
+    MODEL_RUNTIME_ABSOLUTE,
+    MODEL_RUNTIME_SQUARE_ROOT
+} model_runtime_math_kind;
+
+bool model_runtime_math_value(const mc_client_model_runtime_context *, model_runtime_math_kind,
+                              float, float *, mc_client_model_runtime_error *);
+bool model_runtime_call_push(mc_client_model_runtime_error *);
+void model_runtime_call_pop(mc_client_model_runtime_error *);
+bool model_runtime_pose_body(manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_draw_part(mc_client_managed_renderer *, mc_client_model_part *, float,
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_nn_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_nn_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_hh_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_hh_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_td_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_td_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_sc_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_sc_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_no_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_no_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_wn_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_wn_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_il_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_il_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+
+bool model_runtime_biped(const manager_model *);
+bool model_runtime_fh_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_fh_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                             const mc_client_model_runtime_context *,
+                             mc_client_model_runtime_error *);
+bool model_runtime_ej_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_o_pose(manager_model *, const float[6], const mc_client_model_runtime_context *,
+                          mc_client_model_runtime_error *);
+bool model_runtime_o_render(mc_client_managed_renderer *, manager_model *, const float[6],
+                            const mc_client_model_runtime_context *,
+                            mc_client_model_runtime_error *);
+bool model_runtime_o_event(manager_model *, mc_entity *, const float[3],
+                           const mc_client_model_runtime_context *,
+                           mc_client_model_runtime_error *);
+bool model_runtime_draw_part_rotated(mc_client_managed_renderer *, mc_client_model_part *, float,
+                                     const mc_client_model_runtime_context *,
+                                     mc_client_model_runtime_error *);
+bool model_runtime_attach_part(mc_client_managed_renderer *, mc_client_model_part *, float,
+                               const mc_client_model_runtime_context *,
+                               mc_client_model_runtime_error *);
+bool model_runtime_entity_finish(const mc_client_model_runtime_context *, bool,
+                                 mc_client_model_runtime_error *);
+#endif

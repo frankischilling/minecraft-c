@@ -1,0 +1,147 @@
+{
+  "schema": "TORCH_WAKE_PROVENANCE_V1",
+  "status": "PASS_ORIGINAL_CPU_COMPONENTS_ONLY",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "finite_sha256": "97a52a6c16b6510e87f3c95279eeeb453cefa8e3f793c18c0e29c40872e0613c",
+  "capture_sha256": "084cff79bb0da8491d1feb66d4876cf322335eac10951cb6b43fe17dfdb93d68",
+  "sources": {
+    "TorchWakeObservation.java": "9a653b390189395c20bcbc6a6144ad7c8147f45de444cb2625bf26f83d569de4",
+    "capture_reference.py": "82ee987a5281966124858d4e63f460ffaa948094839a0c858f15c57e5f5007a1",
+    "packet.py": "c15fc08cc44bef40b88bef4c29316d06c8c80027c055864889ac866a257ffd5b",
+    "test_packet.py": "a60d596187eae6f2cf1f6a033e31477577c7c2cb047c1eda7ebd1dd3f0856ac6",
+    "README.md": "98a8034c472ffb7f35c92d13c56014a14cf354781379e1fb94ecf24836d09c69",
+    "vm-pins.json": "8e66527207bb65e02370167417b48017ebf1794429741c4cbb4e1f4b5d0ba826"
+  },
+  "shared": {
+    "setup": "a2c6df84392ce30849c34eeeb674eb21544b4c91cea47d31456cc89e6f381fc8",
+    "class_pins": "e4a33d4b33c3f259752962a6fa23fa8fd917b5a1d0dc3055c2cb24aff50f8621",
+    "packet": "83ff48d7800ec2be9b893ebdce040f2998d8ac785b8ec502a9e0e23772f9a9d5",
+    "item_pins": "3c9d36de454ef1b772360553dda6aded7002c76182377e4ed8c442c662e6aab2",
+    "capture": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "classfile": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60",
+    "json": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "foot_packet": "a6f234a2a175c16ae6531bf48879e6d93574e4ec1c850632e693c3d018eb8ed1",
+    "foot_item_pins": "b46ea36d91f4203353e1f721c2fec605335eddf691d1f2d65efd849bfbbdaeac"
+  },
+  "methods": {
+    "gs.a(Lsn;I)Z": {
+      "code_length": 162,
+      "code_sha256": "e7fa6ca23e1ee796814b132548f3461b372ac343a28b397075a7da36da7316f4"
+    },
+    "gs.a(ZZZ)V": {
+      "code_length": 235,
+      "code_sha256": "ba029b701d0f19f5ffeb40692908ef5771c801c18a746ef0975c15f700efb6dc"
+    },
+    "ve.b(Lfd;IIII)V": {
+      "code_length": 133,
+      "code_sha256": "8fb6769b7630f336fc3dc7822fe1fa95a649b611cb5b4d2dec3f2786359f35d1"
+    },
+    "ve.a(Lfd;IIIIF)V": {
+      "code_length": 22,
+      "code_sha256": "02e6200f32ab07ec330dd856b4e51a0c6dd0918af7687b719a00225f59961496"
+    },
+    "uu.g(Lfd;IIII)V": {
+      "code_length": 13,
+      "code_sha256": "daab5bc85d9ec8cc2352e2749c6c4af3c6f9a674bd70cb9500a4fedd274cf271"
+    },
+    "uu.a(Lfd;IIIIF)V": {
+      "code_length": 96,
+      "code_sha256": "10d0b0fcca0bfec12d2dfccd6a0be381dfb3c67306b1d5af8f998f8509dec40f"
+    },
+    "uu.a(Lfd;IIILiz;)V": {
+      "code_length": 124,
+      "code_sha256": "04350e21c1a98c8bbe3742c8397b74896a4f6e5d9a721a33dabd4f2440b09c80"
+    },
+    "hl.<init>(Lfd;DDDLiz;)V": {
+      "code_length": 118,
+      "code_sha256": "0e7fb50470d8d67d5c0d3428801de36ac6dd07b426d0626204ffc59ac6ab5e29"
+    },
+    "fd.b(Lsn;)Z": {
+      "code_length": 110,
+      "code_sha256": "0e7863034219094809847aaceaa7844edd5d93005e78e6123307e4aeaac5c07d"
+    },
+    "fd.c(Lsn;)V": {
+      "code_length": 41,
+      "code_sha256": "a2e151e7d0801da7996e5cdb637d092b2cbe22890a181326cdd313ad44b74346"
+    },
+    "vm.b(Lfd;IIII)V": {
+      "code_length": 169,
+      "code_sha256": "bad389f22d5f022071ad02c4ef5911f45563acfca65f289ef04dd353de89da92"
+    },
+    "vm.i(Lfd;III)Z": {
+      "code_length": 43,
+      "code_sha256": "fe7b86d7d2850d8d1a4e100f778e6858ed54cb47a68a74d6c3b222aa9ebfabdc"
+    },
+    "vm.a(Lfd;III)Z": {
+      "code_length": 78,
+      "code_sha256": "b2ee5d510420c33328f9c9ccbf5667285f3ae64fc0ba2ff5599abe94d1f52133"
+    },
+    "vm.h(Lfd;III)Z": {
+      "code_length": 34,
+      "code_sha256": "a35ae41d5832a226fc5b51f12756bcfbe42f060d2e82f3a275b6ddbf4d857bc9"
+    }
+  },
+  "helpers": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "PlayerDamageWakeObservation$Guard.class": "d8f4514d89f717720edc16f79176ed57bc486e36ecf253f3920f15a2c13ee84a",
+    "PlayerDamageWakeObservation$Observer.class": "cdc6d8e926a1d52d305c08b75eb599fef548d36ca17cbaf5cef8ee575de76efc",
+    "PlayerDamageWakeObservation.class": "afe16cd0c098beb59c453265d36082c66faea673673f481f0a375841ad000ad0",
+    "TorchWakeObservation$Observer.class": "2e9ae25352ca008d3bbcb15e93d1c29abb281d35bdc7245ec2d609af19189ef8",
+    "TorchWakeObservation.class": "3889517b26eac18ae7a9a44b6995ca65b5c5b293f76c20e2e2719e77b42bef5d"
+  },
+  "binaries": {
+    "client": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "javap": "b8289a6f3807c7e833ed968a59365513a90d44849143aecb39d230a35e97bed2",
+    "jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "python": "cce21c0e8710e304273e98ac4b2b0f5aceb639acbcd2343cbaa5c4e81619c45b",
+    "org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+  },
+  "class_count": 31,
+  "rows_per_vm": 2,
+  "original": [
+    {
+      "exit": 0,
+      "output_overflow": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "stderr_bytes": 416,
+      "stderr_file": "original-0.stderr",
+      "stderr_limit": 1048576,
+      "stderr_sha256": "8db1f0add62dc9c69653d27b3319aae1b865d37171b5bd6c94da57e1b714eb50",
+      "stdout_bytes": 18083,
+      "stdout_file": "original-0.stdout",
+      "stdout_limit": 4194304,
+      "stdout_sha256": "e48013f95ffdc961fa239c4f778b5496d7807c83295217fdd738b9ddc788b71c",
+      "timed_out": false,
+      "timeout_seconds": 70,
+      "command_sha256": "04c7db75c1c3289f3717336e5cb6a68f5db7245d479773ff398b9d313e0a7bc6"
+    },
+    {
+      "exit": 0,
+      "output_overflow": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "stderr_bytes": 416,
+      "stderr_file": "original-1.stderr",
+      "stderr_limit": 1048576,
+      "stderr_sha256": "8db1f0add62dc9c69653d27b3319aae1b865d37171b5bd6c94da57e1b714eb50",
+      "stdout_bytes": 18083,
+      "stdout_file": "original-1.stdout",
+      "stdout_limit": 4194304,
+      "stdout_sha256": "e48013f95ffdc961fa239c4f778b5496d7807c83295217fdd738b9ddc788b71c",
+      "timed_out": false,
+      "timeout_seconds": 70,
+      "command_sha256": "4a5b278ce8211239c862b6c94e0dab583bb5fac5f28cd2da542de3ffc32293ff"
+    }
+  ],
+  "inputs_unchanged": true,
+  "helpers_unchanged": true,
+  "class_names_unchanged": true,
+  "class_pins_unchanged": true
+}

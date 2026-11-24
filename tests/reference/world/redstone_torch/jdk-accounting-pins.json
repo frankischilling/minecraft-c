@@ -1,0 +1,55 @@
+{
+  "classes": {
+    "java/lang/Math$RandomNumberGeneratorHolder": {
+      "class_sha256": "ca5c5e68e1f2ff8c79c3e695524da51999aec49d761af73b0c92ff936b3cd9d1",
+      "methods": [
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "flags": 8,
+          "length": 11,
+          "sha256": "4e95e21fe1b189c400945d66686adfca0e669edb1da57cd41db7898ca00595cb"
+        }
+      ]
+    },
+    "java/lang/Math": {
+      "class_sha256": "66d16712330824ea4f0adc08d48b5b7dabedaae8733e7ce718bfef6442260e3f",
+      "methods": [
+        {
+          "name": "random",
+          "descriptor": "()D",
+          "flags": 9,
+          "length": 7,
+          "sha256": "b0709ca62c90fc3d563cda7b58942d805f7bcb6b51b72e9d1710ea924e119dd2"
+        }
+      ]
+    },
+    "java/util/Random": {
+      "class_sha256": "6ec25d6048b527b0963afffc8adfb554a03e989ce24536ab527d05db8e4fc7df",
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "()V",
+          "flags": 1,
+          "length": 12,
+          "sha256": "15d9db472467218b88f0b06fbba79ab7522e36b30364901669dfcb2726c7d7e8"
+        },
+        {
+          "name": "seedUniquifier",
+          "descriptor": "()J",
+          "flags": 10,
+          "length": 29,
+          "sha256": "a7de3fb002c0a944b1795c7b76e6413a0f115cc3b00f38de7f3b1fcff83dc9c3"
+        },
+        {
+          "name": "nextDouble",
+          "descriptor": "()D",
+          "flags": 1,
+          "length": 24,
+          "sha256": "0d49227d87c84a96f6109e07125421f2b363a06796d94b25942a309c6685005a"
+        }
+      ]
+    }
+  },
+  "proof": "Actual Math holder clinit constructs exactly one default Random, then only Math.random/Random.nextDouble; cold post Gaussian cache must remain default0/false. Entity SN constructs one default Random per HL. SeedUniquifier multiplier1181783497276652981 modulo2^64."
+}

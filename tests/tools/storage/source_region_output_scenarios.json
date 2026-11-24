@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "boundary": "Prepared NBT through genuine rj.d/Hz/default zlib/DOS, plain NBT DataOutput emission, explicit close/QJ commit and separate late growth getter. No World/Chunk serializer claim.",
+  "root": "Unnamed Compound containing exactly one ByteArray named Payload",
+  "payload": {"generator": "xorshift32", "initial_state": 305419896, "steps": ["xor left13", "xor unsigned right17", "xor left5", "take low byte"], "small": 32, "medium": 12000, "large": 20000},
+  "flow": [
+    {"step": "fresh", "x": 0, "z": 0, "length": 32, "sector": 2, "required": 1, "appended": 1, "growth": 12288, "region": "r.0.0.mcr"},
+    {"step": "rewrite", "x": 0, "z": 0, "length": 32, "sector": 2, "required": 1, "appended": 0, "growth": 0, "region": "r.0.0.mcr"},
+    {"step": "grow", "x": 0, "z": 0, "length": 20000, "sector": 3, "required": 5, "appended": 5, "growth": 20480, "region": "r.0.0.mcr"},
+    {"step": "shrink", "x": 0, "z": 0, "length": 32, "sector": 2, "required": 1, "appended": 0, "growth": 0, "region": "r.0.0.mcr"},
+    {"step": "reuse", "x": 1, "z": 0, "length": 12000, "sector": 3, "required": 3, "appended": 0, "growth": 0, "region": "r.0.0.mcr"},
+    {"step": "negative", "x": -1, "z": -33, "length": 32, "sector": 2, "required": 1, "appended": 1, "growth": 12288, "region": "r.-1.-2.mcr"}
+  ],
+  "growth_policy": "Consume twice after each ordinary close; second result is zero. Native repeated outer close is an additional no-replay control, with no extra commit.",
+  "abandon": {"x": 2, "z": 0, "length": 12000, "source_close": false},
+  "flush_live": {"old": {"x": 0, "z": 0, "length": 32}, "replacement": {"x": 4, "z": 0, "length": 32}, "end": "Old close reaches actual source-closed RAF and native qj441 diagnostic frontier. Replacement stays uncommitted and native cleanup abandons it."},
+  "native_only": ["Two simultaneous outputs share the actual QJ/RAF with independent holds", "External File/namespace survive final native output/region retirement", "Real RAF close first then one declared failure; native inactive quarantine retains child cause and consumed descriptor; retry never repeats close or commits"],
+  "deferred": ["255/256 sectors and exact4096 boundary", "Ordered lower RAF failure-prefix matrix", "Construction/Hz-growth/UTF/finish native budget failures", "Live Chunk/Entity/TileEntity composition and ordinary World save/reload"]
+}

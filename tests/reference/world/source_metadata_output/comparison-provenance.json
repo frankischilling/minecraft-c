@@ -1,0 +1,362 @@
+{
+  "schema": 2,
+  "status": "PASS_FINAL_REACHED_SOURCE_METADATA_TRANSPORT_ON_BOTH_RECORDED_HOSTS",
+  "recipe_sha256": "b3d52d534f9fe5747cb830c082ae3d21616a833219f7a23482d2798f579e6ec0",
+  "recipe_file": "compare_native.py",
+  "recipe_change": "Pre-read file-size checks only since preceding comparison recipe; the current public recipe was executed again against the final23-profile native fixture and registered original captures.",
+  "profiles": {
+    "windows": {
+      "reference_receipt": {
+        "bytes": 98913,
+        "sha256": "267cd2789533115f77da098d53a4a8eb9d386badc12a0b3fb3c54792a3e29d84"
+      },
+      "native_report": {
+        "bytes": 2012792,
+        "sha256": "9e523236f23365d201a4e10502f7267f331aaa3a7c33cab62a3f2c03921fe7b4"
+      },
+      "native_profiles": 23,
+      "native_checks": 1294,
+      "compared_cases": 7,
+      "native_executable": {
+        "bytes": 796672,
+        "sha256": "bd7865fe3bae55a8276f47cfffe95507ec8f4dfcb12eff15bbc4b1d715bcf4bd"
+      },
+      "native_controller_sha256": "3400b732be16e8f55c916fab12f1ffcaf1797c00148a72dd5dbb245819eb53fe",
+      "original_ordinary_exit": 0,
+      "original_debugger_exit": 0,
+      "original_calls_each_vm": 7,
+      "original_jdi_events": 504,
+      "original_code_pins": 22,
+      "original_input_helper_hashes_unchanged": true,
+      "helper_class_sha256": {
+        "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+        "MetadataJdi.class": "19900d7263587bb699bd1edc75c5dbcfc8d4a67afc99c2c60718cf03caaf4df7",
+        "MetadataTarget$Original.class": "d403f04a3b1e553d6be61772672508e2908ce64b5ea34dd996b79e28a2046874",
+        "MetadataTarget.class": "9dc500acc67da411e877aee55445456e9895b3608648bad9acc27f67a6fc9ab5"
+      },
+      "comparison_output": {
+        "file": "windows-comparison.json",
+        "sha256": "1bd5de7842405a54b593bda4b8b164efd6cd569aca1be255664df69ad99e886b"
+      },
+      "original_jdk_release": "IMPLEMENTOR=\"Eclipse Adoptium\"\nIMPLEMENTOR_VERSION=\"Temurin-17.0.17+10\"\nJAVA_RUNTIME_VERSION=\"17.0.17+10\"\nJAVA_VERSION=\"17.0.17\"\nJAVA_VERSION_DATE=\"2025-10-21\"\nLIBC=\"default\"\nMODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.crypto.mscapi jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.foreign jdk.incubator.vector jdk.internal.le jdk.internal.opt jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom jdk.zipfs\"\nOS_ARCH=\"x86_64\"\nOS_NAME=\"Windows\"\nSOURCE=\".:git:3ae1373f8abb\"\nBUILD_SOURCE=\"git:839fa0b45d809157cffd3dc8515aad262a4a1776\"\nBUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"\nSOURCE_REPO=\"https://github.com/adoptium/jdk17u.git\"\nFULL_VERSION=\"17.0.17+10\"\nSEMANTIC_VERSION=\"17.0.17+10\"\nBUILD_INFO=\"OS: Windows Server 2022 Version: 10.0\"\nJVM_VARIANT=\"Hotspot\"\nJVM_VERSION=\"17.0.17+10\"\nIMAGE_TYPE=\"JDK\"\n",
+      "native_case_labels": [
+        "fresh",
+        "existing-first",
+        "existing-second",
+        "old-directory",
+        "both-directories",
+        "open-failure",
+        "null-first",
+        "retained",
+        "player-array",
+        "repeat",
+        "header-failure",
+        "write-finally",
+        "write-finally-close",
+        "codec-limit",
+        "cleanup-failure",
+        "finish-limit",
+        "utf-limit",
+        "gzip-limit",
+        "literal-4",
+        "literal-5",
+        "literal-6",
+        "literal-7",
+        "close-failure"
+      ],
+      "original_capture_reports": {
+        "compile.capture.json": {
+          "command": [
+            "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe",
+            "--add-modules",
+            "jdk.jdi",
+            "-d",
+            "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\reference-source-metadata-output\\metadata-reference-uyzo6yif\\classes",
+            "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\source_metadata_output\\ConstructorJson.java",
+            "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\source_metadata_output\\MetadataJdi.java",
+            "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\source_metadata_output\\MetadataTarget.java"
+          ],
+          "exit": 0,
+          "timed_out": false,
+          "timeout_seconds": 120,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 0,
+          "limit": 2097152,
+          "reaped": true
+        },
+        "debugger/process.capture.json": {
+          "command": [
+            "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+            "--add-modules",
+            "jdk.jdi",
+            "-cp",
+            "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\reference-source-metadata-output\\metadata-reference-uyzo6yif\\classes",
+            "MetadataJdi",
+            "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\reference-source-metadata-output\\metadata-reference-uyzo6yif\\debugger",
+            "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot",
+            "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+            "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\reference-source-metadata-output\\metadata-reference-uyzo6yif\\classes"
+          ],
+          "exit": 0,
+          "timed_out": false,
+          "timeout_seconds": 240,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 0,
+          "limit": 8388608,
+          "reaped": true
+        },
+        "ordinary/process.capture.json": {
+          "command": [
+            "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+            "-Xint",
+            "-Xverify:all",
+            "-Xmx256m",
+            "-Djava.awt.headless=true",
+            "-Xlog:class+init=info:file=class-init.log",
+            "-Xlog:library=info:file=library-load.log",
+            "-cp",
+            "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\reference-source-metadata-output\\metadata-reference-uyzo6yif\\classes",
+            "MetadataTarget",
+            "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\reference-source-metadata-output\\metadata-reference-uyzo6yif\\ordinary",
+            "C:\\Users\\admin\\minecraft\\b1.7.3.jar"
+          ],
+          "exit": 0,
+          "timed_out": false,
+          "timeout_seconds": 240,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 1066,
+          "limit": 8388608,
+          "reaped": true
+        }
+      }
+    },
+    "linux": {
+      "reference_receipt": {
+        "bytes": 77122,
+        "sha256": "6c5a92d237c380e2104dfbd16afe70d5727a21c412e7c2a1424e982491a1df05"
+      },
+      "native_report": {
+        "bytes": 1943493,
+        "sha256": "f5db97450574a5eeab7697b235449b224df3c2a5d91915a8542c6e52f13e3693"
+      },
+      "native_profiles": 23,
+      "native_checks": 1294,
+      "compared_cases": 7,
+      "native_executable": {
+        "bytes": 7426264,
+        "sha256": "d615a38d38cf29ae449e5e779cfb8e25ae1f73c9ddc944e484afd63a11ddf7f9"
+      },
+      "native_controller_sha256": "3400b732be16e8f55c916fab12f1ffcaf1797c00148a72dd5dbb245819eb53fe",
+      "original_ordinary_exit": 0,
+      "original_debugger_exit": 0,
+      "original_calls_each_vm": 7,
+      "original_jdi_events": 504,
+      "original_code_pins": 22,
+      "original_input_helper_hashes_unchanged": true,
+      "helper_class_sha256": {
+        "MetadataJdi.class": "19900d7263587bb699bd1edc75c5dbcfc8d4a67afc99c2c60718cf03caaf4df7",
+        "MetadataTarget.class": "9dc500acc67da411e877aee55445456e9895b3608648bad9acc27f67a6fc9ab5",
+        "MetadataTarget$Original.class": "d403f04a3b1e553d6be61772672508e2908ce64b5ea34dd996b79e28a2046874",
+        "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a"
+      },
+      "comparison_output": {
+        "file": "linux-comparison.json",
+        "sha256": "50602f8eb07432d3310c64432821c4570b0051a776843be0b61f227390a0d667"
+      },
+      "original_jdk_release": "IMPLEMENTOR=\"Ubuntu\"\nJAVA_RUNTIME_VERSION=\"17.0.20.1+1-1-24.04-Ubuntu\"\nJAVA_VERSION=\"17.0.20.1\"\nJAVA_VERSION_DATE=\"2026-08-18\"\nLIBC=\"gnu\"\nMODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.foreign jdk.incubator.vector jdk.internal.le jdk.internal.opt jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom jdk.zipfs\"\nOS_ARCH=\"x86_64\"\nOS_NAME=\"Linux\"\nSOURCE=\"\"\n",
+      "native_case_labels": [
+        "fresh",
+        "existing-first",
+        "existing-second",
+        "old-directory",
+        "both-directories",
+        "open-failure",
+        "null-first",
+        "retained",
+        "player-array",
+        "repeat",
+        "header-failure",
+        "write-finally",
+        "write-finally-close",
+        "codec-limit",
+        "cleanup-failure",
+        "finish-limit",
+        "utf-limit",
+        "gzip-limit",
+        "literal-4",
+        "literal-5",
+        "literal-6",
+        "literal-7",
+        "close-failure"
+      ],
+      "original_capture_reports": {
+        "compile.capture.json": {
+          "command": [
+            "/usr/lib/jvm/java-17-openjdk-amd64/bin/javac",
+            "--add-modules",
+            "jdk.jdi",
+            "-d",
+            "/home/frank/minecraft-living-overlay-20261031/build/reference-source-metadata-output/metadata-reference-w_kvvifz/classes",
+            "/mnt/c/Users/admin/minecraft/tests/reference/world/source_metadata_output/ConstructorJson.java",
+            "/mnt/c/Users/admin/minecraft/tests/reference/world/source_metadata_output/MetadataJdi.java",
+            "/mnt/c/Users/admin/minecraft/tests/reference/world/source_metadata_output/MetadataTarget.java"
+          ],
+          "exit": 0,
+          "timed_out": false,
+          "timeout_seconds": 120,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 0,
+          "limit": 2097152,
+          "reaped": true
+        },
+        "debugger/process.capture.json": {
+          "command": [
+            "/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+            "--add-modules",
+            "jdk.jdi",
+            "-cp",
+            "/home/frank/minecraft-living-overlay-20261031/build/reference-source-metadata-output/metadata-reference-w_kvvifz/classes",
+            "MetadataJdi",
+            "/home/frank/minecraft-living-overlay-20261031/build/reference-source-metadata-output/metadata-reference-w_kvvifz/debugger",
+            "/usr/lib/jvm/java-17-openjdk-amd64",
+            "/mnt/c/Users/admin/minecraft/b1.7.3.jar",
+            "/home/frank/minecraft-living-overlay-20261031/build/reference-source-metadata-output/metadata-reference-w_kvvifz/classes"
+          ],
+          "exit": 0,
+          "timed_out": false,
+          "timeout_seconds": 240,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 0,
+          "limit": 8388608,
+          "reaped": true
+        },
+        "ordinary/process.capture.json": {
+          "command": [
+            "/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+            "-Xint",
+            "-Xverify:all",
+            "-Xmx256m",
+            "-Djava.awt.headless=true",
+            "-Xlog:class+init=info:file=class-init.log",
+            "-Xlog:library=info:file=library-load.log",
+            "-cp",
+            "/home/frank/minecraft-living-overlay-20261031/build/reference-source-metadata-output/metadata-reference-w_kvvifz/classes",
+            "MetadataTarget",
+            "/home/frank/minecraft-living-overlay-20261031/build/reference-source-metadata-output/metadata-reference-w_kvvifz/ordinary",
+            "/mnt/c/Users/admin/minecraft/b1.7.3.jar"
+          ],
+          "exit": 0,
+          "timed_out": false,
+          "timeout_seconds": 240,
+          "pipe_capture_complete": true,
+          "reader_errors": {},
+          "output_overflow": false,
+          "stdout_bytes": 0,
+          "stderr_bytes": 1046,
+          "limit": 8388608,
+          "reaped": true
+        }
+      }
+    }
+  },
+  "scenarios_per_host": 7,
+  "scope": "Native reached completed-Info File/FOS metadata transport compared with independently executed genuine original handler calls on matching host profiles. The native23-profile authored cohort is recorded as input evidence; only the seven mapped scenarios are compared here. Original ordinary/read-only-JDI observations remain separate from native authored controls and direct JDK codec payload tests.",
+  "exact_comparison": [
+    "complete typed Data-only root and every supported Info field except independently sampled LastPlayed values",
+    "actual modified UTF16 LevelName units including NUL/BMP/surrogate pair",
+    "LastPlayed retains Long kind and lies within each actual process invocation interval",
+    "actual reached File result flags in reviewed native source order against direct original caller JDI exits",
+    "exact resulting file paths and controlled obstruction sentinel bytes",
+    "exact previous-current bytes preserved as old within each original/native cohort"
+  ],
+  "clock_policy": "Only LastPlayed differs across processes; every actual value retains Long type and is checked within its own actual call interval.",
+  "backup_policy": "Exact preceding-current bytes preserved within each original/native cohort; gzip bytes/compound iteration are not equated across implementations.",
+  "boolean_receipt_policy": "Original call order comes from direct fm caller MethodExit events. Native receipts expose reached File call flags/results and the controller lists them in the reviewed implementation source order; no separate native per-primitive trace is claimed.",
+  "source_caller_and_process_scope": "Prepared completed-Info source File/FOS metadata transport and source ignored-booleans/effects only. Native empty/null-first selected-null records match original List omission values; no native List or LocalPlayer serializer call is qualified. Existing-first/second native calls use separate process Handlers; native repeat control separately exercises one Handler.",
+  "source_failure_limit": "Original FOS-open failure catches/prints/returns150. Native C retains that actual FOS cause at explicit fm147 printStackTrace dependency. Only the common pre-rotation prefix/effects and lack of File rotations are compared; native catch return completion is not credited.",
+  "not_qualified": [
+    "whole World/Chunk save or reload",
+    "nonempty live Player serialization",
+    "HashMap order or compressed byte identity",
+    "native codec/JDK direct payload controls",
+    "authored source write/close fault OS equivalence"
+  ],
+  "input_capture_recipe_frozen_before_comparison": true,
+  "qualification": {
+    "private_receipt_sha256": "5c5825c9576d0738289264150694c8d48a6a635b1df50c928bcf7749409a4833",
+    "input_freeze_sha256": "b1810835c468ca27f2f6c0b5e9a054d4d4208e22866827b55137c9490f5489bc",
+    "frozen_recipe_capture_snapshot_tool_inputs": 90,
+    "all_inputs_unchanged": true,
+    "bounded_commands": {
+      "windows": {
+        "command": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\source_metadata_output\\compare_native.py",
+          "--reference-receipt",
+          "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\reference-source-metadata-output\\metadata-reference-uyzo6yif\\receipt.json",
+          "--native-report",
+          "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\source-metadata-output-controls\\metadata-output-8g678ekz\\REPORT.json",
+          "--output",
+          "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-final-comparison-20261101\\windows-comparison.json"
+        ],
+        "exit": 0,
+        "timed_out": false,
+        "timeout_seconds": 60,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 210,
+        "stderr_bytes": 0,
+        "limit": 1048576,
+        "reaped": true
+      },
+      "linux": {
+        "command": [
+          "wsl.exe",
+          "-d",
+          "Ubuntu",
+          "--exec",
+          "python3",
+          "-B",
+          "/mnt/c/Users/admin/minecraft/tests/reference/world/source_metadata_output/compare_native.py",
+          "--reference-receipt",
+          "/home/frank/minecraft-living-overlay-20261031/build/reference-source-metadata-output/metadata-reference-w_kvvifz/receipt.json",
+          "--native-report",
+          "/home/frank/minecraft-living-overlay-20261031/build/source-metadata-output-controls/metadata-output-rkcuvvph/REPORT.json",
+          "--output",
+          "/mnt/c/Users/admin/minecraft/.local/source-metadata-output-final-comparison-20261101/linux-comparison.json"
+        ],
+        "exit": 0,
+        "timed_out": false,
+        "timeout_seconds": 60,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 205,
+        "stderr_bytes": 0,
+        "limit": 1048576,
+        "reaped": true
+      }
+    }
+  },
+  "native_fault_scope": "Final native authored controls include header-failure, write-finally, write-finally-close and a bounded Player-array data record. These controls remain outside this seven-case original transport comparison; their streams/diagnostics are checked by their native controller. They do not qualify a live Player serializer or a real operating-system write/close fault.",
+  "original_fault_supplement_scope": "The distinct faults/ helper executes authored ByteArrayOutputStream effects through unchanged original as/GZIP/DOS. Its separate source22/30/exception observations are not folded into this seven-case comparison or described as original OS faults.",
+  "previous_provenance_sha256": "f9739c165e2d8e2d22ceeb82cc26d854f4c6175de4af61dd9254113ce82aa017",
+  "older_cohort_policy": "The preceding19-profile comparisons remain historical evidence. These new reports bind to the final23-profile native cohorts and current bounded public recipe."
+}

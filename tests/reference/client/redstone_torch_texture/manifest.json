@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "files_sha256": {
+    ".gitattributes": "cdad247cf940eadf9098f1c0b3cb3c74301d66e4ebf5cc5b49684bca0e09d1bd",
+    "TorchTextureObservation.java": "f5b29b8846db6f5a1b82b79cb08d41f62dc14c836762fd6d995c5952b549beb1",
+    "capture.json": "b079b23e70c662c0cf942802bfef258c6f404507ff308b5024ece22dd436573e",
+    "capture_reference.py": "83378e67d1c7913607d152844f97be032450b089c66d3d3a4b10dbebe5abe586",
+    "compile.capture.json": "9344d3dfcdaf48f80dc144617e306e0d678b8d7525107a743460db98e49b48c9",
+    "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "declared-inputs.json": "4d56d976cf18885da8f527b478cdb31dc1c4182b6891e15d101b70ee9c92be52",
+    "freeze.json": "1b23d8ed7a23343164b97beaec0d6be2259943e59928f86fed755d13be788672",
+    "input-freeze.json": "930829e66aa17e3a59f8cdd05985e049d05b36bd09a49d215568974f6f83f098",
+    "java.capture.json": "7428f7444c52df07ef1dc507d51ad1f008b058a2d08193c15545ac775947b342",
+    "java.stderr": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622",
+    "java.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "javac.capture.json": "6a4e3e688cb5b3e63338f9f345e6c35c19cc1d9ed3a31fa41e5285d97720e9a4",
+    "javac.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "javac.stdout": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c",
+    "ordinary-0/original.capture.json": "1c63e7985dcc4cda4d756ce81835705844e5d74927802e0a4571e21f668f3441",
+    "ordinary-0/original.stderr": "f10215ff9a893c078c2a7c4cac5a4b5f0ce2e1642db2ff3fa6af5724fe8f0eaa",
+    "ordinary-0/original.stdout": "b344c62c6288df1c6be540e95ce3f5f52653c85cc56a1231ee8407f264673dbd",
+    "ordinary-0/selected.tsv": "259d6e011520cc5ab940acc6d57275f965cf0e26beff6331212714b28bad0158",
+    "ordinary-1/original.capture.json": "1c63e7985dcc4cda4d756ce81835705844e5d74927802e0a4571e21f668f3441",
+    "ordinary-1/original.stderr": "f10215ff9a893c078c2a7c4cac5a4b5f0ce2e1642db2ff3fa6af5724fe8f0eaa",
+    "ordinary-1/original.stdout": "b344c62c6288df1c6be540e95ce3f5f52653c85cc56a1231ee8407f264673dbd",
+    "ordinary-1/selected.tsv": "259d6e011520cc5ab940acc6d57275f965cf0e26beff6331212714b28bad0158",
+    "profiles.tsv": "93814bb0282031fada52d03a2614f73706736d8d95d313fd96fb92c5136c6998",
+    "provenance.json": "51456c966f8f613f364972fa3f896da49f58566b57423d18b0481cd904ade16b",
+    "source-pins.json": "58ee4b4dca417bb59ad479e3cc8803e74e355ad2724749b4f92a43b9cf20fdad"
+  }
+}

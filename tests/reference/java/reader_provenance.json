@@ -1,0 +1,131 @@
+{
+  "schema": "READER_OBSERVATION_PROVENANCE_V1",
+  "scope": "Actual JDK decoding, line reads, close and retained String identities; no game initialization",
+  "counts": {
+    "owners": 800,
+    "actions": 7136,
+    "read_controls": 5536,
+    "close_controls": 1600,
+    "observed_rows": 19595,
+    "projected_rows": 19594
+  },
+  "fixture": {
+    "bytes": 3117607,
+    "sha256": "c3d695ba660385dfcb49f8d5943f7c9691683228780ef8d1f0ccfb63c43a0da9"
+  },
+  "sources": {
+    "tests/reference/java/ReaderObservation.java": {
+      "bytes": 18326,
+      "sha256": "cf1b2aee10727adeebce3104db9caf59c1cef32dd644a935eb8a16f494df2d02"
+    },
+    "scripts/reference/java/reader_protocol.py": {
+      "bytes": 7520,
+      "sha256": "a3257430aae2539fe1a28e0bccfdfa5bd4a1f79c7d1f700f0fa10712ecb5840b"
+    },
+    "scripts/reference/java/capture_nanotime_conversion.py": {
+      "bytes": 10182,
+      "sha256": "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+    },
+    "scripts/reference/java/capture_reader.py": {
+      "bytes": 6078,
+      "sha256": "3240a1ebcdb777f0b89762de9b9d8feff1a2400cbbf37f3f228ebf03f71831cd"
+    }
+  },
+  "jdk_profile": {
+    "modules": {
+      "path": "modules",
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "jvm": {
+      "path": "jvm",
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "java": {
+      "path": "java",
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "javac": {
+      "path": "javac",
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "java_native": {
+      "path": "java_native",
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "release": {
+      "path": "release",
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "source_archive": {
+      "path": "source_archive",
+      "bytes": 50855389,
+      "sha256": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+    }
+  },
+  "classes": {
+    "ReaderObservation$FiniteStream.class": {
+      "bytes": 2771,
+      "sha256": "605307381ac8d84094e9ece2ad61ccd82f917697098385fb82bb493b2d8334e5"
+    },
+    "ReaderObservation$Lines.class": {
+      "bytes": 1661,
+      "sha256": "ffe04355db1fc841cb7371daf9deab8a6639a5a3fed0a48edd272134f7b6823b"
+    },
+    "ReaderObservation$Rows.class": {
+      "bytes": 1115,
+      "sha256": "0db5d7d150149be40bd061b17a3edf1dd0bb3bcedc02aea2b9ba88e577afa7c9"
+    },
+    "ReaderObservation$TestCase.class": {
+      "bytes": 911,
+      "sha256": "dae2ae473c23a366bc65f8996e9c1ff5e8eedf7d801bc1ef37ebc825c2aa09c7"
+    },
+    "ReaderObservation.class": {
+      "bytes": 12078,
+      "sha256": "dfa8b3d4bc1d02771caa6c471589cf4dd6702c0aa0084e384a6bcacb94041595"
+    }
+  },
+  "modes": [
+    {
+      "name": "interpreted",
+      "flags": [
+        "-Xint"
+      ],
+      "trace": {
+        "bytes": 3117607,
+        "sha256": "c3d695ba660385dfcb49f8d5943f7c9691683228780ef8d1f0ccfb63c43a0da9"
+      },
+      "exit_code": 0,
+      "reaped": true
+    },
+    {
+      "name": "tier1",
+      "flags": [
+        "-XX:TieredStopAtLevel=1"
+      ],
+      "trace": {
+        "bytes": 3117607,
+        "sha256": "c3d695ba660385dfcb49f8d5943f7c9691683228780ef8d1f0ccfb63c43a0da9"
+      },
+      "exit_code": 0,
+      "reaped": true
+    },
+    {
+      "name": "default",
+      "flags": [],
+      "trace": {
+        "bytes": 3117607,
+        "sha256": "c3d695ba660385dfcb49f8d5943f7c9691683228780ef8d1f0ccfb63c43a0da9"
+      },
+      "exit_code": 0,
+      "reaped": true
+    }
+  ],
+  "limitation": "Equal mode output does not prove JIT compilation or whole-game parity",
+  "inputs_unchanged": true
+}

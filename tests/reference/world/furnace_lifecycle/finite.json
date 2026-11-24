@@ -1,0 +1,2153 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "rows": [
+    {
+      "index": 0,
+      "name": "initial",
+      "operation": "snapshot",
+      "returned": true,
+      "exception": null,
+      "exception_message": null,
+      "before": {
+        "block": 61,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              0,
+              1600,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              "S1",
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            2,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            2,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "3616c056310d80234dfc51a1e2c9da4fd28d3712d97dac72a846a0d154c1b89b",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [],
+        "entities": 0
+      },
+      "after": {
+        "block": 61,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              0,
+              1600,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              "S1",
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            2,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            2,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "3616c056310d80234dfc51a1e2c9da4fd28d3712d97dac72a846a0d154c1b89b",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [],
+        "entities": 0
+      },
+      "rng_unchanged": true
+    },
+    {
+      "index": 1,
+      "name": "ignite",
+      "operation": "world-g",
+      "returned": true,
+      "exception": null,
+      "exception_message": null,
+      "before": {
+        "block": 61,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              0,
+              1600,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              "S1",
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            2,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            2,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "3616c056310d80234dfc51a1e2c9da4fd28d3712d97dac72a846a0d154c1b89b",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [],
+        "entities": 0
+      },
+      "after": {
+        "block": 62,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              1600,
+              1600,
+              1
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              "S1",
+              null
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            2,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "5ee374782ecbe05623d485a7c9c8ee727f520ed6b0dec3245b84f8e55aaf91b5",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "rng_unchanged": true
+    },
+    {
+      "index": 2,
+      "name": "warm",
+      "operation": "world-g",
+      "returned": true,
+      "exception": null,
+      "exception_message": null,
+      "before": {
+        "block": 62,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              1600,
+              1600,
+              1
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              "S1",
+              null
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            2,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "5ee374782ecbe05623d485a7c9c8ee727f520ed6b0dec3245b84f8e55aaf91b5",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "after": {
+        "block": 62,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              1599,
+              1600,
+              2
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              "S1",
+              null
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            2,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "5ee374782ecbe05623d485a7c9c8ee727f520ed6b0dec3245b84f8e55aaf91b5",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "rng_unchanged": true
+    },
+    {
+      "index": 3,
+      "name": "cook-boundary",
+      "operation": "world-g",
+      "returned": true,
+      "exception": null,
+      "exception_message": null,
+      "before": {
+        "block": 62,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              1599,
+              1600,
+              199
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              "S1",
+              null
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            2,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "5ee374782ecbe05623d485a7c9c8ee727f520ed6b0dec3245b84f8e55aaf91b5",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "after": {
+        "block": 62,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              1598,
+              1600,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              "S1",
+              "S2"
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            1,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ],
+          "S2": [
+            265,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "5ee374782ecbe05623d485a7c9c8ee727f520ed6b0dec3245b84f8e55aaf91b5",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "rng_unchanged": true
+    },
+    {
+      "index": 4,
+      "name": "exhaust",
+      "operation": "world-g",
+      "returned": true,
+      "exception": null,
+      "exception_message": null,
+      "before": {
+        "block": 62,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              1,
+              1600,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              null,
+              "S2"
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            1,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ],
+          "S2": [
+            265,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "5ee374782ecbe05623d485a7c9c8ee727f520ed6b0dec3245b84f8e55aaf91b5",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "after": {
+        "block": 61,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1",
+          "T2"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              null,
+              "S2"
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          },
+          "T2": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            1,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ],
+          "S2": [
+            265,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "3616c056310d80234dfc51a1e2c9da4fd28d3712d97dac72a846a0d154c1b89b",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "rng_unchanged": true
+    },
+    {
+      "index": 5,
+      "name": "after-exhaust",
+      "operation": "world-g",
+      "returned": true,
+      "exception": null,
+      "exception_message": null,
+      "before": {
+        "block": 61,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1",
+          "T2"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              null,
+              "S2"
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          },
+          "T2": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            1,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ],
+          "S2": [
+            265,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "3616c056310d80234dfc51a1e2c9da4fd28d3712d97dac72a846a0d154c1b89b",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "after": {
+        "block": 61,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1",
+          "T2"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              null,
+              "S2"
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          },
+          "T2": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            1,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ],
+          "S2": [
+            265,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "3616c056310d80234dfc51a1e2c9da4fd28d3712d97dac72a846a0d154c1b89b",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "rng_unchanged": true
+    },
+    {
+      "index": 6,
+      "name": "second-after-exhaust",
+      "operation": "world-g",
+      "returned": true,
+      "exception": null,
+      "exception_message": null,
+      "before": {
+        "block": 61,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1",
+          "T2"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              null,
+              "S2"
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          },
+          "T2": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            1,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ],
+          "S2": [
+            265,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "3616c056310d80234dfc51a1e2c9da4fd28d3712d97dac72a846a0d154c1b89b",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "after": {
+        "block": 61,
+        "metadata": 3,
+        "iterating": false,
+        "suppression": false,
+        "active": [
+          "T0",
+          "T1",
+          "T2"
+        ],
+        "pending": [],
+        "maps": [
+          {
+            "chunk": [
+              0,
+              0
+            ],
+            "values": [
+              "T0"
+            ]
+          },
+          {
+            "chunk": [
+              0,
+              1
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              0
+            ],
+            "values": []
+          },
+          {
+            "chunk": [
+              1,
+              1
+            ],
+            "values": []
+          }
+        ],
+        "tiles": {
+          "T0": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              "S0",
+              null,
+              "S2"
+            ]
+          },
+          "T1": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          },
+          "T2": {
+            "fields": [
+              0,
+              0,
+              0
+            ],
+            "invalid": false,
+            "world_same": true,
+            "xyz": [
+              8,
+              64,
+              8
+            ],
+            "slots": [
+              null,
+              null,
+              null
+            ]
+          }
+        },
+        "stacks": {
+          "S0": [
+            15,
+            1,
+            0,
+            0
+          ],
+          "S1": [
+            263,
+            1,
+            0,
+            0
+          ],
+          "S2": [
+            265,
+            1,
+            0,
+            0
+          ]
+        },
+        "array_sha256": [
+          "3616c056310d80234dfc51a1e2c9da4fd28d3712d97dac72a846a0d154c1b89b",
+          "e7e9e6651c85bf325fe2ba6a4b5bcb5c420fbbd36c1fd0a99d8c8056cfd425cd",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "48305e6bfb70b0b9a0f015ce335e18a6268bf970598f8b8f9d68f9253c0c6250",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1",
+          "c35020473aed1b4642cd726cad727b63fff2824ad68cedd7ffb73c7cbd890479",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+        ],
+        "light_queues": [
+          [
+            0,
+            8,
+            0,
+            8,
+            8,
+            65,
+            8
+          ],
+          [
+            0,
+            7,
+            0,
+            7,
+            9,
+            65,
+            9
+          ],
+          [
+            1,
+            8,
+            64,
+            8,
+            8,
+            64,
+            8
+          ]
+        ],
+        "entities": 0
+      },
+      "rng_unchanged": true
+    }
+  ]
+}

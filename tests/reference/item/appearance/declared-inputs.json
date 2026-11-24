@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "setup": "Genuine Block-before-Item initialization; ascending actual nonnull gm.c slots. New genuine IZ(id,2,damage) for each icon wrapper call. No static final stores or World/clock/RNG/input use.",
+  "operands": [
+    -2147483648,
+    -2147483647,
+    -65536,
+    -17,
+    -16,
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4,
+    7,
+    8,
+    15,
+    16,
+    17,
+    255,
+    65535,
+    2147483646,
+    2147483647
+  ],
+  "bm_operands": [
+    -2147483648,
+    -81,
+    -80,
+    -1,
+    0,
+    2147483567,
+    2147483568,
+    2147483647
+  ],
+  "bm_items": [
+    6,
+    18
+  ],
+  "bm_damage": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "bm_mutation": "Per row capture live UU.z or UU.L receiver, save its actual instance bm, store declared bm, call actual Item and IZ icons, restore in finally before the next row. No alternate Block receiver or original method replacement.",
+  "expected_registered_items": 202,
+  "expected_receiver_classes": 38,
+  "not_qualified": "No graphics/frame/gameplay/native parity; scalar methods and declared instance-bm stores only."
+}

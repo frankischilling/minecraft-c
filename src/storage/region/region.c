@@ -1,17 +1,18 @@
 #include "mc/storage/region/region.h"
 
+#include "region_internal.h"
+
 #include <limits.h>
+#include <stdbool.h>
 
 _Static_assert(CHAR_BIT == 8, "Region storage requires eight-bit bytes");
 
-mc_region_limits mc_region_default_limits(void)
-{
+mc_region_limits mc_region_default_limits(void) {
     const mc_region_limits limits = {1024u * 1024u * 1024u};
     return limits;
 }
 
-const char *mc_region_status_string(mc_region_status status)
-{
+const char *mc_region_status_string(mc_region_status status) {
     switch (status) {
         case MC_REGION_OK:
             return "ok";
@@ -33,14 +34,12 @@ const char *mc_region_status_string(mc_region_status status)
     return "unknown region status";
 }
 
-static uint32_t region_read_u32(const uint8_t *input)
-{
+static uint32_t region_read_u32(const uint8_t *input) {
     return (uint32_t)input[0] << 24u | (uint32_t)input[1] << 16u | (uint32_t)input[2] << 8u |
            input[3];
 }
 
-static void region_read_locations(mc_region_view *view)
-{
+static void region_read_locations(mc_region_view *view) {
     for (size_t i = 0; i < MC_REGION_ENTRY_COUNT; ++i) {
         mc_region_entry *entry = &view->entries[i];
         entry->location = region_read_u32(view->input + 4u * i);
@@ -66,33 +65,77 @@ static void region_read_locations(mc_region_view *view)
     }
 }
 
-static void region_check_overlaps(mc_region_view *view)
-{
-    /* There are at most 1024 packed ranges. Pairwise comparisons keep storage
-     * fixed, even when an entry names a sector far beyond the input. Packed
-     * starts have 24 bits and counts have 8, so their byte endpoints fit u64. */
+static void region_sort_start_byte(const uint32_t *locations, const uint16_t *from, uint16_t *to,
+                                   size_t count, unsigned int shift) {
+    size_t positions[256] = {0};
+    for (size_t i = 0; i < count; ++i) {
+        const uint32_t byte = (locations[from[i]] >> shift) & UINT32_C(255);
+        ++positions[byte];
+    }
+    size_t first = 0;
+    for (size_t byte = 0; byte < 256; ++byte) {
+        const size_t entries = positions[byte];
+        positions[byte] = first;
+        first += entries;
+    }
+    for (size_t i = 0; i < count; ++i) {
+        const uint32_t byte = (locations[from[i]] >> shift) & UINT32_C(255);
+        to[positions[byte]++] = from[i];
+    }
+}
+
+void mc_region_sort_ranges(const uint32_t *locations, uint16_t *indices, uint16_t *sorted,
+                           size_t count) {
+    /* Sort the three start-sector bytes, skipping the low count byte. */
+    region_sort_start_byte(locations, indices, sorted, count, 8);
+    region_sort_start_byte(locations, sorted, indices, count, 16);
+    region_sort_start_byte(locations, indices, sorted, count, 24);
+}
+
+static void region_check_overlaps(mc_region_view *view) {
+    uint16_t indices[MC_REGION_ENTRY_COUNT];
+    uint16_t sorted[MC_REGION_ENTRY_COUNT];
+    size_t count = 0;
+    bool ordered = true;
+    uint64_t previous_start = 0;
     for (size_t i = 0; i < MC_REGION_ENTRY_COUNT; ++i) {
-        mc_region_entry *left = &view->entries[i];
-        if (left->location == 0 || left->extent_bytes == 0) {
+        const mc_region_entry *entry = &view->entries[i];
+        if (entry->extent_bytes == 0)
             continue;
+        indices[count++] = (uint16_t)i;
+        ordered = ordered && entry->byte_offset >= previous_start;
+        previous_start = entry->byte_offset;
+    }
+    if (count < 2)
+        return;
+    const uint16_t *by_start = indices;
+    if (!ordered) {
+        uint32_t locations[MC_REGION_ENTRY_COUNT];
+        for (size_t i = 0; i < count; ++i)
+            locations[indices[i]] = view->entries[indices[i]].location;
+        mc_region_sort_ranges(locations, indices, sorted, count);
+        by_start = sorted;
+    }
+
+    mc_region_entry *furthest = &view->entries[by_start[0]];
+    uint64_t furthest_end = furthest->byte_offset + furthest->extent_bytes;
+    for (size_t i = 1; i < count; ++i) {
+        mc_region_entry *entry = &view->entries[by_start[i]];
+        /* Any other prior range that overlaps this start has already
+         * overlapped the range that reached at least as far. */
+        if (entry->byte_offset < furthest_end) {
+            entry->issues |= MC_REGION_ISSUE_OVERLAP;
+            furthest->issues |= MC_REGION_ISSUE_OVERLAP;
         }
-        uint64_t left_end = left->byte_offset + left->extent_bytes;
-        for (size_t j = i + 1; j < MC_REGION_ENTRY_COUNT; ++j) {
-            mc_region_entry *right = &view->entries[j];
-            if (right->location == 0 || right->extent_bytes == 0) {
-                continue;
-            }
-            uint64_t right_end = right->byte_offset + right->extent_bytes;
-            if (left->byte_offset < right_end && right->byte_offset < left_end) {
-                left->issues |= MC_REGION_ISSUE_OVERLAP;
-                right->issues |= MC_REGION_ISSUE_OVERLAP;
-            }
+        const uint64_t end = entry->byte_offset + entry->extent_bytes;
+        if (end > furthest_end) {
+            furthest = entry;
+            furthest_end = end;
         }
     }
 }
 
-static void region_read_records(mc_region_view *view)
-{
+static void region_read_records(mc_region_view *view) {
     for (size_t i = 0; i < MC_REGION_ENTRY_COUNT; ++i) {
         mc_region_entry *entry = &view->entries[i];
         if (entry->location == 0) {
@@ -123,8 +166,7 @@ static void region_read_records(mc_region_view *view)
 }
 
 mc_region_status mc_region_open(const uint8_t *input, size_t length,
-                                const mc_region_limits *requested_limits, mc_region_view *out)
-{
+                                const mc_region_limits *requested_limits, mc_region_view *out) {
     if (out == NULL || (input == NULL && length != 0)) {
         return MC_REGION_INVALID_ARGUMENT;
     }
@@ -147,8 +189,7 @@ mc_region_status mc_region_open(const uint8_t *input, size_t length,
     return MC_REGION_OK;
 }
 
-const mc_region_entry *mc_region_entry_at(const mc_region_view *view, int32_t x, int32_t z)
-{
+const mc_region_entry *mc_region_entry_at(const mc_region_view *view, int32_t x, int32_t z) {
     if (view == NULL || x < 0 || x >= 32 || z < 0 || z >= 32) {
         return NULL;
     }
@@ -156,8 +197,7 @@ const mc_region_entry *mc_region_entry_at(const mc_region_view *view, int32_t x,
 }
 
 mc_region_status mc_region_record(const mc_region_view *view, int32_t x, int32_t z,
-                                  mc_region_payload *out)
-{
+                                  mc_region_payload *out) {
     if (view == NULL || out == NULL) {
         return MC_REGION_INVALID_ARGUMENT;
     }

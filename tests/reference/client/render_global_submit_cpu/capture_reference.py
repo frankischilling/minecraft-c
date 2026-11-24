@@ -1,0 +1,151 @@
+"""Observe whole unchanged N pre-U failure prefixes through read-only JDI."""
+import argparse
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import sys
+import zipfile
+
+sys.dont_write_bytecode = True
+HERE = Path(__file__).resolve().parent
+SUPPORT = HERE.parent / "controller"
+sys.path.insert(0, str(SUPPORT))
+from capture import capture, digest, ensure, require_success
+from classfile import inspect_class
+
+JAR = "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+LIBRARIES = {
+    "org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+}
+
+
+def rows(text):
+    direct = [line for line in text.splitlines() if line.startswith("SUBMIT ")]
+    if direct:
+        result = direct
+    else:
+        traces = {int(cells[1]): cells[2:] for cells in
+                  (line.split() for line in text.splitlines() if line.startswith("TRACE "))}
+        observed = [line.split() for line in text.splitlines() if line.startswith("OBS ")]
+        ensure(len(traces) == len(observed) == 12, "all original prefixes and JDI traces required")
+        result = [" ".join(["SUBMIT", *cells[1:], *traces[int(cells[1])]]) for cells in observed]
+    ensure(len(result) == 12, "all12 submission prefixes required")
+    for index, row in enumerate(result):
+        cells = row.split()
+        ensure(len(cells) == 14 and cells[:2] == ["SUBMIT", str(index)], "submission row inventory")
+        ensure(cells[3] in ("NPE", "AIOOBE", "ARITH"), "source failure category")
+        ensure(cells[-1].startswith("n.a(Lls;ID)I@"), "actual whole N failure chain")
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--client-jar", type=Path, required=True)
+    parser.add_argument("--library-root", type=Path, required=True)
+    parser.add_argument("--java", default=shutil.which("java"))
+    parser.add_argument("--javac", default=shutil.which("javac"))
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    args.output.mkdir(parents=True, exist_ok=False)
+    java, javac = [Path(shutil.which(p) or "").resolve(strict=True)
+                   for p in (args.java, args.javac)]
+    ensure(java.is_file() and javac.is_file() and java.parent.samefile(javac.parent),
+           "matching JDK17 tools required")
+    ensure(digest(args.client_jar) == JAR, "original client JAR differs")
+    libraries = [args.library_root / name for name in LIBRARIES]
+    ensure(all(digest(path) == pin for path, pin in zip(libraries, LIBRARIES.values())),
+           "SDK metadata differs")
+    pins = json.loads((HERE / "source-pins.json").read_text())
+    ensure(pins["client_jar_sha256"] == JAR, "source pin authority differs")
+    with zipfile.ZipFile(args.client_jar) as archive:
+        for name, pin in pins["classes"].items():
+            actual = inspect_class(archive.read(name + ".class"))
+            selected = {(m["name"], m["descriptor"]) for m in pin["methods"]}
+            actual["methods"] = [m for m in actual["methods"]
+                                 if (m["name"], m["descriptor"]) in selected]
+            ensure(actual == pin, "original class/method differs: " + name)
+    inputs = [java, javac, args.client_jar, *libraries, HERE / "SubmitObservation.java", HERE / "SubmitController.java",
+              HERE / "capture_reference.py", HERE / "source-pins.json", HERE / "fixtures.py",
+              SUPPORT / "capture.py", SUPPORT / "classfile.py"]
+    sys.path.insert(0, str(HERE))
+    from fixtures import encode
+    cases = args.output / "cases.txt"
+    cases.write_text(encode(), encoding="ascii", newline="\n")
+    inputs.append(cases)
+    before = {str(p.resolve()): digest(p) for p in inputs}
+    report = {"status": "FAIL", "input_before_sha256": before,
+              "scope": "Unchanged whole N submission body on declared actual RAW fields, stopping before U302. "
+                       "Read-only JDI records completed R stores and actual exception frame PCs. "
+                       "No forced return, replaced game method, World, Display, native SDK or draw claim."}
+
+
+    environment = os.environ.copy()
+    for key in ("JAVA_TOOL_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVA_OPTIONS"):
+        environment.pop(key, None)
+    classes = args.output / "classes"
+    classes.mkdir()
+    try:
+        for label, tool in (("java", java), ("javac", javac)):
+            version = capture([str(tool), "-version"], args.output, label, 10, environment)
+            require_success(version)
+            version_text = ((args.output / version["stdout_file"]).read_text() +
+                            (args.output / version["stderr_file"]).read_text())
+            ensure(re.search(r'(?:version "|javac )17\.', version_text), "JDK17 required")
+            report[label + "_version"] = version_text
+        classpath = os.pathsep.join(str(p.resolve()) for p in (classes, args.client_jar, *libraries))
+        compiled = capture([str(javac), "--add-modules", "jdk.jdi", "-encoding", "UTF-8", "-classpath", classpath,
+                            "-d", str(classes), str(HERE / "SubmitObservation.java"), str(HERE / "SubmitController.java")],
+                           args.output, "compile", 30, environment)
+        require_success(compiled, empty_stderr=True)
+        helper = {p.relative_to(classes).as_posix(): digest(p) for p in classes.rglob("*.class")}
+        ensure(set(helper) == {"SubmitObservation.class", "SubmitObservation$1.class", "SubmitController.class"},
+               "unexpected observer classes")
+        report["helper_before_sha256"] = helper
+        receipt = capture([str(java), "--add-modules", "jdk.jdi", "-classpath", str(classes.resolve()),
+                           "SubmitController", classpath, str(args.client_jar.resolve()), str(cases.resolve())],
+                          args.output, "original", 60, environment, args.output.resolve())
+        require_success(receipt)
+        text = (args.output / receipt["stdout_file"]).read_text()
+        ensure("Original submission CPU: 12 rows; network=0; native=0" in text.splitlines(),
+               "original completion/guard receipt missing")
+        observed = rows(text)
+        loaded = {}
+        for line in text.splitlines():
+            if not line.startswith("CODE "):
+                continue
+            _, owner, method_name, descriptor, length, code_hash = line.split()
+            method = next(m for m in pins["classes"][owner]["methods"]
+                          if (m["name"], m["descriptor"]) == (method_name, descriptor))
+            ensure(method["code_bytes"] == int(length) and method["code_sha256"] == code_hash,
+                   "loaded original Code differs")
+            loaded[owner + "." + method_name + descriptor] = code_hash
+        ensure(len(loaded) == 4, "all four loaded N/DK source bodies required")
+        report["loaded_code"] = loaded
+        ensure("Original submission CPU capture: 12 cases; read-only JDI" in text.splitlines(),
+               "JDI controller completion missing")
+        (args.output / "finite.json").write_text(json.dumps({"rows": observed}, indent=2) + "\n",
+                                                encoding="utf-8", newline="\n")
+        report.update(status="PASS", rows=12, original=receipt,
+                      fixture_sha256=digest(args.output / "finite.json"))
+    finally:
+        report["input_after_sha256"] = {str(p.resolve()): digest(p) for p in inputs}
+        report["helper_after_sha256"] = {p.relative_to(classes).as_posix(): digest(p)
+                                          for p in classes.rglob("*.class")}
+        same = before == report["input_after_sha256"] and (
+            "helper_before_sha256" not in report or
+            report["helper_before_sha256"] == report["helper_after_sha256"])
+        if not same:
+            report["status"] = "FAIL"
+        (args.output / "capture.json").write_text(json.dumps(report, indent=2) + "\n",
+                                                 encoding="utf-8", newline="\n")
+        ensure(same, "observer inputs changed")
+    print("Original submission CPU: 12 exact rows; " + str(args.output / "capture.json"))
+
+
+if __name__ == "__main__":
+    main()

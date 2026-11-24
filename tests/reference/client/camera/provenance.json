@@ -1,0 +1,298 @@
+{
+  "scope": "Selected constructor-profile CPU camera and genuine live-App/Settings/World callback prefix matrices; native strict-FP policy separately labelled; not complete px/h-i publication, fog, ji or visual equality",
+  "native_sources": {
+    "include/mc/block/registry/registry.h": {
+      "bytes": 7950,
+      "sha256": "db4dec4547b63592bdecd00e5b1af5165acb788c578663eac5afca57a3c70ef0"
+    },
+    "include/mc/block/registry/runtime.h": {
+      "bytes": 3673,
+      "sha256": "b21cb904b7f982462963480de732ee5100748a287dd8ca45becfb4b8d3e5c750"
+    },
+    "include/mc/client/settings/game_settings.h": {
+      "bytes": 16136,
+      "sha256": "5f12e9606c5945dc891edb3f4ecf35d0e340f79c626c5bd4bc242e8b41176bea"
+    },
+    "include/mc/client/world/first_person.h": {
+      "bytes": 5197,
+      "sha256": "7741a4d72cc501c4f77bac247e60a6987416ebc3a54826364d2bb061c0cb2d30"
+    },
+    "include/mc/core/java/java.h": {
+      "bytes": 3573,
+      "sha256": "87a9d709f5607cacd692dd76c767790b9029fac3fdc8d24481fed6d50a409e53"
+    },
+    "include/mc/core/math/math.h": {
+      "bytes": 1885,
+      "sha256": "63bb56dc1425a8115b36e878d8c0cab33b9cc36ae397ccab9d5d02f12a16ec56"
+    },
+    "include/mc/entity/classes/classes.h": {
+      "bytes": 6811,
+      "sha256": "bc267b43e9dad1419ef11ace17e39814c608513d267682b0f972f1a36845c1ad"
+    },
+    "include/mc/entity/entity.h": {
+      "bytes": 8689,
+      "sha256": "2efbee4630c8e9a20ba0fbb071d9482bac4e3215b8413b1354c98df8102ec2ac"
+    },
+    "include/mc/entity/movement/material.h": {
+      "bytes": 1659,
+      "sha256": "1e2adb4be0c8f734b8eeace51f8bd077a05a15fd366e7852481b2c8f3bd8ca97"
+    },
+    "include/mc/entity/player/player.h": {
+      "bytes": 10280,
+      "sha256": "806977baa19465b3c49ff1ec9b8a05f5ad386f67292c09cbbf3222773c6d8725"
+    },
+    "include/mc/world/runtime/blocks.h": {
+      "bytes": 8156,
+      "sha256": "1db57a4234e102126f00adbbef6a1a5b8cc97348b27500a8c1a8f4af00d62848"
+    },
+    "include/mc/world/runtime/construction.h": {
+      "bytes": 11962,
+      "sha256": "5a20cf55f40ed6f1b30dd6837ebe805321ad7bf909cd038cfe902800e81d0031"
+    },
+    "include/mc/world/runtime/runtime.h": {
+      "bytes": 12283,
+      "sha256": "e5beff867ecaa268117a2854dd0b12bc9f5bf72c7f832cbc6d90d8304663e586"
+    },
+    "src/client/settings/game_settings.c": {
+      "bytes": 106007,
+      "sha256": "0d4bb5dbbb1a67229d7c96458bfa7a8fed402eca2577146ffe30b45e08e65dea"
+    },
+    "src/client/world/first_person.c": {
+      "bytes": 20028,
+      "sha256": "5f1de8fffa05367977085750ae532010da9228cec0cfbef31265ef43df87ecd5"
+    },
+    "src/client/world/renderer.c": {
+      "bytes": 26203,
+      "sha256": "1ef95c29e9bc96b1a1cc38565138bc70a2f407cf9429f3986ecb005cd51f59ea"
+    },
+    "src/client/world/renderer.h": {
+      "bytes": 4645,
+      "sha256": "2a310a2a7dc100d314316c669f1d21d82f88ed4e8debc39bb4cca63f6819e55f"
+    },
+    "src/client/world/view.c": {
+      "bytes": 14831,
+      "sha256": "f44042acc9d6ca2f8ebf1f83ec12320d998f6841998fcc1aa79e42de50b4bc2a"
+    },
+    "src/client/world/view.h": {
+      "bytes": 4007,
+      "sha256": "ea53da592f7f996392cc98125ea7187d241c43a5b6a966ab7deadb106a26635b"
+    },
+    "src/core/java/java.c": {
+      "bytes": 8217,
+      "sha256": "efa5f6b0c997ed9a160184785f699ab822d2ba2dd501a1b2228d63a5360fa2db"
+    },
+    "src/core/math/math.c": {
+      "bytes": 1203,
+      "sha256": "a28b1681f42433d221c6e0b66b2e81515b9e3d53f60abf78a63a4c9ed729c202"
+    },
+    "src/entity/classes/classes_internal.h": {
+      "bytes": 2919,
+      "sha256": "abc354e77358ed2ee2b455bb4246b3110f9e65b5ab46debd47ed9568906b0028"
+    },
+    "src/entity/entity_internal.h": {
+      "bytes": 3435,
+      "sha256": "969794a224de4429ee447f5fa51462e14ac1e67ed4bbd660ae3b146dc85911de"
+    },
+    "src/entity/movement/material.c": {
+      "bytes": 7033,
+      "sha256": "a30f814a880be7c7081103016c2635ae5c72b106da6bb59f008d4f88ac797040"
+    },
+    "src/entity/player/construction.c": {
+      "bytes": 18505,
+      "sha256": "3ca91a7602849e25b8d4a60eeb986887fff32023993f3cf32b03c91121870d61"
+    },
+    "src/entity/player/player_internal.h": {
+      "bytes": 1952,
+      "sha256": "0e36fba7cc38c03adeed6f1fa4d8257501d150e7d6855a12be48e35d2721f42c"
+    },
+    "src/world/runtime/blocks.c": {
+      "bytes": 9803,
+      "sha256": "90bfaf52e8ee171bc32a5cdd0d28f4d840335640ff3b69b5bc407a7ee6a60dd5"
+    },
+    "src/world/runtime/construction.c": {
+      "bytes": 51622,
+      "sha256": "4f2bfa523202678d61f4670bc0968c7aaffe5531e113afe88359f050a6e49881"
+    },
+    "tests/client/world/test_first_person.c": {
+      "bytes": 19098,
+      "sha256": "7da3f050f2d8e2261b8a0f5ee3c8a830e5053d66a9d2b9db555eb91169f478e1"
+    },
+    "tests/reference/client/notice/classfile.py": {
+      "bytes": 2803,
+      "sha256": "a2d6bf0923890ff6bd73c32bc5bcfabf89f883c421a2c1eab4270a3cb060857d"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    },
+    "src/client/application_state.h": {
+      "bytes": 8407,
+      "sha256": "b3b7027a8292dcc18fe909060ecbacdf3a1d724acf1706464044844771ee7503"
+    },
+    "src/client/application_access.h": {
+      "bytes": 3807,
+      "sha256": "3e98b97d04a0195f05f22aac84a1805d3ae9a84ca385a283ab2f039693f8eff1"
+    },
+    "src/client/application_access.c": {
+      "bytes": 11498,
+      "sha256": "35366a9e512add6ff114fa83fa749d57fe88f930835275a7ebb2861ff5dfb8ce"
+    },
+    "src/client/particles/application.h": {
+      "bytes": 1290,
+      "sha256": "537b0eda61b3d90454aa7e776ed3a9ad459a0d290e072d10fee7bedd2e7ecf1b"
+    },
+    "src/client/particles/application.c": {
+      "bytes": 2727,
+      "sha256": "7a0174d02c14a7a0ea6a74c8641a38ae8070c435f480f9de29a6c7686e7a29ba"
+    },
+    "src/world/runtime/runtime_internal.h": {
+      "bytes": 6072,
+      "sha256": "20255320186c2fdfc2fdf3ca5d14c712b37966c5cc221db9e236ce9497aab12b"
+    },
+    "src/world/runtime/construction_internal.h": {
+      "bytes": 1359,
+      "sha256": "d7f624a2431e421a44057defb73b2434cc29b68532bafc896625b23b52f1f253"
+    },
+    "src/world/runtime/world_access.c": {
+      "bytes": 32036,
+      "sha256": "27bb1b021da1195adf98678579313e394fb42f3ea602a19499434adead00a0c7"
+    },
+    "src/world/runtime/loading/loading.c": {
+      "bytes": 10960,
+      "sha256": "4161d869cdf7d59b51725f8602574187c3b7d6a4e9cbe0ee05ea4bfbb0735f21"
+    },
+    "src/entity/nbt/nbt.c": {
+      "bytes": 25718,
+      "sha256": "40a16d6e0174952c799787ccffff8b960e45d9a1802cc6089084121687ffb5e7"
+    },
+    "src/entity/nbt/storage.c": {
+      "bytes": 15096,
+      "sha256": "ffbb4c8ee91e1fba3376dafa8247335567b1027571938cc5f01b8be566c8e621"
+    },
+    "src/entity/entity.c": {
+      "bytes": 29957,
+      "sha256": "d83b3fc457fce01f73f5b5b137a59bda5a9610673e540c045e419ea4deeba455"
+    },
+    "tests/client/world/test_first_person_callbacks.c": {
+      "bytes": 22985,
+      "sha256": "1dba34915890ee38b360d8617de41c76abc66bb1ba7cd8f8cf5d8596091912fe"
+    },
+    "src/entity/position.c": {
+      "bytes": 1905,
+      "sha256": "f38aa259ca89ec5f14dc529e8db5d1b22741d9cf97d2325b514de66fe982807d"
+    },
+    "src/entity/position_internal.h": {
+      "bytes": 531,
+      "sha256": "c384eea289560d143a229ce742f8cfd3fd4e91f94640a4bca02ee7058b72e4ab"
+    }
+  },
+  "reference_files": {
+    "CameraGLObservation.java": {
+      "bytes": 14709,
+      "sha256": "55b2b97e1efc143ed29ac778aac2daf3f857439979aa553ad09f7d533fa44a5e"
+    },
+    "compare.py": {
+      "bytes": 13337,
+      "sha256": "e6c0cc70c64edb65b53a0d7858378bf4f3fec1dcfe8cfe1875793a5b6e4b229d"
+    },
+    "README.md": {
+      "bytes": 11214,
+      "sha256": "db4f296ed1e22d79606270dd111790bb95306e52076cedd206bcc236c769a8ab"
+    },
+    "source-pins.json": {
+      "bytes": 324755,
+      "sha256": "05f7bba25b2ca416d010fedc248d992f8eb1ab41f5a706a0a38e22c77e5ea7ca"
+    },
+    "support.py": {
+      "bytes": 6971,
+      "sha256": "99a2a7388a74e24485ac1e953f5e63690df19510ec7d0a63fcdd281f086d3fcb"
+    }
+  },
+  "controller_files": {
+    "tests/tools/client/test_first_person.py": {
+      "bytes": 1718,
+      "sha256": "b5ac0d55c634a7114f85e00f87c43cbfedd5a9b04c0290cb780acbfc6b7388e6"
+    },
+    "tests/tools/client/test_first_person_driver.py": {
+      "bytes": 2914,
+      "sha256": "01b7708f4411bf3cee99e393e1bfd47ba5bb5883751e073aca8f8f012968e18c"
+    },
+    "tests/tools/client/test_first_person_callbacks.py": {
+      "bytes": 2880,
+      "sha256": "a6505c529523425e20999d2c5624a11323d3c3cff62d50c83c28ed7f40eb986e"
+    }
+  },
+  "compiler_policy": "C17 x86-64 strict FP, /W4 /WX /fp:strict or warnings-as-errors -fno-fast-math -ffp-contract=off; native sanitizer profiles do not create an original Linux GL context",
+  "current_binding_updates": [
+    {
+      "role": "Current unqualified composed-source admission only; all prior products and original/JDK observations keep their historical bindings.",
+      "parent_public_source_map": {
+        "sha256": "528a56f56dd4b4888c1f1a101dd3b54c59a43722a4c1a0f5e4bb84d2f7f8dd3b",
+        "files": 2252,
+        "commit": "6249a64de2113a9c1c84272df5237a4a4427998a"
+      },
+      "previous_metadata": {
+        "bytes": 8709,
+        "sha256": "d45019da4a13b9b7fc593eb6c377d66fee89b5ba58418e6e098c02da20556b47"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 346148,
+        "sha256": "cb6ebe63c35026e125ea06e28711d20e144211df29c7e8465638a6fed164fa65"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 46,
+          "after_count": 46,
+          "previous": {
+            "include/mc/entity/player/player.h": {
+              "bytes": 9912,
+              "sha256": "d6f7b915ffeb3092e66efaaa67e8696ece62c8a7e5b44796b10d4076d9b3d049"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "admitted_path_scope": {
+        "native_sources": [
+          "include/mc/entity/player/player.h"
+        ]
+      },
+      "preserved_unrelated_producer_rows": true
+    },
+    {
+      "role": "Current unqualified source admission only; prior producers, original/JDK/Code/capture facts and results retain their exact historical bindings.",
+      "public_parent": {
+        "commit": "5d61f89760507eea33c752bbea352fd407ecc1ff",
+        "source_map": {
+          "bytes": 348140,
+          "sha256": "69fd935f0def729b0c4b0fb9b0145333f788eb5077fcd20756f3d7598d5f9567"
+        },
+        "files": 2284
+      },
+      "previous_metadata": {
+        "bytes": 10006,
+        "sha256": "3b76c5339337424ecdba28aa013a6f4c462e191ebb9426e68b5f4221e6f4d86c"
+      },
+      "frozen_nonmetadata_source_set": {
+        "bytes": 358070,
+        "sha256": "bc6675580594e57eda57baae11fbbc0c8bf29e52f39b626cd445ac464f2cd476"
+      },
+      "groups": {
+        "native_sources": {
+          "before_count": 46,
+          "after_count": 46,
+          "previous": {
+            "src/entity/player/construction.c": {
+              "bytes": 17815,
+              "sha256": "5d48a422be3bfb94c62a01dcd91f80496dc05618d01d30662a3166390e546771"
+            }
+          },
+          "added_paths": [],
+          "removed_paths": []
+        }
+      },
+      "native_compiler_JVM_or_original_results_transferred": false
+    }
+  ]
+}

@@ -86,11 +86,11 @@ unused. A generic Perlin/fBm wrapper does not establish any of these behaviors.
 
 Client generators `yf`, `qn`, `jd` correspond to server `pk`, `ka`, `gb` for
 normal, Nether and Sky providers. Their constructor descriptors are `(Lfd;J)V`
-and `(Ldj;J)V`. Normal/Sky construct octaves with counts
+and `(Ldj;J)V`. Overworld/Sky construct octaves with counts
 16,16,8,4,4,10,16,8 at 82/99/116/132/148/165/182/199. Nether constructs
 16,16,8,4,4,10,16 at 70/87/104/120/136/153/170.
 
-Normal-generator surface methods `yf.a(II[B[Lkd;)V` and
+Overworld-generator surface methods `yf.a(II[B[Lkd;)V` and
 `pk.a(II[B[Lgs;)V` call bulk at 39/77/126, including both Y-size-1 and general
 shapes. Density methods `a([DIIIIII)[D` call the short octave overload at 74/105
 and bulk at 151/185/219. These callsites establish actual consumers, not complete

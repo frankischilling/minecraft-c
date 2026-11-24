@@ -1,0 +1,8 @@
+if(TARGET mc_client_source_screens)
+    target_sources(mc_client_source_screens PRIVATE src/client/gui/display_screen.c)
+    target_link_libraries(mc_client_source_screens PRIVATE mc_client_gui_ingame mc_client_startup_input)
+endif()
+if(MC_BUILD_CLIENT AND TARGET mc_client_application_startup)
+    target_sources(mc_client_application_startup PRIVATE src/client/startup/application_startup_menu.c)
+    target_link_libraries(mc_client_application_startup PUBLIC mc_client_source_screens)
+endif()

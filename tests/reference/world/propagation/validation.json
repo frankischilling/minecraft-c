@@ -1,0 +1,164 @@
+{
+  "schema": "WORLD_PROPAGATION_VALIDATION_V1",
+  "date_UTC": "2026-10-25",
+  "native_configuration": "MSVC 19.51.36260.0 Release, C17, strict configured repository target",
+  "original_runtime": {
+    "java": {
+      "version": "openjdk version \"17.0.17\" 2025-10-21\r\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\r\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)",
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "javac": {
+      "version": "javac 17.0.17",
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    }
+  },
+  "native_executable_sha256": "a00a616c927931517f2658680fdbd00b62f0ea119b577f2db930d060039a60bf",
+  "private_complete_same_ABI_build_manifest_sha256": "93a911653c55c0d7e4b702e1e6ae784d1d213eb7dfb43b8004b1f6bd1236dac5",
+  "frozen_default_runner_view": {
+    "status": "PASS",
+    "profile": "view",
+    "grid_points": 0,
+    "grid_drain_calls": 0,
+    "view_drain_calls": 49,
+    "events": 52,
+    "ordered_C": {
+      "events": 52,
+      "ordered_region_observations": 574219
+    },
+    "arrays": {
+      "constructed.chunks": {
+        "concrete_chunks": 1,
+        "all_five_raw_arrays_equal": true
+      },
+      "view-undrained.chunks": {
+        "concrete_chunks": 25,
+        "all_five_raw_arrays_equal": true
+      },
+      "view-drained.chunks": {
+        "concrete_chunks": 25,
+        "all_five_raw_arrays_equal": true
+      },
+      "final.chunks": {
+        "concrete_chunks": 25,
+        "all_five_raw_arrays_equal": true
+      }
+    },
+    "scheduler": {
+      "F_records": 6506,
+      "E_records": 6506,
+      "actual_same_F_owner_aliases": 6506
+    },
+    "all_boundary_Random_states_equal": true,
+    "native_caller_policy": [
+      262144,
+      16777216,
+      512
+    ]
+  },
+  "full_grid_current_native_and_Java_sources": {
+    "fresh": {
+      "status": "PASS",
+      "profile": "fresh",
+      "grid_points": 289,
+      "grid_drain_calls": 844,
+      "view_drain_calls": 0,
+      "events": 1135,
+      "ordered_C": {
+        "events": 1135,
+        "ordered_region_observations": 730781
+      },
+      "arrays": {
+        "constructed.chunks": {
+          "concrete_chunks": 1,
+          "all_five_raw_arrays_equal": true
+        },
+        "final.chunks": {
+          "concrete_chunks": 289,
+          "all_five_raw_arrays_equal": true
+        }
+      },
+      "scheduler": {
+        "F_records": 114154,
+        "E_records": 114154,
+        "actual_same_F_owner_aliases": 114154
+      },
+      "all_boundary_Random_states_equal": true,
+      "native_caller_policy": [
+        262144,
+        16777216,
+        512
+      ]
+    },
+    "warm": {
+      "status": "PASS",
+      "profile": "warm",
+      "grid_points": 289,
+      "grid_drain_calls": 801,
+      "view_drain_calls": 49,
+      "events": 1142,
+      "ordered_C": {
+        "events": 1142,
+        "ordered_region_observations": 1265983
+      },
+      "arrays": {
+        "constructed.chunks": {
+          "concrete_chunks": 1,
+          "all_five_raw_arrays_equal": true
+        },
+        "view-undrained.chunks": {
+          "concrete_chunks": 25,
+          "all_five_raw_arrays_equal": true
+        },
+        "view-drained.chunks": {
+          "concrete_chunks": 25,
+          "all_five_raw_arrays_equal": true
+        },
+        "final.chunks": {
+          "concrete_chunks": 289,
+          "all_five_raw_arrays_equal": true
+        }
+      },
+      "scheduler": {
+        "F_records": 114097,
+        "E_records": 114097,
+        "actual_same_F_owner_aliases": 114097
+      },
+      "all_boundary_Random_states_equal": true,
+      "native_caller_policy": [
+        262144,
+        16777216,
+        512
+      ]
+    }
+  },
+  "full_grid_validation_revision_note": "Only bounded subprocess pipe.read to pipe.read1; native C, original Java observer, comparator and all inputs unchanged. Frozen runner default view and seven bounded-process cases rerun. Full grids re-compared with current comparator, not executed again after this I/O-only change.",
+  "private_result_metadata_sha256": {
+    "frozen_default_runner": "44c970e178a34ed044b910bfa51681ed52734177423ac62dc2a1aba6b649b762",
+    "full_process_grid_run": "f695c7e103730c2e00d4f7126ddc58558a218f309145b2d5fa25a66b0fa06732",
+    "final_full_grid_recomparison": "c24f78808efc87228903111bc3906a3f33ffe5738be8e4e0e24d557021bb761c",
+    "final_process_limit_checks": "2189bad274759256253002346b12739f87294252813e89ea72e474f83ef936f0"
+  },
+  "bounded_process_cases": {
+    "success": true,
+    "stdout-limit": true,
+    "stderr-limit": true,
+    "both-streams": true,
+    "stdout-small-overflow-sleep": true,
+    "stderr-small-overflow-sleep": true,
+    "timeout": true
+  },
+  "native_C_H_clang_format_18_1_3": true,
+  "Python_syntax": true,
+  "missing_required_private_input_exit": 77,
+  "optional_paired_server_static_metadata": {
+    "server_jar_sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
+    "selected_binary_method_pins_verified": 30,
+    "server_runtime_executed": false,
+    "normalization_reexecuted": false
+  },
+  "original_JAR_and_native_executable_unchanged_during_runs": true,
+  "compiled_helper_and_authored_sources_unchanged_during_accepted_process_runs": true,
+  "no_public_raw_outputs_or_oracle_answers": true,
+  "native_Linux_validation_in_this_record": false,
+  "scope": "One explicit post-constructor World.r input. No uncontrolled startup transient parity, all within-call events, Player, ticks, gameplay, rendering or pixels."
+}

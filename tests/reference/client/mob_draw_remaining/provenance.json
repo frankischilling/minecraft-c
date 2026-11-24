@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "scope": "Finite14 Wolf/Zombie/Skeleton draw protocol; authored-source rehoming after the immutable capture",
+  "chronology": {
+    "original_capture_precedes_this_package": true,
+    "public_sources_were_capture_start_inputs": false,
+    "authored_helpers_and_TSVs_are_byte_identical_to_captured_v2_inputs": true,
+    "current_public_source_binding": "Separate post-capture current byte identity; not retroactive capture provenance"
+  },
+  "authored_inputs_sha256": {
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "RemainingDrawJdi.java": "1aa88270bd26314d2cd3615754496ba29804ddcfa507839aa3feb715affb7e92",
+    "RemainingDrawTarget.java": "b7c2b9fd140a82a81a6c6a46bdfd065e02ef1e5a13572f8883b772eaaed6a992",
+    "profiles.tsv": "44722f121bee768279132aef0c403cf6846b553d9dbd190915d70204c6942522",
+    "preparation.tsv": "ce4fc9f164184b2f837d340451ecf5c0d2090843971a41cee328d606e653fce1"
+  },
+  "compiled_helpers_sha256": {
+    "ConstructorJson.class": "1d49f80ca7097e808a497f3a861381a387f18208f6817852dcbf5eebc343fa5e",
+    "RemainingDrawJdi.class": "a1d2dfeee349d717357d01b2b1d2a6e0254bca64e5482e1235c35050f26f590a",
+    "RemainingDrawTarget$1.class": "c62720198f684ff072f6f6400e46f971222f1ec82f4091f703bb238008ed3d5b",
+    "RemainingDrawTarget.class": "ebea6beba7570d32b6c6f7eaad5613db47aa2ca83611bea27b37de60d4d175cd"
+  },
+  "external_original_authority": {
+    "analysis_name": "analysis-v2.json",
+    "analysis_sha256": "cec285e657535f0bada40f5390b662dd5ffd0b66c8f15a4b78a9a1f0fc7d55c6",
+    "capture_relative": "capture-v2/receipt.json",
+    "capture_sha256": "8538770953229f894cee22f5b253852a593300c925507e44f323aa49d0388e5d",
+    "post_capture_audit_name": "final-audit.json",
+    "post_capture_audit_sha256": "4d99aec4d210b9c4603e3a5922e25f0b18ecfbdd28841111adb35ae21f3c9858",
+    "captured_inputs": 30,
+    "compiled_helpers": 4,
+    "capture_artifacts": 149,
+    "whole_external_packet_artifacts": 288,
+    "selected_original_live_Code": 213
+  },
+  "source_pins_sha256": "700f7e7d5174fff9ef86edd97908887d09b3d5febc41d1b7824bdbe27b210c37",
+  "limits": [
+    "No JAR, compiled helper, observed result packet or pixels are shipped.",
+    "Native-only execution does not access Original observations or claim Original comparison.",
+    "Optional Original comparison requires the separately supplied exact external packet and current declared input/tool/helper hashes.",
+    "Optional explicitly supplied fourteen-case same-device ordinary evidence may supply known current normals only. V1 device evidence is never accepted."
+  ],
+  "external_windows_authority": {
+    "scope": "Ordinary fourteen-case same-helper supplement for actually known current normal only; no new Code/JDI/other GL authority",
+    "capture_sha256": "5324e9087d834c977600281ee2df7a68af237de13231d572896ebc80283fb539",
+    "source_device": {
+      "event": "device",
+      "vendor": "NVIDIA Corporation",
+      "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+      "version": "4.6.0 NVIDIA 581.42"
+    },
+    "native_device": {
+      "event": "device",
+      "vendor": "NVIDIA Corporation",
+      "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+      "version": "3.3.0 NVIDIA 581.42"
+    },
+    "Windows_inputs": 27,
+    "Source_inputs": 30,
+    "compiled_helpers": 4,
+    "normal_artifacts": 69,
+    "full_artifacts": 83,
+    "original_linux_capture_sha256": "8538770953229f894cee22f5b253852a593300c925507e44f323aa49d0388e5d",
+    "original_linux_analysis_sha256": "cec285e657535f0bada40f5390b662dd5ffd0b66c8f15a4b78a9a1f0fc7d55c6",
+    "original_linux_audit_sha256": "4d99aec4d210b9c4603e3a5922e25f0b18ecfbdd28841111adb35ae21f3c9858"
+  }
+}

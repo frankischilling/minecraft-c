@@ -1,0 +1,519 @@
+# Source frame input and World drawing
+
+The default client executes focused mouse look and opens the source pause
+screen. Its World-frame path calls real [terrain submission](terrain-submission.md)
+at `px.a(FJ)V:486` after colors, fog, Sky, camera, culling and standard Block
+list compilation. A normal N return continues through FLAT493,
+[standard lighting](standard-lighting.md)496 and camera eye position504 to the
+captured RenderGlobal at510. The initial [Entity pass](render-global-entities.md)
+consumes the constructor's I2 delay and returns17 with I1.
+
+Later N calls execute the actual LL/TH frame bindings, live Entity Lists and
+visibility predicates. Visible Sheep, Pig, Cow and Chicken now return through
+their retained [TH/GV renderer/model and BW shadow paths](mob-drawing.md). N checks child retirement
+before continuing at 332 or 519. PX then completes both particle calls,
+translucent terrain, precipitation, clouds and the empty first-person hand.
+World draw1013 precedes the parent's real timing and [GuiIngame draw](gui-ingame.md).
+The loaded Windows repeat proves two actual Sheep draws across four returned
+World/HUD frames, with first compilation, reuse, real ticking through
+`Minecraft.k:1328` and checked terminal cleanup. Its declared native Sheep and
+existing-player statistics bound that result. The separate Windows `animals`
+mode passes three independent loaded scopes, each with one genuinely
+constructed and published Pig, Cow or Chicken. Each has four returned
+World/HUD frames, including two actual first/reused actor draws, real tick
+1328 and checked cleanup. The observed model parts are six, nine and eight;
+their shadow totals are 18, 18 and 2 quads. Caller inputs preserve Player pose
+and World Random; subsequent source ticks consume their ordinary random work.
+
+The [vertex-lighting backend](lighting-raster.md) handles source normals,
+materials and flat/smooth lighting. Other Mob renderer families, nonempty
+TileEntity draws, specialized Block shapes, other particle classes, nonempty
+HUD items and many gameplay actions retain explicit dependencies or narrower
+qualification. This native continuation does not establish a matched original
+frame or a playable client. See the [particle continuation](particle-rendering.md)
+for source ordering and retained views.
+
+## Focused mouse input
+
+The frame handles inactivity before its `px.b(F)V:38..194` input segment. A
+false App.N reads no MouseHelper, Settings, CU filters or Player. A true N
+invokes the same MouseHelper's `vy.c()V`, consuming SDK getDX and then getDY.
+The source sensitivity formula is evaluated as separate binary32 operations.
+Inversion follows the selected Settings flag. Smooth camera invokes the actual
+PX n/o CU objects before inherited Player `sn.d(FF)V`; it does not turn App.i.
+
+Each CU retains its accumulated input, accumulated output and smoothed delta.
+Its comparisons preserve the original NaN branch behavior. The qualified
+x86-64/JDK17 profile also preserves the observed right-operand NaN payload for
+the three additions. Invalid native FP controls fail at the reached operation,
+after any earlier motion consumption. A missing second filter preserves the
+first filter's completed stores. Native retirement releases the call's PX hold
+without undoing input, filter or angle changes.
+
+The [CU fixtures](../../tests/reference/client/mouse_filter/README.md) contain
+96 unchanged-original observations. The
+[focused-frame fixture](../../tests/reference/client/renderer_focus/README.md)
+contains 72 histories from the unchanged original PX method with genuine LWJGL
+Display/Mouse setup. The native loaded-World profile supplies authored SDL
+motion through the actual SDK and compares all 72 rows exactly. The original
+observer's authored `w=true` makes that method return after mouse look; it does
+not qualify World drawing or a complete gameplay frame.
+
+## Pause screen
+
+Both Escape and the inactive-window path invoke actual `Minecraft.i()V`.
+An existing screen returns before allocation. Otherwise the shared transition
+owner constructs OZ and publishes it through the existing display-screen body.
+OZ initializes five real Buttons in source order: Back to game, Save and quit,
+Options, Achievements and Statistics. Reinitialization resets the save-pass
+counter and preserves its tick count. Back to game and inherited Escape close
+through the genuine display/focus routes. Other destinations retain their
+explicit missing descendants.
+
+Focused screen publication releases Player keys before storing N=false and
+calling MouseHelper ungrab. A null Player input fails before the N store.
+The current default startup profile has a null source Canvas; focused ungrab
+therefore retains the real `Component.getWidth` null failure after key release
+and the N store. The inactive N=false path can initialize OZ without this call.
+Native window dimensions do not replace the absent source Canvas.
+
+The OZ draw entry uses the existing GL3.3 GUI kernels, executes background
+drawing, advances the save-pass counter, and invokes actual incremental World
+saving before its saving label/title/Buttons. The returned Sheep and animal fixtures have
+no screen; they do not qualify the active pause saving and drawing path as
+part of that frame. The
+[pause fixture](../../tests/reference/client/pause_screen/README.md) compares
+68 constructor/init/tick rows; live loaded-graph controls cover Escape, existing
+screen admission, Back to game and key-release failure order.
+
+## World frame
+
+`px.a(FJ)V` enables the real Display's cull/depth state, publishes the source
+view fallback if needed and invokes the existing picker. It captures the actual
+camera, World, RenderGlobal and particle manager in source order, interpolates
+camera coordinates, checks the actual provider class, and applies the first
+anaglyph eye's mask and viewport.
+
+Actual `px.h(F)` now reads [World sky, fog and cloud colors](../world/colors.md),
+camera immersion, rain/thunder/lightning and PX brightness fields. It stores
+canonical PX RGB, applies the original anaglyph operations and calls the real
+GL clear-color bridge. Color/depth clear and culling precede actual camera at 282.
+
+The canonical camera executes `px.a(FI)` and its FOV, hurt/death, bob and
+orientation children. This includes portal rotation using actual Player.l,
+E/F/G zoom, sleeping, debug and ordinary third person. The ordinary third-person
+path makes all eight original World rays. The final RenderGlobal cloud query
+uses its actual literal-false body and stores PX.D. Every child reloads its
+source App fields at the reached operation. Native transforms update the same
+Display projection/modelview ledger in source order.
+
+At 285 the canonical W singleton reads those matrices into its three actual
+Ge buffers, computes the combined matrix and normalizes six frustum planes.
+The RenderModels namespace owns its static lifetime; teardown refuses active
+calls or outstanding owners before retiring it. Matrix reads preserve the
+original clear/flip/limit/get cursor effects. Box tests use the original plane
+and corner order.
+
+For render distance below 2 the frame invokes actual fog setup 306 and
+RenderGlobal sky 312. It then enables fog 318, performs terrain fog setup 324,
+reads ambient occlusion and applies smooth shading343 when selected. The real
+SR constructor350 calls W again; recenter 363 stores the interpolated camera
+position before the fresh App.g culling call378. Dirty-chunk compilation396
+now completes for standard Block sections. The actual deadline controls further
+update calls. Draw fog449, terrain texture470/473 and standard lighting476 then
+run before real [N terrain submission](terrain-submission.md)486. The source
+connects its ordinary and occlusion paths with recenter/JO sorting and TG replay.
+After a normal N return it sets FLAT493, enables standard lighting496 and reads
+the actual camera eye504 before N510. Both the initial delay and qualified
+Sheep, Pig, Cow and Chicken draws can return from this N call. Successful TH
+children at N329/516
+retire before N resumes at332/519. Copied scalar identities, return PCs and
+model/shadow counts survive that cleanup; borrowed child pointers do not.
+The admitted path continues through both particle methods, translucent
+terrain, weather and clouds, the empty hand and the ordinary empty-slot HUD.
+The [Spawner preview](spawner-rendering.md) supplies the first nonempty special
+TileEntity path. Other renderer/model families, Sign/Piston drawing and other
+particle/item routes retain their separate limits and qualification.
+
+The performance deadline uses the source 200/120/40 target and Java long
+wrapping. Retained frames preserve completed fields, matrices, GL state and
+complete child diagnostics. A successful Sky child retires before the next N
+method; its scalar receipt remains while pool/array/error views expire. Cleanup
+refusal refreshes every surviving child view. The existing successful World
+attachment may remain retained during drawing; active or failed attachments
+still block overlapping native operations.
+
+## Fog state and source shader
+
+Actual `px.a(IF)` clears the same PX.f FloatBuffer, writes g/h/i/1 and flips to
+position 0/limit 4/capacity 16 before setting fog color. Current normal becomes
+(0,-1,0) and current color becomes white. Cloud and water select EXP/.1; lava
+selects EXP/2. Air selects LINEAR with start k*.25 and end k; a negative pass
+changes those to 0 and k*.8. Actual context capability controls the radial
+distance selector, and a fresh World Dimension read can set the start to 0.
+Every branch enables FRONT/AMBIENT ColorMaterial. The partial argument is never
+loaded. Anaglyph's unused local arithmetic still executes in exponential paths,
+retaining its Settings/null/FP order and earlier state effects.
+
+The existing GL3 source program now consumes this same fog ledger. It supports
+LINEAR/EXP/EXP2, absolute/signed eye-plane and radial distance, RGB fog mixing
+and source triangle fans. It retains inherited framebuffer, viewport, depth,
+blend, texture and matrix state. It does not enter the diagnostic scene renderer.
+GL_FLAT is admitted for the existing constant-color primitive profile; varying
+flat colors retain an explicit dependency.
+
+The original NVIDIA driver starts with absolute eye-plane distance 34140 and
+selects radial 34139 on the first air call. Controlled pixels distinguish
+vertex-distance interpolation from fragment Euclidean distance on that profile.
+The source shader follows the observed vertex-distance behavior. This does not
+claim that every OpenGL driver uses the same allowed approximation. The
+[fog fixture](../../tests/reference/client/renderer_fog_state/README.md)
+records normative specification links, driver identity and capability limits.
+
+## Sky and ChunkRenderer culling
+
+Actual `n.a(F)` uses its constructor-compiled upper, star and lower source lists.
+It reads the genuine World sky vector and draws the fogged upper list before
+disabling fog/alpha, enabling blend and disabling standard lighting. The
+provider's actual sunrise array supplies a smooth triangle fan; its rim retains
+the raw RGB even when anaglyph changes the center. Real Engine texture lookups
+draw sun and moon, followed by stars, horizon tint and the lower list. Depth
+writes and the source texture/alpha/blend/fog states follow the original order.
+The initial Nether flag returns before any GL, Math or Tessellator operation.
+[World sky leaves](../world/sky.md) provide the real scalar/array children.
+
+The source SR wrapper owns the actual W result and live b/c/d camera origin.
+Box tests subtract that origin before calling DR. N culling rereads its live
+ChunkRenderer array, honors real DK empty-pass flags and the `(index+j)&15`
+visibility throttle, tests actual DK bounds, then stores visibility. Its wrapping
+j counter increments after the whole loop. No terrain mesh or always-visible
+substitute supplies these results.
+
+### Frustum corner evaluation
+
+Each plane first tests the minimum-coordinate corner. If it fails, ordered
+box coordinates within ±2^512 and finite plane coefficients allow the test to
+select the corner that maximizes the product on each axis. The bound keeps
+every product and sum finite in double precision. The additions keep their
+original order, so the maximum score preserves the strict `> 0` result.
+Other inputs continue through the original ordered corners. The native test
+compares 5,824 cases against that corner walk, including signed zero,
+subnormal values, reversed extents and nonfinite inputs.
+
+In two profiled Windows Release pairs on DISPLAY2 at 854 × 480 and Far render
+distance, median culling time moved from 0.866 to 0.824 ms. A separate
+instrumented pair measured 8.287 and 2.436 corner evaluations per tested box,
+respectively. Camera interpolation differed between captures, so the traces
+compare aggregate rates. The two moving pairs without phase instrumentation
+shared 215 World ticks. Their median FPS moved from 63.97 to 63.78 and p99
+frame time moved from 21.16 to 21.33 ms.
+
+### Frustum diagnostics during rendering
+
+Chunk and Entity drawing now request frustum diagnostics only on failure.
+Entity drawing reads the bounds from the retained actor without copying
+a full snapshot. The same box test still decides visibility and the
+public calls still populate the full record. The native controls check
+visible and culled boxes, untouched private diagnostics on success, and
+partial culling state when a box is missing.
+
+Each fixed CPU run visits 4,096 authored chunk bounds per pass over 1,100
+passes. Visit and test counts, throttle counts, and visibility checksums
+matched in 12 alternating pairs on each host.
+[WSL2 pairs](../../tests/benchmarks/frustum_culling_linux.json) ·
+[Windows pairs](../../tests/benchmarks/frustum_culling_windows.json)
+
+| Host and camera workload | Box tests per run | Baseline median | Candidate median | Change |
+| --- | ---: | ---: | ---: | ---: |
+| WSL2, steady | 244,603 | 42.882 ms | 28.697 ms | -33.1% |
+| WSL2, sweeping | 1,766,917 | 152.566 ms | 53.975 ms | -64.6% |
+| Windows, steady | 244,603 | 66.057 ms | 43.645 ms | -33.9% |
+| Windows, sweeping | 1,766,917 | 239.051 ms | 76.137 ms | -68.2% |
+
+These timings cover the Chunk culling loop. Entity drawing and gameplay
+FPS have no timing result for this change.
+
+### Display-list capacity during movement
+
+Two forward-input runs reached the old 32 MiB display-list budget after
+roughly 15 seconds. One refused a 48 KiB command payload with 12,477 commands
+already in a range that allowed 65,536. The display now budgets 128 MiB for
+committed and pending list definitions together, with allocation as commands
+arrive. Individual command and staging limits stay at 32 MiB. Device tests
+cover admission above the old total, refusal at the new ceiling, continued
+replay of the committed list and charge retirement.
+
+The Windows device test passed 32,697 checks. The Linux Clang sanitizer run
+passed the other 24 focused tests. Both revisions of the device test reached
+the same attribute-profile refusal on local Mesa 26.0.8, before the quota
+controls. The test requires one of the measured driver profiles.
+
+A 30-second DISPLAY2 run with the new budget completed 600 World ticks,
+advanced 132.4 blocks and closed normally. Independent region and NBT readback
+verified 1,405 saved Chunks, including 36 of the 38 coordinates generated during
+the timed interval. Saved Player position bits matched the live tick record.
+During this run the Player stayed within the authored footprint while the
+renderer requested Chunks outside it. Native reload remains unverified for
+this run. At 50.1 FPS with a 44.97 ms p99 frame time, this run still shows stalls.
+Two longer attempts ended at a Player environment tick and a Skeleton Arrow
+publication, after 66.3 and 46.5 seconds respectively. The 75-second target
+remains open.
+
+A fresh load from the saved 66-second run verified the saved World time
+and exact Player pose. Two repeats stopped 26 World ticks later while drawing
+a Falling Sand Entity. The retained failure identifies renderer `gn` at
+method entry. With Arrow publication fixed and the larger vertex cache, a
+separate 75-second attempt completed 946 ticks before the Player action failed.
+Reloading its save reproduced that failure in the nearby pickup dispatch.
+The later Arrow contact fix routed the reached case through the existing
+collection path. Two reloads of the affected save reproduced the old stop
+after 61 World ticks. The fixed build completed the eight-second reload
+with 165 World ticks, and independent readback verified the autosave.
+See [Arrow contact and collection](../entity/player-action.md#arrow-contact-and-collection).
+
+### Native replay after context reentry
+
+When another renderer acquires the context from a native callback during
+display-list replay, the next draw restores the source program, buffers,
+matrix and fragment uniforms, and provoking mode. Replay refreshes those
+bindings on each remaining draw after reentry. The active texture-unit
+and texture-binding checks still run before drawing.
+
+The device regression forwards the first GL draw, reenters the context
+and installs real replacement objects and uniforms. It checks the
+second draw's bindings, uploads and framebuffer output on both the
+streamed and warm vertex-cache paths. The texture-unit refusal case
+also runs through the same callback.
+
+Nine focused tests passed on Windows MSVC Release. Eight passed in
+WSL Clang Debug with ASan, UBSan and llvmpipe. Terrain submission
+matched all 35 rows on Windows and 30 rows on WSL. The WSL software
+context had no support for the five `occlusion16` rows.
+
+### GPU vertex cache during movement
+
+The vertex cache holds converted draws from committed display lists. It
+allocates buffer storage as draws arrive. Its byte budget is 64 MiB, and the
+existing 4,096 slots and eviction rule still apply. Cache identity still uses
+the recorded draw bytes, context generation, and relevant current attributes.
+
+One profiled run at each budget used the 30-second DISPLAY2 route described
+above. In the last ten seconds, the 32 MiB cache reached its budget and hit on
+1.1% of eligible draws. The 64 MiB cache hit on 91.8% of those draws. The
+larger cache cut evictions from 108,095 to 359 and the mean terrain replay
+span from 16.50 to 1.96 ms per frame. Phase stamps measure host-side spans.
+
+A fixed device workload replayed the same 80 recorded lists and 45 MiB of
+converted vertices per pass under both budgets. Across four alternating
+processes per budget, median synchronized replay time fell from 15.43 to
+0.64 ms. Each process checked draw counts, recorded bytes, framebuffer
+readback and list retirement. This workload isolates retained vertex replay.
+
+Two pairs of ordinary Windows Release runs at 854 × 480 and Far finished
+with 600 World ticks each, valid focus and camera checks, and checked save
+and close. Median FPS moved from 51.55 to 56.20, and median p99 frame time
+moved from 47.59 to 44.27 ms. The initial save and assets matched. The runs
+diverged in World Random and scheduling receipts after Chunk acquisition.
+The 32 MiB runs generated 40 and 41 Chunks during play. The 64 MiB runs
+generated 64 and 70. These frame times describe the observed moving routes.
+
+### Frame cost after loading the moving save
+
+A separate eight-second DISPLAY2 trace loaded the retained save at World
+time 13,399 and sent ordinary forward input. It returned 98 frames and
+166 World ticks with valid focus and pose checks. Mean host frame time
+was 82.46 ms. These are inclusive host spans grouped by returned frame.
+The 166 timed ticks reached 17,261 Entity dispatches, about 104 per tick.
+
+| Span | Mean ms per frame |
+| --- | ---: |
+| Main tick batch | 58.26 |
+| Entity tick within the batch | 41.34 |
+| Scheduler within the batch | 15.19 |
+| Random block work within the scheduler | 13.29 |
+| World rendering | 18.37 |
+| Entity drawing within World rendering | 8.54 |
+| Dirty mesh compilation within World rendering | 3.32 |
+
+The trace includes 42 Chunk generations. A longer run with the
+[Watcher Byte change](../entity/movement.md#movement-diagnostic-cost)
+completed 406 World ticks after loading the same save. It stopped at
+the missing Bubble allocation when the Player entered water. The
+client released the input and closed the window with valid focus and
+pose checks. Independent NBT readback matched the earlier run's autosave
+at World time 13,799, including all Player position and rotation bits.
+
+Releasing held vectors directly in fluid scans and sight rays raised
+median FPS on the same saved route from 12.74 to 21.59 in two DISPLAY2
+pairs. Median p99 frame time fell from 233.88 to 214.28 ms. The four
+runs matched Player motion, scheduler work and Entity dispatches over
+165 timed World ticks. See [held-vector measurements](../world/material-movement.md#releasing-held-vectors).
+
+The longer held-vector run again reached the Bubble allocation after
+406 World ticks. It drew 464 frames before the stop and closed with
+valid focus and pose checks. NBT readback matched the earlier autosave
+at World time 13,799, including all Player position and rotation bits.
+
+### Authored forward movement and reload
+
+The Windows Release observer queues native SDL movement key events
+and lets the SDK apply input to ordinary client frames. These runs use
+authored assets, Far render distance and an 854 × 480 window. The loaded
+Player faces along negative Z from the saved orientation. The observer reads
+the live pose, focus and World counters without changing them.
+
+The candidate completed 200 timed World ticks and moved 42.91 blocks in
+ten seconds. Ordinary Save and Quit returned to a fresh title screen.
+Independent NBT readback recorded World time 244 and Player Z −43.53.
+A new process selected a copy of that save, advanced another 200 timed
+ticks and read back World time 488 and Player Z −86.70 after a second save.
+
+A 75-second route alternated forward and backward input through eight legs
+on the authored floor. The observer verified motion in both directions
+while the window kept focus. The run returned 16,193 frames and 1,499
+timed World ticks before saving through the normal menu. NBT readback
+recorded World time 1,545 and Player Z −91.42. A new process loaded that
+save, completed another 199 timed World ticks and returned to title after
+saving at World time 1,789 and Player Z −134.26.
+
+A 75-second attempt crossed from the authored floor into generated terrain.
+The baseline and candidate both completed 1,338 timed World ticks over about
+66.9 seconds. The terminal Player poses and scheduler work counts matched.
+Both stopped in the active Player tick child at `fd.a:121` calling `gs.w_()`.
+Their last autosaves independently decoded to World time 1,359 and Player
+Z −284.53.
+A repeat with detailed failure output reached the same tick and pose. It
+recorded the Player environment call at `sn.U:299` and the missing Bubble
+allocation at `n.a:120`. A separate reload of the generated-terrain autosave
+stopped in the Living renderer at `n.a:516` before timing began.
+
+| Returned-frame prefix | Frames | FPS | p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| Baseline | 3,090 | 46.15 | 64.30 |
+| Candidate | 3,210 | 47.96 | 61.23 |
+
+This single pair describes the returned prefixes at that frontier. With
+the earlier 1,024-entry limit, a longer authored floor ran for 50.5 seconds
+before stopping in the renderer's World Chunk getter at `n.a:519`. Windows mining
+controls completed forward movement, pickup and two save and reload cycles.
+The independent ten-epoch world-selection fixture passed save readback and
+terminal ownership checks.
+
+### Resident Chunk capacity during Far travel
+
+The extended authored floor reproduced the renderer stop at 1,010 timed
+World ticks. The failing ChunkCache getter requested Chunk (−5, −28) when
+both the provider map and insertion list held 1,024 entries. The acquisition
+reported its native limit before the region loader ran. The diagnostic
+repeat of the separate generated-terrain autosave identified the unavailable
+Falling Sand renderer at `gn.a` method entry.
+
+The normal client now admits 4,096 entries in both the source Store and
+the provider. On the same authored floor, the 854 × 480 Far run completed
+75 seconds, 1,500 timed World ticks and 323.53 blocks of straight movement.
+It had 1,204 resident Chunks at the end of the interval. The provider's
+direct allocation rose by 108 KiB and its separate index by 24 KiB.
+The Store still allocates Chunk data as it loads or generates each Chunk.
+
+Save and Quit returned to title. Independent NBT readback recorded World
+time 1,545 and Player Z −324.15. A new process selected a copy of the save,
+completed another 200 timed ticks and saved at World time 1,790 and Player
+Z −367.32. The starting save and asset hashes matched across the capacity
+comparison. These results cover the authored route and its reload.
+
+Five focused CTests passed on Windows Release and Linux Clang with ASan
+and UBSan. Both compared all 950 ChunkCache rows and passed the canonical
+lease controls and 18,938 Chunk compilation checks.
+
+## Evidence and limits
+
+The [full-fog fixture](../../tests/reference/client/world_frame/README.md)
+contains 96 executions of unchanged original `px.h(F)` with real LWJGL clear-color
+queries. Prepared PX/App/World/Player fields and authored block/metadata
+transport bound this body comparison. Original World color and immersion
+methods remain unchanged. Eight earlier JDK expression vectors separately
+qualify the render-distance blend; they do not execute an original PX method.
+
+The [camera fixture](../../tests/reference/client/renderer_camera/README.md)
+contains 36 mode/partial profiles plus 36 scalar field rows. FOV, k/D and E/F/G
+compare exactly. Projection/modelview coefficients use an explicit absolute
+`2e-6` limit; the observed Windows maximum is `4.76837158203125e-7`.
+Prepared original receivers and air/water transport do not qualify bypassed
+constructors, actual Chunk transport or complete frames. Native collision-wall
+and failure/ownership controls have separate scope.
+
+The [frustum fixture](../../tests/reference/client/frustum/README.md) compares
+four controlled original GL profiles, actual constructor/static identity,
+matrix/plane bits, buffer cursors and box results. Its finite inputs do not
+establish arbitrary cross-driver matrix generation. Native tests also cover
+all 28 allocation boundaries, partial stores, FP refusal and namespace cleanup.
+
+The preceding source fixtures separately cover 366 World/provider sky rows, 48 fog-state
+rows, 30 authored GPU pixels, eight SR/N/DK culling rows, four early N sky outcomes
+and 48 whole-sky post-call states. The Windows NV-present fog context matches all
+48 state rows exactly. NV-absent Linux contexts compare common original fields
+separately from the bytecode-derived skipped-selector branch; no original
+false-capability observation is claimed. All 30 authored GPU samples match exactly
+on Windows NVIDIA and Linux Mesa. These are controlled shader probes rather
+than complete sky/frame pixel comparisons.
+
+The whole-sky native device fixture uses genuine App/startup and N list
+construction with explicitly prepared World/camera operands. Its actual lower
+list GPU vertex/color record is checked independently. Original Engine cache-hit
+operands and authored native sun/moon textures bound that comparison. See the
+[sky fixture](../../tests/reference/client/render_global_sky/README.md) and
+[culling fixture](../../tests/reference/client/frustum_culling/README.md).
+
+At the previous qualified standard Block checkpoint, the loaded Windows graph
+entered [ChunkRenderer compilation](chunk-compilation.md) at396 after Sky, fog
+and culling, compiled standard Block lists and reached PX486. Its inspected
+854 by 480 back buffer showed the reached Sky passes without terrain or HUD.
+At that historical terrain-submission checkpoint, the loaded Windows profile
+passed 704 checks in 12.69 seconds, retained all 72 original focus histories and
+preserved resources/saves while reaching U.b496. Its inspected
+`load.png.world-prefix.png` showed authored grass terrain and Sky without HUD.
+Eight focused submission CTests passed in 4.51 seconds with zero failures or
+skips; hosted qualification was pending for that checkpoint. The seven-profile
+original N cohort excluded issued-query N execution, including a 17-entry case.
+Those results retain their original scopes.
+
+At the earlier [Sheep drawing checkpoint](mob-drawing.md#earlier-sheep-observations-and-native-comparison),
+the fixture passes 666 native
+checks on each host and 70,341 selected original comparisons, including 147
+ordered direct World/Block query receipts. Linux ordinary/read-only JDI
+observations supply the graph, list and query reference. Windows uses a
+separately audited ordinary NVIDIA GL supplement for its device-specific normal
+state; it earns no Windows JDI credit. These finite state/geometry comparisons
+and visible native readbacks do not establish original/native whole-frame
+pixel equality.
+
+The earlier loaded continuation uses the same live Sheep, canonical renderer, distinct
+MW/EA models and twelve PS/list identities across its first and reused draw.
+One preceding frame takes N's delay and another completes traversal without
+a Sheep draw before its first simulation tick. Neither counts as a rendered
+Sheep. The new [four-animal fixture](../../tests/reference/client/mob_draw_animals/README.md)
+adds eight unchanged-original calls across Sheep, Pig, Cow and Chicken with
+independent constructor contexts. Both native pairs pass the finite
+graph, geometry, identity, query, texture and animation checks described in
+[Mob drawing](mob-drawing.md#four-animal-observations-and-current-qualification).
+The actual ordinary Windows NVIDIA supplement is separately audited and
+admits that host's device-specific normal state; the strict Mesa-normal
+comparison remains failed evidence. That earlier 93-target broad cohort built
+on both hosts and passed 121 Windows and 115 Linux tests without failures,
+skips or sanitizer findings. The current qualification has its separate scope
+in [the testing record](../testing.md). Fresh component controls inspect actual model/PS
+prefixes and KO flags after retirement. They are checked against original Code,
+with no paired original Throwable credit, and change no production drawing.
+
+The loaded animal profiles prove the same actual actor, canonical ME/VA/IP
+renderer, EH/HH/TD model and part/list identities across compilation and reuse.
+Pig's distinct unused saddle model stays uncompiled. Existing-player statistics
+and native constructor/publication inputs bound the result; Entity-empty saves
+do not qualify Mob NBT loading. The later direct comparisons cover all eleven
+default Mob families, including Skeleton's actual Bow; loaded Wolf also returns.
+The preserved Zombie and Skeleton sessions stop in actual simulation children.
+Nonempty TileEntity drawing, active tutorial notices, Canvas/focus, general
+nonempty items, combat, saving and extended play remain unfinished or
+unqualified. The separate diagnostic World renderer remains outside the
+default source path. No whole-frame original/native equality or playable
+client claim follows from these finite results.

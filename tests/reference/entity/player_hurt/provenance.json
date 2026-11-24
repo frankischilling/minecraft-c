@@ -1,0 +1,76 @@
+{
+  "schema": "PLAYER_HURT_CAPTURE_V1",
+  "status": "PASS",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "finite_sha256": "e15f1f612e4b66ddb633cddf5912e3d96eff55b8293089cc3f966c217512fa85",
+  "source_sha256": {
+    "PlayerHurtObservation.java": "c5cbd6c01e9db814d8ce742656995cec1c4fc0e2bc100fa4ed94aeacd27c3b14",
+    "capture_reference.py": "06243c4696b2bcef16fbffc583a38f2fff139ac2cf57df1c87a557da76795278",
+    "profiles.json": "9b066d4a2a6c07fe2d5de6828c11178d354731a0868aa17c97c61f1828c23eda",
+    "profiles.tsv": "cf2658df8a8ede69c837688c4a23003443d58a390f42f119532c3fbc0985deb6",
+    "source-pins.json": "ac24ed51a5528cf373380d1dce3ef93316224d9bb35a9909c2e2b7364e76da4f",
+    "player-fields.json": "4e538a666d2c90f842dbc0bfc763c23fd8f1fb0a93c3f472126a98721111f0f8",
+    "../player/ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "../../client/controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "../player/classfile.py": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60"
+  },
+  "tool_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+  },
+  "helper_sha256": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "PlayerHurtObservation$Guard.class": "12db8b0471332e6b24ddf2d8e88f92aaa9dcb55f331775b1b0ff281bd9c5aa0a",
+    "PlayerHurtObservation$Observer.class": "be25487fa73f066ecb5427127c64bd2d7ef3f55d0b29ce08640de2abb34b6ba0",
+    "PlayerHurtObservation.class": "b5746e810f97977259361ea11b51e2fa850902cfa3e9a3fdc50975e0d515a6d0"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-0.stdout",
+      "stderr_file": "original-0.stderr",
+      "stdout_bytes": 441132,
+      "stderr_bytes": 380,
+      "stdout_sha256": "d37072479ca56f4b4960d81865f59e20a068982f39e9e7ee97011f889a676414",
+      "stderr_sha256": "42aa3a4c59e74b2f2e1bbb18a66cb3380bec858a14954d4e1348090812f680fc",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    {
+      "exit": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-1.stdout",
+      "stderr_file": "original-1.stderr",
+      "stdout_bytes": 441053,
+      "stderr_bytes": 380,
+      "stdout_sha256": "2153d5922dfd04b69bae0c816b071c29ce40b93056d8cbb59d38ed4d51cca7e8",
+      "stderr_sha256": "42aa3a4c59e74b2f2e1bbb18a66cb3380bec858a14954d4e1348090812f680fc",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  ],
+  "input_unchanged": true,
+  "helper_unchanged": true,
+  "rows_per_vm": 28,
+  "profiles_per_vm": 22,
+  "independent_player_fields": [
+    "sn.aD",
+    "ls.F",
+    "ls.G",
+    "ls.aj"
+  ],
+  "independent_world_fields": [
+    "fd.I",
+    "fd.Q",
+    "fd.g"
+  ]
+}

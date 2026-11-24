@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "world": {"seed": 23, "chunks": [[0, 0], [0, 1], [1, 0], [1, 1]]},
+  "furnace": {"position": [8, 64, 8], "block": 61, "metadata": 3,
+    "burn": 0, "cook": 0, "items": [[0, 15, 2, 0], [1, 263, 2, 0]]},
+  "steps": [
+    {"name": "initial", "operation": "snapshot", "author": {}},
+    {"name": "ignite", "operation": "world-g", "author": {}},
+    {"name": "warm", "operation": "world-g", "author": {}},
+    {"name": "cook-boundary", "operation": "world-g", "author": {"cook": 199}},
+    {"name": "exhaust", "operation": "world-g", "author": {"burn": 1, "fuel_null": true}},
+    {"name": "after-exhaust", "operation": "world-g", "author": {}},
+    {"name": "second-after-exhaust", "operation": "world-g", "author": {}}
+  ]
+}

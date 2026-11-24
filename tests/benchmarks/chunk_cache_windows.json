@@ -1,0 +1,3451 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "scope": "Windows x64 MSVC Release fixed-work genuine EW Block-accessor CPU comparison.",
+  "limits": [
+    "Finite API CPU work; no frame FPS, GPU, loading-speed or original-game parity claim.",
+    "Both profiles call the actual production accessor through identical function-pointer dispatch and share one compiled workload object.",
+    "The candidate changes one cache object in the frozen simulation archive. Other 238 members and dependency libraries remain byte-identical.",
+    "The public API retains full success diagnostics. The private failure-only API leaves its caller error untouched on success; that contract difference is checked explicitly.",
+    "Published workload adds independently qualified untimed per-control owner assertions and source formatting/include-name changes. Captured samples remain bound to their original private source/object/executable hashes.",
+    "The published timed interval has exactly the captured C tokens; separate owner-control qualification does not supply additional timing samples.",
+    "Failure equality checks every declared scalar, string, retained identity and nested field without padding. NBT payload unions are inactive and their statuses must be OK.",
+    "No affinity or scheduler controls; all initial and confirmation samples and process order are retained separately."
+  ],
+  "host": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel"
+  },
+  "compiler": {
+    "family": "MSVC",
+    "toolset": "14.51.36231",
+    "configuration": "Release",
+    "language": "C17",
+    "pointer_bits": 64,
+    "flags": [
+      "/DWIN32",
+      "/D_WINDOWS",
+      "/O2",
+      "/Ob2",
+      "/DNDEBUG",
+      "-std:c17",
+      "-MD",
+      "-experimental:c11atomics",
+      "/W4",
+      "/WX",
+      "/fp:strict"
+    ]
+  },
+  "diagnostic_sizes": {
+    "error_bytes": 7352,
+    "acquisition_bytes": 4520,
+    "tile_entity_bytes": 2512,
+    "registry_bytes": 96,
+    "owner_bytes": 14872,
+    "public_full_initializations_per_call": 1,
+    "public_full_copies_per_call": 1,
+    "public_nominal_diagnostic_bytes_per_call": 14704,
+    "public_nominal_diagnostic_bytes_per_65536_calls": 963641344,
+    "scope": "Actual x64 sizeof values and source-level initialization/copy volume, not measured memory bandwidth."
+  },
+  "source_bindings": {
+    "baseline_chunk_cache_c_sha256": "0a1c7928227870fa3c4b1a8c1a16615cd7341220841132ee4044772b1ba45c5c",
+    "baseline_chunk_cache_internal_h_sha256": "7a0a0b8b66eccaa63fa974fd081cbf08b3e3a4d19b335b68711002548be218b4",
+    "candidate_chunk_cache_c_sha256": "2096e0943920f12a360b17c5c24c09f6bb7034c43808bb92ed5a4128e0720724",
+    "candidate_chunk_cache_internal_h_sha256": "a19d792c30ceaeb8f269788995a095e7338a85cc6c3b0923a8daa8735f59e270",
+    "unchanged_public_block_body_sha256": "c2ad20cdc74fcf66c6da025ba73947a3f527d0c6ccbb5cf57dcadc58e8f7ab33",
+    "unchanged_block_value_body_sha256": "2426340b54187f9d2ef69f0f7b4ad48d945d741aecb6df5a8397f87983e05c3d",
+    "shared_world_queries_c_sha256": "8a471ecbbded3c9fe7cca7a9840aaba47e7c689a3b06492b1075c7de1a15bf1a",
+    "shared_world_queries_runtime_c_sha256": "2520f3189e541be5a7af421bd97e117f2e1e03cbbcf99a69ddc4da04a66f4ee2",
+    "captured_benchmark_c_sha256": "0b3292a85656f11586b8d2c7f93773662d8a2c82a10a57592e7873fc803a2eec",
+    "captured_error_comparison_sha256": "3d56c8e72e4eabce2d1194f8752cd25f3a12722ca9bd708db84ed0224b5b3e4a",
+    "owner_control_benchmark_c_sha256": "46eb28b814ef4ec690a87f596719190dbba5f5ea4435a9ff258f66f232b0eacd",
+    "published_files_sha256": {
+      "tests/benchmarks/chunk_cache.c": "23ddde393b1fc0989b41648f7adb2440bcbf5042c74ee27a255b90f16f76542c",
+      "tests/benchmarks/chunk_cache_adapter.h": "f18b85ee51c692ee0a90c9fa64778cac000a0a6bcb9c1956f6ce452300713d28",
+      "tests/benchmarks/chunk_cache_public.c": "b0839f6ca98e01bab5a7fb265cbaf7b760313fe31fd4ea6c0f3afa01fe2c888b",
+      "tests/benchmarks/chunk_cache_failure.c": "4ff06c20144eabc98f1c85d1754d8e1515423bcc0993e81c682035b513710b3d",
+      "tests/benchmarks/chunk_cache_error_equal.inc": "e823e19e78d048328f8b613a00f3e08d257a3ece86d2a8fa61299c16c7f72397",
+      "tests/tools/world/benchmark_chunk_cache.py": "f456027a6b0fd28b5b811e44fb10d55285a44c73c357d313d96dce778e5d133d",
+      "cmake/tests/source_world_saving.cmake": "63018f971a287cde8b859f13d995105c08a3d033c115c6187d577cccc3d31d7d"
+    },
+    "timed_interval_tokens_sha256": "e21b9920ca09a61cf276c24306d4ae2ae24dacdaaf30525dacedaa9ee08ca0d1",
+    "published_timed_interval_tokens_equal": true,
+    "published_error_function_tokens_sha256": "3c024f7f75a2c195cba20aa22a9916e9ea6750acc9d166b3fabf104355a45e83"
+  },
+  "build_bindings": {
+    "shared_benchmark_object_sha256": "10551faa0fc5d69a77460daf9eebc3bdd101cbfa6473f8ca72b0469704929439",
+    "adapter_objects_sha256": {
+      "public_adapter.c": "43ab826ea9552b524fc95429162486340ee2b8d203bb92dcaaee6d3d93cfbc8c",
+      "failure_adapter.c": "cabddef3cf96cb77b1a1c29fecd425c640a9719799145a8699f72f318c5b30e6"
+    },
+    "executables_sha256": {
+      "public": "17f6aa1d6ee74766fa7d8f3408f0ea5be9d964d1fb0dc808d4fd1d8d4db36452",
+      "failure": "2fcc9e42348849b06cb130ac01a39b62629acfa62a57056a79d5f22748a5750e"
+    },
+    "baseline_simulation_archive_sha256": "09cb0d3aa45522d5ee0d4f6b2469633440b6b275b7b7f3a4b82943acd902ae82",
+    "candidate_simulation_archive_sha256": "8bc22cc1b2925199489edab696fb56137435e8b906ed12e14c6dad3719591a10",
+    "replaced_baseline_object_sha256": "b702a0ddad2c63e7f6675daacc225e7987442b3aef45996dcd4a160554ebc276",
+    "replacement_object_sha256": "edf4f5e384274e320f5650ab433767a7fca0ac4e8ef14cf3951c85599fc3cdce",
+    "all_other_members_byte_identical": true,
+    "other_members": 238,
+    "unchanged_simulation_members_sha256": {
+      "src/entity/particles/flame.c.obj": "cd47311a8e0bb4f947dd2bdfc0b07de0a2d611a8dbbaccd04af1912ab701d97a",
+      "src/entity/particles/smoke.c.obj": "7f9c9ce6e1792653e5047550dcfd38c01e6cf0d22291bac01da7d9fc2327a724",
+      "src/entity/particles/explosion.c.obj": "36080d62d4a758112ed83f725e57cbfe47a72bc095455e9dc27102b77b395d99",
+      "src/item/combat/combat.c.obj": "0b6e31560b169647b0aa0b1c7625d7e3d5bbfb8b32cbc426ec63854e7504494a",
+      "src/entity/player/combat_callbacks.c.obj": "ff5d0468f90bc8e8f9dd405192e47e16eb026a5f105b3f4651afdf51452cbb63",
+      "src/entity/player/attack.c.obj": "a29b60a03be7ab6ed44eb56eda83b9673e25b8218faefd6da14d0a42e18dfe2a",
+      "src/entity/mob/death.c.obj": "84fcf7615f830c8a1b9db31b951b963e7b1b002e12a237d6ac056daa39b038ab",
+      "src/entity/drop/drop.c.obj": "6249c43a6eda9d0536c4bc4d207a060dc028a44c54983a56d2d350c4a9543b4f",
+      "src/entity/falling_sand/tick.c.obj": "f7602526994c74ef802a9b50af5ce985746664a5a8ba306627bc327b5f42bcf6",
+      "src/entity/mount/mount.c.obj": "a4f8be6368d0a9d0af5afe11bc2a8895818adf44659f2c23626b01dd7ffd04b3",
+      "src/entity/player/drop.c.obj": "682775d0cd2ff25548adf54147e883f3ef32bb8a3d08080e66753538dcd7dd2a",
+      "src/world/runtime/placement.c.obj": "bc77ecff12b74d6ec4339c4dec0c51ac0eecedc0774f9c1d743294413d7b7e2c",
+      "src/world/runtime/auxiliary.c.obj": "1f1ddd0e458467416b1fd672724576ee0d36e7c250eaa0cc022c900fbe87397e",
+      "src/entity/particles/digging.c.obj": "eaab10d58efcce4f2ada377d16581f978513eaf5331c7b9be2c9e1ac5dc1b8ec",
+      "src/entity/player/mining.c.obj": "59d6576d5dde5753ca371c9ecb2167a4dcef9fb5bdad9fbfae1fef97a7480d3a",
+      "src/entity/render/leaves.c.obj": "8797f78e16df267112800b47fa4d205c82b5f31512a0daaeca361e5335b6500d",
+      "src/world/runtime/client_tick_state.c.obj": "c8d9e5debd425005c966c515d9b4e682a41f2d06c6e57754803de3feaa7df554",
+      "src/world/dimension/sky.c.obj": "702ad424dda4cf08cdae193338691aaeaa4810bf9f99fa4f962c42f2dd372de4",
+      "src/world/runtime/sky.c.obj": "88ee2192b68e87b42af67b1fd0cf732fcd51fd109778288371cf64cfdfdb549c",
+      "src/world/runtime/colors.c.obj": "9ddcdff46a46552380d712b290daa88fff7a5e697919fba99bed7f26b5f3a582",
+      "src/world/dimension/raw_temperature.c.obj": "919f0347671f274311fe989cbea6942b5f8eaa3738aebaa9f49ef8179e867dbc",
+      "src/world/path/finder.c.obj": "1143c04367f3d087f4ab9b3afd66fb91f2f1770e1b180683fe3001d6a4203b94",
+      "src/world/path/neighbors.c.obj": "e40a8c4c8521795d27c3875b4cbe9ec3aadc53ef3502b0170ffa6ec3e043a1cf",
+      "src/world/path/clearance.c.obj": "cdc453bc48cada40826c31874d4d93b2279dca2cda8e4c2c8ae9f615d785e617",
+      "src/world/path/heap.c.obj": "b6224990e772e65c6fffed4ba2c9e5a2142ff752edb939819cef6c29b1eeafb1",
+      "src/world/path/point_map.c.obj": "efbdf85cab694007267fb37593f5b85a16ea39c4a048716d205a1d50daf432de",
+      "src/world/path/point.c.obj": "ed3ab8a743471cd3fdb052304a5e393217bf18705b0da5108994cdd430c62ac8",
+      "src/world/path/path.c.obj": "d8c40fab7b267aff50360a077cc351b89754d8a895553d3c106cada57f6a72c0",
+      "src/world/path/common.c.obj": "991a54b5e9ee9292a4d8ad2eb655ef82259e653bd8c94914ede749b43deeb908",
+      "src/world/runtime/path.c.obj": "892276ce23c96bea054d7e8e7c5b6c339c2951baef00e5f80f943be440e78c41",
+      "src/entity/mob/tick/wrappers.c.obj": "dd0d1de643abeabaf336459acb169c12488a111ef972acd6974b097418d1718f",
+      "src/entity/mob/tick/wolf_setter.c.obj": "b4e344915905054fdcb61fc169f5dc1c2ccd57eac1898cf9d40388835dad357a",
+      "src/entity/mob/tick/wolf.c.obj": "fe71812dac7a9d4801644e95715f557c98853ef1c7cd005369d01cb8b382b39a",
+      "src/entity/mob/tick/slime_squid.c.obj": "77ee17b69ee052146d8ea5464cfbd736647a07259bc17e76d9c559c18904db61",
+      "src/entity/mob/tick/living.c.obj": "48e1336d1dbbdd6eb8ec7368f50f7b3df6acacb39240c71d829e0d6a5946b148",
+      "src/entity/mob/tick/tick.c.obj": "c8046d3ef9b2bf1a2c011ffbd5778935ffda6fdfa6a82aa7809f04c91b167078",
+      "src/entity/mob/tick/path_follow.c.obj": "d0588f4b312d09cae888da246731f9a8b421c7019e0fa248e0f7f50c9cea943e",
+      "src/entity/mob/tick/path.c.obj": "bae5e9dd1075d8724f10479c0e0a410b0f0252d5556b20a1595cb2410c7b6559",
+      "src/entity/mob/tick/wolf_attack.c.obj": "9599a78ded930abb5c4a3f3b490e81e133b381c0736836abbb3a6bb63656c489",
+      "src/entity/mob/tick/monster_attack.c.obj": "e07043deb93cfe4410d401f9e4a287fe0744413171a99dbe552c7e15c5c6599d",
+      "src/entity/mob/tick/creeper.c.obj": "002c567374b01ccce5f9cb0c3e0c688c20f4c48da814140352b63c1b965a0db7",
+      "src/entity/mob/tick/behavior.c.obj": "f8682fc04ac1ce464ce6b94903205dac47334567c03a39271892828dbccacdb8",
+      "src/entity/mob/tick/ray.c.obj": "37097a78ecfe02737924d20a52a187fa7b8a79bfbccdc3f1984e5c6e96efd562",
+      "src/entity/mob/tick/helpers.c.obj": "2990c8f85c967720301f83fd62fc349669bf457adbd923ee6a23d08da37cf191",
+      "src/entity/mob/tick/common.c.obj": "09afb9cf0290a8fe6e5ae4a3f81b489d011fc79d77a0eda1d8e66e9552d83320",
+      "src/entity/mob/references.c.obj": "cf8dda9c8beacf047537598daa1d0753770e9bfc1a7fc662cca1fb2e2a07af91",
+      "src/entity/mob/damage.c.obj": "e2f6a92900375e96567be66f5c791166c6fc50ce4d550f3272096f5d1901ec8b",
+      "src/entity/living/fields.c.obj": "1c1a93acc1e7f6d17239f5e1513260030f064a340d401947482c53f5bf7ccc13",
+      "src/world/runtime/block_random_display.c.obj": "660a592746614a65aa0aefc24534b8e2968d36c66278b3a2bd2af56194789760",
+      "src/world/runtime/random_display.c.obj": "75b0049f914d395efa09a476b9bca809c293380cb848e7c3433938585e060e70",
+      "src/entity/lightning/construction.c.obj": "4a09fe950d79ea5db47e6db70b2fa071435b8692687c92ad99dc1f2dd0daa79d",
+      "src/world/runtime/mutation/random_blocks.c.obj": "a3536ed649fa6507c388c8b9db5ff11b7b37252f06060bdf53e9e0a6ed37764b",
+      "src/world/runtime/chunk_tick.c.obj": "b7104008839cb44b77ff7fb0ded0de88da2d6b81804caaa017110b047fe2a657",
+      "src/world/runtime/world_tick_random.c.obj": "ba21bd711baabbee6fbb2716b9c336c97d7bb21667296af9c235546b5e3e5c82",
+      "src/world/runtime/collision/spawning.c.obj": "2de0de365958f8f26c6c9837504de93324f5069434c021fca0eeaabfd42dcacc",
+      "src/world/runtime/chunk_random.c.obj": "38341f7cc7acc376d36ab97726b7ef3fb588e1f00d0f54f9b9741404922b9259",
+      "src/entity/mob/spawning.c.obj": "d8acba13ee788e01055e9cf042d57ccd8ff1c18591df3472ceeb86924300e3a4",
+      "src/world/runtime/world_tick_scheduled.c.obj": "90b85140b47f8e4113c18d3e4b29d1d870a42963a118f4a1cb95c4ed9326734e",
+      "src/world/runtime/world_tick_spawn.c.obj": "1241d17ff3273ec6f6683b4587ee7540046aa1e3ebbceb8a80d87fbd6d25aa52",
+      "src/world/runtime/world_tick.c.obj": "8a2bfd6243ce1bb50a9fde685e055f685b8009be850f4c3cf106161293a25728",
+      "src/entity/player/container_interaction.c.obj": "f2ae1d7bdeead447cf15145dfc072d30078d45fffe8487f3bb6133658bc1376a",
+      "src/entity/player/mouse_filter.c.obj": "294eaffad9386c95c3e45724e8f95753647d455a256de1bce822625b253fe2df",
+      "src/world/runtime/brightness.c.obj": "8304ec33634c58299d53c560bbfcf81ed1bdb2a4b75e469b310df8c4fd0a2fc3",
+      "src/entity/living/view.c.obj": "96d2a8fce497a91a394594ebc8f09917b39db9813f7fe1006470288a6b04e930",
+      "src/world/runtime/raytrace_blocks.c.obj": "44a10e0a57ce26ea8071dd10d709c7545abb6dfca81522f2c73fe02239c6cf1e",
+      "src/world/runtime/raytrace.c.obj": "5d0961ffdef627ed303f4d6b5f4bd0241149f0d2b0854ef6139f3909aec17b85",
+      "src/entity/bounds/intercept.c.obj": "6c500452dc928c8a65223826445847f1f5007028e57536701878f359b9f90804",
+      "src/entity/hit_result/pickability.c.obj": "3794000a362c93d4eaf361ade56fabbe71042339d8ec1060cf43e1497493e74d",
+      "src/entity/hit_result/owner.c.obj": "aef95918075fd009323e0d0fd5b2de4c73da4eae70aa3fc632f9a8dae205f4e8",
+      "src/world/runtime/loading/player.c.obj": "4f03f5486a275a575ea45e55096a37223746102789f26b44f08773076a83fff0",
+      "src/entity/player/appearance.c.obj": "80a610104c2dba1085ac12cdd00ffe960d80d6f3972c714cfe23d936430353e0",
+      "src/world/runtime/source_construction.c.obj": "858e665620f8a8a6d78a5065015c04596398ae2e5200804e6cab24827bee7bd4",
+      "src/world/storage/source_chunk_loader.c.obj": "415b42a03db42bcd5f688a11e877c7c0cd753dff60ebc0a634a7e2218ff29c95",
+      "src/world/runtime/spawn.c.obj": "12a71c4e767da51b4398f7099c30ceedba165addc1a723b2b8d82c3799a02708",
+      "src/entity/minecart/storage.c.obj": "3a06655fe1b234f83dd1ef729002bdc59ffb874ac6931c288e05ad318c1f2644",
+      "src/entity/minecart/nbt.c.obj": "084934b3e16d99c5f29bdf37e0cf44a6e344d7fc961dfb96b9aed871b2bdf72a",
+      "src/entity/minecart/inventory.c.obj": "780ae71d2514d2d0adf3da8e68db14541e8a4a1eb62a73c6683a1835e946cf25",
+      "src/entity/minecart/entity.c.obj": "80face53be1e622909fa529a425005c1778b85caedd3a575cafa07b720140fb6",
+      "src/entity/player/strings.c.obj": "5ddce3f72baeae5e82931ec09ed8817ba355411e5ca31351358a8fb2bfd0f071",
+      "src/entity/player/session.c.obj": "ca4f876984d98424048c81327ff6083704e1b619f0bca9a61b52bbdf8dad9a3c",
+      "src/entity/player/input.c.obj": "3ecf5408e43b418b6c240156dc870a484c7f1b56fd9ad2f17e003e98d032f268",
+      "src/entity/player/terminal_inventory.c.obj": "4f3b21d50c8a962c7691de8becf7ef63223509e74e80677535a6dbd927694a11",
+      "src/entity/player/construction.c.obj": "dcef020dffdebfbcb3b3d4fb21179783942827ce563a32c94b5457a8f40ca698",
+      "src/entity/mob/nbt.c.obj": "75adbef5bc0863ab4669527b424df9e702ecf96428a218f2ec99054139d2601f",
+      "src/entity/mob/construction.c.obj": "a3a82a8cd156435452a531854caf479dad64f5b645adc2fa090ba46144f8c3a2",
+      "src/entity/living/construction.c.obj": "d2b85dcf2a8d801b15971cd55c16f56605ea0e1bd26467ba873a235cd11a8ef4",
+      "src/entity/entity.c.obj": "68d65e8d7360098f98cf610807ea547fa4c8ffa3c4387950b5525ebaa5501f3b",
+      "src/world/dimension/temperature.c.obj": "be312cd0953238cbb0fbc7ac8c568e035f1c1e56d28c64490efefc7ce7e36592",
+      "src/world/dimension/world_provider.c.obj": "fdcefb0b9fbd0ccfba666331c1799593ed8f34e637410f4cb5654dc6b90f2542",
+      "src/world/runtime/generation/caves.c.obj": "a9daf9f4a83c4c691c8fe4b6286abbaf0399373cd83388b421f183d4252dca45",
+      "src/world/runtime/generation/surface.c.obj": "f4b08c4eff9d19d0d3a764e90df9a9c459403a370102ce79162e61f3511571ca",
+      "src/world/runtime/generation/generation.c.obj": "44bd460cdd3589ad4007138f9bc3c1df1d85da97a00f6142cefd7c480b82a12b",
+      "src/world/runtime/saved_data.c.obj": "2025dea7d65d5690753b192087968350abb4ae846594bca5aaafe5b906ea0842",
+      "src/world/runtime/chunk_provider.c.obj": "04e57ccb483fe22feb5c15d831ecbcdf6f1099897ea660c4ca1e407bd1d94f1f",
+      "src/world/runtime/mutation/world.c.obj": "801b4929f7cbe689f0458dc2937fd0d8911411a2fbdf48842d31b4d597b8a6f8",
+      "src/world/runtime/mutation/drops.c.obj": "a30164e60fe39e5294279aeba9b8ba6c537b78464b62a6d6dd0eeae057599cfd",
+      "src/world/runtime/mutation/rails/wrapper_transport.c.obj": "293cc57e25b551e18c5b854d30d864a80bc70b68ba3f9098e1b7ad2d6a0fa475",
+      "src/world/runtime/mutation/rails/power_search.c.obj": "4f999992d3cf76cc408cea37b527723b57b701a6cbfda475825b7cbf2e6f22b7",
+      "src/world/runtime/mutation/rails/lifecycle.c.obj": "13d4cf1e47ef4a9c7fff89e8e4ab140626b55aeb94eba3637504f8a2cfebc988",
+      "src/world/runtime/mutation/rails/error_sites.c.obj": "2dc2a8126fc13795a3c4471210ee3520a1160e7f794ef6c8346bc2531e379b46",
+      "src/world/runtime/mutation/rails/dispatch.c.obj": "e328ba9f304918eed4251ea101443dc560eb472aea3fc4b24cce6031f7983059",
+      "src/world/runtime/mutation/rails/detector.c.obj": "e915feb6ca40dbd6e840119718099f4b30f53f19190fcdad2f42f9a97142db4d",
+      "src/world/runtime/mutation/rails/connections.c.obj": "b7498e1d45e39e325461888bb10d2542f2f248b74ab7fdfb05c5fb0049c88ede",
+      "src/world/runtime/mutation/pressure_lifecycle.c.obj": "48aa69888f6486bc7914729c4de0f17455d05d306b0fb4fa7b197e4ef0644f96",
+      "src/world/runtime/mutation/pressure_plate.c.obj": "e23b71fcc1fd9bb801d8e9e39bb2ba7faa816bdb0624f65c757bf48eb1f24eb3",
+      "src/world/runtime/mutation/plants/farmland.c.obj": "3b9f482a177c3bdd541ff41b78516dd1c2f3349783f7e3721c7ee598b2bb3b89",
+      "src/world/runtime/mutation/plants/sapling.c.obj": "6f00208c52ade183d52805f3ddc2684eab88acc45911cea68e6211ce6112998a",
+      "src/world/runtime/mutation/plants/crop.c.obj": "620926f5932fc17157c6319d0e3ff95f35c0d9acadabfe2c865804e4ffb23613",
+      "src/world/runtime/mutation/plants/mushroom.c.obj": "fe4d0813205d70489614ea2c649677f4db5026389c85d185fef7481c142b689c",
+      "src/world/runtime/mutation/plants/upright.c.obj": "136e4dfb09a365dba6b0638c6a42088dfa73983a6613951f43b310df472aeb15",
+      "src/world/runtime/mutation/plants/survival.c.obj": "b0fa976b45a3ab6f4778dec517b76932cb258268746e516216ffed9e36a2157d",
+      "src/world/runtime/mutation/snow.c.obj": "f2139b1cbf7e4fef4911bdeade75f8109df8a41fe728e9ab8215ea9826f0e3d5",
+      "src/world/runtime/mutation/falling.c.obj": "46cd747037097dfb5f8fe0f417f52deef578bf064292fda71fb59616776ca6de",
+      "src/world/runtime/mutation/fluids.c.obj": "4f54b567880dc8c8a27dadf4189bd2ddf4083960455669a9043d8e21219c7215",
+      "src/world/runtime/mutation/ticks.c.obj": "3cc1844d108275c47d4aa09655f931a359cfeb99c5c2d51196deb434fffccd11",
+      "src/world/runtime/mutation/redstone/lifecycle.c.obj": "7daf339276e289bc53ce4d2589333511b2105db0c9bc8f01477d3a3e022a4e11",
+      "src/world/runtime/mutation/redstone/update.c.obj": "ab86f7395094e1cd2712cbe6ab43a22377aba10933e1e6145ad45afcd0cf10cb",
+      "src/world/runtime/mutation/redstone/queries.c.obj": "eb077dfd2dfe041cd700905552964efbaa1cc2a972d044c4809951b4f694b2d5",
+      "src/world/runtime/mutation/hooks.c.obj": "53512b57f9a8bcab535161302290829554bef28d80395c37e4d62208a305eee8",
+      "src/world/runtime/mutation/notifications.c.obj": "474bb8171555fd844948f9c42837cd6f18314b1f0cfa8507f7e401f35ee6ab9c",
+      "src/world/runtime/mutation/height.c.obj": "4f74bbf5bc2de61535698c2264b67471d18aaace125c46348752bb2b008b6d06",
+      "src/world/runtime/mutation/chunk.c.obj": "e77c1e86275ba94b9ad63773a18606c0f773d0f61a8a9add8c74fdbc05b7cc5f",
+      "src/world/runtime/mutation/support.c.obj": "60becd455c327b9c4dee69baf7b5a6b83542aefd24305f1a6cd6381f9197d04b",
+      "src/world/runtime/scheduling.c.obj": "bf1be34d8eef8d16399f0ad07b61921ee5ccc5e13ab68e45fd685f978ac3978e",
+      "src/world/chunk/entities.c.obj": "91333f4048c22dd200c14b29c8d53bd802e2e10045ffbdbbbce68e4bf080556e",
+      "src/world/runtime/collision/blocks.c.obj": "5fe1264a5cd6cd766be9326db4fa97f11abda1445cb79e8e99300d9c6a871c96",
+      "src/world/runtime/collision/boxes.c.obj": "bf2053cb943e4588a68229ec13215861b0be364957fe6ef4d3d3135e9153b5cb",
+      "src/world/runtime/collision/class_entities.c.obj": "8ae05b6da095d5a7319ce4b97624a40da8eea168b8c2b5cb5c6d3cc4510d91b4",
+      "src/world/runtime/collision/entities.c.obj": "befe1a33200ee09dbc39c105c1813b6916addd648c2f52753be1c12af1c6192c",
+      "src/world/runtime/entity_update.c.obj": "109794fc2a46862e3460163c605bc961b87bab0d17e71da6e3f3609cba40fa6f",
+      "src/world/runtime/weather.c.obj": "766b32ae87fb677395d9e403565061b27268e3b9bf9a6c7f75b84f360bd4dbf6",
+      "src/world/runtime/entity_tick_tiles.c.obj": "bf1e791e1887845dcf40c16b5c629972f1a3ab4f1d8c93df34758125cc8b1fdc",
+      "src/world/runtime/entity_tick_spawner.c.obj": "105cc318fbaa5d865408ddc39117e27dccd5330ecf564f72a21eaf99ba6851f5",
+      "src/world/runtime/entity_tick_observers.c.obj": "c9a8c7c9a67cadfdab676f8c4ddb3c883270f21a3d90ec516be977dfd51ec875",
+      "src/world/runtime/entity_tick_nearest.c.obj": "805d4ef405a21ab58d00ec685f633d80977c621e7d9c605e08305be9bd49da86",
+      "src/world/runtime/entity_tick_loops.c.obj": "9449ad93587934ba31a24d29607ded7c2e413d96de34016a397e2664cf54c000",
+      "src/world/runtime/entity_tick_lists.c.obj": "5e04b7770bb5a3021408fa48e91f04c2bbc71a12ebaf774bb9da0559c8315123",
+      "src/world/runtime/entity_tick_dispatch.c.obj": "97f0aa15d2622b38836676ffaddec3630f8ddd1b7c7de9c92739b19d739589a1",
+      "src/world/runtime/entity_tick_chunks.c.obj": "641e6107d57d9c73d11f4fdcd11a6313006ad02d11fe19fc5ccdabedc73f9941",
+      "src/world/runtime/entity_tick.c.obj": "8636f4432fac8d0cf875376c1626c2f03e6589183d47b45bce57c58b408b70c8",
+      "src/world/chunk/entity_remove.c.obj": "bd13be46e6385520c13e4b55f68e95148baba0333cd01f7cc9f915bcb24748c2",
+      "src/world/runtime/render_entities.c.obj": "b5fe465a1d0d6e035de0c0182fe5447619b41b0aa02b0ab32ca0fb86006d4e70",
+      "src/world/runtime/entity_publication.c.obj": "181627f4474a2b77813a05b0869c8c8633bce880d23abbd7f27dcd1ad03853b4",
+      "src/world/runtime/world_access.c.obj": "5c0d8756198ef81d708e6385091926be93eb6066957befd754e43c529ed43ee4",
+      "src/world/runtime/presentation.c.obj": "7334dcfa9c0b896a6c6ece8b4f4a9bc3e06aa76f39d7fbef2dca4716c06b9ccd",
+      "src/world/runtime/power/blocks.c.obj": "d24c6185280967963b67dab3cae9a5faf07148832e15d7186f3844133889bad4",
+      "src/world/runtime/power/world.c.obj": "0155d3541b14b61fb74f3de8d21c663d6b95b7a06c1705a8a085548860c6d4a6",
+      "src/world/runtime/solid_support.c.obj": "f08d7b71260fd115ca0283034228df6cf823050a97af909a3bf9c2a11347b6e7",
+      "src/world/runtime/presence.c.obj": "13cbf31ed763bdd4401a62b26bea7992708c29e2b56d81ed678f48b18ee8c3c5",
+      "src/world/runtime/chunks.c.obj": "1381f467697c23dc84c50668223aeabeb33c28862c938c111d68755d2f5f0bdd",
+      "src/world/runtime/propagation.c.obj": "5649124055bb77e406690ca2df7550c575cc73efd682a52c253f11a45bacd68b",
+      "src/world/runtime/lighting.c.obj": "4e4e754b06c670783ff2a33c4089359db5ec4da61ba99bc31d0d90b62154e9dd",
+      "src/world/runtime/population/overworld.c.obj": "1dcd96bb0947e014444b9f5bc0fd617f2c9eda6ebcdcc803be1c38fddd48e348",
+      "src/world/runtime/population/dungeon.c.obj": "3bbcd445cc5966058ed703a6a70be8bb9649a817c887730c8c03afcaf621fd03",
+      "src/world/runtime/population/lake_spring.c.obj": "88b5387a40599d54cafc395f2824f3af6d6483099638eedd309a5d9c56120632",
+      "src/world/runtime/population/ore_clay.c.obj": "ff28c8562cbd6a80f1e311523ea4ec9233bce83e265a14ab0e087b37fa8ded56",
+      "src/world/runtime/population/trees.c.obj": "f061a6778c89a7687714f4587cc8065b4bce69f05aa638ae20c4751739d965f4",
+      "src/world/runtime/population/plants.c.obj": "18786dd8d1074c0840d8acd32b4ad42b3d47431a638cdfb4eac8866fa291f2da",
+      "src/world/runtime/plants.c.obj": "79fb354a7f8625b65f3b00f6b6d525a25b297dd5d668a9577ff2d795afba6048",
+      "src/world/runtime/queries.c.obj": "c5c431da70ab8bbefe590c0c90af8bf18e7db93f0a2251aa2f667f0930ca5af2",
+      "src/world/runtime/height.c.obj": "0d4bcf25f470921900661b11f63bd26fe84292c2e7ffc7fea8610cd64b88d6b0",
+      "src/world/runtime/blocks.c.obj": "bcfb7cc6f9acfcff7ddb0bca0a32a9ae92e4811e76bb9aaaebe4f904cf24614c",
+      "src/world/runtime/material_movement.c.obj": "c995b6bc4a7ee0b87ac1c9199b263fc8aeaeaf86ad3c96594bd4b5a16a48104d",
+      "src/world/runtime/step.c.obj": "5b87a3a3226aefc1d19087c3ffcd16bec7869f573dcf141800663ff13d72889d",
+      "src/world/runtime/contact.c.obj": "71e6fb18c4c5c17757d07bcd237580d737f7fe554ea9142eea8fa9d5176ce55f",
+      "src/world/runtime/movement.c.obj": "1c9a8f8f5b2146900beeadf1dad49941792b85febff932406c7a3068059d2591",
+      "src/world/runtime/environment.c.obj": "0dfeec2710887896cd04801eb4e1c3d9cdf7fd212e7d719e48d8ba09e757adec",
+      "src/world/runtime/dedicated/entity_index.c.obj": "36e54e56497183d347f25d108e6529991ac0abde77210dd3b2c7c32b4773ac2e",
+      "src/world/runtime/terminal_inventory.c.obj": "8be1584b64ca66b7d9336513ed63d2b360fd428572e4c27594958a7b0a7ca1bb",
+      "src/world/runtime/construction.c.obj": "7c822d218394ecd7bd37d524edc30d3dc74c5c27e6ce403cce550c587923c1c9",
+      "src/world/runtime/registry.c.obj": "2fa959d259f5a03fb8fd7013bbd527d0588e409c6e2b7d267d29e31812e9056a",
+      "src/world/runtime/activation.c.obj": "ac02702414c0873cca4405c740c81ec0d9d418c6a9369bb5c9a392c8c4b32073",
+      "src/world/runtime/runtime.c.obj": "28e0cd9da5376f3a22038808d695fc28b909857a7f68d216dc84e8cd58bc8b24",
+      "src/world/runtime/saving/player_metadata.c.obj": "9ebeaf923421d1491b5baa87d8ec0378ebf748da05640d53fe943049af457428",
+      "src/world/runtime/saving/saving.c.obj": "70e1e85e1cadd98e2427158f9365c45d12c20570139f7897c39829f8ee0a3faf",
+      "src/world/runtime/loading/loading.c.obj": "c7415f9004fca2932b28e8506a2ad784314057ba048e54df2a5f1828d60943b2",
+      "src/world/runtime/tile_entities/piston_tick.c.obj": "b7961d148b0020209e18c4075786fabae61dd208606e4e5af02d30433e3a70b4",
+      "src/world/runtime/tile_entities/piston.c.obj": "6bf4501723095e144fc27e09409becd24ccf47e7c6dbaf4d0ce4b7b3dd6aa3c1",
+      "src/world/runtime/tile_entities/piston_math.c.obj": "5b661ad6de88b400a77784736e24f3a75ef90ad44c62e0bdfaa2941c012699d4",
+      "src/world/runtime/tile_entities/tile_entities.c.obj": "ee59ad81d2562ccc7766427285a67eb0d7f714291cc03ddec559be25097e999f",
+      "src/entity/nbt/storage.c.obj": "1e4d93bc67de461b9358f6edec3640d77b5c4a3d5ac16aef2a487354f280a306",
+      "src/entity/nbt/nbt.c.obj": "abd1421a6f1bd48a088bee2658c3b4ddbeb4d0b5d0ba6bf7a1f58b8719b9bd1c",
+      "src/entity/nbt/factory.c.obj": "ca5ed9e10e35f3cac981ef671a856f455197ae74aac44940ac8d071aab85e959",
+      "src/entity/movement/environment.c.obj": "9f61b2bf637e562b0ade9e21515a07d3fcc7450b5aba104314c977b1dda50a29",
+      "src/entity/movement/material.c.obj": "3d052c657a502899bdefc86f5a8822ef288c1e1ef1713f8e6d340901b5e964b9",
+      "src/entity/movement/turn.c.obj": "b476eb2ffdb613cd3eefbef586511567fc69139ec66ff0a9449c0d58b90f9af4",
+      "src/entity/movement/effects.c.obj": "f687eba2984a8097a46467943e041db2670cd1a596e7c89b0859c78818012534",
+      "src/entity/movement/movement.c.obj": "db2e77cdabdda46783f8262c393a2e8ef85540363c86e689650620f13c03ea5e",
+      "src/inventory/runtime/map.c.obj": "20d8607ce2a15a7ac1d74ecd573fcde5cf27ca5f3033a7fd8fb7c7e9d9c89a3d",
+      "src/inventory/runtime/tick.c.obj": "f6912805f4f24f7c29b81d7e3234c09a0d2e5f83f407032bbce0959383a26f89",
+      "src/entity/tick/watcher.c.obj": "7928cab6bd9df10fb3a82c38aaf6ac2292b675b90ad9c47860b103f08acca433",
+      "src/entity/tick/suffocation.c.obj": "0173863b0a727cbec70bdda95fb800851b478629b5b227bd6d562d52447b0f6e",
+      "src/entity/tick/environment.c.obj": "25ba9dd6df162b7758eea5c4c2130236fce3d0b53138020e98f9c446485ddd19",
+      "src/entity/tick/common.c.obj": "3afbef91a475fe32e864e8cfa7b221056445a2f41b0e010bf0e9735a20290ece",
+      "src/entity/living/travel.c.obj": "07a653be57be5c51d9e5b62689d6ab0bd2ea2072711947f9520a1abf122bff5a",
+      "src/server/runtime/construction.c.obj": "4e35d038ccf83b8216316ce4f29282600fb388ef2c9d03104e50e0e67655c85f",
+      "src/client/statistics/writer.c.obj": "6e7c6225979087c9cc86fa6daa33f6085cf0c6af0b6395a6e25880e072014900",
+      "src/client/statistics/workers.c.obj": "243c1283c24d11c559f265c36fe2094127d371477e5f10f4315a38acae24f0c6",
+      "src/client/statistics/owner.c.obj": "3609ed9b133e00e437d9357e5f1af302a38e472c95ed1cf20efc8a4473676599",
+      "src/client/statistics/maps.c.obj": "09dcf3018bd95b9d538382a485af584148ddf12de22bf09cdc3a3a44ec21dc6a",
+      "src/client/statistics/json.c.obj": "5f562833cc09e6b77940ba04fe893da1bbb95716ec474516c13a5cad0d046f04",
+      "src/client/statistics/files.c.obj": "aa5f95a106f442cfdf9a3539ba679b30cd532c9f5157027e9959d20a8974ea7e",
+      "src/client/statistics/diagnostic.c.obj": "06547eb917d1c21c1cd57c25ac8d5ec1b747de495c9e02f36021b573f4a24682",
+      "src/client/statistics/checksum.c.obj": "0b02b0809c16c7e13de6250226a58d2b13f44b62f33493f250c4f991107c4b0e",
+      "src/client/particles/application.c.obj": "0c2e332439abed247a364cb703da8d387806b8c9feda44ac2c31b6db65421fb3",
+      "src/client/particles/effect_renderer.c.obj": "f3f0cccfe8f32d2ec12b0dafe8fcfcff6a6cbb0cfe9cddb597ecd432220e1a8f",
+      "src/entity/player/pickup.c.obj": "f261bb7886c8139c4623159a8b523cd4a04982433baed7c3967bdcc7d2e82c3f",
+      "src/entity/particles/origin.c.obj": "f958cabff518d7702ca0afafd93777036a9ab291bed42064475cc198f96d293c",
+      "src/entity/particles/item.c.obj": "bd54ccdc9d38e0d30ab1c810fe8575118ddf6c43ce0ba6028a4858feb574e0d5",
+      "src/entity/particles/pickup.c.obj": "ef00e7f6935bfcce502140837f499f5de47df69f97a3b6e7dca733c0570773fc",
+      "src/entity/player/atan2.c.obj": "241ac04f62d6dbe5463d6ff43245be34486f6a40518707408b6dddfb71b47171",
+      "src/entity/player/eligibility.c.obj": "bd097e90115b8b3f4680e486fd568112260bdfaf5dba9b3d42c6e0cb916761e6",
+      "src/entity/player/pushout.c.obj": "f9ec0f960276f91c6eee3184944c20ad44e8ba4bf00de039d66388d080396de4",
+      "src/entity/living/sleeping.c.obj": "34e23f229a0f76965f4b16ddb1dd2bb8ba9cab6ece293681ef86da9cfded87b0",
+      "src/entity/render_distance.c.obj": "9506c8d95c4c970bd8cb87a2d265e673b4d438603363d64ffe1448472e1ba58d",
+      "src/entity/position.c.obj": "f8dd10bc1038b7790c0ddb3abcd4680e8b7f9f67558ad27790097c22800546a9",
+      "src/entity/player/spawn.c.obj": "4fe53bbb3b924dce676e5aaea0a7db6c17b51e5042727f6d709945502af90a32",
+      "src/entity/player/nbt.c.obj": "ea86620cc50a0757b75d6bb12f165f7b9672b3695e6b72b1b73481dc6230c2a0",
+      "src/entity/player/player_tick.c.obj": "438d75b6a534aced34f958c0d2145b208c71713c77f9fcb1c7dbd6754db75bae",
+      "src/entity/player/living_tick.c.obj": "38a8db27b89d94fbc3ebf79a8d83a3c15578a396ce99f0b7a2d8742a67198322",
+      "src/entity/player/local_tick.c.obj": "5bf6d4ca4702142e4ce31fda745ecc97d0e3e974835826e489eafd38046e90c3",
+      "src/entity/player/tick.c.obj": "ca3297674746f98b29ebeb5eb199e7710d2d37bc40ec9dff0ad600a9736bec68",
+      "src/inventory/runtime/nbt.c.obj": "6e337ab51ce7d310fb80928141a9fc1fad6a59355d6f15fee2956699dec387e2",
+      "src/inventory/runtime/insertion.c.obj": "5b3a29250a0b90bc0efee4580fbd58ba7a3adcfca55a02ce79ef6dba26c6cc4f",
+      "src/entity/item/pushout.c.obj": "6255ce3a0242271d7a69e81b868bb7a0d253d427f03514541106d6554de0c41a",
+      "src/entity/item/tick.c.obj": "cb06e68afc2d2bf931cdbef6da7f31ce1858375bcf4467cbf073f184e9371b5d",
+      "src/entity/item/pickup.c.obj": "135228916ab0b24acabe807ddbdef5868d14371eaf72fc71ae0e36390c1bb38a",
+      "src/entity/action/angle.c.obj": "7ee45f164df9e0d09012a8112e8489fa42b3fc6541f8d7fd02474daf0f0d6a7d",
+      "src/entity/action/atan.c.obj": "91f5c50cb5defa2b473630bc119150b4654d128145a9f9ed4948abcda895089c",
+      "src/entity/action/push.c.obj": "112ad1b0ccaa8753d0c394c5ba5288a0968776f35220bb31bb74fe5752f9441b",
+      "src/entity/action/input.c.obj": "ed64ed4768fd574fb4ac08525d88469b5716e8578a746c9fd6b26f55f84f3ec4",
+      "src/entity/action/common.c.obj": "9fafcff45c325a5d21a7e50321c73590f1ff0baeefeac05ea1195236c93f58b8",
+      "src/entity/action/action.c.obj": "83962ce49ec29c7929c21742a65367c19efdc333c295e43eb8e232d80ffe9145",
+      "src/entity/player/statistics.c.obj": "cb90be0cc7b0eedb9ac0a0edd51f9a05fd9eaa0f654d788e014fc9fd5bf6213e",
+      "src/client/statistics/source_files.c.obj": "51066f1bf2799db25e52fec341a0a1c2ad32917fd09c299967b571be713f2598",
+      "src/client/statistics/source_diagnostics.c.obj": "a24162b136cc898d8db9ad50d4eab0707845cc508c5fbb09995b5ef448ac3a30",
+      "src/client/statistics/source_classes.c.obj": "7918f4b08208b0c56296af4489caae4803ae5f99b725cb7ce414089f9d33bc1b",
+      "src/client/statistics/application.c.obj": "9d0f7e6c79e5690067a1f76bff8ad408c8999ad5a46abf0ea25fd4772df69754"
+    },
+    "shared_dependency_libraries_sha256": {
+      "mc_simulation.lib": "09cb0d3aa45522d5ee0d4f6b2469633440b6b275b7b7f3a4b82943acd902ae82",
+      "mc_persistence.lib": "adb297308575c7b5dac779cc0d189c9682c65429eebc23daf0b9a7456fd49780",
+      "mc_world_saved_data.lib": "a067ac10cc292022118b8e3b3d45ed3d2d2deefdff577debc01318d50d93b66d",
+      "mc_gzip_input.lib": "3127e882fec5e5940b6bbf1f2e2a27f60de637f3f8261e5321a53223f6debee8",
+      "mc_compressed_output.lib": "55a8e69f3d914ac0e3b0e401ac875c4c5fd55774b17d6e2c5ed09a4c1467cc84",
+      "mc_inventory.lib": "6bee56d5813d3f71ed301def6221b76cdfbd7671d494da105f6fd053219c9cae",
+      "mc_movement_input.lib": "ffe8897708bf65849a9a669c16b841943cf643b01ab402efe3255ce8aad0c938",
+      "mc_math_classes.lib": "2357f1dc3f48284c39cd24b3cd2849c6b0e641f21a13014f30332701f064c29d",
+      "mc_client_notice.lib": "c140a47ebbb2b01067d7293750611456fa49e69cc0c43a9f2e9cdd1f0bdbb5fc",
+      "mc_registry.lib": "50cc6d773aabb6527d0683a629e5e9dc4fbc80d353dd3889632183a71059dfa3",
+      "mc_item.lib": "534db0ccb1d9532a4bc3f6e888d0447570ba037cb9bc87923db96ec8453182cc",
+      "mc_world.lib": "f604ff4617084aba86dfbe0c2f886b53910385dd15284f3cceecdf820e9cc36b",
+      "mc_block.lib": "2da59c234fa37e020ed367651d9fa99bd97391f54cfea73d807a1950e1d89008",
+      "mc_entity_classes.lib": "2f3866b1b4691a46b02e3626bab53931efa2952121dbf9751ca0e5ead44a7454",
+      "mc_game_settings.lib": "f6e36d14bdfbbbc21c548e9c9473b516566c3b9811f9c839641bcb16fd37042b",
+      "mc_client_sound_pool.lib": "b1527af4dc873aabbbe4e190cd01536fb6c0e18f89395890050266bef052cd8e",
+      "mc_client_sound_files.lib": "de4b0559034bc595a0839150af65cf9b54cae1ce6686e61239ee12786cc5d100",
+      "mc_java_file_urls.lib": "936bedbc296602d4895c9d3d2daa8f6ea9dbd655ba2214d9491ce1599c8add51",
+      "mc_client_game_directory.lib": "5ca915956bb6ffdd4b79e5278be8857c2ed0123097187af310df99e7d0b6fec2",
+      "mc_client_directory_native.lib": "b5a2700df2d65a8f3008f4a4e53906849d88008328572834bd9b79720f81fdfd",
+      "mc_java_file_writers.lib": "2ba6cc7b42ac73df5cf939ef9e352acc4b37b76f33f69c5b693900a7f5e940a6",
+      "mc_java_outputs.lib": "2a847665d6e7072063d604aa03b23b2c6db081146feb4337b878ca2e09dbf379",
+      "mc_java_files.lib": "5c65cd76fc986e15201b7c678a5f3e9863869f1dec476728d84b504c1f142bf1",
+      "mc_world_info.lib": "c939f7e4dfc18634226547cb27184344129b8cd2678ddc84ba078cd4e1c5c089",
+      "mc_storage.lib": "aa1c65b08f8d1ef1ace928d9fbfe0d2af5e369bf159ff5ed167fefa892aa80b5",
+      "_deps\\mc_zlib-build\\zs.lib": "0c053dff21c709b4f3656768ad386815b184058ff41bd5e8bbba948daafff29d",
+      "mc_core.lib": "83709cd05c538bce0db1329ab6a553dd7b46413b5e2dfd9dd8b990c54874a70b",
+      "mc_platform_time.lib": "2a56dea5f2753ea9f3b016905becebbb95fffaa502d151d47a99c8fb21fd02bf",
+      "mc_platform_text.lib": "007c14e4377dff6796e8d884dcdec7dc7b6622074921e4cd92a09cbd3e7d6c4b",
+      "mc_platform_files.lib": "3cf09170e145e13a92c0502d2b04fd5b42613a59d5f1416ce9dedccbc1653a73"
+    }
+  },
+  "summary": {
+    "confirmation_public_median_ms": 8.39885,
+    "confirmation_failure_median_ms": 0.74005,
+    "median_reduction_percent": 91.18867463998048,
+    "confirmation_public_p95_ms": 9.5065,
+    "confirmation_failure_p95_ms": 0.9652
+  },
+  "captures": {
+    "initial_42_samples": {
+      "status": "PASS",
+      "rounds": 3,
+      "total_samples": 42,
+      "host": {
+        "platform": "Windows-10-10.0.19045-SP0",
+        "machine": "AMD64",
+        "processor": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel"
+      },
+      "workload": {
+        "chunks": 9,
+        "points": 1024,
+        "calls_per_sample": 65536,
+        "samples_per_process": 7,
+        "failure_controls": 8,
+        "success_branch_controls": 5,
+        "point_success_controls": 1024
+      },
+      "summary": {
+        "public": {
+          "samples": 21,
+          "mean_ms": 8.058485714285714,
+          "median_ms": 8.0652,
+          "p95_ms": 8.7214,
+          "min_ms": 7.6653,
+          "max_ms": 8.8288
+        },
+        "failure": {
+          "samples": 21,
+          "mean_ms": 0.7404761904761905,
+          "median_ms": 0.7235,
+          "p95_ms": 0.7941,
+          "min_ms": 0.718,
+          "max_ms": 0.8178
+        }
+      },
+      "ordered_processes": [
+        {
+          "round": 0,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "88288",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "80789",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "79352",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "82613",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "79950",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "80625",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "79738",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 0,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "7766",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "7193",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7180",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "7196",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "7191",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "7182",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "7190",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 1,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "7788",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "7318",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7347",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "7271",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "8178",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "7626",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "7639",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 1,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "87214",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "81260",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "82216",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "81280",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "81738",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "81761",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "81520",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 2,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "78272",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "76653",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "77491",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "77243",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "80652",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "76675",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "76952",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 2,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "7941",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "7233",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7366",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "7210",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "7234",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "7235",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "7216",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        }
+      ]
+    },
+    "confirmation_84_samples": {
+      "status": "PASS",
+      "rounds": 6,
+      "total_samples": 84,
+      "host": {
+        "platform": "Windows-10-10.0.19045-SP0",
+        "machine": "AMD64",
+        "processor": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel"
+      },
+      "workload": {
+        "chunks": 9,
+        "points": 1024,
+        "calls_per_sample": 65536,
+        "samples_per_process": 7,
+        "failure_controls": 8,
+        "success_branch_controls": 5,
+        "point_success_controls": 1024
+      },
+      "summary": {
+        "public": {
+          "samples": 42,
+          "mean_ms": 8.55905238095238,
+          "median_ms": 8.39885,
+          "p95_ms": 9.5065,
+          "min_ms": 7.9095,
+          "max_ms": 9.5809
+        },
+        "failure": {
+          "samples": 42,
+          "mean_ms": 0.770802380952381,
+          "median_ms": 0.74005,
+          "p95_ms": 0.9652,
+          "min_ms": 0.7255,
+          "max_ms": 1.0466
+        }
+      },
+      "ordered_processes": [
+        {
+          "round": 0,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "84091",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "81936",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "81049",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "80959",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "82107",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "81443",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "81120",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 0,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "7940",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "7292",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7284",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "7291",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "7282",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "7306",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "7293",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 1,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "7774",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "7261",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7964",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "7276",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "7284",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "7293",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "7292",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 1,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "80873",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "79753",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "80132",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "79095",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "80189",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "79354",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "81659",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 2,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "92668",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "89970",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "92096",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "90855",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "91654",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "91765",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "90420",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 2,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "7832",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "8138",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7281",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "7261",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "7292",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "7285",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "7255",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 3,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "8007",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "7412",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7416",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "10145",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "7446",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "7389",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "7441",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 3,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "85114",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "84963",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "85172",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "84229",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "84233",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "84163",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "82545",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 4,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "81460",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "79510",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "81194",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "79509",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "80952",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "80244",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "83886",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 4,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "8068",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "7536",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7526",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "7524",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "7542",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "9327",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "9652",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 5,
+          "variant": "failure",
+          "context": {
+            "adapter": "failure",
+            "success-error": "untouched",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "7811",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "7278",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "7286",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "7283",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "7264",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "10466",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "7742",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        },
+        {
+          "round": 5,
+          "variant": "public",
+          "context": {
+            "adapter": "public",
+            "success-error": "full",
+            "error-bytes": "7352",
+            "calls": "65536",
+            "points": "1024",
+            "samples": "7",
+            "chunks": "9",
+            "planes": "6924617187916519194",
+            "coordinates": "9991975581628547912",
+            "public-init-per-call": "1",
+            "public-copy-per-call": "1",
+            "public-nominal-bytes-per-sample": "963641344"
+          },
+          "samples": [
+            {
+              "sample": "0",
+              "ticks": "95809",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "1",
+              "ticks": "94414",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "2",
+              "ticks": "95065",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "3",
+              "ticks": "95178",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "4",
+              "ticks": "94255",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "5",
+              "ticks": "94944",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            },
+            {
+              "sample": "6",
+              "ticks": "94775",
+              "frequency": "10000000",
+              "calls": "65536",
+              "result": "5311586382542596995",
+              "planes": "6924617187916519194",
+              "owner-same": "1",
+              "world-same": "1",
+              "random-same": "1",
+              "holds-same": "1",
+              "acquisition-gets": "0"
+            }
+          ],
+          "controls": [
+            "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+            "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+            "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+            "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+            "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+          ],
+          "finish": "EW_CPU_FINISH checks=461917 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+          "semantic_equal": true,
+          "authored_inputs_unchanged": true,
+          "authored_files": {
+            "level.dat": {
+              "bytes": 177,
+              "sha256": "c4930f867ea6fc9bc9e4acbe6ad464d291ad16238f5cd83abbe3c3e81182ca6e"
+            },
+            "region/r.-1.-1.mcr": {
+              "bytes": 12288,
+              "sha256": "6e97ee23dc6d27b53f1ce12cc10dc854683fb220d2db2cd5d1b4d63ed1bbc8a0"
+            },
+            "region/r.-1.0.mcr": {
+              "bytes": 16384,
+              "sha256": "7551abffb8b6c9f3ef70ec3c909c7c8daeaddd8ff911726fa61b93780f3fe776"
+            },
+            "region/r.0.-1.mcr": {
+              "bytes": 16384,
+              "sha256": "4ffa1d7aeb3d7098a39715634b9ee27d2eb501e8954555e7b6c966dfcaf87ccc"
+            },
+            "region/r.0.0.mcr": {
+              "bytes": 24576,
+              "sha256": "a1a595fbfd303a0a0b87eac6d32bda0c8ac0bf5f001854e63a9ccbeca1c48b9f"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "additional_untimed_owner_proof": {
+    "status": "PASS",
+    "shared_control_object_sha256": "1fec004838eb2e435d38ec5f3f641cc79589ebba3a50615a57d6837f7db1e1ef",
+    "benchmark_source_sha256": "46eb28b814ef4ec690a87f596719190dbba5f5ea4435a9ff258f66f232b0eacd",
+    "executables_sha256": {
+      "public": "2c2fa0d01c01d6fa6c9df0aac5db81a3f4513bae2344ea9d2ad78462fa74e894",
+      "failure": "c72cf50c74c6ae236be0635323472fb2843b8031040bb5e2ae0a7cbd561c0f1f"
+    },
+    "actual_controls": [
+      {
+        "variant": "public",
+        "context": {
+          "adapter": "public",
+          "success-error": "full",
+          "error-bytes": "7352",
+          "calls": "65536",
+          "points": "1024",
+          "samples": "0",
+          "chunks": "9",
+          "planes": "6924617187916519194",
+          "coordinates": "9991975581628547912",
+          "public-init-per-call": "1",
+          "public-copy-per-call": "1",
+          "public-nominal-bytes-per-sample": "963641344"
+        },
+        "controls": [
+          "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+          "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+          "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+          "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+          "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+          "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+          "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+          "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+          "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+          "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+          "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+          "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+          "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+        ],
+        "finish": "EW_CPU_FINISH checks=6257 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+        "authored_inputs_unchanged": true
+      },
+      {
+        "variant": "failure",
+        "context": {
+          "adapter": "failure",
+          "success-error": "untouched",
+          "error-bytes": "7352",
+          "calls": "65536",
+          "points": "1024",
+          "samples": "0",
+          "chunks": "9",
+          "planes": "6924617187916519194",
+          "coordinates": "9991975581628547912",
+          "public-init-per-call": "1",
+          "public-copy-per-call": "1",
+          "public-nominal-bytes-per-sample": "963641344"
+        },
+        "controls": [
+          "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+          "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+          "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+          "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+          "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+          "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+          "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+          "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+          "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+          "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+          "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+          "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+          "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+        ],
+        "finish": "EW_CPU_FINISH checks=6257 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+        "authored_inputs_unchanged": true
+      }
+    ],
+    "scope": "Full EW owner bytes are checked before/after every public/helper control, including active/retiring cases. All Chunk planes and World bytes are checked across all entered-point and failure/guard controls. No timing samples."
+  },
+  "private_failed_attempt": {
+    "status": "FAIL",
+    "retained_privately": true,
+    "public_processes": 1,
+    "failure_processes": 0,
+    "accepted_timing_samples": 0,
+    "reason": "The first public-only attempt stopped at an aggregate continuity guard before candidate timing. That harness compared observer structures through padding-sensitive byte comparisons. The qualified harness compares every provider observation field and explicitly copies full owner bytes; every semantic guard remains. No failed-attempt sample is reused."
+  },
+  "artifact_exclusions": [
+    "Original Java archives, class files and Code bytes",
+    "Imported original assets",
+    "Save payloads and personal worlds",
+    "Pointer addresses and private absolute paths"
+  ],
+  "reproduce": [
+    "Configure MC_BUILD_BENCHMARKS=ON in a matching Release build.",
+    "Build mc_benchmark_chunk_cache_public and mc_benchmark_chunk_cache_failure; their workload OBJECT target is shared.",
+    "python -B tests/tools/world/benchmark_chunk_cache.py --executable public=PUBLIC_EXE --executable failure=FAILURE_EXE --rounds 3 --artifacts NEW_PRIVATE_DIRECTORY",
+    "Use --mode controls for the same genuine construction/failure/ownership checks without a timed sample."
+  ],
+  "published_harness_validation": {
+    "status": "PASS",
+    "scope": "Strict target builds and untimed controls after moving the complete unchanged static equality function into its file-scope include. No runtime or timed-interval change; captured timing cohorts remain bound to their original products.",
+    "clang_format": "18.1.3",
+    "format_dry_run": "PASS",
+    "windows_configuration": "MSVC Release",
+    "linux_configuration": "Clang 18 Debug ASan/UBSan",
+    "linux_options": [
+      "detect_leaks=1",
+      "halt_on_error=1",
+      "print_stacktrace=1"
+    ],
+    "preserved_compile_red_sha256": "756d57ee23a6c6c6ebd1146f644ce4c2474b7f5092c34170dbc402e06c6a3518",
+    "error_function_tokens_unchanged": true,
+    "timed_interval_tokens_unchanged": true,
+    "platforms": {
+      "windows": {
+        "status": "PASS",
+        "mode": "controls",
+        "samples": 0,
+        "profiles": 2,
+        "executables_sha256": {
+          "public": "0678b690d649b72271f6b1b122808f5701ba2777f5eafe988d59100731dd958a",
+          "failure": "4cf99ac86426397200e4aae7a4a93a68cbfda5ff00794770a808051f08379c2e"
+        },
+        "controls": [
+          {
+            "variant": "public",
+            "context": {
+              "adapter": "public",
+              "success-error": "full",
+              "error-bytes": "7352",
+              "calls": "65536",
+              "points": "1024",
+              "samples": "0",
+              "chunks": "9",
+              "planes": "6924617187916519194",
+              "coordinates": "9991975581628547912",
+              "public-init-per-call": "1",
+              "public-copy-per-call": "1",
+              "public-nominal-bytes-per-sample": "963641344"
+            },
+            "controls": [
+              "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+              "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+              "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+              "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+              "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+            ],
+            "finish": "EW_CPU_FINISH checks=6257 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+            "authored_inputs_unchanged": true
+          },
+          {
+            "variant": "failure",
+            "context": {
+              "adapter": "failure",
+              "success-error": "untouched",
+              "error-bytes": "7352",
+              "calls": "65536",
+              "points": "1024",
+              "samples": "0",
+              "chunks": "9",
+              "planes": "6924617187916519194",
+              "coordinates": "9991975581628547912",
+              "public-init-per-call": "1",
+              "public-copy-per-call": "1",
+              "public-nominal-bytes-per-sample": "963641344"
+            },
+            "controls": [
+              "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+              "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+              "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+              "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+              "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+            ],
+            "finish": "EW_CPU_FINISH checks=6257 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+            "authored_inputs_unchanged": true
+          }
+        ],
+        "report_sha256": "b06cc5c6e85479ea900458f4754e024df5209072c5ef5620d60778ccb355d7ef"
+      },
+      "linux": {
+        "status": "PASS",
+        "mode": "controls",
+        "samples": 0,
+        "profiles": 2,
+        "executables_sha256": {
+          "public": "29d9f0d2a085d23dbcce554fb61f051ea4707d7b0769b80995ba517ac5f6f1cc",
+          "failure": "f1d6e2ca75be6e4dfb1b2c1245393dae1d79d5acbb5f6be6f7f91cf1c99acccc"
+        },
+        "controls": [
+          {
+            "variant": "public",
+            "context": {
+              "adapter": "public",
+              "success-error": "full",
+              "error-bytes": "7352",
+              "calls": "65536",
+              "points": "1024",
+              "samples": "0",
+              "chunks": "9",
+              "planes": "6924617187916519194",
+              "coordinates": "9991975581628547912",
+              "public-init-per-call": "1",
+              "public-copy-per-call": "1",
+              "public-nominal-bytes-per-sample": "963641344"
+            },
+            "controls": [
+              "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+              "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+              "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+              "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+              "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+            ],
+            "finish": "EW_CPU_FINISH checks=6257 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+            "authored_inputs_unchanged": true
+          },
+          {
+            "variant": "failure",
+            "context": {
+              "adapter": "failure",
+              "success-error": "untouched",
+              "error-bytes": "7352",
+              "calls": "65536",
+              "points": "1024",
+              "samples": "0",
+              "chunks": "9",
+              "planes": "6924617187916519194",
+              "coordinates": "9991975581628547912",
+              "public-init-per-call": "1",
+              "public-copy-per-call": "1",
+              "public-nominal-bytes-per-sample": "963641344"
+            },
+            "controls": [
+              "EW_CPU_CONTROL name=null-cache status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-out status=1 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native accessor arguments exact-public-failure=1",
+              "EW_CPU_CONTROL name=active status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+              "EW_CPU_CONTROL name=retiring status=2 value=777 method=a descriptor=(III)I pc=0 child=0 native=1 nested=0 operation=ew native active/retiring accessor exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-block-backing status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+              "EW_CPU_CONTROL name=short-block-backing status=6 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk block index exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-data status=5 value=777 method=a descriptor=(III)I pc=100 child=15 native=0 nested=0 operation=actual Chunk null block array exact-public-failure=1",
+              "EW_CPU_CONTROL name=null-outer status=5 value=777 method=a descriptor=(III)I pc=46 child=0 native=0 nested=0 operation=actual ew block null outer array exact-public-failure=1",
+              "EW_CPU_CONTROL name=y-guard-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=negative-row-before-null status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=high-row-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=high-y-zero status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0",
+              "EW_CPU_CONTROL name=failed-constructor-null-cell status=0 value=0 method=a descriptor=(III)I pc=0 child=0 native=0 nested=0 operation=NULL exact-public-failure=0"
+            ],
+            "finish": "EW_CPU_FINISH checks=6257 cleanup=1 genuine-world=1 genuine-ew=1 gl=0",
+            "authored_inputs_unchanged": true
+          }
+        ],
+        "report_sha256": "6d537258f744729728aca3cdc57ad94badd09bbbbc920e245d46d41d74bbb472"
+      }
+    }
+  }
+}

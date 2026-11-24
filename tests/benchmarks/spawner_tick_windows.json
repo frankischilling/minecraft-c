@@ -1,0 +1,493 @@
+{
+  "schema": 1,
+  "scope": "Four fresh serial Windows SDK processes on physical monitor2: actual Timer/World.g countdown, two independent expired-Pig save/reselection runs, and post-publication failure/App cleanup.",
+  "source_set": {
+    "selected_inputs": 2362,
+    "canonical_relative_map_sha256": "b137835f23483793554698716919f32fd43cb655796765ae944d8a43e9ed1170",
+    "executable_sha256": "714462e8fec827635676c102aeb510f4e2e5a16bb36589fcfe6c6ab3cc3b7ce0",
+    "selection": "Source/include/CMake/client harness inputs and sibling DLLs selected by the retained runner. Compiler, full dependencies, desktop contents and all repository text are outside this selector."
+  },
+  "records": [
+    {
+      "profile": "countdown",
+      "checks": 374,
+      "physical_monitor_work": [
+        -1920,
+        0,
+        1920,
+        1040
+      ],
+      "native": {
+        "checks": 374,
+        "window_ids": [
+          3,
+          4
+        ],
+        "active": {
+          "entity_calls": 4,
+          "attempts": 0,
+          "factory": 0,
+          "predicates": 0,
+          "accepted": 0,
+          "inserted": 0,
+          "smoke": 4,
+          "flame": 4,
+          "explode": 0,
+          "resets": 0,
+          "pigs": 0,
+          "delay": 32763,
+          "time": 4
+        }
+      },
+      "images": {
+        "spawner-tick.png": {
+          "bytes": 215953,
+          "sha256": "9ec4f411c7c60ab761d87888e6a4a63252d07a6081f4db816b6d79114e630ffc",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        }
+      },
+      "receipt": {
+        "bytes": 692856,
+        "sha256": "30d844a66da305978e3bee819d74c982f41a855b9d6a3379dcf91feacef24355"
+      },
+      "stdout_text_file": {
+        "bytes": 1109,
+        "sha256": "ac9c387a07415ab72e815d9340894a790d5fed53fe18bfef06927d435d5dcac1"
+      },
+      "stderr_text_file": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "selected_inputs_unchanged": true,
+      "imported_assets_unchanged": true,
+      "actual_windows_closed": true
+    },
+    {
+      "profile": "success",
+      "checks": 942,
+      "physical_monitor_work": [
+        -1920,
+        0,
+        1920,
+        1040
+      ],
+      "native": {
+        "checks": 942,
+        "window_ids": [
+          3,
+          4
+        ],
+        "reloaded_pigs": 1,
+        "readback": {
+          "chunks": [
+            {
+              "chunk": [
+                -1,
+                0
+              ],
+              "loaded": true
+            }
+          ],
+          "pigs": [
+            {
+              "runtime": {
+                "pos": [
+                  13834091045124069828,
+                  4634204016564240384,
+                  4613010451909672661
+                ],
+                "motion": [
+                  0,
+                  13813685773000465449,
+                  0
+                ],
+                "rotation": [
+                  1084347794,
+                  0
+                ],
+                "health": 10,
+                "hurt": 0,
+                "death": 0,
+                "attack": 0,
+                "fire": -1,
+                "air": 300,
+                "grounded": 1,
+                "saddle": 0,
+                "chunk": [
+                  -1,
+                  0
+                ]
+              },
+              "input": {
+                "pos": [
+                  13834091045124069828,
+                  4634204016564240384,
+                  4613010451909672661
+                ],
+                "motion": [
+                  0,
+                  13813685773000465449,
+                  0
+                ],
+                "rotation": [
+                  1084347794,
+                  0
+                ],
+                "health": 10,
+                "hurt": 0,
+                "death": 0,
+                "attack": 0,
+                "fire": -1,
+                "air": 300,
+                "grounded": 1,
+                "saddle": 0,
+                "chunk": [
+                  -1,
+                  0
+                ]
+              }
+            }
+          ]
+        },
+        "active": {
+          "entity_calls": 4,
+          "attempts": 4,
+          "factory": 4,
+          "predicates": 4,
+          "accepted": 1,
+          "inserted": 1,
+          "smoke": 24,
+          "flame": 24,
+          "explode": 20,
+          "resets": 1,
+          "pigs": 1,
+          "delay": 387,
+          "time": 4
+        }
+      },
+      "images": {
+        "spawner-tick.png": {
+          "bytes": 213480,
+          "sha256": "f8c8308fbb3173e8b8e37758ff5ef5bc85a4fd5bc503ce5f82a5bc729fee6506",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "spawner-tick-title.png": {
+          "bytes": 32668,
+          "sha256": "2fb13967c9f7c4eb31fbbad34040443522336753d97a698acc39412b00139e97",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "spawner-tick-reloaded.png": {
+          "bytes": 153990,
+          "sha256": "1f3578ffa640ed43bbc6d4f3dc6178c7c823919be092bc284022c19f8243b9a1",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        }
+      },
+      "receipt": {
+        "bytes": 699771,
+        "sha256": "8335e05de62e50e81e87aa4885925f113e8d7b63f2743d2a9fa123c8735b4a16"
+      },
+      "stdout_text_file": {
+        "bytes": 2505,
+        "sha256": "124e2313ac3350a43bfe5092331771b3fa8340c922c86ba3c18de4c42826179f"
+      },
+      "stderr_text_file": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "selected_inputs_unchanged": true,
+      "imported_assets_unchanged": true,
+      "actual_windows_closed": true,
+      "save_reload": {
+        "all_disk_pigs": 1,
+        "disk_pigs_in_witnessed_loaded_chunks": 1,
+        "disk_pigs_in_witnessed_unloaded_chunks": 0,
+        "imported_records_matched_one_for_one": true,
+        "fresh_spawner_insertions_on_reload": 0,
+        "save_time": 5
+      }
+    },
+    {
+      "profile": "success",
+      "checks": 971,
+      "physical_monitor_work": [
+        -1920,
+        0,
+        1920,
+        1040
+      ],
+      "native": {
+        "checks": 971,
+        "window_ids": [
+          3,
+          4
+        ],
+        "reloaded_pigs": 2,
+        "readback": {
+          "chunks": [
+            {
+              "chunk": [
+                -1,
+                0
+              ],
+              "loaded": true
+            },
+            {
+              "chunk": [
+                0,
+                0
+              ],
+              "loaded": true
+            }
+          ],
+          "pigs": [
+            {
+              "runtime": {
+                "pos": [
+                  13817472779522441392,
+                  4634233571435872256,
+                  4616876134319679982
+                ],
+                "motion": [
+                  13808235882202593088,
+                  4599674017386589685,
+                  4580955942384053248
+                ],
+                "rotation": [
+                  1114796002,
+                  0
+                ],
+                "health": 10,
+                "hurt": 0,
+                "death": 0,
+                "attack": 0,
+                "fire": -1,
+                "air": 300,
+                "grounded": 0,
+                "saddle": 0,
+                "chunk": [
+                  -1,
+                  0
+                ]
+              },
+              "input": {
+                "pos": [
+                  13817472779522441392,
+                  4634233571435872256,
+                  4616876134319679982
+                ],
+                "motion": [
+                  13808235882202593088,
+                  4599674017386589685,
+                  4580955942384053248
+                ],
+                "rotation": [
+                  1114796002,
+                  0
+                ],
+                "health": 10,
+                "hurt": 0,
+                "death": 0,
+                "attack": 0,
+                "fire": -1,
+                "air": 300,
+                "grounded": 0,
+                "saddle": 0,
+                "chunk": [
+                  -1,
+                  0
+                ]
+              }
+            },
+            {
+              "runtime": {
+                "pos": [
+                  4609876781935633098,
+                  4634204016564240384,
+                  4608117754419839086
+                ],
+                "motion": [
+                  0,
+                  13813685773000465449,
+                  0
+                ],
+                "rotation": [
+                  1111129704,
+                  0
+                ],
+                "health": 10,
+                "hurt": 0,
+                "death": 0,
+                "attack": 0,
+                "fire": -1,
+                "air": 300,
+                "grounded": 1,
+                "saddle": 0,
+                "chunk": [
+                  0,
+                  0
+                ]
+              },
+              "input": {
+                "pos": [
+                  4609876781935633098,
+                  4634204016564240384,
+                  4608117754419839086
+                ],
+                "motion": [
+                  0,
+                  13813685773000465449,
+                  0
+                ],
+                "rotation": [
+                  1111129704,
+                  0
+                ],
+                "health": 10,
+                "hurt": 0,
+                "death": 0,
+                "attack": 0,
+                "fire": -1,
+                "air": 300,
+                "grounded": 1,
+                "saddle": 0,
+                "chunk": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ]
+        },
+        "active": {
+          "entity_calls": 4,
+          "attempts": 4,
+          "factory": 4,
+          "predicates": 4,
+          "accepted": 2,
+          "inserted": 2,
+          "smoke": 44,
+          "flame": 44,
+          "explode": 40,
+          "resets": 2,
+          "pigs": 2,
+          "delay": 284,
+          "time": 4
+        }
+      },
+      "images": {
+        "spawner-tick.png": {
+          "bytes": 216877,
+          "sha256": "5983639fe2d24c6dfbda569d6822480c896285db124f78416ab1e2c1b3e5c19d",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "spawner-tick-title.png": {
+          "bytes": 32702,
+          "sha256": "806dca3ae6a0f342fa28e92836fb09bf35ea0c5acf0f0db9784dddbb11dadf10",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        },
+        "spawner-tick-reloaded.png": {
+          "bytes": 154040,
+          "sha256": "fc79a3e81f79ac64c00e83e1b3ce04fbb7b3701e424bc6b9a3f9598ce1a8dbd4",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        }
+      },
+      "receipt": {
+        "bytes": 705807,
+        "sha256": "b8808bbaad99bc7388dd9fd05702aa69ed9afa2caa4966b5fb58d30bec14bd51"
+      },
+      "stdout_text_file": {
+        "bytes": 3098,
+        "sha256": "c291da8825a657df3fcfc3ba9ebd6b5fedc93c768889841a229429b9542e5827"
+      },
+      "stderr_text_file": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "selected_inputs_unchanged": true,
+      "imported_assets_unchanged": true,
+      "actual_windows_closed": true,
+      "save_reload": {
+        "all_disk_pigs": 2,
+        "disk_pigs_in_witnessed_loaded_chunks": 2,
+        "disk_pigs_in_witnessed_unloaded_chunks": 0,
+        "imported_records_matched_one_for_one": true,
+        "fresh_spawner_insertions_on_reload": 0,
+        "save_time": 5
+      }
+    },
+    {
+      "profile": "failure",
+      "checks": 461,
+      "physical_monitor_work": [
+        -1920,
+        0,
+        1920,
+        1040
+      ],
+      "native": {
+        "checks": 461,
+        "window_ids": [
+          3,
+          4
+        ]
+      },
+      "images": {
+        "spawner-tick-before-failure.png": {
+          "bytes": 121193,
+          "sha256": "36958072d74157023660ab57bbfd2239e5ffc197db3a6fdb15ad95df976f1f04",
+          "width": 854,
+          "height": 480,
+          "color_type": 6
+        }
+      },
+      "receipt": {
+        "bytes": 692570,
+        "sha256": "b7d3120d8834579acab70923b2852d7055ab4321b095a031399df7c1e1dbf97f"
+      },
+      "stdout_text_file": {
+        "bytes": 1170,
+        "sha256": "fd7e7ea64971e4865e691f20d4beca76eeb46ae37d328c22a87593b931fabdf5"
+      },
+      "stderr_text_file": {
+        "bytes": 105,
+        "sha256": "15582a1f159ce26f06f6df84076a71d03b840eb34b7671da547a2b9935705425"
+      },
+      "selected_inputs_unchanged": true,
+      "imported_assets_unchanged": true,
+      "actual_windows_closed": true,
+      "expected_failure": {
+        "world_tile_invoke_pc": 390,
+        "spawner_particle_pc": 571,
+        "observer_self_removed": true,
+        "pig_still_published": true,
+        "delay_not_reset": true,
+        "source_snapshot_preserved_through_prepare": true,
+        "owned_child_retired": true,
+        "stderr": "One exact expected client failure diagnostic; no other stderr admitted."
+      }
+    }
+  ],
+  "transport": "SDK stdout/stderr are retained text-mode files after newline conversion, not original raw OS pipes. Receipt and file hashes bind that finite transport.",
+  "limitations": [
+    "Authored saved terrain, Player and delay inputs; no live Source/Random repair.",
+    "Native constructor entropy and positive spawn counts remain independent of the original Java cohort.",
+    "Current runtime fields and immutable imported NBT are distinct records; ordinary reload ticks may evolve runtime fields.",
+    "All Pig-bearing Chunks in these qualifying positive captures were loaded. The unloaded-subset decoder has synthetic controls, not a new dynamic absent-Chunk qualification.",
+    "No original GL/pixel equality, FPS result, sustained-play or whole-game parity qualification.",
+    "Earlier fixture compilation, incomplete observer, all-regions/live-list comparison and expected-stderr reader failures remain separate private attempts. They are not these qualifying processes."
+  ]
+}

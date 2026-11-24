@@ -1,0 +1,227 @@
+{
+  "status": "PASS_SYNTHETIC_INPUTS_ONLY",
+  "roles": [
+    {
+      "role": 0,
+      "name": "zero",
+      "time": 0,
+      "chunks": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "entities": 0,
+      "tile_entities": 0,
+      "all_arrays_zero": true,
+      "session_token": 137,
+      "personal_material_present": false
+    },
+    {
+      "role": 1,
+      "name": "age100",
+      "time": 100,
+      "chunks": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "entities": 0,
+      "tile_entities": 0,
+      "all_arrays_zero": true,
+      "session_token": 137,
+      "personal_material_present": false
+    },
+    {
+      "role": 2,
+      "name": "age101",
+      "time": 101,
+      "chunks": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "entities": 0,
+      "tile_entities": 0,
+      "all_arrays_zero": true,
+      "session_token": 137,
+      "personal_material_present": false
+    },
+    {
+      "role": 3,
+      "name": "wrap-old",
+      "time": 9223372036854775757,
+      "chunks": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "entities": 0,
+      "tile_entities": 0,
+      "all_arrays_zero": true,
+      "session_token": 137,
+      "personal_material_present": false
+    },
+    {
+      "role": 4,
+      "name": "wrap100",
+      "time": -9223372036854775759,
+      "chunks": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "entities": 0,
+      "tile_entities": 0,
+      "all_arrays_zero": true,
+      "session_token": 137,
+      "personal_material_present": false
+    },
+    {
+      "role": 5,
+      "name": "wrap101",
+      "time": -9223372036854775758,
+      "chunks": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "entities": 0,
+      "tile_entities": 0,
+      "all_arrays_zero": true,
+      "session_token": 137,
+      "personal_material_present": false
+    }
+  ],
+  "generation": "authored picking World producer; only prelaunch Time changed; no private saved World imported",
+  "source_generator_sha256": "16fc9e7a26fa65649270611e39c060399643dca87d777a519c6591430921f8e1",
+  "producer": {
+    "path": "tests/reference/client/picking/observe.py",
+    "sha256": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "publication_generator": "generate_worlds.py",
+    "publication_projection": "Existing authored producer plus explicit prelaunch Time replacement; stored exact binary inputs remain authoritative across compression versions."
+  },
+  "preserved_level_fields": {
+    "RandomSeed": 23,
+    "SpawnX": 0,
+    "SpawnY": 64,
+    "SpawnZ": 0,
+    "version": 19132,
+    "rainTime": 0,
+    "thunderTime": 0,
+    "LastPlayed": 123,
+    "SizeOnDisk": 0,
+    "LevelName": "Pick",
+    "raining": false,
+    "thundering": false,
+    "Time": "exact role-specific long from world-inputs.json"
+  },
+  "preserved_chunk_fields": {
+    "coordinates": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "LastUpdate": 0,
+    "TerrainPopulated": 1,
+    "Blocks_bytes": 32768,
+    "Data_bytes": 16384,
+    "SkyLight_bytes": 16384,
+    "BlockLight_bytes": 16384,
+    "HeightMap_bytes": 256,
+    "all_array_bytes": 0,
+    "Entities": [],
+    "TileEntities": []
+  },
+  "region_timestamps_all_zero": true
+}
